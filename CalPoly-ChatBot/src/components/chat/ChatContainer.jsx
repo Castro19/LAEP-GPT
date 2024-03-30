@@ -1,22 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 
 const ChatContainer = () => {
   const [msg, setMsg] = useState("");
   const [msgList, setMsgList] = useState([]);
+  const messagesContainerRef = useRef(null);
+
+  useEffect(() => {
+    const messagesContainer = messagesContainerRef.current;
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }, [msgList]);
 
   return (
     <div className="flex flex-col h-screen justify-between">
-      <div className="overflow-auto">
+      <div
+        ref={messagesContainerRef}
+        className="messages-container overflow-auto p-4 pb-16"
+      >
         {/* Messages will go here */}
-        ChatContainer
+        {msgList.map((message) => (
+          <ChatMessage key={message.id} msg={message} />
+        ))}
       </div>
+
       <ChatInput
         msg={msg}
         setMsg={setMsg}
         msgList={msgList}
         setMsgList={setMsgList}
+        messagesContainerRef={messagesContainerRef} // Passing the ref as a prop
       />
     </div>
   );

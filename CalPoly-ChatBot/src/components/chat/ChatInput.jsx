@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const ChatInput = ({ msg, setMsg, msgList, setMsgList }) => {
+const ChatInput = ({
+  msg,
+  setMsg,
+  msgList,
+  setMsgList,
+  messagesContainerRef,
+}) => {
   const [inputRows, setInputRows] = useState(1);
   const textareaRef = useRef(null);
 
@@ -20,10 +26,23 @@ const ChatInput = ({ msg, setMsg, msgList, setMsgList }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (msg.trim()) {
-      setMsgList([...msgList, msg]);
+      const newUserMessage = {
+        id: Date.now(),
+        sender: "user2",
+        text: msg,
+      };
+      setMsgList([...msgList, newUserMessage]);
       console.log(msgList);
       setMsg("");
-      setInputRows(1); // Reset rows when message is sent
+      setInputRows(1);
+      textareaRef.current.style.height = "auto"; // Replace 40px with the actual initial height
+
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop =
+            messagesContainerRef.current.scrollHeight;
+        }
+      }, 0);
     }
   };
 
@@ -32,13 +51,13 @@ const ChatInput = ({ msg, setMsg, msgList, setMsgList }) => {
     <div className="w-full p-4 bg-white fixed inset-x-0 bottom-0">
       <form onSubmit={handleSubmit} className="flex items-start">
         <textarea
+          ref={textareaRef}
           id="ChatInput"
           className="flex-1 resize-none p-2 border rounded-tl rounded-bl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out bg-gray-100"
           placeholder="Type your message here..."
           rows={inputRows}
           value={msg}
           onChange={handleInputChange}
-          style={{ marginBottom: "0" }} // Remove margin-bottom if it exists
         />
         <button
           type="submit"
