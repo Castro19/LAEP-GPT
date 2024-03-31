@@ -23,26 +23,43 @@ const ChatInput = ({
     textarea.style.height = `${newHeight}px`; // Set new height
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (msg.trim()) {
       const newUserMessage = {
         id: Date.now(),
-        sender: "user2",
+        sender: "user",
         text: msg,
       };
-      setMsgList([...msgList, newUserMessage]);
+      setMsgList((prevMessages) => [...prevMessages, newUserMessage]);
       console.log(msgList);
       setMsg("");
       setInputRows(1);
       textareaRef.current.style.height = "auto"; // Replace 40px with the actual initial height
-
       setTimeout(() => {
         if (messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop =
             messagesContainerRef.current.scrollHeight;
         }
       }, 0);
+
+      try {
+        const response = await fetch("http://localhost:4000/respond", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg }),
+        });
+        const data = await response.json();
+        const newBotMessage = {
+          id: Date.now(),
+          sender: "bot",
+          text: data.botResponse,
+        };
+        setMsgList((prevMessages) => [...prevMessages, newBotMessage]);
+      } catch (error) {
+        setErr(error);
+        console.error(error);
+      }
     }
   };
 
