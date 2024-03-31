@@ -5,19 +5,29 @@ const ChatMessage = ({ msg }) => {
 
   return (
     <div
-      className={`w-full my-2 rounded-lg ${
-        isUserMessage ? "bg-gray-500 text-white" : "bg-gray-300 text-gray-800"
+      className={`w-full my-2 flex ${
+        isUserMessage ? "justify-end" : "justify-start"
       }`}
     >
-      <div className="p-2">
-        <span
-          className={`text-xs font-semibold uppercase tracking-wide ${
-            isUserMessage ? "text-gray-200" : "text-gray-700"
-          }`}
-        >
-          {msg.sender}:
-        </span>
-        <p className="text-sm mt-1">{msg.text}</p>
+      <div
+        className={`max-w-2/3 rounded-lg shadow ${
+          isUserMessage
+            ? "bg-blue-600 text-white"
+            : "bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200"
+        }`}
+      >
+        <div className="p-2">
+          <span
+            className={`text-xs font-semibold uppercase tracking-wide ${
+              isUserMessage
+                ? "text-blue-200"
+                : "text-gray-700 dark:text-gray-300"
+            }`}
+          >
+            {msg.sender}:
+          </span>
+          <p className="text-sm mt-1">{msg.text}</p>
+        </div>
       </div>
     </div>
   );

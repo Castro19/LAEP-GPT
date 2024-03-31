@@ -9,6 +9,7 @@ const ChatInput = ({
 }) => {
   const [inputRows, setInputRows] = useState(1);
   const textareaRef = useRef(null);
+  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     setMsg(e.target.value);
@@ -20,7 +21,9 @@ const ChatInput = ({
     textarea.style.height = "auto"; // Reset height so scrollHeight includes only text
     const newHeight =
       textarea.scrollHeight > maxHeight ? maxHeight : textarea.scrollHeight;
+
     textarea.style.height = `${newHeight}px`; // Set new height
+    textarea.style.overflowY = newHeight >= maxHeight ? "scroll" : "hidden"; // Show scrollbar only when at max height
   };
 
   const handleSubmit = async (e) => {
@@ -49,15 +52,18 @@ const ChatInput = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: msg }),
         });
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
         const data = await response.json();
         const newBotMessage = {
-          id: Date.now(),
+          id: Date.now() + 1,
           sender: "bot",
           text: data.botResponse,
         };
         setMsgList((prevMessages) => [...prevMessages, newBotMessage]);
       } catch (error) {
-        setErr(error);
+        setError(error.toString());
         console.error(error);
       }
     }
@@ -65,12 +71,12 @@ const ChatInput = ({
 
   // ChatInput Component
   return (
-    <div className="w-full p-4 bg-white fixed inset-x-0 bottom-0">
-      <form onSubmit={handleSubmit} className="flex items-start">
+    <div className="w-full p-4 bg-white dark:bg-gray-800 fixed inset-x-0 bottom-0">
+      <form onSubmit={handleSubmit} className="flex items-end gap-2">
         <textarea
           ref={textareaRef}
           id="ChatInput"
-          className="flex-1 resize-none p-2 border rounded-tl rounded-bl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out bg-gray-100"
+          className="flex-1 resize-none p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition-all duration-300 ease-in-out bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 overflow-y-hidden"
           placeholder="Type your message here..."
           rows={inputRows}
           value={msg}
@@ -78,7 +84,7 @@ const ChatInput = ({
         />
         <button
           type="submit"
-          className="w-auto px-4 py-2 bg-blue-500 text-white rounded-tr rounded-br hover:bg-blue-600"
+          className="w-auto px-4 py-2 bg-blue-500 text-white rounded-tr rounded-br hover:bg-blue-600 dark:hover:bg-blue-400"
         >
           Send
         </button>
