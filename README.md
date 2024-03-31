@@ -5,6 +5,10 @@ This project is a part of California Polytechnic State University (Cal Poly) in 
 
 We are currently in the early stages of building an AI chatbot that will provide ethical considerations for senior projects, help match students with advisors for their projects, and utilize the power of AI to enhance the experience of a student's senior project.
 
+
+<img src="https://live.staticflickr.com/65535/53623114111_406c076410_k.jpg" width="500" alt="Description">
+
+
 ## Table of Contents
 - [Requirements](#requirements)
 - [Installation](#installation)
