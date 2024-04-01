@@ -6,13 +6,14 @@ This project is a part of California Polytechnic State University (Cal Poly) in 
 We are currently in the early stages of building an AI chatbot that will provide ethical considerations for senior projects, help match students with advisors for their projects, and utilize the power of AI to enhance the experience of a student's senior project.
 
 
-<img src="https://live.staticflickr.com/65535/53623114111_406c076410_k.jpg" width="500" alt="Description">
+<img src="https://live.staticflickr.com/65535/53625001307_7cc401a26b_b.jpg" width="700" alt="Description">
 
 
 ## Table of Contents
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Next Steps](#nextSteps)
 - [Contributors](#contributors)
 - [License](#license)
 
@@ -65,6 +66,12 @@ We are currently in the early stages of building an AI chatbot that will provide
     cd server
     node index.js
     ```
+
+## Next Steps
+
+1. Continuously display the message as it finishes using the `stream: true` parameter on the server side API request.
+2. Implement a header and footer.
+3. Implement a main menu of options for different types of models to use.
 
 ## Contributors
 
