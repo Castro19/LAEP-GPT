@@ -1,7 +1,13 @@
 import React from "react";
+import MarkdownIt from "markdown-it";
+import DOMPurify from "dompurify";
+
+const md = new MarkdownIt();
 
 const ChatMessage = ({ msg }) => {
   const isUserMessage = msg.sender === "user";
+  const messageHtml = md.render(msg.text); // Convert Markdown to HTML
+  const safeHtml = DOMPurify.sanitize(messageHtml);
 
   return (
     <div
@@ -10,24 +16,16 @@ const ChatMessage = ({ msg }) => {
       }`}
     >
       <div
-        className={`max-w-2/3 rounded-lg shadow ${
+        className={`max-w-2/3 ${
           isUserMessage
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200"
-        }`}
+            ? "bg-blue-600 text-white" // User messages: Blue background with white text.
+            : "bg-gray-800 dark:bg-gray-700 text-white" // Bot messages: Darker background with white text for better contrast.
+        } rounded-lg shadow p-4`}
       >
-        <div className="p-2">
-          <span
-            className={`text-xs font-semibold uppercase tracking-wide ${
-              isUserMessage
-                ? "text-blue-200"
-                : "text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            {msg.sender}:
-          </span>
-          <p className="text-sm mt-1">{msg.text}</p>
-        </div>
+        <div
+          className="prose prose-invert"
+          dangerouslySetInnerHTML={{ __html: safeHtml }}
+        />
       </div>
     </div>
   );

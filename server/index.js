@@ -21,8 +21,15 @@ app.post("/respond", async (req, res) => {
     const { message } = req.body;
     console.log("MESSAGE: ", message);
     const chatCompletion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: message }],
+      model: "gpt-4-0613",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed.",
+        },
+        { role: "user", content: message },
+      ],
     });
 
     console.log("PASSED");
