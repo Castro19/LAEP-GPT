@@ -32,5 +32,3 @@ export default async function sendMessage(msg, setMsgList, setError) {
     console.log("Request shorter message");
   }
 }
-
-function checkMessage(msg) {}

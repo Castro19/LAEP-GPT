@@ -1,12 +1,12 @@
 {
-  "name": "clone-chatgpt-server",
+  "name": "laep-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sushant Dhimal",
+  "author": "Cristian Castro Oliva",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.1",
