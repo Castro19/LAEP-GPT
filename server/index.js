@@ -20,6 +20,8 @@ app.post("/respond", async (req, res) => {
   try {
     const { message } = req.body;
     console.log("MESSAGE: ", message);
+    // model: "gpt-3.5-turbo-0125",
+    // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({
       model: "gpt-4-0613",
       messages: [
@@ -41,6 +43,11 @@ app.post("/respond", async (req, res) => {
     console.error("Error calling OpenAI:", error);
     res.status(500).json({ error: "Failed to generate response from OpenAI" });
   }
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong...");
 });
 
 // Start the server
