@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 
-const ChatContainer = () => {
+const ChatContainer = ({ modelType }) => {
   const [msg, setMsg] = useState("");
   const [msgList, setMsgList] = useState([]);
   const messagesContainerRef = useRef(null);
@@ -27,6 +27,7 @@ const ChatContainer = () => {
       </div>
 
       <ChatInput
+        modelType={modelType}
         msg={msg}
         setMsg={setMsg}
         msgList={msgList}

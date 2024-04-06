@@ -7,7 +7,13 @@ import {
   resetInputAndScrollToBottom,
 } from "../../utils/format";
 
-const ChatInput = ({ msg, setMsg, setMsgList, messagesContainerRef }) => {
+const ChatInput = ({
+  modelType,
+  msg,
+  setMsg,
+  setMsgList,
+  messagesContainerRef,
+}) => {
   const textareaRef = useRef(null);
   const [error, setError] = useState(null);
   const [isSending, setIsSending] = useState(false);
@@ -31,7 +37,7 @@ const ChatInput = ({ msg, setMsg, setMsgList, messagesContainerRef }) => {
     try {
       // Find this function in src/utils/handleMessage.js
       // This makes the API request and handles the response
-      await sendMessage(msg, setMsgList, setError);
+      await sendMessage(modelType, msg, setMsgList, setError);
     } catch (error) {
       console.error("Failed to send message", error);
     } finally {

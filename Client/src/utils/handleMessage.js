@@ -1,9 +1,15 @@
-export default async function sendMessage(msg, setMsgList, setError) {
+export default async function sendMessage(
+  modelType,
+  msg,
+  setMsgList,
+  setError
+) {
   if (msg.trim() && msg.length < 2000) {
     const newUserMessage = {
       id: Date.now(),
       sender: "user",
       text: msg,
+      mode: modelType,
     };
     setMsgList((prevMessages) => [...prevMessages, newUserMessage]);
 
@@ -11,7 +17,7 @@ export default async function sendMessage(msg, setMsgList, setError) {
       const response = await fetch("http://localhost:4000/respond", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg }),
+        body: JSON.stringify({ message: msg, modelType: modelType }),
       });
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);

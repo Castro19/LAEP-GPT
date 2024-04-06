@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       <Header modelType={modelType} setModelType={setModelType} />
-      <ChatContainer />
+      <ChatContainer modelType={modelType} />
     </>
   );
 }

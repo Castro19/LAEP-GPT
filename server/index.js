@@ -1,8 +1,11 @@
-require("dotenv").config();
-const { OpenAI } = require("openai");
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+import dotenv from "dotenv";
+dotenv.config();
+
+import OpenAI from "openai";
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import chooseModel from "./utils/chooseModel.js"; // Make sure the file has `.js` extension or is a directory with an `index.js` file
 
 // Initialize express app
 const app = express();
@@ -18,8 +21,13 @@ app.use(cors());
 // Route to handle POST requests
 app.post("/respond", async (req, res) => {
   try {
-    const { message } = req.body;
-    console.log("MESSAGE: ", message);
+    const { message, modelType } = req.body;
+
+    const modelDesc = chooseModel(modelType);
+    const contentStr =
+      "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed. " +
+      modelDesc;
+    console.log(contentStr);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({
@@ -27,8 +35,7 @@ app.post("/respond", async (req, res) => {
       messages: [
         {
           role: "system",
-          content:
-            "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed.",
+          content: contentStr,
         },
         { role: "user", content: message },
       ],
