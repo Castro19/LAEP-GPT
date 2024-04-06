@@ -9,13 +9,19 @@ function App() {
   // Senior Project Ethical Advisor('Ethical'),
   // Advisor Matching ('match')
   const [modelType, setModelType] = useState("normal");
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
   return (
     <>
-      <Header modelType={modelType} setModelType={setModelType} />
+      <Header
+        modelType={modelType}
+        setModelType={setModelType}
+        isSidebarVisible={isSidebarVisible}
+        setIsSidebarVisible={setIsSidebarVisible}
+      />
       <ChatContainer modelType={modelType} />
     </>
   );

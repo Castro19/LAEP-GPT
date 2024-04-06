@@ -13,5 +13,8 @@
   },
   "keywords": [],
   "author": "Cristian Castro Oliva",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
