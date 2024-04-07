@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
+import { useMessage } from "../contexts/MessageContext";
+import { useUI } from "../contexts/UIContext";
 
-const ChatContainer = ({
-  msgList,
-  setMsgList,
-  logList,
-  setLogList,
-  isNewChat,
-  setIsNewChat,
-  modelType,
-}) => {
-  const [msg, setMsg] = useState("");
+const ChatContainer = () => {
+  const { msgList, logList } = useMessage();
+  const { setIsNewChat } = useUI();
+
   const messagesContainerRef = useRef(null);
 
   useEffect(() => {
@@ -37,14 +33,6 @@ const ChatContainer = ({
       </div>
 
       <ChatInput
-        modelType={modelType}
-        msg={msg}
-        setMsg={setMsg}
-        msgList={msgList}
-        setMsgList={setMsgList}
-        logList={logList}
-        setLogList={setLogList}
-        isNewChat={isNewChat}
         messagesContainerRef={messagesContainerRef} // Passing the ref as a prop
       />
     </div>

@@ -1,27 +1,23 @@
 import React, { useRef, useState } from "react";
+import { useMessage } from "../contexts/MessageContext";
+import { useUI } from "../contexts/UIContext";
+import { useModel } from "../contexts/ModelContext";
 import { FaSpinner } from "react-icons/fa"; // Example using React Icons
-
 import sendMessage from "../../utils/handleMessage";
 import createLogTitle, { archiveChatSession } from "../../utils/createLog";
-
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
 } from "../../utils/format";
 
-const ChatInput = ({
-  modelType,
-  msg,
-  setMsg,
-  msgList,
-  setMsgList,
-  logList,
-  setLogList,
-  isNewChat,
-  messagesContainerRef,
-}) => {
+const ChatInput = ({ messagesContainerRef }) => {
   const textareaRef = useRef(null);
   const [_error, setError] = useState(null);
+  const { msg, setMsg, msgList, setMsgList, logList, setLogList } =
+    useMessage();
+  const { isNewChat } = useUI();
+  const { modelType } = useModel();
+
   const [isSending, setIsSending] = useState(false);
   // Modify the Message State variable and automatically change the height of the input text area
   const handleInputChange = (e) => {

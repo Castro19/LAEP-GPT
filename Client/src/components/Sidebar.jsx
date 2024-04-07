@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "./chat/ChatLog";
-const Sidebar = ({
-  msgList,
-  setMsgList,
-  logList,
-  setLogList,
-  isSidebarVisible,
-  setIsSidebarVisible,
-}) => {
+import { useUI } from "./contexts/UIContext";
+import { useMessage } from "./contexts/MessageContext";
+
+const Sidebar = () => {
+  const { isSidebarVisible, setIsSidebarVisible } = useUI();
+  const { msgList, setMsgList, logList, setLogList } = useMessage();
+
   useEffect(() => {
     console.log(isSidebarVisible);
   }, [isSidebarVisible]);

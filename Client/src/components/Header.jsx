@@ -2,24 +2,17 @@ import React, { useState } from "react";
 import ModeDropDown from "./ModeDropDown";
 import Sidebar from "./Sidebar";
 import { BiChat } from "react-icons/bi";
-import { RiChatNewFill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
-
-const Header = ({
-  msgList,
-  setMsgList,
-  logList,
-  setLogList,
-  modelType,
-  setModelType,
-  isSidebarVisible,
-  setIsSidebarVisible,
-}) => {
+import NewChat from "./NewChat";
+import { useUI } from "./contexts/UIContext";
+import { useModel } from "./contexts/ModelContext";
+const Header = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const { isSidebarVisible, setIsSidebarVisible } = useUI();
 
+  const { setModelType } = useModel();
   const toggleSidebar = () => setIsSidebarVisible(!isSidebarVisible);
   const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
-  const toggleNewChat = () => window.location.reload();
   const selectMode = (mode) => {
     setModelType(mode);
     setIsDropdownVisible(false);
@@ -36,14 +29,7 @@ const Header = ({
         <button onClick={toggleSidebar} className="text-lg">
           <BiChat />
         </button>
-        <Sidebar
-          msgList={msgList}
-          setMsgList={setMsgList}
-          logList={logList}
-          setLogList={setLogList}
-          isSidebarVisible={isSidebarVisible}
-          setIsSidebarVisible={setIsSidebarVisible}
-        />
+        <Sidebar />
         <div>
           <button
             onClick={toggleDropdown}
@@ -59,13 +45,10 @@ const Header = ({
               isVisible={isDropdownVisible}
               onSelect={selectMode}
               options={modeOptions}
-              modelType={modelType}
             />
           )}
         </div>
-        <button onClick={toggleNewChat} className="text-lg">
-          <RiChatNewFill />
-        </button>
+        <NewChat />
       </div>
     </header>
   );
