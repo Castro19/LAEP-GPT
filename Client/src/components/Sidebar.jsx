@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "./chat/ChatLog";
 import { useUI } from "./contexts/UIContext";

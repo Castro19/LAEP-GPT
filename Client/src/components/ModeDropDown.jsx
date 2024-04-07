@@ -17,7 +17,7 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
 
   useEffect(() => {
     console.log("MODEL: ", modelType);
-  }, []);
+  }, [modelType]);
 
   return (
     <div
