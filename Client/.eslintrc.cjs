@@ -21,7 +21,7 @@ module.exports = {
     "react/jsx-uses-react": "off", // Not needed with React 17+ JSX Transform
     "react/react-in-jsx-scope": "off", // Not needed with React 17+ JSX Transform
     "react/prop-types": "off", // Optional: Disable if you're not using prop-types
-    "no-unused-vars": ["warn", { varsIgnorePattern: "React" }], // Adjust based on your needs
+    "no-unused-vars": ["warn", { varsIgnorePattern: "^React$|^_" }],
   },
   overrides: [
     {

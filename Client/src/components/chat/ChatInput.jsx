@@ -15,7 +15,7 @@ const ChatInput = ({
   messagesContainerRef,
 }) => {
   const textareaRef = useRef(null);
-  const [error, setError] = useState(null);
+  const [_error, setError] = useState(null);
   const [isSending, setIsSending] = useState(false);
   // Modify the Message State variable and automatically change the height of the input text area
   const handleInputChange = (e) => {
