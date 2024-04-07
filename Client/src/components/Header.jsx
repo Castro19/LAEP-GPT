@@ -7,16 +7,20 @@ import NewChat from "./NewChat";
 import { useUI } from "./contexts/UIContext";
 import { useModel } from "./contexts/ModelContext";
 const Header = () => {
+  // Define State Vars:
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const { isSidebarVisible, setIsSidebarVisible } = useUI();
-
   const { setModelType } = useModel();
+
+  // Define Event Handlers for Button on Header being pressed.
   const toggleSidebar = () => setIsSidebarVisible(!isSidebarVisible);
   const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
   const selectMode = (mode) => {
     setModelType(mode);
     setIsDropdownVisible(false);
   };
+
+  // Define the different mode options for out chatBot
   const modeOptions = [
     { label: "normal", value: "normal" },
     { label: "ethical", value: "ethical" },

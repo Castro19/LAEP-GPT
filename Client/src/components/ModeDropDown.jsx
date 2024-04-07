@@ -3,7 +3,6 @@ import { useModel } from "./contexts/ModelContext";
 
 const ModeDropDown = ({ isVisible, onSelect, options }) => {
   const { modelType } = useModel();
-
   const dropdownRef = useRef(null);
   const [maxHeight, setMaxHeight] = useState("0");
 
@@ -18,7 +17,7 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
 
   useEffect(() => {
     console.log("MODEL: ", modelType);
-  }, [modelType]);
+  }, []);
 
   return (
     <div
