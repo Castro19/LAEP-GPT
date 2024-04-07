@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FaSpinner } from "react-icons/fa"; // Example using React Icons
 
 import sendMessage from "../../utils/handleMessage";

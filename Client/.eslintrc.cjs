@@ -23,4 +23,12 @@ module.exports = {
     "react/prop-types": "off", // Optional: Disable if you're not using prop-types
     "no-unused-vars": ["warn", { varsIgnorePattern: "React" }], // Adjust based on your needs
   },
+  overrides: [
+    {
+      files: ["tailwind.config.js"],
+      env: {
+        node: true,
+      },
+    },
+  ],
 };
