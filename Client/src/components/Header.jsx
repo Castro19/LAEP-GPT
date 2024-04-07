@@ -2,24 +2,25 @@ import React, { useState } from "react";
 import ModeDropDown from "./ModeDropDown";
 import Sidebar from "./Sidebar";
 import { BiChat } from "react-icons/bi";
-import { RiChatNewFill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
-
-const Header = ({
-  modelType,
-  setModelType,
-  isSidebarVisible,
-  setIsSidebarVisible,
-}) => {
+import NewChat from "./NewChat";
+import { useUI } from "./contexts/UIContext";
+import { useModel } from "./contexts/ModelContext";
+const Header = () => {
+  // Define State Vars:
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const { isSidebarVisible, setIsSidebarVisible } = useUI();
+  const { setModelType } = useModel();
 
+  // Define Event Handlers for Button on Header being pressed.
   const toggleSidebar = () => setIsSidebarVisible(!isSidebarVisible);
   const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
-  const toggleNewChat = () => window.location.reload();
   const selectMode = (mode) => {
     setModelType(mode);
     setIsDropdownVisible(false);
   };
+
+  // Define the different mode options for out chatBot
   const modeOptions = [
     { label: "normal", value: "normal" },
     { label: "ethical", value: "ethical" },
@@ -32,10 +33,7 @@ const Header = ({
         <button onClick={toggleSidebar} className="text-lg">
           <BiChat />
         </button>
-        <Sidebar
-          isSidebarVisible={isSidebarVisible}
-          setIsSidebarVisible={setIsSidebarVisible}
-        />
+        <Sidebar />
         <div>
           <button
             onClick={toggleDropdown}
@@ -51,13 +49,10 @@ const Header = ({
               isVisible={isDropdownVisible}
               onSelect={selectMode}
               options={modeOptions}
-              modelType={modelType}
             />
           )}
         </div>
-        <button onClick={toggleNewChat} className="text-lg">
-          <RiChatNewFill />
-        </button>
+        <NewChat />
       </div>
     </header>
   );

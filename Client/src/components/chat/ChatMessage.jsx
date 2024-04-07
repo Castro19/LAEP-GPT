@@ -5,7 +5,9 @@ import DOMPurify from "dompurify";
 const md = new MarkdownIt();
 
 const ChatMessage = ({ msg }) => {
+  // Boolean Variable to style messages differently between user and chatbot
   const isUserMessage = msg.sender === "user";
+
   const messageHtml = md.render(msg.text); // Convert Markdown to HTML
   const safeHtml = DOMPurify.sanitize(messageHtml);
 
