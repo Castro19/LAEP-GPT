@@ -1,0 +1,43 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  client-build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+
+      - name: Install Client Dependencies
+        run: cd Client && npm install
+
+      - name: Lint Client Code
+        run: cd Client && npm run lint
+
+      - name: Build Client
+        run: cd Client && npm run build
+
+  server-setup:
+    needs: client-build-and-lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+
+      - name: Install Server Dependencies
+        run: cd server && npm install
+
+    # Placeholder for future server-side testing
+    # - name: Run Server Tests
+    #   run: cd server && npm test
