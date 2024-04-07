@@ -6,6 +6,10 @@ import { RiChatNewFill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
 
 const Header = ({
+  msgList,
+  setMsgList,
+  logList,
+  setLogList,
   modelType,
   setModelType,
   isSidebarVisible,
@@ -33,6 +37,10 @@ const Header = ({
           <BiChat />
         </button>
         <Sidebar
+          msgList={msgList}
+          setMsgList={setMsgList}
+          logList={logList}
+          setLogList={setLogList}
           isSidebarVisible={isSidebarVisible}
           setIsSidebarVisible={setIsSidebarVisible}
         />

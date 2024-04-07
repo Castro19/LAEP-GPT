@@ -1,7 +1,14 @@
 import React, { useEffect } from "react";
 import { MdClose } from "react-icons/md"; // Importing the close icon
-
-const Sidebar = ({ isSidebarVisible, setIsSidebarVisible }) => {
+import ChatLog from "./chat/ChatLog";
+const Sidebar = ({
+  msgList,
+  setMsgList,
+  logList,
+  setLogList,
+  isSidebarVisible,
+  setIsSidebarVisible,
+}) => {
   useEffect(() => {
     console.log(isSidebarVisible);
   }, [isSidebarVisible]);
@@ -31,6 +38,12 @@ const Sidebar = ({ isSidebarVisible, setIsSidebarVisible }) => {
         </button>
         <h2 className="font-semibold text-xl">Chat Logs</h2>
         {/* Populate this area with your chat log entries */}
+        <ChatLog
+          msgList={msgList}
+          setMsgList={setMsgList}
+          logList={logList}
+          setLogList={setLogList}
+        />
       </div>
     </aside>
   );

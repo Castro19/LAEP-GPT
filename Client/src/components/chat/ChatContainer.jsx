@@ -2,9 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 
-const ChatContainer = ({ modelType }) => {
+const ChatContainer = ({
+  msgList,
+  setMsgList,
+  logList,
+  setLogList,
+  isNewChat,
+  setIsNewChat,
+  modelType,
+}) => {
   const [msg, setMsg] = useState("");
-  const [msgList, setMsgList] = useState([]);
   const messagesContainerRef = useRef(null);
 
   useEffect(() => {
@@ -12,6 +19,9 @@ const ChatContainer = ({ modelType }) => {
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+    if (msgList.length > 1) setIsNewChat(false);
+    else setIsNewChat(true);
+    console.log(logList);
   }, [msgList]);
 
   return (
@@ -32,6 +42,9 @@ const ChatContainer = ({ modelType }) => {
         setMsg={setMsg}
         msgList={msgList}
         setMsgList={setMsgList}
+        logList={logList}
+        setLogList={setLogList}
+        isNewChat={isNewChat}
         messagesContainerRef={messagesContainerRef} // Passing the ref as a prop
       />
     </div>

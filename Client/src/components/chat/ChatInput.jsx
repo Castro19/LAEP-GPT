@@ -2,6 +2,8 @@ import React, { useRef, useState } from "react";
 import { FaSpinner } from "react-icons/fa"; // Example using React Icons
 
 import sendMessage from "../../utils/handleMessage";
+import createLogTitle, { archiveChatSession } from "../../utils/createLog";
+
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
@@ -11,7 +13,11 @@ const ChatInput = ({
   modelType,
   msg,
   setMsg,
+  msgList,
   setMsgList,
+  logList,
+  setLogList,
+  isNewChat,
   messagesContainerRef,
 }) => {
   const textareaRef = useRef(null);
@@ -27,6 +33,10 @@ const ChatInput = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
+
+    // Temporary hold the current message for archiving purposes if needed
+    const currentMessage = msg;
+
     // Resetting the message will clear the message in the text area b4 async call f'n returns
     // Will still pass the user's message correctly to `sendMessage`
     setMsg("");
@@ -43,6 +53,18 @@ const ChatInput = ({
     } finally {
       // Re-enable button always after promise resolves, whether it fails or suceeds.
       setIsSending(false);
+      if (isNewChat) {
+        // Assuming you call this to archive the chat session after the first message of a new chat
+        // Adjust this logic based on when you actually want to archive the chat
+        try {
+          // This now archives the chat right after the first message is sent in a new chat
+          // Consider adjusting this logic to archive at the end of the chat session instead
+          await createLogTitle(currentMessage, msgList, setLogList);
+        } catch (error) {
+          console.error("Failed to archive chat session", error);
+          setError(error.toString());
+        }
+      }
     }
   };
 

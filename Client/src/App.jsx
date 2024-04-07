@@ -10,6 +10,9 @@ function App() {
   // Advisor Matching ('match')
   const [modelType, setModelType] = useState("normal");
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [logList, setLogList] = useState([]);
+  const [isNewChat, setIsNewChat] = useState(true);
+  const [msgList, setMsgList] = useState([]);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -17,12 +20,24 @@ function App() {
   return (
     <>
       <Header
+        msgList={msgList}
+        setMsgList={setMsgList}
         modelType={modelType}
         setModelType={setModelType}
         isSidebarVisible={isSidebarVisible}
         setIsSidebarVisible={setIsSidebarVisible}
+        logList={logList}
+        setLogList={setLogList}
       />
-      <ChatContainer modelType={modelType} />
+      <ChatContainer
+        msgList={msgList}
+        setMsgList={setMsgList}
+        logList={logList}
+        setLogList={setLogList}
+        isNewChat={isNewChat}
+        setIsNewChat={setIsNewChat}
+        modelType={modelType}
+      />
     </>
   );
 }
