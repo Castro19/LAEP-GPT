@@ -29,9 +29,14 @@ const ChatContainer = () => {
   useEffect(() => {
     if (logList.length > 0) {
       console.log("ID: ", currentChatId);
-      if (logList[currentChatId]) {
-        setMsgList(logList[currentChatId].content);
+      console.log("LL: ", logList);
+      const currChatLog = logList.find((item) => item.id === currentChatId);
+
+      if (currChatLog) {
+        console.log("CCL: ", currChatLog);
+        setMsgList(currChatLog.content);
       } else {
+        console.log("Did not find a CCL");
         setMsgList([]);
       }
     }
