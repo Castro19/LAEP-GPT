@@ -63,7 +63,8 @@ const ChatInput = ({ messagesContainerRef }) => {
             currentMessage,
             currentChatId,
             msgList,
-            setLogList
+            setLogList,
+            modelType
           );
         } catch (error) {
           console.error("Failed to archive chat session", error);

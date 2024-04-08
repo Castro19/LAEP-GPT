@@ -39,7 +39,7 @@ app.post("/respond", async (req, res) => {
     const contentStr =
       "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed. " +
       modelDesc;
-    // console.log(contentStr);
+    console.log("Bot Instructions: ", contentStr);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({
@@ -53,9 +53,6 @@ app.post("/respond", async (req, res) => {
       ],
     });
 
-    // console.log("PASSED");
-    // console.log("OpenAI Response:", chatCompletion.choices[0].message.content);
-
     // Send the ChatGPT response back to the client
     res.json({ botResponse: chatCompletion.choices[0].message.content });
   } catch (error) {
@@ -66,10 +63,28 @@ app.post("/respond", async (req, res) => {
 
 app.post("/title", async (req, res) => {
   try {
-    const { message } = req.body;
-    console.log("Messageee: ", message);
+    const { message, modelType } = req.body;
 
-    const title = message.slice(0, 5);
+    const modelDesc = chooseModel(modelType);
+    const contentStr =
+      "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title! Model Description:" +
+      modelDesc;
+    console.log("Bot Instructions: ", contentStr);
+    // model: "gpt-3.5-turbo-0125",
+    // model: "gpt-4-0613",
+    const chatCompletion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-0125",
+      messages: [
+        {
+          role: "system",
+          content: contentStr,
+        },
+        { role: "user", content: message },
+      ],
+    });
+
+    // Send the ChatGPT response back to the client
+    const title = chatCompletion.choices[0].message.content;
     console.log("TITLE: ", title);
     res.json({ title: title });
   } catch (error) {
