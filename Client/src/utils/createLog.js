@@ -1,11 +1,12 @@
-export async function archiveChatSession(
+export function archiveChatSession(
   msgList,
   currentChatId,
   logList,
   setLogList
 ) {
-  if (logList[currentChatId].content) {
-    logList[currentChatId].content = msgList;
+  const currLog = logList.find((item) => item.id === currentChatId);
+  if (currLog) {
+    currLog.content = msgList;
     setLogList(logList);
   }
 }
@@ -17,7 +18,6 @@ export default async function createLogTitle(
   setLogList
 ) {
   try {
-    console.log(currentChatId);
     // Assuming the title is generated based on the last message or another logic
     const response = await fetch("http://localhost:4000/title", {
       method: "POST",
