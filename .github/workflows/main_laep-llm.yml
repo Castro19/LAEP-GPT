@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -29,7 +33,6 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_429425FACD5A4334875D6D975D40BC01 }}
 
       - name: Deploy to Azure Web App
-        id: deploy_to_webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: "laep-llm"
