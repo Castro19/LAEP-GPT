@@ -27,8 +27,6 @@ jobs:
         run: |
           npm run build --prefix Client
 
-      # No build step for server, assuming server is already ready to run and just needs npm install
-
       - name: Zip Client and Server for deployment
         run: |
           zip -r release.zip Client/ server/ -x "Client/node_modules/*" "server/node_modules/*"
