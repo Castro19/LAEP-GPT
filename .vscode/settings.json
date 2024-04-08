@@ -1,0 +1,5 @@
+{
+  "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"],
+  "appService.defaultWebAppToDeploy": "/subscriptions/48dd82d6-2612-4e3b-ac27-975b1c65673e/resourceGroups/LAEP/providers/Microsoft.Web/sites/laep-llm",
+  "appService.deploySubpath": "."
+}
