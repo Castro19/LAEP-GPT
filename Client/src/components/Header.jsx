@@ -28,7 +28,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 bg-white dark:bg-gray-800 text-black p-4 z-50 shadow-md">
+    <header className="sticky top-0 bg-white dark:bg-gray-800 text-white p-4 z-50 shadow-md">
       <div className="flex items-center justify-between">
         <button onClick={toggleSidebar} className="text-lg">
           <BiChat />
