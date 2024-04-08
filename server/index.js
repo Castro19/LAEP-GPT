@@ -2,14 +2,19 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import OpenAI from "openai";
+import { fileURLToPath } from "url";
+import path, { dirname, join } from "path";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import chooseModel from "./utils/chooseModel.js"; // Make sure the file has `.js` extension or is a directory with an `index.js` file
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 // Initialize express app
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // This is also the default, can be omitted
@@ -17,6 +22,13 @@ const openai = new OpenAI({
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+
+// Serve static files from the React app
+// Calculate __dirname equivalent in ES Module
+
+// Now you can use __dirname as before
+const clientBuildPath = join(__dirname, "../Client/dist/");
+app.use(express.static(clientBuildPath));
 
 // Route to handle POST requests
 app.post("/respond", async (req, res) => {
@@ -65,6 +77,12 @@ app.post("/title", async (req, res) => {
     res.status(500).json({ error: "Failed to generate response from OpenAI" });
   }
 });
+
+// Catch-all handler for any other client-side routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(clientBuildPath, "index.html"));
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong...");
