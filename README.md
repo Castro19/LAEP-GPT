@@ -49,10 +49,11 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 6. **Environment Variable Setup**
 
-   - Go to the server folder and create a `.env` file in the root of the server folder and create the variables
-     `OPENAI_API_KEY = [Your Open AI key here]` inside the `.env` file.
-     `PORT=4000`
-     
+   - Go to the server folder and create a `.env` file in the root of the server folder and create the variables:
+     ```
+     OPENAI_API_KEY=[Your Open AI key here]
+     PORT=4000
+     ```
 ## Usage
 
 1. **Start the client and server**
