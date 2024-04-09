@@ -31,48 +31,41 @@ We are currently in the early stages of building an AI chatbot that will provide
    git clone https://github.com/Castro19/LAEP-GPT.git
    ```
 
-2. **Install client dependencies**
-
+2. **Install client & server dependencies**
+   In the root directory `LAEP-GPT` enter the following:
+   
    ```
-   cd Client
+   npm run install:all
+   ```
+
+4. **Install Dependencies for root directory**
+   In the root directory `LAEP-GPT` enter the following:
+   
+   ```
    npm install
    ```
 
-3. **Install server dependencies**
+5. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**
 
-   ```
-   cd server
-   npm install
-   ```
+6. **Environment Variable Setup**
 
-4. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**
-
-5. **Environment Variable Setup**
-
-   - Go to the server folder and create a `.env` file in the root of the server folder and create a variable
-     `REACT_APP_OPENAI_API_KEY = [Your Open AI key here]` inside the `.env` file.
-
+   - Go to the server folder and create a `.env` file in the root of the server folder and create the variables
+     `OPENAI_API_KEY = [Your Open AI key here]` inside the `.env` file.
+     `PORT=4000`
+     
 ## Usage
 
-1. **Start the client**
+1. **Start the client and server**
 
    ```
-   cd client
-   npm start
-   ```
-
-2. **Start the server**
-
-   ```
-   cd server
-   node index.js
+   npm run start:dev
    ```
 
 ## Next Steps
 
 1. Continuously display the message as it finishes using the `stream: true` parameter on the server side API request.
-2. Implement sidebar logic for the chat logs.
-3. Implement the model functionality for different types of models to use when chosen from the dropdown menu of model types.
+2. Implement authentication
+3. Implement an open source LLM 
 
 ## Contributors
 
