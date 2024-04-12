@@ -22,13 +22,44 @@ export default async function sendMessage(
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      const data = await response.json();
-      const newBotMessage = {
-        id: Date.now() + 1,
-        sender: "bot",
-        text: data.botResponse,
-      };
-      setMsgList((prevMessages) => [...prevMessages, newBotMessage]);
+
+      const render = response.body.getReader();
+      let botMessageId = Date.now() + 1;
+      let accumulatedText = "";
+      setMsgList((prevMessages) => [
+        ...prevMessages,
+        { id: botMessageId, sender: "bot", text: "Loading..." },
+      ]);
+
+      while (true) {
+        const { done, value } = await render.read(); // value is a Uint8Array
+        const decoder = new TextDecoder();
+        if (done) break;
+
+        const chunks = decoder.decode(value).split("\n");
+        chunks.forEach((chunk) => {
+          if (chunk) {
+            const obj = JSON.parse(chunk);
+            accumulatedText += obj.choices[0].delta.content ?? "" + " ";
+
+            setMsgList((prevMessages) => {
+              return prevMessages.map((message) =>
+                message.id === botMessageId
+                  ? { ...message, text: accumulatedText }
+                  : message
+              );
+            });
+          }
+        });
+      }
+
+      setMsgList((prevMessages) => {
+        return prevMessages.map((message) =>
+          message.id === botMessageId
+            ? { ...message, text: accumulatedText.trim() }
+            : message
+        );
+      });
     } catch (error) {
       setError(error.toString());
       console.error(error);
