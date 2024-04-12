@@ -17,6 +17,7 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
+    "no-constant-condition": ["error", { checkLoops: false }],
     // Add or update these rules
     "react/jsx-uses-react": "off", // Not needed with React 17+ JSX Transform
     "react/react-in-jsx-scope": "off", // Not needed with React 17+ JSX Transform
