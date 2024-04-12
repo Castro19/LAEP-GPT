@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMessage } from "../contexts/MessageContext";
 import { useUI } from "../contexts/UIContext";
 import { useModel } from "../contexts/ModelContext";
@@ -9,7 +9,6 @@ import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
 } from "../../utils/format";
-
 const ChatInput = ({ messagesContainerRef }) => {
   // Context State vars:
   const { isNewChat, currentChatId } = useUI();
@@ -35,8 +34,8 @@ const ChatInput = ({ messagesContainerRef }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true); // Disables the send button, so user cannot submit another message until a response is sent back
-
     const currentMessage = msg;
+
     // Resetting the message will clear the message in the text area b4 async call f'n returns
     // Will still pass the user's message correctly to `sendMessage`
     setMsg("");
