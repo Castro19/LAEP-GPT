@@ -1,74 +1,83 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useMessage } from "../contexts/MessageContext";
-import { useUI } from "../contexts/UIContext";
-import { useModel } from "../contexts/ModelContext";
+import React, { useRef, useState } from "react";
 import { FaSpinner } from "react-icons/fa"; // Example using React Icons
-import sendMessage from "../../utils/handleMessage";
-import createLogTitle from "../../utils/createLog";
+// Helpers:
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
 } from "../../utils/format";
-const ChatInput = ({ messagesContainerRef }) => {
-  // Context State vars:
-  const { isNewChat, currentChatId } = useUI();
-  const { msg, setMsg, msgList, setMsgList, setLogList } = useMessage();
-  const { modelType } = useModel();
+import createNewChatLogId from "../../utils/handleNewChat";
+// Redux:
+import { useSelector, useDispatch } from "react-redux";
+import {
+  toggleNewChat as toggleReduxNewChat,
+  setCurrentChatId as setReduxCurrentChatId,
+} from "../../redux/ui/uiSlice";
+import { fetchBotResponse } from "../../redux/message/messageSlice";
+import {
+  addLog as addReduxLog,
+  archiveCurrentChat as archiveReduxCurrentChat,
+} from "../../redux/message/messageSlice";
 
+const ChatInput = ({ messagesContainerRef }) => {
+  const [msg, setMsg] = useState(""); // local state for input value
   // State variables only used for this component
   const [_error, setError] = useState(null); // An error context might be created in the future
   const [isSending, setIsSending] = useState(false);
 
-  // Reference to the DOM element for the text area where user inputs their message.
+  // Reference to the DOM element: For the text area where user inputs their message.
   const textareaRef = useRef(null);
 
-  // Modify the Message State variable
-  // automatically change the height of the input text area with helper format function
+  const dispatch = useDispatch();
+  // Redux State Vars:
+  const modelType = useSelector((state) => state.model.modelType); // Access the modelType from Redux store
+
+  const isNewChat = useSelector((state) => state.ui.isNewChat);
+  const currentChatId = useSelector((state) => state.ui.currentChatId);
+
   const handleInputChange = (e) => {
+    // Modify the Message State variable
     setMsg(e.target.value);
-    // Find this f'n in src/utils/format
+    // automatically change the height of the input text area with helper format function,  Find this f'n in src/utils/format
     adjustTextareaHeight(e.target); // helper format function
   };
 
   // When user sends their message:
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSending(true); // Disables the send button, so user cannot submit another message until a response is sent back
-    const currentMessage = msg;
+    setIsSending(true); // Disable the send button
 
     // Resetting the message will clear the message in the text area b4 async call f'n returns
     // Will still pass the user's message correctly to `sendMessage`
     setMsg("");
 
-    // We want to use this helper function to scroll to the bottom of the message container (in case of long messages) and resize the text area.
+    // Scroll to the bottom of the message container
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
 
     try {
-      // Find this function in src/utils/handleMessage.js
       // *** This makes the API request and handles the response ***
-      await sendMessage(modelType, msg, setMsgList, setError);
+      await dispatch(fetchBotResponse({ modelType, msg }));
     } catch (error) {
       console.error("Failed to send message", error);
+      setError(error.toString());
     } finally {
-      // Re-enable button always after promise resolves, whether it fails or suceeds.
+      // Re-enable sending button
       setIsSending(false);
       if (isNewChat) {
-        // Assuming you call this to archive the chat session after the first message of a new chat
-        // Adjust this logic based on when you actually want to archive the chat
-        try {
-          // This now archives the chat right after the first message is sent in a new chat
-          // Consider adjusting this logic to archive at the end of the chat session instead
-          await createLogTitle(
-            currentMessage,
-            currentChatId,
-            msgList,
-            setLogList,
-            modelType
-          );
-        } catch (error) {
-          console.error("Failed to archive chat session", error);
-          setError(error.toString());
-        }
+        // Create the chatID &
+        const newChatId = createNewChatLogId();
+        dispatch(setReduxCurrentChatId(newChatId));
+        dispatch(toggleReduxNewChat(false));
+
+        // Create the Title of the chat and adds a new log
+        dispatch(
+          addReduxLog({
+            msg: msg,
+            modelType: modelType,
+            currentChatId: newChatId,
+          })
+        );
+      } else {
+        dispatch(archiveReduxCurrentChat(currentChatId));
       }
     }
   };

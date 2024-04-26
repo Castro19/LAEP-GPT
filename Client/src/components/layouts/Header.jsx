@@ -1,22 +1,32 @@
 import React, { useState } from "react";
-import ModeDropDown from "./ModeDropDown";
+import ModeDropDown from "../chat/ModeDropDown";
 import Sidebar from "./Sidebar";
 import { BiChat } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
-import NewChat from "./NewChat";
-import { useUI } from "./contexts/UIContext";
-import { useModel } from "./contexts/ModelContext";
-const Header = () => {
-  // Define State Vars:
+import NewChat from "../chat/NewChat";
+// import { useUI } from "../contexts/UIContext";
+
+// Redux:
+import { useSelector, useDispatch } from "react-redux";
+import { setModelType as setReduxModelType } from "../../redux/chatModel/modelSlice";
+import { toggleSidebar as toggleReduxSidebar } from "../../redux/ui/uiSlice";
+
+const ChatHeader = () => {
+  // Define State Vars:handleModeSelection
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const { isSidebarVisible, setIsSidebarVisible } = useUI();
-  const { setModelType } = useModel();
+
+  // Redux:
+  const dispatch = useDispatch();
+  const isSidebarVisible = useSelector((state) => state.ui.isSidebarVisible);
 
   // Define Event Handlers for Button on Header being pressed.
-  const toggleSidebar = () => setIsSidebarVisible(!isSidebarVisible);
+  const toggleSidebar = () => dispatch(toggleReduxSidebar(!isSidebarVisible));
   const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
-  const selectMode = (mode) => {
-    setModelType(mode);
+
+  const handleModeSelection = (mode) => {
+    console.log(mode);
+    dispatch(setReduxModelType(mode));
+
     setIsDropdownVisible(false);
   };
 
@@ -47,7 +57,7 @@ const Header = () => {
           {isDropdownVisible && (
             <ModeDropDown
               isVisible={isDropdownVisible}
-              onSelect={selectMode}
+              onSelect={handleModeSelection}
               options={modeOptions}
             />
           )}
@@ -58,4 +68,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default ChatHeader;
