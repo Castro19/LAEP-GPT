@@ -40,6 +40,8 @@ app.post("/respond", async (req, res) => {
     const contentStr =
       "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed. " +
       modelDesc;
+    console.log("MODEL TYPE: ", modelType);
+    console.log("Server Side Model Description: ", modelDesc);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({

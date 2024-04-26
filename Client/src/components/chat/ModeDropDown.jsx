@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useModel } from "./contexts/ModelContext";
+// import { useModel } from "../contexts/ModelContext";
+import { useSelector } from "react-redux";
 
 const ModeDropDown = ({ isVisible, onSelect, options }) => {
-  const { modelType } = useModel();
+  // Access the modelType from Redux store
+  const modelType = useSelector((state) => state.model.modelType);
+
+  // To manage the dropdown effect of the mode dropdown
   const dropdownRef = useRef(null);
   const [maxHeight, setMaxHeight] = useState("0");
 
@@ -14,10 +18,6 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
       setMaxHeight("0");
     }
   }, [isVisible]);
-
-  useEffect(() => {
-    console.log("MODEL: ", modelType);
-  }, [modelType]);
 
   return (
     <div

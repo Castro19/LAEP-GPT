@@ -1,46 +1,25 @@
 import React, { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
-import { useMessage } from "../contexts/MessageContext";
-import { useUI } from "../contexts/UIContext";
+// Redux:
+import { useSelector } from "react-redux";
 
 const ChatContainer = () => {
-  // Context State Vars:
-  const { msgList, setMsgList, logList } = useMessage();
-  const { currentChatId, setIsNewChat } = useUI();
+  // Redux State Variables in uiMessage
+  const msgList = useSelector((state) => state.message.msgList);
 
   // Referance to the DOM element of our messages container
   const messagesContainerRef = useRef(null);
 
-  // When the a message gets added, do the following:
+  // When the a message gets added
   useEffect(() => {
-    console.log(logList);
-    // 1.) scroll all the way to the bottom of the message container
+    // scroll all the way to the bottom of the message container
     // Used for lengthy responses
     const messagesContainer = messagesContainerRef.current;
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-    // 2.) Handle new chat logs
-    if (msgList.length > 1) setIsNewChat(false);
-    else setIsNewChat(true);
   }, [msgList]);
-
-  useEffect(() => {
-    if (logList.length > 0) {
-      console.log("ID: ", currentChatId);
-      console.log("LL: ", logList);
-      const currChatLog = logList.find((item) => item.id === currentChatId);
-
-      if (currChatLog) {
-        console.log("CCL: ", currChatLog);
-        setMsgList(currChatLog.content);
-      } else {
-        console.log("Did not find a CCL");
-        setMsgList([]);
-      }
-    }
-  }, [currentChatId]);
 
   return (
     <div className="flex flex-col h-screen justify-between bg-white dark:bg-gray-800">
