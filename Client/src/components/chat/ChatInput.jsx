@@ -18,7 +18,8 @@ import {
 import { fetchBotResponse } from "../../redux/message/messageSlice";
 import {
   addLog as addReduxLog,
-  archiveCurrentChat as archiveReduxCurrentChat,
+  // updateCurrentChat as updateReduxCurrentChat,
+  updateLog as updateReduxLog,
 } from "../../redux/message/messageSlice";
 
 const ChatInput = ({ messagesContainerRef }) => {
@@ -84,7 +85,14 @@ const ChatInput = ({ messagesContainerRef }) => {
           })
         );
       } else {
-        dispatch(archiveReduxCurrentChat(currentChatId));
+        console.log("logID: ", currentChatId);
+        console.log("firebaseUserId: ", currentUser ? currentUser.uid : null);
+        dispatch(
+          updateReduxLog({
+            logId: currentChatId,
+            firebaseUserId: currentUser ? currentUser.uid : null,
+          })
+        );
       }
     }
   };
