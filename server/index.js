@@ -7,6 +7,8 @@ import bodyParser from "body-parser";
 // Routes:
 import llms from "./routes/llm.js";
 import users from "./routes/user.js";
+import chatLogs from "./routes/chatLog.js";
+
 import { fileURLToPath } from "url";
 import path, { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
@@ -24,7 +26,7 @@ app.use(express.text());
 // Routes
 app.use("/llms", llms);
 app.use("/users", users);
-
+app.use("/chatLogs", chatLogs);
 // Serve static files from the React app
 // Calculate __dirname equivalent in ES Module
 // Now you can use __dirname as before

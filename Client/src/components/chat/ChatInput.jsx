@@ -6,6 +6,9 @@ import {
   resetInputAndScrollToBottom,
 } from "../../utils/format";
 import createNewChatLogId from "../../utils/handleNewChat";
+// Context: For user information
+import { useAuth } from "@/contexts/authContext";
+
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -23,6 +26,9 @@ const ChatInput = ({ messagesContainerRef }) => {
   // State variables only used for this component
   const [_error, setError] = useState(null); // An error context might be created in the future
   const [isSending, setIsSending] = useState(false);
+
+  // User information:
+  const { currentUser } = useAuth();
 
   // Reference to the DOM element: For the text area where user inputs their message.
   const textareaRef = useRef(null);
@@ -74,6 +80,7 @@ const ChatInput = ({ messagesContainerRef }) => {
             msg: msg,
             modelType: modelType,
             currentChatId: newChatId,
+            firebaseUserId: currentUser ? currentUser.uid : null,
           })
         );
       } else {
