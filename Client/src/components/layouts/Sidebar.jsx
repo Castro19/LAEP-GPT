@@ -1,6 +1,7 @@
 import React from "react";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../chat/ChatLog";
+import UserMenu from "@/components/userProfile/UserMenu";
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -48,14 +49,22 @@ const Sidebar = () => {
         >
           <MdClose />
         </button>
-        <h2 className="font-semibold text-xl">Chat Logs</h2>
-        {logList.length > 0 ? (
-          logList.map((log) => (
-            <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
-          ))
-        ) : (
-          <div>No chat logs available</div> // This is just an example placeholder
-        )}
+        <div className="flex-grow">
+          <h2 className="font-semibold text-xl">Chat Logs</h2>
+          {logList.length > 0 ? (
+            logList.map((log) => (
+              <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
+            ))
+          ) : (
+            <div>No chat logs available</div> // This is just an example placeholder
+          )}
+        </div>
+      </div>
+
+      <div className="">
+        {" "}
+        {/* New wrapper for UserMenu */}
+        <UserMenu />
       </div>
     </aside>
   );
