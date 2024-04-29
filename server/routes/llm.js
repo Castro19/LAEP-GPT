@@ -13,7 +13,7 @@ const openai = new OpenAI({
 
 router.get("/"),
   (res) => {
-    res.send("Working");
+    res.send("LLM Backend Working");
   };
 router.post("/respond", async (req, res) => {
   try {

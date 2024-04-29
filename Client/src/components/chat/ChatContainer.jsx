@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 const ChatContainer = () => {
   // Redux State Variables in uiMessage
   const msgList = useSelector((state) => state.message.msgList);
-
+  const logList = useSelector((state) => state.message.logList);
   // Referance to the DOM element of our messages container
   const messagesContainerRef = useRef(null);
 
@@ -21,6 +21,10 @@ const ChatContainer = () => {
     }
   }, [msgList]);
 
+  useEffect(() => {
+    console.log("Log List: ", logList);
+    // console.log("Msg List: ", msgList);
+  }, [logList]);
   return (
     <div className="flex flex-col h-screen justify-between bg-white dark:bg-gray-800">
       <div

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import sendMessage from "../../utils/handleMessage";
-import createLogTitle from "../../utils/createLog";
+import createLogTitle, { saveLog } from "../../utils/createLog";
 
 export const fetchBotResponse = createAsyncThunk(
   "message/fetchBotResponse",
@@ -27,7 +27,10 @@ export const fetchBotResponse = createAsyncThunk(
 
 export const addLog = createAsyncThunk(
   "message/addLog",
-  async ({ msg, modelType, currentChatId }, { dispatch, rejectWithValue }) => {
+  async (
+    { msg, modelType, currentChatId, firebaseUserId },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       const logTitle = await createLogTitle(msg, modelType);
 
@@ -38,6 +41,15 @@ export const addLog = createAsyncThunk(
             title: logTitle,
           })
         );
+      }
+      if (firebaseUserId) {
+        // Save Log to Database
+        const savedLog = await saveLog({
+          currentChatId,
+          firebaseUserId,
+          title: logTitle,
+        });
+        return savedLog;
       }
     } catch (error) {
       console.error("Failed to create log title: ", error);
