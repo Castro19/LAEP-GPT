@@ -9,9 +9,8 @@
     "install:server": "cd server && npm install",
     "install:all": "npm run install:Client && npm run install:server",
     "start:Client": "cd Client && npm run dev",
-    "start": "node server/index.js",
     "start:server": "cd server && node index.js",
-    "start:dev": "concurrently \"npm run start:Client\" \"npm run start:server\"",
+    "start": "concurrently \"npm run start:Client\" \"npm run start:server\"",
     "build:client": "cd Client && npm run build",
     "postinstall": "npm run build:client"
   },

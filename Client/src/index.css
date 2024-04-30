@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Tailwind with PostCSS setup */
+@layer components {
+  .delay-hide {
+    transition: visibility 0.5s, opacity 0.5s;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .delay-show {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+}

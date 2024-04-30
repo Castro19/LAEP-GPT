@@ -12,7 +12,7 @@ export default async function sendMessage(modelType, msg) {
 
   // eslint-disable-next-line no-useless-catch
   try {
-    const response = await fetch("http://localhost:4000/respond", {
+    const response = await fetch("http://localhost:4000/llms/respond", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg, modelType: modelType }),

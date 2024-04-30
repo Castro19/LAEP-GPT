@@ -6,6 +6,9 @@ import {
   resetInputAndScrollToBottom,
 } from "../../utils/format";
 import createNewChatLogId from "../../utils/handleNewChat";
+// Context: For user information
+import { useAuth } from "@/contexts/authContext";
+
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -15,14 +18,19 @@ import {
 import { fetchBotResponse } from "../../redux/message/messageSlice";
 import {
   addLog as addReduxLog,
-  archiveCurrentChat as archiveReduxCurrentChat,
+  // updateCurrentChat as updateReduxCurrentChat,
+  updateLog as updateReduxLog,
 } from "../../redux/message/messageSlice";
 
 const ChatInput = ({ messagesContainerRef }) => {
   const [msg, setMsg] = useState(""); // local state for input value
   // State variables only used for this component
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_error, setError] = useState(null); // An error context might be created in the future
   const [isSending, setIsSending] = useState(false);
+
+  // User information:
+  const { currentUser } = useAuth();
 
   // Reference to the DOM element: For the text area where user inputs their message.
   const textareaRef = useRef(null);
@@ -74,10 +82,18 @@ const ChatInput = ({ messagesContainerRef }) => {
             msg: msg,
             modelType: modelType,
             currentChatId: newChatId,
+            firebaseUserId: currentUser ? currentUser.uid : null,
           })
         );
       } else {
-        dispatch(archiveReduxCurrentChat(currentChatId));
+        console.log("logID: ", currentChatId);
+        console.log("firebaseUserId: ", currentUser ? currentUser.uid : null);
+        dispatch(
+          updateReduxLog({
+            logId: currentChatId,
+            firebaseUserId: currentUser ? currentUser.uid : null,
+          })
+        );
       }
     }
   };
