@@ -33,27 +33,28 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 2. **Install client & server dependencies**
    In the root directory `LAEP-GPT` enter the following:
-   
+
    ```
    npm run install:all
    ```
 
-4. **Install Dependencies for root directory**
+3. **Install Dependencies for root directory**
    In the root directory `LAEP-GPT` enter the following:
-   
+
    ```
    npm install
    ```
 
-5. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**
+4. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**
 
-6. **Environment Variable Setup**
+5. **Environment Variable Setup**
 
    - Go to the server folder and create a `.env` file in the root of the server folder and create the variables:
      ```
      OPENAI_API_KEY=[Your Open AI key here]
      PORT=4000
      ```
+
 ## Usage
 
 1. **Start the client and server**
@@ -66,11 +67,11 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 1. Continuously display the message as it finishes using the `stream: true` parameter on the server side API request.
 2. Implement authentication
-3. Implement an open source LLM 
+3. Implement an open source LLM
 
 ## Contributors
 
-To be updated.
+Cristian Castro, Victor Phan,
 
 ## License
 
