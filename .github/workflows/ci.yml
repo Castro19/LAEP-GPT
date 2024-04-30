@@ -12,12 +12,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "14"
+          node-version: "16"
 
       - name: Install Client Dependencies
         run: cd Client && npm install
 
-      - name: Lint Client Code
+      - name: Run lint
         run: cd Client && npm run lint
 
       - name: Build Client

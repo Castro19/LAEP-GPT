@@ -25,6 +25,7 @@ import {
 const ChatInput = ({ messagesContainerRef }) => {
   const [msg, setMsg] = useState(""); // local state for input value
   // State variables only used for this component
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_error, setError] = useState(null); // An error context might be created in the future
   const [isSending, setIsSending] = useState(false);
 
