@@ -71,7 +71,7 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 ## Contributors
 
-Cristian Castro, Victor Phan,
+Cristian Castro, Victor Phan, Saul Rodriguez
 
 ## License
 
