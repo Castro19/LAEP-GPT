@@ -71,7 +71,7 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 ## Contributors
 
-Cristian Castro
+[Cristian Castro](https://github.com/Castro19), [Victor Phan](https://github.com/victorphan101), [Saul Rodriguez](https://github.com/SARdude54), [Tristan Spear](https://github.com/tristan-spear)
 
 ## License
 
