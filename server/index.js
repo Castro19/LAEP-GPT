@@ -22,6 +22,7 @@ const openai = new OpenAI({
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.text());
 
 // Serve static files from the React app
 // Calculate __dirname equivalent in ES Module
@@ -39,7 +40,8 @@ app.post("/respond", async (req, res) => {
     const contentStr =
       "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed. " +
       modelDesc;
-    console.log("Bot Instructions: ", contentStr);
+    console.log("MODEL TYPE: ", modelType);
+    console.log("Server Side Model Description: ", modelDesc);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({
@@ -51,10 +53,18 @@ app.post("/respond", async (req, res) => {
         },
         { role: "user", content: message },
       ],
+      stream: true,
     });
-
+    const reader = chatCompletion.toReadableStream().getReader();
     // Send the ChatGPT response back to the client
-    res.json({ botResponse: chatCompletion.choices[0].message.content });
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      res.write(value);
+    }
+    res.end();
   } catch (error) {
     console.error("Error calling OpenAI:", error);
     res.status(500).json({ error: "Failed to generate response from OpenAI" });

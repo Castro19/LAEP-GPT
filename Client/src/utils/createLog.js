@@ -1,23 +1,4 @@
-export function archiveChatSession(
-  msgList,
-  currentChatId,
-  logList,
-  setLogList
-) {
-  const currLog = logList.find((item) => item.id === currentChatId);
-  if (currLog) {
-    currLog.content = msgList;
-    setLogList(logList);
-  }
-}
-
-export default async function createLogTitle(
-  msg,
-  currentChatId,
-  msgList,
-  setLogList,
-  modelType
-) {
+export default async function createLogTitle(msg, modelType) {
   try {
     // Assuming the title is generated based on the last message or another logic
     const response = await fetch("http://localhost:4000/title", {
@@ -31,14 +12,7 @@ export default async function createLogTitle(
 
     const data = await response.json();
 
-    const newLog = {
-      id: currentChatId, // This should be a unique ID, consider using a more robust method than Date.now() for production
-      content: [...msgList], // Spread operator to clone the current msgList
-      title: data.title,
-      timestamp: new Date().toISOString(),
-    };
-
-    setLogList((prevLogList) => [...prevLogList, newLog]);
+    return data.title;
   } catch (error) {
     console.error(error);
   }
