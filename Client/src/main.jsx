@@ -8,6 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Register from "./pages/register/Register.tsx";
+import AddInfoForm from "./pages/register/signup/AddInfoForm.jsx";
 import { SignupFormDemo } from "./pages/register/signup/SignUpForm.tsx";
 import { LoginFormDemo } from "./pages/register/login/LoginForm.tsx";
 import ChatPage from "./pages/ChatPage.jsx";
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="signup" replace /> },
       { path: "signup", element: <SignupFormDemo /> },
       { path: "login", element: <LoginFormDemo /> },
+      { path: "settingForm", element: <AddInfoForm /> },
     ],
   },
 ]);
