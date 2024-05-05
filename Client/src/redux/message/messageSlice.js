@@ -5,6 +5,7 @@ import createLogTitle, {
   updateLogItem,
 } from "../../utils/createLog";
 
+// Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 export const fetchBotResponse = createAsyncThunk(
   "message/fetchBotResponse",
   async ({ modelType, msg }, { dispatch, rejectWithValue }) => {
@@ -13,22 +14,22 @@ export const fetchBotResponse = createAsyncThunk(
         modelType,
         msg
       );
-      dispatch(addUserMessage(newUserMessage));
-      dispatch(addUserMessage(botMessage));
+      dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
+      dispatch(addUserMessage(botMessage)); // Dispatching to add bot message to the state
 
-      // Streaming updates
+      // Streaming updates for the bot messages
       await updateStream((botMessageId, text) => {
-        dispatch(updateBotMessage({ id: botMessageId, text }));
+        dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
       });
 
-      return botMessage; // This represents the final state of the bot message
+      return botMessage; // Returning the final state of the bot message
     } catch (error) {
       return rejectWithValue(error.toString());
     }
   }
 );
 
-// LogList: Create the initial Log:
+// Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "message/addLog",
   async (
@@ -37,8 +38,8 @@ export const addLog = createAsyncThunk(
   ) => {
     try {
       const logTitle = await createLogTitle(msg, modelType);
-      const timestamp = new Date().toISOString(); // Create timestamp to use in both Redux and DB update
-      const content = getState().message.msgList; // Get the current message list from state
+      const timestamp = new Date().toISOString(); // Timestamp for log
+      const content = getState().message.msgList; // Accessing message list from the state
 
       if (logTitle) {
         dispatch(
@@ -68,7 +69,7 @@ export const addLog = createAsyncThunk(
   }
 );
 
-// LogList: Update the LogList
+// Thunk for updating a log. Combines UPDATE and READ operations.
 export const updateLog = createAsyncThunk(
   "message/updateLog",
   async (
@@ -76,8 +77,8 @@ export const updateLog = createAsyncThunk(
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
-      const timestamp = new Date().toISOString(); // Create timestamp to use in both Redux and DB update
-      const content = getState().message.msgList; // Get the current message list from state
+      const timestamp = new Date().toISOString(); // Timestamp for updating log
+      const content = getState().message.msgList; // Accessing current message list from the state
       console.log("logId: ", logId);
       dispatch(
         updateCurrentChat({
@@ -86,12 +87,12 @@ export const updateLog = createAsyncThunk(
       );
 
       if (firebaseUserId) {
-        // Update Log to Database
+        // Update log in the database
         const updatedLog = await updateLogItem({
           logId,
           firebaseUserId,
-          content, // Ensure the content is included in the DB save
-          timestamp, // Ensure the timestamp is included in the DB save
+          content,
+          timestamp,
         });
         return updatedLog;
       }
@@ -113,24 +114,27 @@ const messageSlice = createSlice({
   name: "message",
   initialState,
   reducers: {
-    // msgList
+    // Reducer to add user or bot message to the state (CREATE)
     addUserMessage: (state, action) => {
       state.msgList.push(action.payload);
     },
+    // Reducer to update an existing bot message in the state (UPDATE)
     updateBotMessage: (state, action) => {
       const message = state.msgList.find((msg) => msg.id === action.payload.id);
       if (message) {
         message.text = action.payload.text;
       }
     },
+    // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
     setMsgList: (state, action) => {
       state.msgList = action.payload;
     },
+    // Reducer to clear the message list (DELETE)
     resetMsgList: (state) => {
       state.msgList = [];
     },
     // logList:
-    // Create or Update or both?
+    // Reducer to add a new log to the state (CREATE)
     addLogList: (state, action) => {
       const { currentChatId, title, content, timestamp } = action.payload;
 
@@ -143,10 +147,7 @@ const messageSlice = createSlice({
 
       state.logList.push(newLog);
     },
-    // updateLogList: (state, action) => {
-    //   const { currentChatId, content, timestamp } = action.payload;
-
-    // }
+    // Reducer to update an existing log in the state (UPDATE)
     updateCurrentChat: (state, action) => {
       const { currentChatId } = action.payload;
       const logIndex = state.logList.findIndex(

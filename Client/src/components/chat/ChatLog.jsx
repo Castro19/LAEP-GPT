@@ -1,10 +1,19 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/authContext";
 
 const ChatLog = ({ log, onSelectLog }) => {
   // Assuming useMessage and useUI contexts are correctly set up and utilized here
+  const navigate = useNavigate();
+  const { userId } = useAuth();
+
+  const handleNewLog = async (logId) => {
+    onSelectLog(logId);
+    navigate(`/${userId}/chat/${logId}}`);
+  };
   return (
     <button
-      onClick={() => onSelectLog(log.id)}
+      onClick={() => handleNewLog(log.id)}
       className="
           block
           w-full

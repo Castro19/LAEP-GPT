@@ -29,6 +29,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [isEmailUser, setIsEmailUser] = useState(false);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
@@ -42,9 +43,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           (provider) => provider.providerId === "password"
         );
         setIsEmailUser(isEmail);
+        setUserId(user.uid);
         setUserLoggedIn(true);
       } else {
         setCurrentUser(null);
+        setUserId(null);
         setUserLoggedIn(false);
       }
       setLoading(false);
@@ -58,6 +61,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isGoogleUser,
     currentUser,
     setCurrentUser,
+    userId,
+    setUserId,
   };
 
   return (

@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/authContext";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 
 export function SignupFormDemo() {
-  const { userLoggedIn } = useAuth();
+  const { userLoggedIn, userId } = useAuth();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -59,8 +59,6 @@ export function SignupFormDemo() {
       return;
     }
 
-    try {
-    } catch (error) {}
     if (!isRegistering) {
       try {
         setIsRegistering(true);
@@ -113,7 +111,7 @@ export function SignupFormDemo() {
 
   return (
     <>
-      {userLoggedIn && <Navigate to={"/"} replace={true} />}
+      {userLoggedIn && userId && <Navigate to={`/${userId}`} replace={true} />}
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome
@@ -198,7 +196,7 @@ export function SignupFormDemo() {
           >
             Already have an account? {"   "}
             <Link
-              to={"/register/login"}
+              to={"/login"}
               className="text-center text-sm hover:underline font-bold"
             >
               Continue

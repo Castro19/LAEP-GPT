@@ -21,8 +21,10 @@ import {
   // updateCurrentChat as updateReduxCurrentChat,
   updateLog as updateReduxLog,
 } from "../../redux/message/messageSlice";
+import { useNavigate } from "react-router-dom";
 
 const ChatInput = ({ messagesContainerRef }) => {
+  const navigate = useNavigate();
   const [msg, setMsg] = useState(""); // local state for input value
   // State variables only used for this component
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,7 +32,7 @@ const ChatInput = ({ messagesContainerRef }) => {
   const [isSending, setIsSending] = useState(false);
 
   // User information:
-  const { currentUser } = useAuth();
+  const { currentUser, userId } = useAuth();
 
   // Reference to the DOM element: For the text area where user inputs their message.
   const textareaRef = useRef(null);
@@ -74,6 +76,8 @@ const ChatInput = ({ messagesContainerRef }) => {
         // Create the chatID &
         const newChatId = createNewChatLogId();
         dispatch(setReduxCurrentChatId(newChatId));
+        navigate(`/${userId}/chat/${newChatId}`);
+
         dispatch(toggleReduxNewChat(false));
 
         // Create the Title of the chat and adds a new log

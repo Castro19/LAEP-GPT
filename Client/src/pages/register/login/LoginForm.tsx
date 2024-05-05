@@ -18,7 +18,7 @@ import {
 } from "@/firebase/auth";
 
 export function LoginFormDemo() {
-  const { userLoggedIn } = useAuth();
+  const { userLoggedIn, userId } = useAuth();
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -76,7 +76,7 @@ export function LoginFormDemo() {
 
   return (
     <div>
-      {userLoggedIn && <Navigate to={"/"} replace={true} />}
+      {userLoggedIn && userId && <Navigate to={`/${userId}`} replace={true} />}
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome Back!
@@ -124,7 +124,7 @@ export function LoginFormDemo() {
           <p className="text-center text-sm dark:text-gray-400">
             Don't have an account?{" "}
             <Link
-              to={"/register/signup"}
+              to={"/signup"}
               className="hover:underline font-bold dark:text-white text-blue-500"
             >
               Sign up

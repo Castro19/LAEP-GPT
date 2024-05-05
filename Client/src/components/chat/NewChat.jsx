@@ -5,8 +5,12 @@ import { RiChatNewFill } from "react-icons/ri";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleNewChat as toggleReduxNewChat } from "../../redux/ui/uiSlice";
 import { resetMsgList as resetReduxMsgList } from "../../redux/message/messageSlice";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/authContext";
 
 const NewChat = () => {
+  const navigate = useNavigate();
+  const { userId } = useAuth();
   // Redux:
   const dispatch = useDispatch();
   const currentMsgList = useSelector((state) => state.message.msgList);
@@ -15,6 +19,7 @@ const NewChat = () => {
     if (currentMsgList.length > 0) {
       dispatch(resetReduxMsgList()); // Reset the MsgList
       dispatch(toggleReduxNewChat(true)); // Flag indicating it's a new chat
+      navigate(`/${userId}`);
     }
   };
 
