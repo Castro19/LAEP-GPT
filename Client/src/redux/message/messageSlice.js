@@ -26,7 +26,6 @@ export const fetchBotResponse = createAsyncThunk(
     }
   }
 );
-
 const initialState = {
   msgList: [],
   isLoading: false,

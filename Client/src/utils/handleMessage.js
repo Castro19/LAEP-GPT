@@ -25,7 +25,7 @@ export default async function sendMessage(modelType, msg, currentChatId) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const render = response.body.getReader();
+    // const render = response.body.getReader();
     let botMessageId = Date.now() + 1;
     let accumulatedText = "";
     const botMessage = { id: botMessageId, sender: "bot", text: "Loading..." };
@@ -34,23 +34,24 @@ export default async function sendMessage(modelType, msg, currentChatId) {
       newUserMessage,
       botMessage,
       updateStream: async (updateCallback) => {
-        while (true) {
-          const { done, value } = await render.read();
-          if (done) break;
+        const decoder = new TextDecoder("utf-8");
+        const reader = response.body.getReader();
 
-          const decoder = new TextDecoder();
-          const chunks = decoder.decode(value).split("\n");
+        async function processText() {
+          const { done, value } = await reader.read();
+          if (done) {
+            console.log("Stream complete");
+            return;
+          }
+          const chunk = decoder.decode(value, { stream: true });
+          accumulatedText += chunk;
+          updateCallback(botMessageId, accumulatedText); // Update the UI for each chunk
 
-          console.log("CHUNKS:", chunks);
-          chunks.forEach((chunk) => {
-            if (chunk) {
-              accumulatedText += chunk + "\n";
-              updateCallback(botMessageId, accumulatedText);
-            }
-          });
-          accumulatedText += chunks;
+          return processText(); // Continue processing next chunk
         }
-        return accumulatedText.trim(); // Final update
+
+        await processText(); // Start processing
+        return accumulatedText.trim(); // Final accumulated text might not be necessary to return
       },
     };
   } catch (error) {

@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
       content,
     };
     console.log("---------Creating the Log--------");
-    console.log("New Log in ChatLog.js: ", newLog);
+    console.log("New Log in ChatLog.js: ", newLog._id);
     const result = await createLog(newLog);
     res.status(201).json(result);
   } catch (error) {

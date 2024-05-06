@@ -7,7 +7,7 @@ const ErrorPage = () => {
     <div className={styles.container}>
       <div className={styles.title}>SORRY</div>
       <img className={styles.errImg} src={errorImage} />
-      <div className={styles.subtitle}>We couldn't find that page</div>
+      <div className={styles.subtitle}>We couldnt find that page</div>
       <div className={styles.message}>
         <p>404: Go back to</p>
         <Link to="/">Homepage</Link>

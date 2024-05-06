@@ -6,6 +6,7 @@ import UserMenu from "@/components/userProfile/UserMenu";
 import { useSelector, useDispatch } from "react-redux";
 import {
   toggleSidebar as toggleReduxSidebar,
+  toggleNewChat as toggleReduxNewChat,
   setCurrentChatId as setReduxCurrentChatId,
 } from "../../redux/ui/uiSlice";
 import { setMsgList as msgReduxSetList } from "../../redux/message/messageSlice";
@@ -33,6 +34,8 @@ const Sidebar = () => {
     dispatch(msgReduxSetList(chosenLog.content));
     // Set the current chat id
     dispatch(setReduxCurrentChatId(logId));
+    dispatch(toggleReduxNewChat(false));
+
     dispatch(toggleReduxSidebar(false)); // close slidebar
   };
 
