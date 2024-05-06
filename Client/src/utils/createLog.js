@@ -53,3 +53,26 @@ export async function updateLogItem(logData) {
     console.error("Failed to create chatlog on server side: ", error);
   }
 }
+
+// delete Log
+export async function deleteLogItem({ logId, userId }) {
+  console.log("UID: ", userId);
+  try {
+    const response = await fetch(
+      `http://localhost:4000/chatLogs/${userId}/${logId}`,
+      { method: "DELETE" }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.log(`Error: ${errorData}`);
+      throw new Error(
+        "Failed to reach server when deleting log: " + errorData.message
+      );
+    }
+    const responseData = await response.json();
+    console.log("Response Data: ", responseData);
+    return responseData;
+  } catch (error) {
+    console.log(`Error: `, error);
+  }
+}

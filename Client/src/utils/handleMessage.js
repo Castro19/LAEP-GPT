@@ -1,4 +1,4 @@
-export default async function sendMessage(modelType, msg) {
+export default async function sendMessage(modelType, msg, currentChatId) {
   if (!msg.trim() || msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");
   }
@@ -15,10 +15,14 @@ export default async function sendMessage(modelType, msg) {
     const response = await fetch("http://localhost:4000/llms/respond", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: msg, modelType: modelType }),
+      body: JSON.stringify({
+        message: msg,
+        modelType: modelType,
+        chatId: currentChatId,
+      }),
     });
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const render = response.body.getReader();
@@ -36,18 +40,21 @@ export default async function sendMessage(modelType, msg) {
 
           const decoder = new TextDecoder();
           const chunks = decoder.decode(value).split("\n");
+
+          console.log("CHUNKS:", chunks);
           chunks.forEach((chunk) => {
             if (chunk) {
-              const obj = JSON.parse(chunk);
-              accumulatedText += obj.choices[0].delta.content ?? "" + " ";
+              accumulatedText += chunk + "\n";
               updateCallback(botMessageId, accumulatedText);
             }
           });
+          accumulatedText += chunks;
         }
-        return accumulatedText.trim(); // Final update to the bot message
+        return accumulatedText.trim(); // Final update
       },
     };
   } catch (error) {
+    console.error("Failed to fetch response:", error);
     throw error;
   }
 }

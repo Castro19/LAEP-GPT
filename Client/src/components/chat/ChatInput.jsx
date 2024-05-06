@@ -18,9 +18,8 @@ import {
 import { fetchBotResponse } from "../../redux/message/messageSlice";
 import {
   addLog as addReduxLog,
-  // updateCurrentChat as updateReduxCurrentChat,
   updateLog as updateReduxLog,
-} from "../../redux/message/messageSlice";
+} from "../../redux/log/logSlice";
 import { useNavigate } from "react-router-dom";
 
 const ChatInput = ({ messagesContainerRef }) => {
@@ -62,10 +61,18 @@ const ChatInput = ({ messagesContainerRef }) => {
 
     // Scroll to the bottom of the message container
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
+    const newChatId = createNewChatLogId();
 
     try {
       // *** This makes the API request and handles the response ***
-      await dispatch(fetchBotResponse({ modelType, msg }));
+      console.log("CURRENT CHAT ID: ", isNewChat ? newChatId : currentChatId);
+      await dispatch(
+        fetchBotResponse({
+          modelType,
+          msg,
+          currentChatId: isNewChat ? newChatId : currentChatId,
+        })
+      );
     } catch (error) {
       console.error("Failed to send message", error);
       setError(error.toString());
@@ -74,7 +81,6 @@ const ChatInput = ({ messagesContainerRef }) => {
       setIsSending(false);
       if (isNewChat) {
         // Create the chatID &
-        const newChatId = createNewChatLogId();
         dispatch(setReduxCurrentChatId(newChatId));
         navigate(`/${userId}/chat/${newChatId}`);
 

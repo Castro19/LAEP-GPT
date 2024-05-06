@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdClose } from "react-icons/md"; // Importing the close icon
-import ChatLog from "../chat/ChatLog";
+import ChatLog from "../chat/logs/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
@@ -9,13 +9,18 @@ import {
   setCurrentChatId as setReduxCurrentChatId,
 } from "../../redux/ui/uiSlice";
 import { setMsgList as msgReduxSetList } from "../../redux/message/messageSlice";
+import { fetchLogs as fetchReduxLogs } from "../../redux/log/logSlice";
+import { useAuth } from "../../contexts/authContext";
 
 const Sidebar = () => {
   // Redux:
   const dispatch = useDispatch();
   const isSidebarVisible = useSelector((state) => state.ui.isSidebarVisible);
-  const logList = useSelector((state) => state.message.logList);
-
+  const logList = useSelector((state) => state.log.logList);
+  const { userId } = useAuth();
+  useEffect(() => {
+    dispatch(fetchReduxLogs(userId));
+  }, [dispatch, userId]);
   // Added transition classes and conditional translate classes
   const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-800 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"

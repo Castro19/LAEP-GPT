@@ -3,7 +3,16 @@ dotenv.config();
 
 import express from "express";
 import OpenAI from "openai";
-import chooseModel from "../utils/chooseModel.js"; // Make sure the file has `.js` extension or is a directory with an `index.js` file
+import {
+  addMessageToThread,
+  createThread,
+} from "../utils/openAI/threadFunctions.js";
+import {
+  addThread,
+  fetchThreadID,
+} from "../db/models/threads/threadServices.js";
+
+import chooseModel from "../utils/chooseModel.js";
 
 const router = express.Router();
 
@@ -15,42 +24,98 @@ router.get("/"),
   (res) => {
     res.send("LLM Backend Working");
   };
+
 router.post("/respond", async (req, res) => {
   try {
-    const { message, modelType } = req.body;
+    const { message, modelType, chatId } = req.body;
+    console.log("CHAT ID: ", chatId);
+    let threadId = await fetchThreadID(chatId);
+    console.log("THREAD ID: ", threadId);
 
-    const modelDesc = chooseModel(modelType);
-    const contentStr =
-      "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed. " +
-      modelDesc;
-    console.log("MODEL TYPE: ", modelType);
-    console.log("Server Side Model Description: ", modelDesc);
-    // model: "gpt-3.5-turbo-0125",
-    // model: "gpt-4-0613",
-    const chatCompletion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-0125",
-      messages: [
-        {
-          role: "system",
-          content: contentStr,
-        },
-        { role: "user", content: message },
-      ],
-      stream: true,
-    });
-    const reader = chatCompletion.toReadableStream().getReader();
-    // Send the ChatGPT response back to the client
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      res.write(value);
+    // New Chat: Create thread and insert threadID here
+    if (threadId === null) {
+      const threadObj = await createThread(openai);
+      threadId = threadObj.id;
+      const addedThreadId = await addThread(chatId, threadId);
+      console.log(addedThreadId);
     }
-    res.end();
+    console.log("THREAD ID: ", threadId);
+
+    // Add User Message to thread:
+    const threadMessages = await addMessageToThread(
+      openai,
+      threadId,
+      "user",
+      message
+    );
+    // console.log("Thread Messages: ", threadMessages);
+    // Run Thread
+    try {
+      const stream = await openai.beta.threads.runs.create(threadId, {
+        assistant_id: process.env.ASST_ID,
+        stream: true,
+      });
+
+      let accumulatedData = "";
+      for await (const chunk of stream) {
+        accumulatedData += chunk;
+
+        // Check and process complete lines from accumulated data
+        let newlineIndex = accumulatedData.indexOf("\n");
+        while (newlineIndex !== -1) {
+          const line = accumulatedData.substring(0, newlineIndex).trim();
+          accumulatedData = accumulatedData.substring(newlineIndex + 1);
+          newlineIndex = accumulatedData.indexOf("\n");
+
+          // Check for special control signals before any JSON parsing
+          if (line === "[DONE]") {
+            console.log("Stream completed");
+            res.end(); // End the response if the stream is marked as done
+            return; // Exit the loop and function since we're done processing
+          }
+
+          // Process JSON data if the line starts with 'data: '
+          if (line.startsWith("data: ")) {
+            const jsonData = line.substring(6); // Remove the 'data: ' prefix to get the JSON string
+            try {
+              const event = JSON.parse(jsonData);
+              // console.log("Processed EVENT:", event);
+
+              if (
+                event.object === "thread.run" &&
+                event.status === "completed"
+              ) {
+                console.log("Stream completed with status 'completed'");
+                res.end(); // End the response on stream completion status
+                return; // Exit the loop as we are done processing
+              }
+
+              // Handle specific event types such as 'thread.message.delta'
+              if (event.delta) {
+                console.log("DELTA: ", event.delta.content);
+                event.delta.content.forEach((delta) => {
+                  if (delta.type === "text") {
+                    res.write(delta.text.value);
+                    console.log("Delta text:", delta.text.value);
+                  }
+                });
+              }
+            } catch (err) {
+              console.error("Error parsing JSON:", err);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error streaming from OpenAI:", error);
+      res.status(500).send("Failed to process stream.");
+    } finally {
+      if (!res.finished) {
+        res.end(); // Ensure to close the response properly
+      }
+    }
   } catch (error) {
-    console.error("Error calling OpenAI:", error);
-    res.status(500).json({ error: "Failed to generate response from OpenAI" });
+    console.log("Error in llm: ", error);
   }
 });
 

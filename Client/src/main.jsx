@@ -7,12 +7,14 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
+// Pages
 import Register from "./pages/register/Register.tsx";
 import AddInfoForm from "./pages/register/signup/AddInfoForm.jsx";
 import { SignupFormDemo } from "./pages/register/signup/SignUpForm.tsx";
 import { LoginFormDemo } from "./pages/register/login/LoginForm.tsx";
 import ChatPage from "./pages/ChatPage.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
+// Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.jsx";
 import { AuthProvider } from "./contexts/authContext/index.tsx";
 import "./index.css";

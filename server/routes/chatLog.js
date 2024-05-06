@@ -1,4 +1,10 @@
 import express from "express";
+import {
+  createLog,
+  getLogsByUser,
+  updateLog,
+  deleteLog,
+} from "../db/models/chatlog/chatLogServices.js";
 
 const router = express.Router();
 
@@ -18,29 +24,35 @@ router.post("/", async (req, res) => {
     const newLog = {
       _id: currentChatId,
       userId: firebaseUserId,
-      title: title,
+      title,
+      timestamp,
+      content,
     };
     console.log("---------Creating the Log--------");
-    console.log("Chat ID: ", currentChatId);
-    console.log("Firebase User ID: ", firebaseUserId);
-    console.log("Title: ", title);
-    console.log("Content: ", content);
-    console.log("Timestamp: ", timestamp);
-    res.status(201).json({ isWorking: true });
+    console.log("New Log in ChatLog.js: ", newLog);
+    const result = await createLog(newLog);
+    res.status(201).json(result);
   } catch (error) {
-    res.status(500).send("Failed to create user: " + error.message);
-    console.error("Failed to create user: ", error);
+    res.status(500).send("Failed to create log: " + error.message);
+    console.error("Failed to create log: ", error);
   }
 });
 
 // Get the entire LogList: (Read)
 router.get("/:userId", async (req, res) => {
-  res.send("Backend for ChatLog LogList UserID is working!");
+  const userId = req.params.userId;
+  try {
+    const logs = await getLogsByUser(userId);
+    res.status(200).json(logs);
+  } catch (error) {
+    console.error("Failed to fetch logs: ", error);
+    res.status(500).send("Failed to fetch logs: " + error.message);
+  }
 });
 
 // Retreive a specific Log: (Read)
 // FIX: Add in check for authorization
-router.get("/:userId/:logId", async (req, res) => {
+router.get("/:userId/chat/:logId", async (req, res) => {
   console.log(`Fetching log ${req.params.logId} for user ${req.params.userId}`);
   res.status(200).send(`Log ${req.params.logId} for user ${req.params.userId}`);
 });
@@ -49,21 +61,31 @@ router.get("/:userId/:logId", async (req, res) => {
 router.put("/", async (req, res) => {
   const { logId, firebaseUserId, content, timestamp } = req.body;
   console.log("-----Updating the Log-------");
-  // console.log(
-  // `Updating log ${req.params.logId} for user ${req.params.firebaseUserId}`
-  // );
   console.log("Log ID: ", logId);
   console.log("Firebase User ID: ", firebaseUserId);
   console.log("Content: ", content);
   console.log("Timestamp: ", timestamp);
-  res.status(200);
-  // .send(`Updated log ${req.params.logId} for user ${req.params.userId}`);
+  try {
+    const result = await updateLog(logId, firebaseUserId, content, timestamp);
+    res.status(204).json(result); // No Content response on successful update
+  } catch (error) {
+    console.error("Failed to update log: ", error);
+    res.status(500).send("Failed to update log in database: " + error.message);
+  }
 });
 
 // Deleting a Log
 router.delete("/:userId/:logId", async (req, res) => {
-  console.log(`Deleting log ${req.params.logId} for user ${req.params.userId}`);
-  res.status(204).send(); // 204 No Content is typical for a delete operation.
+  const { logId, userId } = req.params;
+  console.log(`Deleting log ${logId} for user ${userId}`);
+
+  try {
+    const response = await deleteLog(logId, userId);
+    res.status(204).send(response); // 204 No Content is typical for a delete operation.
+  } catch (error) {
+    console.error("Failed to Delete log: ", error);
+    res.status(500).send("Failed to Delete log in database: " + error.message);
+  }
 });
 
 export default router;
