@@ -14,8 +14,8 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   toggleNewChat as toggleReduxNewChat,
   setCurrentChatId as setReduxCurrentChatId,
-} from "../../redux/ui/uiSlice";
-import { fetchBotResponse } from "../../redux/message/messageSlice";
+} from "../../redux/layout/layoutSlice";
+import { fetchBotResponse } from "../../redux/chat/messageSlice";
 import {
   addLog as addReduxLog,
   updateLog as updateReduxLog,
@@ -40,8 +40,8 @@ const ChatInput = ({ messagesContainerRef }) => {
   // Redux State Vars:
   const modelType = useSelector((state) => state.model.modelType); // Access the modelType from Redux store
 
-  const isNewChat = useSelector((state) => state.ui.isNewChat);
-  const currentChatId = useSelector((state) => state.ui.currentChatId);
+  const isNewChat = useSelector((state) => state.layout.isNewChat);
+  const currentChatId = useSelector((state) => state.layout.currentChatId);
 
   const handleInputChange = (e) => {
     // Modify the Message State variable

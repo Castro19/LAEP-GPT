@@ -10,7 +10,6 @@ export default async function sendMessage(modelType, msg, currentChatId) {
     mode: modelType,
   };
 
-  // eslint-disable-next-line no-useless-catch
   try {
     const response = await fetch("http://localhost:4000/llms/respond", {
       method: "POST",

@@ -3,8 +3,8 @@ import { RiChatNewFill } from "react-icons/ri";
 
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
-import { toggleNewChat as toggleReduxNewChat } from "../../redux/ui/uiSlice";
-import { resetMsgList as resetReduxMsgList } from "../../redux/message/messageSlice";
+import { toggleNewChat as toggleReduxNewChat } from "../../redux/layout/layoutSlice";
+import { resetMsgList as resetReduxMsgList } from "../../redux/chat/messageSlice";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 

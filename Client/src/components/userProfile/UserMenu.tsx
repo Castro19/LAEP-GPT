@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, MenuItem, HoveredLink } from "@/components/ui/navbar-item";
 import { useAuth } from "@/contexts/authContext";

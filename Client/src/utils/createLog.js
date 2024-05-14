@@ -36,6 +36,8 @@ export async function createLogItem(logData) {
   }
 }
 
+// Reading an individual log by logId
+
 // Update Log (Message gets added)
 export async function updateLogItem(logData) {
   try {

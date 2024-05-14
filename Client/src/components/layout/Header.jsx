@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ModeDropDown from "../chat/ModeDropDown";
+import ModeDropDown from "../chatModel/ModeDropDown";
 import Sidebar from "./Sidebar";
 import { BiChat } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
@@ -9,7 +9,7 @@ import NewChat from "../chat/NewChat";
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
 import { setModelType as setReduxModelType } from "../../redux/chatModel/modelSlice";
-import { toggleSidebar as toggleReduxSidebar } from "../../redux/ui/uiSlice";
+import { toggleSidebar as toggleReduxSidebar } from "../../redux/layout/layoutSlice";
 
 const ChatHeader = () => {
   // Define State Vars:handleModeSelection
@@ -17,7 +17,9 @@ const ChatHeader = () => {
 
   // Redux:
   const dispatch = useDispatch();
-  const isSidebarVisible = useSelector((state) => state.ui.isSidebarVisible);
+  const isSidebarVisible = useSelector(
+    (state) => state.layout.isSidebarVisible
+  );
 
   // Define Event Handlers for Button on Header being pressed.
   const toggleSidebar = () => dispatch(toggleReduxSidebar(!isSidebarVisible));

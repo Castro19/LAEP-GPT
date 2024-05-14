@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { MdClose } from "react-icons/md"; // Importing the close icon
-import ChatLog from "../chat/logs/ChatLog";
+import ChatLog from "../chatLog/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
@@ -8,15 +8,17 @@ import {
   toggleSidebar as toggleReduxSidebar,
   toggleNewChat as toggleReduxNewChat,
   setCurrentChatId as setReduxCurrentChatId,
-} from "../../redux/ui/uiSlice";
-import { setMsgList as msgReduxSetList } from "../../redux/message/messageSlice";
+} from "../../redux/layout/layoutSlice";
+import { setMsgList as msgReduxSetList } from "../../redux/chat/messageSlice";
 import { fetchLogs as fetchReduxLogs } from "../../redux/log/logSlice";
 import { useAuth } from "../../contexts/authContext";
 
 const Sidebar = () => {
   // Redux:
   const dispatch = useDispatch();
-  const isSidebarVisible = useSelector((state) => state.ui.isSidebarVisible);
+  const isSidebarVisible = useSelector(
+    (state) => state.layout.isSidebarVisible
+  );
   const logList = useSelector((state) => state.log.logList);
   const { userId } = useAuth();
   useEffect(() => {

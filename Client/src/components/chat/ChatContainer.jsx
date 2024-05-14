@@ -4,7 +4,7 @@ import ChatMessage from "./ChatMessage";
 // Redux:
 import { useSelector } from "react-redux";
 
-const ChatContainer = ({ chatId }) => {
+const ChatContainer = () => {
   // Redux State Variables in uiMessage
   const msgList = useSelector((state) => state.message.msgList);
   const logList = useSelector((state) => state.log.logList);

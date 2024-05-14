@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -28,7 +28,7 @@ export function UserAvatar() {
   useEffect(() => {
     console.log("USER PHOTO: ", userPhoto);
     console.log("USER NAME: ", userName);
-  }, [userName]);
+  }, [userName, userPhoto]);
   return (
     <div className="flex gap-x-20">
       <Avatar>

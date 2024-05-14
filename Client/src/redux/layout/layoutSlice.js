@@ -5,8 +5,8 @@ const initialState = {
   isNewChat: true,
 };
 
-const uiSlice = createSlice({
-  name: "ui",
+const layoutSlice = createSlice({
+  name: "layout",
   initialState,
   reducers: {
     toggleSidebar(state, action) {
@@ -22,6 +22,6 @@ const uiSlice = createSlice({
 });
 
 export const { toggleSidebar, setCurrentChatId, toggleNewChat } =
-  uiSlice.actions;
+  layoutSlice.actions;
 
-export default uiSlice.reducer;
+export default layoutSlice.reducer;

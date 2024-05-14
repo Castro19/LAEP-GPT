@@ -2,7 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 
 import ChatContainer from "@/components/chat/ChatContainer";
-import ChatHeader from "@/components/layouts/Header";
+import ChatHeader from "@/components/layout/Header";
 
 const ChatPage = () => {
   const { chatId } = useParams();
