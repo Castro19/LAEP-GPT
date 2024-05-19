@@ -23,7 +23,7 @@ export const MenuItem = ({
   children?: React.ReactNode;
 }) => {
   return (
-    <div onMouseEnter={() => setActive(item)} className="relative ">
+    <div onMouseEnter={() => setActive(item)} className="relative">
       <UserAvatar />
       {active !== null && (
         <motion.div
@@ -32,7 +32,7 @@ export const MenuItem = ({
           transition={transition}
         >
           {active === item && (
-            <div className="absolute bottom-full transform translate-x-2/3 -translate-y-12">
+            <div className="absolute bottom-full transform translate-x-2 -translate-y-16">
               {" "}
               <motion.div
                 transition={transition}
@@ -64,7 +64,7 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative rounded-full  bg-white shadow-lg flex justify-center items-center w-10 h-10" // Adjusted for circle
+      className="relative rounded-full  bg-white shadow-lg flex justify-center w-10 h-10" // Adjusted for circle
     >
       {children}
     </nav>

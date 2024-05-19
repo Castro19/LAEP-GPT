@@ -42,12 +42,12 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className={sidebarClasses}>
-      <div className="text-gray-700 dark:text-white">
+    <aside className={`${sidebarClasses} flex flex-col h-full`}>
+      <div className="relative text-gray-700 dark:text-white flex-shrink-0">
         <button
           onClick={() => dispatch(toggleReduxSidebar(false))}
           className="
-            absolute top-4 right-4
+            absolute top-1 right-4
             p-2
             rounded-full
             bg-gray-200 dark:bg-gray-700
@@ -59,21 +59,20 @@ const Sidebar = () => {
         >
           <MdClose />
         </button>
-        <div className="flex-grow">
-          <h2 className="font-semibold text-xl">Chat Logs</h2>
-          {logList.length > 0 ? (
-            logList.map((log) => (
-              <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
-            ))
-          ) : (
-            <div>No chat logs available</div> // This is just an example placeholder
-          )}
-        </div>
+        <h2 className="font-semibold text-xl my-2 border-b border-gray-200 dark:border-gray-700 pb-4">
+          Chat Logs
+        </h2>
       </div>
-
-      <div className="">
-        {" "}
-        {/* New wrapper for UserMenu */}
+      <div className="flex-grow overflow-y-auto overflow-x-hidden">
+        {logList.length > 0 ? (
+          logList.map((log) => (
+            <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
+          ))
+        ) : (
+          <div>No chat logs available</div>
+        )}
+      </div>
+      <div className="relative border-t border-gray-200 dark:border-gray-700 box-shadow p-4">
         <UserMenu />
       </div>
     </aside>

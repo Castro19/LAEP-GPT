@@ -1,40 +1,17 @@
-import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
-export function UserAvatar() {
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        setUserPhoto(user.photoURL);
-        setUserName(user.displayName);
-      } else {
-        // User is signed out
-        setUserPhoto(null);
-        setUserName(null);
-      }
-    });
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    console.log("USER PHOTO: ", userPhoto);
-    console.log("USER NAME: ", userName);
-  }, [userName, userPhoto]);
+interface UserAvatarProps {
+  userPhoto: string | null;
+}
+export function UserAvatar({ userPhoto }: UserAvatarProps) {
   return (
-    <div className="flex gap-x-20">
-      <Avatar>
-        <AvatarImage src={userPhoto || "../../static/imgs/test.png"} />
+    <div className="flex items-center relative bg-gray-50 dark:bg-gray-800 shadow-md">
+      <Avatar className="w-10 h-10 rounded-full overflow-hidden">
+        <AvatarImage
+          src={userPhoto || "../../static/imgs/test.png"}
+          alt="User Avatar"
+        />
       </Avatar>
-      <h4>{userName}</h4>
     </div>
   );
 }
