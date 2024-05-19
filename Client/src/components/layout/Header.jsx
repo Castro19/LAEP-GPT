@@ -40,16 +40,17 @@ const ChatHeader = () => {
   ];
 
   return (
-    <header className="sticky top-0 bg-white dark:bg-gray-800 text-white p-4 z-50 shadow-md">
+    <header className="sticky top-0 bg-white dark:bg-gray-800 text-white p-4 z-50 border-b-2 border-gray-300 dark:border-x-gray-500 shadow-md">
+      {" "}
       <div className="flex items-center justify-between">
-        <button onClick={toggleSidebar} className="text-lg">
+        <button onClick={toggleSidebar} className="text-lg hover:text-gray-300">
           <BiChat />
         </button>
         <Sidebar />
         <div>
           <button
             onClick={toggleDropdown}
-            className="relative inline-flex items-center text-lg bg-white dark:bg-gray-800"
+            className="relative inline-flex items-center text-lg bg-white dark:bg-gray-800 hover:text-gray-300"
           >
             LAEP Chatbot
             <span className="ml-4">

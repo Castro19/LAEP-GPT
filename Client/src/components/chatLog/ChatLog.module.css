@@ -8,7 +8,7 @@
 }
 
 .deleteButton:hover {
-  color: red; /* Change icon color on hover */
+  color: rgb(244, 65, 65); /* Change icon color on hover */
 }
 
 /* Ensure MdDelete inherits the color from the button */

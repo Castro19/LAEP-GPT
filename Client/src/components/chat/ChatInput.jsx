@@ -102,16 +102,17 @@ const ChatInput = ({ messagesContainerRef }) => {
           maxLength="2000"
           onChange={handleInputChange}
         />
-        <button
-          type="submit"
-          disabled={isSending}
-          className={`w-auto px-4 py-2 text-white rounded-tr rounded-br ${
-            isSending
-              ? "bg-gray-400 cursor-not-allowed flex justify-center"
-              : "bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-400"
-          }`}
-        >
-          {isSending ? <FaSpinner className="animate-spin" /> : "Send"}
+        <button className="p-[3px] relative" disabled={isSending}>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-800 rounded-lg" />
+          <div
+            className={`px-8 py-2 bg-black rounded-[6px] relative group transition duration-200 text-white ${
+              isSending
+                ? "bg-gray-400 cursor-not-allowed flex justify-center"
+                : "hover:bg-transparent"
+            }`}
+          >
+            {isSending ? <FaSpinner className="animate-spin" /> : "Send"}
+          </div>
         </button>
       </form>
     </div>

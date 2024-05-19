@@ -30,7 +30,7 @@ const NewChat = () => {
   };
 
   return (
-    <button onClick={toggleNewChat} className="text-lg">
+    <button onClick={toggleNewChat} className="text-lg hover:text-gray-300">
       <RiChatNewFill />
     </button>
   );

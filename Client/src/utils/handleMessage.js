@@ -11,7 +11,6 @@ export default async function sendMessage(modelType, msg, currentChatId) {
   };
 
   const timeoutDuration = 10000; // 10 seconds
-
   const timeoutPromise = new Promise((_, reject) => {
     setTimeout(() => {
       reject(new Error("Error: Response took too long. Please try again."));
@@ -45,7 +44,6 @@ export default async function sendMessage(modelType, msg, currentChatId) {
 
     // eslint-disable-next-line no-inner-declarations
     function startTimeout(updateCallback) {
-      const timeoutDuration = 10000; // 10 seconds
       setTimeout(() => {
         if (!updateOccurred) {
           updateCallback(

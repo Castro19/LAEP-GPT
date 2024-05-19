@@ -56,6 +56,7 @@ const UserMenu = () => {
             {userName}
           </h4>
           <button
+            className="text-lg hover:text-red-500"
             onClick={handleSignOut}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}

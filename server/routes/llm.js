@@ -27,6 +27,8 @@ router.get("/"),
   };
 
 router.post("/respond", async (req, res) => {
+  res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
+  res.setHeader("Transfer-Encoding", "chunked");
   const { message, modelType, chatId } = req.body;
   let assistant_id = "";
   if (modelType === "ethical") {
