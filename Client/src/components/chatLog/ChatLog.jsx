@@ -1,16 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
+import { useSelector, useDispatch } from "react-redux";
+import { clearError } from "../../redux/chat/messageSlice";
+
 import DeleteLog from "./DeleteLog";
 
 const ChatLog = ({ log, onSelectLog }) => {
   // Assuming useMessage and useUI contexts are correctly set up and utilized here
   const navigate = useNavigate();
   const { userId } = useAuth();
+  // Redux:
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.message.error); // Access the error state from Redux
 
   const handleNewLog = async (logId) => {
     onSelectLog(logId);
     navigate(`/${userId}/chat/${logId}}`);
+    if (error) {
+      dispatch(clearError()); // Clear error when user starts typing
+    }
   };
   return (
     <div className="flex align-center justify-between">

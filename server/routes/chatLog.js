@@ -5,6 +5,8 @@ import {
   updateLog,
   deleteLog,
 } from "../db/models/chatlog/chatLogServices.js";
+import { fetchThreadID } from "../db/models/threads/threadServices.js";
+import { deleteThreadById } from "./llm.js";
 
 const router = express.Router();
 
@@ -67,10 +69,14 @@ router.put("/", async (req, res) => {
   console.log("Timestamp: ", timestamp);
   try {
     const result = await updateLog(logId, firebaseUserId, content, timestamp);
-    res.status(204).json(result); // No Content response on successful update
+    // Log the response before sending
+    console.log("Response:", JSON.stringify(result));
+
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(result));
   } catch (error) {
     console.error("Failed to update log: ", error);
-    res.status(500).send("Failed to update log in database: " + error.message);
+    res.status(500).json("Failed to update log in database: " + error.message);
   }
 });
 
@@ -78,10 +84,14 @@ router.put("/", async (req, res) => {
 router.delete("/:userId/:logId", async (req, res) => {
   const { logId, userId } = req.params;
   console.log(`Deleting log ${logId} for user ${userId}`);
+  const threadId = await fetchThreadID(logId);
 
   try {
     const response = await deleteLog(logId, userId);
-    res.status(204).send(response); // 204 No Content is typical for a delete operation.
+    const deleteResponse = await deleteThreadById(threadId);
+    console.log("Response: ", response);
+    console.log("Deleted Response: ", deleteResponse);
+    res.status(204).json({ response, deleteResponse }); // 204 No Content is typical for a delete operation.
   } catch (error) {
     console.error("Failed to Delete log: ", error);
     res.status(500).send("Failed to Delete log in database: " + error.message);

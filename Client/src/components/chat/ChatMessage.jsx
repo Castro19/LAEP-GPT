@@ -13,7 +13,7 @@ const ChatMessage = ({ msg }) => {
 
   return (
     <div
-      className={`w-full my-2 flex ${
+      className={`w-full my-6 flex ${
         isUserMessage ? "justify-end" : "justify-start"
       }`}
     >

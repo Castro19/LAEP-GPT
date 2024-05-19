@@ -15,10 +15,21 @@ export const addThread = async (chatId, threadId) => {
   }
 };
 
+// Read
 export const fetchThreadID = async (chatId) => {
   try {
     const threadId = await ThreadModel.getThreadId(chatId);
     return threadId ? threadId : null;
+  } catch (error) {
+    console.error("Error fetching thread ID: ", error.message);
+    return null;
+  }
+};
+
+// Delete
+export const deleteThread = async (threadId) => {
+  try {
+    await ThreadModel.deleteThreadByID(threadId);
   } catch (error) {
     console.error("Error fetching thread ID: ", error.message);
     return null;

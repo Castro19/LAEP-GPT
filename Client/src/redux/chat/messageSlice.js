@@ -22,7 +22,7 @@ export const fetchBotResponse = createAsyncThunk(
 
       return botMessage; // Returning the final state of the bot message
     } catch (error) {
-      return rejectWithValue(error.toString());
+      return rejectWithValue(error.message); // Ensure the error message is passed to rejectWithValue
     }
   }
 );
@@ -55,6 +55,10 @@ const messageSlice = createSlice({
     resetMsgList: (state) => {
       state.msgList = [];
     },
+    // Reducer to clear the error state
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -71,6 +75,11 @@ const messageSlice = createSlice({
   },
 });
 
-export const { setMsgList, resetMsgList, addUserMessage, updateBotMessage } =
-  messageSlice.actions;
+export const {
+  setMsgList,
+  resetMsgList,
+  addUserMessage,
+  updateBotMessage,
+  clearError,
+} = messageSlice.actions;
 export default messageSlice.reducer;

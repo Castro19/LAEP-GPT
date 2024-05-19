@@ -1,21 +1,17 @@
 import React, { useRef, useState } from "react";
-import { FaSpinner } from "react-icons/fa"; // Example using React Icons
-// Helpers:
+import { FaSpinner } from "react-icons/fa";
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
 } from "../../utils/format";
 import createNewChatLogId from "../../utils/handleNewChat";
-// Context: For user information
 import { useAuth } from "@/contexts/authContext";
-
-// Redux:
 import { useSelector, useDispatch } from "react-redux";
 import {
   toggleNewChat as toggleReduxNewChat,
   setCurrentChatId as setReduxCurrentChatId,
 } from "../../redux/layout/layoutSlice";
-import { fetchBotResponse } from "../../redux/chat/messageSlice";
+import { fetchBotResponse, clearError } from "../../redux/chat/messageSlice";
 import {
   addLog as addReduxLog,
   updateLog as updateReduxLog,
@@ -24,69 +20,46 @@ import { useNavigate } from "react-router-dom";
 
 const ChatInput = ({ messagesContainerRef }) => {
   const navigate = useNavigate();
-  const [msg, setMsg] = useState(""); // local state for input value
-  // State variables only used for this component
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_error, setError] = useState(null); // An error context might be created in the future
+  const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  // User information:
   const { currentUser, userId } = useAuth();
-
-  // Reference to the DOM element: For the text area where user inputs their message.
   const textareaRef = useRef(null);
 
   const dispatch = useDispatch();
-  // Redux State Vars:
-  const modelType = useSelector((state) => state.model.modelType); // Access the modelType from Redux store
-
+  const modelType = useSelector((state) => state.model.modelType);
   const isNewChat = useSelector((state) => state.layout.isNewChat);
   const currentChatId = useSelector((state) => state.layout.currentChatId);
+  const error = useSelector((state) => state.message.error); // Access the error state from Redux
 
   const handleInputChange = (e) => {
-    // Modify the Message State variable
     setMsg(e.target.value);
-    // automatically change the height of the input text area with helper format function,  Find this f'n in src/utils/format
-    adjustTextareaHeight(e.target); // helper format function
+    adjustTextareaHeight(e.target);
   };
 
-  // When user sends their message:
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSending(true); // Disable the send button
+    setIsSending(true);
 
-    // Resetting the message will clear the message in the text area b4 async call f'n returns
-    // Will still pass the user's message correctly to `sendMessage`
     setMsg("");
-
-    // Scroll to the bottom of the message container
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
     const newChatId = createNewChatLogId();
-
+    if (error) {
+      dispatch(clearError()); // Clear error when user starts typing
+    }
     try {
-      // *** This makes the API request and handles the response ***
-      console.log("CURRENT CHAT ID: ", isNewChat ? newChatId : currentChatId);
       await dispatch(
         fetchBotResponse({
           modelType,
           msg,
           currentChatId: isNewChat ? newChatId : currentChatId,
         })
-      );
-    } catch (error) {
-      console.error("Failed to send message", error);
-      setError(error.toString());
-    } finally {
-      // Re-enable sending button
-      setIsSending(false);
+      ).unwrap();
+
       if (isNewChat) {
-        // Create the chatID &
         dispatch(setReduxCurrentChatId(newChatId));
         navigate(`/${userId}/chat/${newChatId}`);
-
         dispatch(toggleReduxNewChat(false));
-
-        // Create the Title of the chat and adds a new log
         dispatch(
           addReduxLog({
             msg: msg,
@@ -96,8 +69,6 @@ const ChatInput = ({ messagesContainerRef }) => {
           })
         );
       } else {
-        console.log("logID: ", currentChatId);
-        console.log("firebaseUserId: ", currentUser ? currentUser.uid : null);
         dispatch(
           updateReduxLog({
             logId: currentChatId,
@@ -105,12 +76,16 @@ const ChatInput = ({ messagesContainerRef }) => {
           })
         );
       }
+    } catch (error) {
+      console.error("Failed to send message", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
-  // ChatInput Component:
   return (
     <div className="w-full p-4 bg-white dark:bg-gray-800 fixed inset-x-0 bottom-0">
+      {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
       {msg.length > 1500 && (
         <div className="text-yellow-500 text-sm">
           You have reached {msg.length} of 2000 characters.

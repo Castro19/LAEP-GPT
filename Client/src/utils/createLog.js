@@ -50,9 +50,10 @@ export async function updateLogItem(logData) {
       throw new Error(`Error: ${response.status}`);
     }
     const data = await response.json();
+    console.log("UPDATED DATA: ", data);
     return data;
   } catch (error) {
-    console.error("Failed to create chatlog on server side: ", error);
+    console.error("Failed to update chatlog on server side: ", error);
   }
 }
 

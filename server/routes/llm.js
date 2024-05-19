@@ -10,6 +10,7 @@ import {
 import {
   addThread,
   fetchThreadID,
+  deleteThread,
 } from "../db/models/threads/threadServices.js";
 
 import chooseModel from "../utils/chooseModel.js";
@@ -57,13 +58,8 @@ router.post("/respond", async (req, res) => {
     assistant_id: process.env.ASST_ID,
   });
 
-  run.on("textCreated", (text) => {
-    // console.log("\nassistant > "); // Optionally log to server console
-    // res.write("\nassistant > " + text);
-  });
-
   run.on("textDelta", (textDelta) => {
-    // console.log(textDelta.value); // Optionally log to server console
+    console.log(textDelta.value); // Optionally log to server console
     res.write(textDelta.value);
   });
 
@@ -72,7 +68,7 @@ router.post("/respond", async (req, res) => {
     res.end();
   });
 
-  run.on("error", (error) => {
+  run.on("errors", (error) => {
     console.error("Error streaming from OpenAI:", error);
     if (!res.headersSent) {
       res.status(500).send("Failed to process stream.");
@@ -113,5 +109,10 @@ router.post("/title", async (req, res) => {
     res.status(500).json({ error: "Failed to generate response from OpenAI" });
   }
 });
+
+export async function deleteThreadById(threadId) {
+  await deleteThread(threadId);
+  return await openai.beta.threads.del(threadId);
+}
 
 export default router;

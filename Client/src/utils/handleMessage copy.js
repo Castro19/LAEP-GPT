@@ -10,7 +10,7 @@ export default async function sendMessage(modelType, msg, currentChatId) {
     mode: modelType,
   };
 
-  const timeoutDuration = 10000; // 10 seconds
+  const timeoutDuration = 5000; // 5 seconds
 
   const timeoutPromise = new Promise((_, reject) => {
     setTimeout(() => {
@@ -45,7 +45,7 @@ export default async function sendMessage(modelType, msg, currentChatId) {
 
     // eslint-disable-next-line no-inner-declarations
     function startTimeout(updateCallback) {
-      const timeoutDuration = 10000; // 10 seconds
+      const timeoutDuration = 5000; // 5 seconds
       setTimeout(() => {
         if (!updateOccurred) {
           updateCallback(
