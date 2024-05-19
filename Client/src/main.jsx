@@ -54,7 +54,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "bots",
+    path: "gpts",
     element: <GPTPage />,
   },
 ]);

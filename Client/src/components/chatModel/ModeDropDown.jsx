@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-// import { useModel } from "../contexts/ModelContext";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ModeDropDown = ({ isVisible, onSelect, options }) => {
+  const navigate = useNavigate();
   // Access the modelType from Redux store
   const modelType = useSelector((state) => state.model.modelType);
 
@@ -19,6 +20,9 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
     }
   }, [isVisible]);
 
+  const onViewGPTs = () => {
+    navigate("/gpts");
+  };
   return (
     <div
       ref={dropdownRef}
@@ -42,6 +46,12 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
             ></span>
           </button>
         ))}
+      <button
+        onClick={onViewGPTs}
+        className="flex justify-between items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-900 hover:text-white"
+      >
+        View more GPTs
+      </button>
     </div>
   );
 };
