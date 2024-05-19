@@ -22,7 +22,7 @@ const ChatLog = ({ log, onSelectLog }) => {
     }
   };
   return (
-    <div className="flex align-center justify-between">
+    <div className="flex align-center justify-between mb-1 pb-1 border-b border-gray-500 dark:border-gray-700">
       <DeleteLog logId={log.id} />
       <button
         onClick={() => handleNewLog(log.id)}

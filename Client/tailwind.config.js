@@ -20,12 +20,13 @@ export default {
       },
       keyframes: {
         "accordion-down": {
+          backgroundPosition: "0 0",
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          to: { height: "0", backgroundPosition: "-200% 0" },
         },
       },
       animation: {

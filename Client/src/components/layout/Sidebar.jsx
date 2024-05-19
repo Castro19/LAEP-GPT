@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import styles from "./sidebar.module.css";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../chatLog/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";
@@ -27,7 +28,7 @@ const Sidebar = () => {
   // Added transition classes and conditional translate classes
   const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-800 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-  }`;
+  } border-r border-gray-200 dark:border-gray-700`;
 
   // Handler for selecting a log to view
   const handleSelectLog = (logId) => {
@@ -49,6 +50,7 @@ const Sidebar = () => {
           className="
             absolute top-1 right-4
             p-2
+            my-2
             rounded-full
             bg-gray-200 dark:bg-gray-700
             text-gray-600 dark:text-gray-300
@@ -59,11 +61,13 @@ const Sidebar = () => {
         >
           <MdClose />
         </button>
-        <h2 className="font-semibold text-xl my-2 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <h2 className="font-semibold text-xl my-6 border-b-2 border-gray-200 dark:border-gray-300 pb-2">
           Chat Logs
         </h2>
       </div>
-      <div className="flex-grow overflow-y-auto overflow-x-hidden">
+      <div
+        className={`flex-grow overflow-y-auto overflow-x-hidden scroll-smooth ${styles.customScrollbar}`}
+      >
         {logList.length > 0 ? (
           logList.map((log) => (
             <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
@@ -72,7 +76,7 @@ const Sidebar = () => {
           <div>No chat logs available</div>
         )}
       </div>
-      <div className="relative border-t border-gray-200 dark:border-gray-700 box-shadow p-4">
+      <div className="relative border-t-2 border-gray-200 dark:border-gray-500 box-shadow p-4">
         <UserMenu />
       </div>
     </aside>

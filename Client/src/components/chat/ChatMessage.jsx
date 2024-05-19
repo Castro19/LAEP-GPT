@@ -13,16 +13,16 @@ const ChatMessage = ({ msg }) => {
 
   return (
     <div
-      className={`w-full my-6 flex ${
+      className={`w-full my-4 flex ${
         isUserMessage ? "justify-end" : "justify-start"
       }`}
     >
       <div
-        className={`max-w-2/3 ${
+        className={`rounded-lg shadow-lg p-4 ${
           isUserMessage
-            ? "bg-blue-600 text-white" // User messages: Blue background with white text.
-            : "bg-gray-800 dark:bg-gray-700 text-white" // Bot messages: Darker background with white text for better contrast.
-        } rounded-lg shadow p-4`}
+            ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white " // User messages: Blue background with white text.
+            : "bg-gradient-to-r from-gray-800 to-gray-700 text-white dark:from-gray-700 dark:to-gray-600 mb-8" // Bot messages: Darker background with white text for better contrast.
+        } `}
       >
         <div
           className="prose prose-invert"

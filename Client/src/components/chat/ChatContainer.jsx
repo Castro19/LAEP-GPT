@@ -29,7 +29,7 @@ const ChatContainer = () => {
     <div className="flex flex-col h-screen justify-between bg-white dark:bg-gray-800">
       <div
         ref={messagesContainerRef}
-        className="messages-container overflow-auto p-4 pb-16"
+        className="messages-container overflow-auto p-4 pb-32"
       >
         {/* Messages will go here */}
         {msgList.map((message) => (

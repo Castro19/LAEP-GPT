@@ -1,14 +1,10 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-
-import ChatContainer from "@/components/chat/ChatContainer";
-import ChatHeader from "@/components/layout/Header";
-
+import GPTContainer from "../../components/customGPT/GPTContainer/GPTContainer";
+import GPTHeader from "../../components/customGPT/GPTHeader/GPTHeader";
+// Redux:
 import { useSelector } from "react-redux";
 
-const ChatPage = () => {
-  const { chatId } = useParams();
-  console.log("Chat id in page: ", chatId);
+const GPTPage = () => {
   const isSidebarVisible = useSelector(
     (state) => state.layout.isSidebarVisible
   );
@@ -20,10 +16,10 @@ const ChatPage = () => {
       }`}
     >
       {" "}
-      <ChatHeader />
-      <ChatContainer />
+      <GPTHeader />
+      <GPTContainer />
     </div>
   );
 };
 
-export default ChatPage;
+export default GPTPage;
