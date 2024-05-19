@@ -27,7 +27,7 @@ const Sidebar = () => {
   // Added transition classes and conditional translate classes
   const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-800 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-  }`;
+  } border-r border-gray-200 dark:border-gray-700`;
 
   // Handler for selecting a log to view
   const handleSelectLog = (logId) => {

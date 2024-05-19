@@ -27,10 +27,13 @@ router.get("/"),
   };
 
 router.post("/respond", async (req, res) => {
-  res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
-  res.setHeader("Transfer-Encoding", "chunked");
-  console.log(req.body);
   const { message, modelType, chatId } = req.body;
+  let assistant_id = "";
+  if (modelType === "ethical") {
+    assistant_id = process.env.ETHICAL_ASST_ID;
+  } else {
+    assistant_id = process.env.ASST_ID;
+  }
   console.log("CHAT ID: ", chatId);
   let threadId = await fetchThreadID(chatId);
   console.log("THREAD ID: ", threadId);
@@ -55,11 +58,11 @@ router.post("/respond", async (req, res) => {
   // Run Thread
   // Start the stream from OpenAI's API
   const run = openai.beta.threads.runs.stream(threadId, {
-    assistant_id: process.env.ASST_ID,
+    assistant_id,
   });
 
   run.on("textDelta", (textDelta) => {
-    console.log(textDelta.value); // Optionally log to server console
+    // console.log(textDelta.value); // Optionally log to server console
     res.write(textDelta.value);
   });
 
@@ -86,7 +89,7 @@ router.post("/title", async (req, res) => {
     const contentStr =
       "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title! Model Description:" +
       modelDesc;
-    console.log("Bot Instructions: ", contentStr);
+    // console.log("Bot Instructions: ", contentStr);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({
