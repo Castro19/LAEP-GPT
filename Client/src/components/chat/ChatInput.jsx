@@ -83,14 +83,6 @@ const ChatInput = ({ messagesContainerRef }) => {
     }
   };
 
-  const placeholders = [
-    "Type your message here...?",
-    "How do I register for CSC400?",
-    "How do I enroll in a Senior Project?",
-    "Can you review my senior project...",
-    "What ehtical considerations do you have on my senior project...",
-  ];
-
   return (
     <div className="w-full p-4 bg-white dark:bg-gray-800 fixed inset-x-0 bottom-0">
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
