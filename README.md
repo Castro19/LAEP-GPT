@@ -6,7 +6,7 @@ This project is a part of California Polytechnic State University (Cal Poly) in 
 
 We are currently in the early stages of building an AI chatbot that will provide ethical considerations for senior projects, help match students with advisors for their projects, and utilize the power of AI to enhance the experience of a student's senior project.
 
-<img src="https://live.staticflickr.com/65535/53625001307_7cc401a26b_b.jpg" width="700" alt="Description">
+![](https://live.staticflickr.com/65535/53735181371_2b6f85997d_b.jpg)
 
 ## Table of Contents
 
@@ -45,29 +45,44 @@ We are currently in the early stages of building an AI chatbot that will provide
    npm install
    ```
 
-4. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**
+4. **Configure Firebase:**
 
-5. **Environment Variable Setup**
+- Go to your [firebase console](https://console.firebase.google.com/u/0/)
 
-   - Go to the server folder and create a `.env` file in the root of the server folder and create the variables:
-     ```
-     OPENAI_API_KEY=[Your Open AI key here]
-     PORT=4000
-     ```
+  - Click `add project`
+  - Follow their guidelines
+
+- Once you create your project, a config file should be ready for you.
+
+  - In your newly created Firebase project, click on the left sidebar for the option of `Project Settings`.
+  - Scroll down until you are at the `Your Apps section` where you will `Add app`
+  - Select the web with </> symbols. Click
+  - Here you should get the `SDK setup and configuration`
+  - Copy your firebaseConfig options.
+
+- Now that you have your firebase configuration file, go into the `client/sample.env` and update the changes here.
+
+- Finally rename `sample.env` to be `.env`
+
+5. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**:
+
+   - Go into the `server/sample.env` file and set the variable `OPENAI_API_KEY` to the OpenAI key.
+
+6. **Configure MongoDB Compass:**
+
+- Make sure MongoDB is setup on your local machine
+
+- Go into the `server/sample.env` file and set the variable `ATLAS_URI` to the URI for your MongoDB database.
+
+- Finally rename `sample.env` to be `.env`
 
 ## Usage
 
-1. **Start the client and server**
+1. **Start the client and server concurrently**
 
    ```
    npm start
    ```
-
-## Next Steps
-
-1. Continuously display the message as it finishes using the `stream: true` parameter on the server side API request.
-2. Implement authentication
-3. Implement an open source LLM
 
 ## Contributors
 
@@ -76,5 +91,3 @@ We are currently in the early stages of building an AI chatbot that will provide
 ## License
 
 To be updated.
-
-This is victor
