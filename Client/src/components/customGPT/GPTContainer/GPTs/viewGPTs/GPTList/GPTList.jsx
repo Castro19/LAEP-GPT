@@ -21,7 +21,6 @@ const GPTList = () => {
           desc={asst.desc}
         />
       ))}
-      HI
     </div>
   );
 };

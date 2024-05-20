@@ -16,13 +16,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
-import GPTList from "../../viewGPTs/GPTList/GPTList";
-
 export default function GPTForm() {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [instructions, setInstructions] = useState("");
-  const [urlPhoto, setUrlPhoto] = useState("'");
+  const [urlPhoto, setUrlPhoto] = useState("");
   const [gptError, setGptError] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [newGptSaved, setNewGptSaved] = useState<string | null>();
@@ -95,11 +93,8 @@ export default function GPTForm() {
     <div>
       <div className="max-w w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-gray-700">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-          Welcome Back!
+          Create an Assistant!
         </h2>
-        <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          Login
-        </p>
 
         <form className="my-8" onSubmit={handleSubmit}>
           <LabelInputContainer className="mb-4">
@@ -143,7 +138,6 @@ export default function GPTForm() {
           <Button className="">Create GPT</Button>
         </form>
       </div>
-      <GPTList />
     </div>
   );
 }
