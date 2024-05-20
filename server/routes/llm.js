@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
-
 import express from "express";
-import OpenAI from "openai";
+
+import { openai } from "../index.js";
 import {
   addMessageToThread,
   createThread,
@@ -16,10 +16,6 @@ import {
 import chooseModel from "../utils/chooseModel.js";
 
 const router = express.Router();
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // This is also the default, can be omitted
-});
 
 router.get("/"),
   (res) => {
@@ -42,7 +38,7 @@ router.post("/respond", async (req, res) => {
 
   // New Chat: Create thread and insert threadID here
   if (threadId === null) {
-    const threadObj = await createThread(openai);
+    const threadObj = await createThread();
     threadId = threadObj.id;
     const addedThreadId = await addThread(chatId, threadId);
     console.log(addedThreadId);
@@ -50,12 +46,7 @@ router.post("/respond", async (req, res) => {
   console.log("THREAD ID: ", threadId);
 
   // Add User Message to thread:
-  const threadMessages = await addMessageToThread(
-    openai,
-    threadId,
-    "user",
-    message
-  );
+  const threadMessages = await addMessageToThread(threadId, "user", message);
   // console.log("Thread Messages: ", threadMessages);
   // Run Thread
   // Start the stream from OpenAI's API

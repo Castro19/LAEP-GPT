@@ -3,8 +3,8 @@ import { FaSpinner } from "react-icons/fa";
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
-} from "../../utils/format";
-import createNewChatLogId from "../../utils/handleNewChat";
+} from "../../helpers/format";
+import createNewChatLogId from "../../helpers/handleNewChat";
 import { useAuth } from "@/contexts/authContext";
 import { useSelector, useDispatch } from "react-redux";
 import {

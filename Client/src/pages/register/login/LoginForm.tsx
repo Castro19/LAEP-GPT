@@ -122,10 +122,10 @@ export function LoginFormDemo() {
             <BottomGradient />
           </button>
           <p className="text-center text-sm dark:text-gray-400">
-            Don't have an account?{" "}
+            Don&apos;t have an account?
             <Link
               to={"/signup"}
-              className="hover:underline font-bold dark:text-white text-blue-500"
+              className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
             >
               Sign up
             </Link>

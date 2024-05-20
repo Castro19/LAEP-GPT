@@ -1,5 +1,4 @@
 // HomePage.tsx
-import React from "react";
 import { Outlet } from "react-router-dom";
 import TitleCard from "@/components/register/TitleCard"; // Make sure the import path is correct
 

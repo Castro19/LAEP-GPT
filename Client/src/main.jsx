@@ -14,7 +14,12 @@ import { SignupFormDemo } from "./pages/register/signup/SignUpForm.tsx";
 import { LoginFormDemo } from "./pages/register/login/LoginForm.tsx";
 import ChatPage from "./pages/ChatPage.jsx";
 import GPTPage from "./pages/customGPT/GPTPage.jsx";
+import GPTEditor from "./pages/customGPT/editorPage/GPTEditorPage.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
+// Page Layout
+import GPTLayout from "./components/layout/GPTLayout.jsx";
+// Loaders:
+import { viewGPTs } from "./redux/gpt/crudGPT.js";
 // Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.jsx";
 import { AuthProvider } from "./contexts/authContext/index.tsx";
@@ -54,8 +59,25 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "gpts",
-    element: <GPTPage />,
+    path: "/:userId/gpts",
+    element: (
+      <ProtectedRoute>
+        <GPTLayout>
+          <GPTPage />
+        </GPTLayout>
+      </ProtectedRoute>
+    ),
+    loader: viewGPTs,
+  },
+  {
+    path: "/:userId/gpts/editor",
+    element: (
+      <ProtectedRoute>
+        <GPTLayout>
+          <GPTEditor />
+        </GPTLayout>
+      </ProtectedRoute>
+    ),
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(

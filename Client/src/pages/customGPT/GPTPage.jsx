@@ -1,23 +1,20 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+import { initGptList } from "../../redux/gpt/gptSlice";
+import { Outlet, useLoaderData } from "react-router-dom";
+
 import GPTContainer from "../../components/customGPT/GPTContainer/GPTContainer";
-import GPTHeader from "../../components/customGPT/GPTHeader/GPTHeader";
-// Redux:
-import { useSelector } from "react-redux";
 
 const GPTPage = () => {
-  const isSidebarVisible = useSelector(
-    (state) => state.layout.isSidebarVisible
-  );
-
+  const dispatch = useDispatch();
+  const gptLoadedData = useLoaderData();
+  const gptList = gptLoadedData.gptList;
+  console.log("GPT LIST FETCHED: ", gptList);
+  dispatch(initGptList(gptList));
   return (
-    <div
-      className={`dark:bg-gray-800 dark:text-white min-h-screen p-4 transition-all duration-300 ${
-        isSidebarVisible ? "ml-64" : ""
-      }`}
-    >
-      {" "}
-      <GPTHeader />
+    <div>
       <GPTContainer />
+      <Outlet />
     </div>
   );
 };
