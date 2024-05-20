@@ -7,8 +7,8 @@ const GPTContainer = () => {
   return (
     <div>
       <GPTPageTitle />
-      <CreateGPTButton />
       <GPTList />
+      <CreateGPTButton />
     </div>
   );
 };

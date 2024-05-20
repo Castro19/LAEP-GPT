@@ -13,7 +13,9 @@ const CreateGPTButton = () => {
 
   return (
     <div>
-      <Button onClick={onClick}>Create</Button>
+      <Button className="w-full" onClick={onClick}>
+        Create
+      </Button>
     </div>
   );
 };

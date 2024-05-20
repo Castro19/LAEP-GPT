@@ -21,7 +21,7 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
   }, [isVisible]);
 
   const onViewGPTs = () => {
-    navigate("/gpts");
+    navigate("gpts");
   };
   return (
     <div
