@@ -3,7 +3,7 @@ import createLogTitle, {
   createLogItem,
   updateLogItem,
   deleteLogItem,
-} from "../../utils/createLog";
+} from "./crudLog";
 
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(

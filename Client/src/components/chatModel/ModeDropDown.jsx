@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useAuth } from "../../contexts/authContext";
 
 const ModeDropDown = ({ isVisible, onSelect, options }) => {
+  const { userId } = useAuth;
   const navigate = useNavigate();
   // Access the modelType from Redux store
   const modelType = useSelector((state) => state.model.modelType);
@@ -21,8 +23,9 @@ const ModeDropDown = ({ isVisible, onSelect, options }) => {
   }, [isVisible]);
 
   const onViewGPTs = () => {
-    navigate("/gpts");
+    navigate(`gpts`);
   };
+
   return (
     <div
       ref={dropdownRef}

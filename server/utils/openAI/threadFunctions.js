@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
-
-export async function createThread(openai) {
+import { openai } from "../../index.js";
+export async function createThread() {
   try {
     const messageThread = await openai.beta.threads.create();
     return messageThread;
@@ -10,7 +10,7 @@ export async function createThread(openai) {
   }
 }
 
-export async function addMessageToThread(openai, threadId, role, message) {
+export async function addMessageToThread(threadId, role, message) {
   try {
     const threadMessages = await openai.beta.threads.messages.create(threadId, {
       role: role,
@@ -25,11 +25,11 @@ export async function addMessageToThread(openai, threadId, role, message) {
   }
 }
 
-export async function fetchThread(openai, threadId) {
+export async function fetchThread(threadId) {
   return await openai.beta.threads.retrieve(threadId);
 }
 
-export async function deleteThread(openai, threadId) {
+export async function deleteThread(threadId) {
   return await openai.beta.threads.del(threadId);
 }
 

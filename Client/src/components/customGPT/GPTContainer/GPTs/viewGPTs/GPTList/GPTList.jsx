@@ -1,14 +1,27 @@
-import React from "react";
-import CustomGPT from "../CustomGPT/CustomGPT";
-import styles from "./GPTList.module.css";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-const asst_ids = [1, 2, 3, 4, 5];
+import CustomGPT from "../CustomGPT/CustomGPT";
+
 const GPTList = () => {
+  const gptList = useSelector((state) => state.gpt.gptList);
+  console.log("GPTTTTT: ", gptList);
+  useEffect(() => {
+    console.log("GPTLIST: ", gptList);
+  }, [gptList]);
+
   return (
     <div>
-      {asst_ids.map((asst, index) => (
-        <CustomGPT key={index} asst_id={asst} />
+      {gptList.map((asst, index) => (
+        <CustomGPT
+          key={index}
+          asst={asst.id}
+          urlPhoto={asst.urlPhoto}
+          title={asst.title}
+          desc={asst.desc}
+        />
       ))}
+      HI
     </div>
   );
 };

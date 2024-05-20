@@ -8,6 +8,10 @@ import bodyParser from "body-parser";
 import llms from "./routes/llm.js";
 import users from "./routes/user.js";
 import chatLogs from "./routes/chatLog.js";
+import gpts from "./routes/gpt.js";
+
+// LLM API
+import OpenAI from "openai";
 
 // Initialize express app
 const app = express();
@@ -22,10 +26,15 @@ app.use(express.text());
 app.use("/llms", llms);
 app.use("/users", users);
 app.use("/chatLogs", chatLogs);
+app.use("/gpts", gpts);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong...");
+});
+
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // This is also the default, can be omitted
 });
 
 // Start the server

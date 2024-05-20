@@ -9,12 +9,15 @@ interface AuthContextType {
   isGoogleUser: boolean;
   currentUser: User | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
+  userId: string | null;
+  setUserId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 // Create a context with default values
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 // Custom hook to use the auth context
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -32,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [isEmailUser, setIsEmailUser] = useState(false);
-  const [isGoogleUser, setIsGoogleUser] = useState(false);
+  const [isGoogleUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

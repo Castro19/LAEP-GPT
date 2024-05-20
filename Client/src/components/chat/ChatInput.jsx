@@ -3,8 +3,8 @@ import { FaSpinner } from "react-icons/fa";
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
-} from "../../utils/format";
-import createNewChatLogId from "../../utils/handleNewChat";
+} from "../../helpers/format";
+import createNewChatLogId from "../../helpers/handleNewChat";
 import { useAuth } from "@/contexts/authContext";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -82,6 +82,14 @@ const ChatInput = ({ messagesContainerRef }) => {
       setIsSending(false);
     }
   };
+
+  const placeholders = [
+    "Type your message here...?",
+    "How do I register for CSC400?",
+    "How do I enroll in a Senior Project?",
+    "Can you review my senior project...",
+    "What ehtical considerations do you have on my senior project...",
+  ];
 
   return (
     <div className="w-full p-4 bg-white dark:bg-gray-800 fixed inset-x-0 bottom-0">

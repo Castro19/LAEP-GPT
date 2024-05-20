@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import sendMessage from "../../utils/handleMessage";
+import sendMessage from "./handleMessage";
 
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 export const fetchBotResponse = createAsyncThunk(

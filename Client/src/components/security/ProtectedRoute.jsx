@@ -12,10 +12,18 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     if (!userLoggedIn) {
       navigate("/login", { replace: true });
-    } else if (userLoggedIn && (userId !== urlUserId || chatId != urlChatId)) {
-      navigate(`/${userId}`); // Redirects to the correct user page
+    } else if (
+      userLoggedIn &&
+      (urlUserId !== userId || (chatId && chatId !== urlChatId)) &&
+      !(
+        (urlUserId === userId && urlChatId === chatId) ||
+        urlUserId === "gpts" ||
+        urlUserId === "editor"
+      )
+    ) {
+      navigate(`/${userId}`, { replace: true }); // Redirects to the correct user page
     }
-  }, [navigate, userLoggedIn, userId, urlUserId]);
+  }, [navigate, userLoggedIn, userId, urlUserId, chatId, urlChatId]);
 
   return children;
 };
