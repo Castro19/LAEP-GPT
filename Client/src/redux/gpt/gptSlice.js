@@ -67,18 +67,32 @@ export const deleteGpt = createAsyncThunk(
     }
   }
 );
+
 const initialState = {
   gptList: [],
+  currentModel: {
+    id: "664ca3b0143d529c7bf09f23",
+    title: "Normal",
+    desc: "A helpful assistant to help answer any questions you have!",
+    urlPhoto:
+      "https://live.staticflickr.com/65535/53736681383_5cc3b12e54_n.jpg",
+  },
 };
 
 const gptSlice = createSlice({
   name: "gpt",
   initialState,
   reducers: {
-    // Init the Log List:
+    // Init the GPT List:
     initGptList: (state, action) => {
       const gptList = action.payload;
       state.gptList = gptList;
+    },
+    // Set our current model
+    setCurrentGpt: (state, action) => {
+      state.currentModel = state.gptList.find(
+        (asst) => asst.id === action.payload
+      );
     },
   },
   extraReducers: (builder) => {
@@ -92,6 +106,6 @@ const gptSlice = createSlice({
   },
 });
 
-export const { initGptList, addGptList } = gptSlice.actions;
+export const { initGptList, addGptList, setCurrentGpt } = gptSlice.actions;
 
 export default gptSlice.reducer;

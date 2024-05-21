@@ -17,9 +17,8 @@ export async function createGPT(gptData) {
 }
 
 // Read
-export async function viewGPTs({ params }) {
+export async function viewGPTs(userId) {
   try {
-    const { userId } = params;
     console.log("USER ID USING TO FETCH: ", userId);
     const response = await fetch(`http://localhost:4000/gpts/${userId}`);
     if (!response.ok) {

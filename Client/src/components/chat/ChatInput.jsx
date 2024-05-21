@@ -27,7 +27,7 @@ const ChatInput = ({ messagesContainerRef }) => {
   const textareaRef = useRef(null);
 
   const dispatch = useDispatch();
-  const modelType = useSelector((state) => state.model.modelType);
+  const currentModel = useSelector((state) => state.gpt.currentModel);
   const isNewChat = useSelector((state) => state.layout.isNewChat);
   const currentChatId = useSelector((state) => state.layout.currentChatId);
   const error = useSelector((state) => state.message.error); // Access the error state from Redux
@@ -50,7 +50,7 @@ const ChatInput = ({ messagesContainerRef }) => {
     try {
       await dispatch(
         fetchBotResponse({
-          modelType,
+          currentModel,
           msg,
           currentChatId: isNewChat ? newChatId : currentChatId,
         })
@@ -63,7 +63,8 @@ const ChatInput = ({ messagesContainerRef }) => {
         dispatch(
           addReduxLog({
             msg: msg,
-            modelType: modelType,
+            modelType: currentModel.title,
+            urlPhoto: currentModel.urlPhoto,
             currentChatId: newChatId,
             firebaseUserId: currentUser ? currentUser.uid : null,
           })
@@ -73,6 +74,7 @@ const ChatInput = ({ messagesContainerRef }) => {
           updateReduxLog({
             logId: currentChatId,
             firebaseUserId: currentUser ? currentUser.uid : null,
+            urlPhoto: currentModel.urlPhoto,
           })
         );
       }

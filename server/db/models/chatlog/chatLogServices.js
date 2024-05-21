@@ -19,6 +19,7 @@ export const getLogsByUser = async (userId) => {
       content: log.content,
       title: log.title,
       timestamp: log.timestamp,
+      urlPhoto: log.urlPhoto,
     }));
   } catch (error) {
     throw new Error("Service error: " + error.message);

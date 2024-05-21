@@ -5,7 +5,7 @@ interface UserAvatarProps {
 }
 export function UserAvatar({ userPhoto }: UserAvatarProps) {
   return (
-    <div className="flex items-center">
+    <div>
       <Avatar className="w-10 h-10 rounded-full overflow-hidden">
         <AvatarImage
           src={userPhoto || "../../static/imgs/test.png"}

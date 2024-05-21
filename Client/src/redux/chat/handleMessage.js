@@ -1,4 +1,4 @@
-export default async function sendMessage(modelType, msg, currentChatId) {
+export default async function sendMessage(currentModel, msg, currentChatId) {
   if (!msg.trim() || msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");
   }
@@ -7,7 +7,7 @@ export default async function sendMessage(modelType, msg, currentChatId) {
     id: Date.now(),
     sender: "user",
     text: msg,
-    mode: modelType,
+    model: currentModel.title,
   };
 
   const timeoutDuration = 10000; // 10 seconds
@@ -23,7 +23,7 @@ export default async function sendMessage(modelType, msg, currentChatId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: msg,
-        modelType: modelType,
+        model: currentModel,
         chatId: currentChatId,
       }),
     });
@@ -38,7 +38,12 @@ export default async function sendMessage(modelType, msg, currentChatId) {
 
     let botMessageId = Date.now() + 1;
     let accumulatedText = "";
-    const botMessage = { id: botMessageId, sender: "bot", text: "Loading..." };
+    const botMessage = {
+      id: botMessageId,
+      sender: "bot",
+      text: "Loading...",
+      urlPhoto: currentModel.urlPhoto,
+    };
 
     let updateOccurred = false;
 
