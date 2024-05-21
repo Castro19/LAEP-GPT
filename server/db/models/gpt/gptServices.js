@@ -35,7 +35,7 @@ export const createGpt = async (gptData) => {
   }
 };
 
-// Read
+// Read All
 export const fetchGPTs = async (userId) => {
   try {
     const result = await gptModel.viewGPTs(userId);
@@ -50,6 +50,16 @@ export const fetchGPTs = async (userId) => {
     return gptList;
   } catch (error) {
     console.log("CONSOLE LOG ERROR: ", error);
+  }
+};
+
+// Read one:
+export const getGPT = async (gptId) => {
+  try {
+    const result = await gptModel.getGptById(gptId);
+    return result;
+  } catch (error) {
+    console.log("Error finding model: ", error);
   }
 };
 // Delete

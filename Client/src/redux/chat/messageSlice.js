@@ -4,10 +4,13 @@ import sendMessage from "./handleMessage";
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 export const fetchBotResponse = createAsyncThunk(
   "message/fetchBotResponse",
-  async ({ modelType, msg, currentChatId }, { dispatch, rejectWithValue }) => {
+  async (
+    { currentModel, msg, currentChatId },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       const { newUserMessage, botMessage, updateStream } = await sendMessage(
-        modelType,
+        currentModel,
         msg,
         currentChatId
       );

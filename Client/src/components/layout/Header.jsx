@@ -8,7 +8,8 @@ import NewChat from "../chat/NewChat";
 
 // Redux:
 import { useSelector, useDispatch } from "react-redux";
-import { setModelType as setReduxModelType } from "../../redux/chatModel/modelSlice";
+import { setCurrentGpt } from "../../redux/gpt/gptSlice";
+
 import { toggleSidebar as toggleReduxSidebar } from "../../redux/layout/layoutSlice";
 
 const ChatHeader = () => {
@@ -25,19 +26,12 @@ const ChatHeader = () => {
   const toggleSidebar = () => dispatch(toggleReduxSidebar(!isSidebarVisible));
   const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
 
-  const handleModeSelection = (mode) => {
-    console.log(mode);
-    dispatch(setReduxModelType(mode));
+  const handleModeSelection = (modelId) => {
+    console.log(modelId);
+    dispatch(setCurrentGpt(modelId));
 
     setIsDropdownVisible(false);
   };
-
-  // Define the different mode options for out chatBot
-  const modeOptions = [
-    { label: "normal", value: "normal" },
-    { label: "ethical", value: "ethical" },
-    { label: "matching", value: "matching" },
-  ];
 
   return (
     <header className="sticky top-0 bg-white dark:bg-gray-800 text-white p-4 z-50 border-b-2 border-gray-300 dark:border-x-gray-500 shadow-md">
@@ -61,7 +55,6 @@ const ChatHeader = () => {
             <ModeDropDown
               isVisible={isDropdownVisible}
               onSelect={handleModeSelection}
-              options={modeOptions}
             />
           )}
         </div>

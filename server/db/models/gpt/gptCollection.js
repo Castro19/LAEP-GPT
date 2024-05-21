@@ -22,6 +22,16 @@ export const viewGPTs = async (userId) => {
     throw new Error("Error fetching GPTs from database: " + error.message);
   }
 };
+
+// Read one:
+export const getGptById = async (gptId) => {
+  try {
+    const result = await gptCollection.findOne({ _id: new ObjectId(gptId) });
+    return result;
+  } catch (error) {
+    throw new Error("Error finding GPT from database: " + error.message);
+  }
+};
 // Delete
 export const removeGpt = async (gptId) => {
   try {

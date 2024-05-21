@@ -12,7 +12,7 @@ import {
   fetchThreadID,
   deleteThread,
 } from "../db/models/threads/threadServices.js";
-
+import { getGPT } from "../db/models/gpt/gptServices.js";
 import chooseModel from "../utils/chooseModel.js";
 
 const router = express.Router();
@@ -25,13 +25,12 @@ router.get("/"),
 router.post("/respond", async (req, res) => {
   res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
   res.setHeader("Transfer-Encoding", "chunked");
-  const { message, modelType, chatId } = req.body;
-  let assistant_id = "";
-  if (modelType === "ethical") {
-    assistant_id = process.env.ETHICAL_ASST_ID;
-  } else {
-    assistant_id = process.env.ASST_ID;
-  }
+  const { message, model, chatId } = req.body;
+  const fetchedModel = await getGPT(model.id);
+  // Fetch the assistant ID with the model from gpt collection
+
+  const assistant_id = fetchedModel.assistantId;
+
   console.log("CHAT ID: ", chatId);
   let threadId = await fetchThreadID(chatId);
   console.log("THREAD ID: ", threadId);

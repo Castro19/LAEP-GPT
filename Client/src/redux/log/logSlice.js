@@ -9,7 +9,7 @@ import createLogTitle, {
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { msg, modelType, currentChatId, firebaseUserId },
+    { msg, modelType, urlPhoto, currentChatId, firebaseUserId },
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
@@ -24,6 +24,7 @@ export const addLog = createAsyncThunk(
             title: logTitle,
             content: content, // Include the actual content
             timestamp: timestamp, // Include the timestamp
+            urlPhoto: urlPhoto,
           })
         );
       }
@@ -35,6 +36,7 @@ export const addLog = createAsyncThunk(
           title: logTitle,
           content: content, // Ensure the content is included in the DB save
           timestamp: timestamp, // Ensure the timestamp is included in the DB save
+          urlPhoto: urlPhoto,
         });
         return savedLog;
       }
@@ -68,7 +70,7 @@ export const fetchLogs = createAsyncThunk(
 export const updateLog = createAsyncThunk(
   "log/updateLog",
   async (
-    { logId, firebaseUserId },
+    { logId, firebaseUserId, urlPhoto },
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
@@ -80,6 +82,7 @@ export const updateLog = createAsyncThunk(
           currentChatId: logId,
           content: content, // Pass the msgList as part of the payload
           timestamp: timestamp,
+          urlPhoto,
         })
       );
 
@@ -132,20 +135,22 @@ const logSlice = createSlice({
     // logList:
     // Reducer to add a new log to the state (CREATE)
     addLogList: (state, action) => {
-      const { currentChatId, title, content, timestamp } = action.payload;
+      const { currentChatId, title, content, timestamp, urlPhoto } =
+        action.payload;
 
       const newLog = {
         id: currentChatId,
         content: [...content], // Use the content passed in the action
         title: title,
         timestamp: timestamp, // Use the timestamp passed in the action
+        urlPhoto,
       };
 
       state.logList.push(newLog);
     },
     // Reducer to update an existing log in the state (UPDATE)
     updateCurrentChat: (state, action) => {
-      const { currentChatId, content, timestamp } = action.payload;
+      const { currentChatId, content, timestamp, urlPhoto } = action.payload;
       const logIndex = state.logList.findIndex(
         (log) => log.id === currentChatId
       );
@@ -155,6 +160,7 @@ const logSlice = createSlice({
       if (logIndex !== -1) {
         state.logList[logIndex].content = [...content]; // Use content from the payload
         state.logList[logIndex].timestamp = timestamp; // Update the timestamp
+        state.logList[logIndex].urlPhoto = urlPhoto;
       }
     },
     deleteLogListItem: (state, action) => {

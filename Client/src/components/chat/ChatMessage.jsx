@@ -2,6 +2,8 @@ import React from "react";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 
+import UserAvatar from "@/components/userProfile/UserAvatar";
+
 const md = new MarkdownIt();
 
 const ChatMessage = ({ msg }) => {
@@ -17,6 +19,11 @@ const ChatMessage = ({ msg }) => {
         isUserMessage ? "justify-end" : "justify-start"
       }`}
     >
+      {!isUserMessage && (
+        <div className="-ml-4 pr-2 pt-1">
+          <UserAvatar userPhoto={msg.urlPhoto} />
+        </div>
+      )}
       <div
         className={`rounded-lg shadow-lg p-4 ${
           isUserMessage
