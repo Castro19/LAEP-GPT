@@ -120,7 +120,7 @@ export default function GPTForm() {
               id="description"
               className="dark:bg-zinc-800"
               value={desc}
-              maxLength={500}
+              maxLength={1000}
               onChange={(e) => setDesc(e.target.value)}
             />
           </LabelInputContainer>
@@ -130,7 +130,7 @@ export default function GPTForm() {
               id="instructions"
               className="dark:bg-zinc-800"
               value={instructions}
-              maxLength={2500}
+              maxLength={5000}
               onChange={(e) => setInstructions(e.target.value)}
             />
           </LabelInputContainer>
