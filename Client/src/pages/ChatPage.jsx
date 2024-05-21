@@ -41,7 +41,6 @@ const ChatPage = () => {
         isSidebarVisible ? "ml-64" : ""
       }`}
     >
-      {" "}
       <ChatHeader />
       <ChatContainer />
     </div>
