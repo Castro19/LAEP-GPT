@@ -15,11 +15,10 @@ const ChatPage = () => {
 
   return (
     <div
-      className={`dark:bg-gray-800 dark:text-white min-h-screen p-4 transition-all duration-300 overflow-hidden${
+      className={`dark:bg-gray-800 dark:text-white min-h-screen p-4 transition-all duration-300 ${
         isSidebarVisible ? "ml-64" : ""
       }`}
     >
-      {" "}
       <ChatHeader />
       <ChatContainer />
     </div>
