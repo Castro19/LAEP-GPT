@@ -37,12 +37,14 @@ const ChatPage = () => {
 
   return (
     <div
-      className={`dark:bg-gray-800 dark:text-white min-h-screen p-4 transition-all duration-300 ${
+      className={`dark:bg-gray-800 dark:text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
         isSidebarVisible ? "ml-64" : ""
       }`}
     >
       <ChatHeader />
-      <ChatContainer />
+      <div className="flex-1">
+        <ChatContainer />
+      </div>{" "}
     </div>
   );
 };
