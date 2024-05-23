@@ -24,4 +24,4 @@ const layoutSlice = createSlice({
 export const { toggleSidebar, setCurrentChatId, toggleNewChat } =
   layoutSlice.actions;
 
-export default layoutSlice.reducer;
+export const layoutReducer = layoutSlice.reducer;

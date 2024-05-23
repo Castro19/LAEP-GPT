@@ -181,10 +181,7 @@ const logSlice = createSlice({
   },
 });
 
-export const {
-  // logList
-  addLogList,
-  updateCurrentChat,
-  deleteLogListItem,
-} = logSlice.actions;
-export default logSlice.reducer;
+export const { addLogList, updateCurrentChat, deleteLogListItem } =
+  logSlice.actions;
+
+export const logReducer = logSlice.reducer;

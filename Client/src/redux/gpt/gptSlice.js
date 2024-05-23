@@ -108,4 +108,4 @@ const gptSlice = createSlice({
 
 export const { initGptList, addGptList, setCurrentGpt } = gptSlice.actions;
 
-export default gptSlice.reducer;
+export const gptReducer = gptSlice.reducer;

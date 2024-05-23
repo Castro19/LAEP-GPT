@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styles from "./sidebar.module.css";
+import styles from "./Sidebar.module.css";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../chatLog/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";

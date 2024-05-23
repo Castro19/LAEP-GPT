@@ -1,14 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import layoutReducer from "./layout/layoutSlice";
-import messageReducer from "./chat/messageSlice";
-import logReducer from "./log/logSlice";
-import gptReducer from "./gpt/gptSlice";
-export const store = configureStore({
+import { messageReducer } from "./chat/messageSlice";
+import { gptReducer } from "./gpt/gptSlice";
+import { layoutReducer } from "./layout/layoutSlice";
+import { logReducer } from "./log/logSlice";
+
+const store = configureStore({
   reducer: {
-    layout: layoutReducer,
     message: messageReducer,
-    log: logReducer,
     gpt: gptReducer,
+    layout: layoutReducer,
+    log: logReducer,
   },
 });
 

@@ -1,6 +1,6 @@
 import React from "react";
 import UserAvatar from "@/components/userProfile/UserAvatar";
-import styles from "./CustomGPT.module.css";
+import styles from "./CustomGPTCard.module.css";
 
 const CustomGPT = ({ asst, urlPhoto, title, desc }) => {
   const onCardClick = () => {

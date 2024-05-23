@@ -1,7 +1,7 @@
 import React from "react";
 import { BiChat } from "react-icons/bi";
 
-import Sidebar from "../../layout/Sidebar";
+import Sidebar from "../Sidebar";
 import { toggleSidebar as toggleReduxSidebar } from "../../../redux/layout/layoutSlice";
 import { useSelector, useDispatch } from "react-redux";
 

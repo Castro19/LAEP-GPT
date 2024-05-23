@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ModeDropDown from "../chatModel/ModeDropDown";
+import ModeDropDown from "../customGPT/ModeDropDown";
 import Sidebar from "./Sidebar";
 import { BiChat } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";

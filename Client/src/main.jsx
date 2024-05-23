@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { store } from "./redux/store.js";
+import { store } from "./redux";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -9,15 +9,15 @@ import {
 } from "react-router-dom";
 // Pages
 import Register from "./pages/register/Register.tsx";
-import AddInfoForm from "./pages/register/signup/AddInfoForm.jsx";
-import { SignupFormDemo } from "./pages/register/signup/SignUpForm.tsx";
-import { LoginFormDemo } from "./pages/register/login/LoginForm.tsx";
+import { SignupFormDemo } from "./pages/register/SignUpForm.tsx";
+import AddInfoForm from "./pages/register/AddInfoForm.jsx";
+import { LoginFormDemo } from "./pages/register/LoginForm.tsx";
 import ChatPage from "./pages/ChatPage.jsx";
 import GPTPage from "./pages/customGPT/GPTPage.jsx";
-import GPTEditor from "./pages/customGPT/editorPage/GPTEditorPage.jsx";
+import GPTEditor from "./pages/customGPT/GPTEditorPage.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
 // Page Layout
-import GPTLayout from "./components/layout/GPTLayout.jsx";
+import GPTLayout from "./components/layout/gpt/GPTLayout.jsx";
 // Loaders:
 import { viewGPTs } from "./redux/gpt/crudGPT.js";
 // Auth

@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
 import { Navigate, Link } from "react-router-dom";
 // Importing component
-import { Label } from "../../../components/ui/label";
-import { Input } from "../../../components/ui/input";
-import { ErrorMessage } from "../../../components/register/ErrorMessage";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { ErrorMessage } from "../../components/register/ErrorMessage";
 
 // Importing Contexts
 import { useAuth } from "@/contexts/authContext";

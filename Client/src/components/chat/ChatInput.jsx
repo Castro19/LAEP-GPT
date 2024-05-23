@@ -1,22 +1,22 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
+// User Auth Context
+import { useAuth } from "@/contexts/authContext";
+// React Redux
+import { useSelector, useDispatch } from "react-redux";
+import {
+  toggleNewChat,
+  setCurrentChatId,
+} from "../../redux/layout/layoutSlice";
+import { fetchBotResponse, clearError } from "../../redux/chat/messageSlice";
+import { addLog, updateLog } from "../../redux/log/logSlice";
+// Helpers
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
-} from "../../helpers/format";
-import createNewChatLogId from "../../helpers/handleNewChat";
-import { useAuth } from "@/contexts/authContext";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  toggleNewChat as toggleReduxNewChat,
-  setCurrentChatId as setReduxCurrentChatId,
-} from "../../redux/layout/layoutSlice";
-import { fetchBotResponse, clearError } from "../../redux/chat/messageSlice";
-import {
-  addLog as addReduxLog,
-  updateLog as updateReduxLog,
-} from "../../redux/log/logSlice";
-import { useNavigate } from "react-router-dom";
+} from "./helpers/formatHelper";
+import { v4 as uuidv4 } from "uuid";
 
 const ChatInput = ({ messagesContainerRef }) => {
   const navigate = useNavigate();
@@ -43,7 +43,8 @@ const ChatInput = ({ messagesContainerRef }) => {
 
     setMsg("");
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
-    const newChatId = createNewChatLogId();
+    // Generate a new unique chatId
+    const newChatId = uuidv4();
     if (error) {
       dispatch(clearError()); // Clear error when user starts typing
     }
@@ -57,11 +58,11 @@ const ChatInput = ({ messagesContainerRef }) => {
       ).unwrap();
 
       if (isNewChat) {
-        dispatch(setReduxCurrentChatId(newChatId));
+        dispatch(setCurrentChatId(newChatId));
         navigate(`/${userId}/chat/${newChatId}`);
-        dispatch(toggleReduxNewChat(false));
+        dispatch(toggleNewChat(false));
         dispatch(
-          addReduxLog({
+          addLog({
             msg: msg,
             modelType: currentModel.title,
             urlPhoto: currentModel.urlPhoto,
@@ -71,7 +72,7 @@ const ChatInput = ({ messagesContainerRef }) => {
         );
       } else {
         dispatch(
-          updateReduxLog({
+          updateLog({
             logId: currentChatId,
             firebaseUserId: currentUser ? currentUser.uid : null,
             urlPhoto: currentModel.urlPhoto,

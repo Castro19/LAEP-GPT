@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-import CustomGPT from "../CustomGPT/CustomGPT";
+import CustomGPT from "../customGptCard/CustomGPTCard";
 
 const GPTList = () => {
   const gptList = useSelector((state) => state.gpt.gptList);

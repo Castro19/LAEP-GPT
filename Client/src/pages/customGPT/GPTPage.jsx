@@ -1,12 +1,11 @@
 import React from "react";
-import styles from "./GPTPage.module.css";
 import { Outlet } from "react-router-dom";
 
 import GPTContainer from "../../components/customGPT/GPTContainer/GPTContainer";
 
 const GPTPage = () => {
   return (
-    <div className={styles.container}>
+    <div>
       <GPTContainer />
       <Outlet />
     </div>

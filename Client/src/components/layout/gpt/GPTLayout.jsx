@@ -1,5 +1,5 @@
 import React from "react";
-import GPTHeader from "../../components/customGPT/GPTHeader/GPTHeader";
+import GPTHeader from "./GPTHeader";
 import { useSelector } from "react-redux";
 import { Toaster } from "@/components/ui/toaster";
 const GPTLayout = ({ children }) => {

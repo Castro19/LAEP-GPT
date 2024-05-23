@@ -85,4 +85,5 @@ export const {
   updateBotMessage,
   clearError,
 } = messageSlice.actions;
-export default messageSlice.reducer;
+
+export const messageReducer = messageSlice.reducer;

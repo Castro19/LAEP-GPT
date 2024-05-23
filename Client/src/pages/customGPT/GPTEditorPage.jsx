@@ -1,5 +1,5 @@
 import React from "react";
-import GPTForm from "@/components/customGPT/GPTContainer/GPTs/createGPTs/createGPTForm/CreateGPTForm.tsx";
+import GPTForm from "@/components/customGPT/CreateGPTForm.tsx";
 const GPTEditor = () => {
   return (
     <div className="mt-10">

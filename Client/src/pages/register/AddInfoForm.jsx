@@ -1,5 +1,5 @@
 import React from "react";
-import RegisterSettingForm from "../../../components/register/registerSettings/RegisterSettingForm";
+import RegisterSettingForm from "../../components/register/registerSettings/RegisterSettingForm";
 
 const AddInfoForm = () => {
   return (
