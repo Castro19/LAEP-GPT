@@ -84,9 +84,8 @@ const ChatInput = ({ messagesContainerRef }) => {
       setIsSending(false);
     }
   };
-
   return (
-    <div className="w-full p-4 bg-white dark:bg-gray-800 fixed inset-x-0 bottom-0">
+    <div className="w-full p-4 bg-white dark:bg-gray-800 sticky bottom-0">
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
       {msg.length > 1500 && (
         <div className="text-yellow-500 text-sm">
@@ -120,5 +119,4 @@ const ChatInput = ({ messagesContainerRef }) => {
     </div>
   );
 };
-
 export default ChatInput;

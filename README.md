@@ -1,4 +1,4 @@
-# LAEP LLM
+# [LAEP LLM](https://www.youtube.com/watch?v=Dd83CYNRw4k&ab_channel=CristianCastroOliva)
 
 ## Description
 
@@ -83,10 +83,6 @@ We are currently in the early stages of building an AI chatbot that will provide
    ```
    npm start
    ```
-
-## Contributors
-
-[Cristian Castro](https://github.com/Castro19), [Victor Phan](https://github.com/victorphan101), [Saul Rodriguez](https://github.com/SARdude54), [Tristan Spear](https://github.com/tristan-spear)
 
 ## License
 

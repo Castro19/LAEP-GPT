@@ -20,7 +20,7 @@ const ChatMessage = ({ msg }) => {
       }`}
     >
       {!isUserMessage && (
-        <div className="-ml-4 pr-2 pt-1">
+        <div className="pr-2 pt-1">
           <UserAvatar userPhoto={msg.urlPhoto} />
         </div>
       )}
