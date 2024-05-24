@@ -19,18 +19,19 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const ChatInput = ({ messagesContainerRef }) => {
+  const dispatch = useDispatch();
+
+  const currentModel = useSelector((state) => state.gpt.currentModel);
+  const isNewChat = useSelector((state) => state.layout.isNewChat);
+  const currentChatId = useSelector((state) => state.layout.currentChatId);
+  const error = useSelector((state) => state.message.error); // Access the error state from Redux
+
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const { currentUser, userId } = useAuth();
   const textareaRef = useRef(null);
-
-  const dispatch = useDispatch();
-  const currentModel = useSelector((state) => state.gpt.currentModel);
-  const isNewChat = useSelector((state) => state.layout.isNewChat);
-  const currentChatId = useSelector((state) => state.layout.currentChatId);
-  const error = useSelector((state) => state.message.error); // Access the error state from Redux
 
   const handleInputChange = (e) => {
     setMsg(e.target.value);
@@ -56,7 +57,7 @@ const ChatInput = ({ messagesContainerRef }) => {
           currentChatId: isNewChat ? newChatId : currentChatId,
         })
       ).unwrap();
-
+      console.log("Current Model: ", currentModel);
       if (isNewChat) {
         dispatch(setCurrentChatId(newChatId));
         navigate(`/${userId}/chat/${newChatId}`);
@@ -66,7 +67,7 @@ const ChatInput = ({ messagesContainerRef }) => {
             msg: msg,
             modelType: currentModel.title,
             urlPhoto: currentModel.urlPhoto,
-            currentChatId: newChatId,
+            id: newChatId,
             firebaseUserId: currentUser ? currentUser.uid : null,
           })
         );

@@ -1,10 +1,12 @@
-export default async function createLogTitle(msg, modelType) {
+import { LogData, UpdateLogData } from "@/types";
+
+export default async function createLogTitle(msg: string, modelTitle: string) {
   try {
     // Assuming the title is generated based on the last message or another logic
     const response = await fetch("http://localhost:4000/llms/title", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: msg, modelType: modelType }),
+      body: JSON.stringify({ message: msg, modelType: modelTitle }),
     });
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
@@ -19,7 +21,7 @@ export default async function createLogTitle(msg, modelType) {
 }
 
 // Creating Log
-export async function createLogItem(logData) {
+export async function createLogItem(logData: LogData) {
   try {
     const response = await fetch("http://localhost:4000/chatLogs", {
       method: "POST",
@@ -39,7 +41,7 @@ export async function createLogItem(logData) {
 // Reading an individual log by logId
 
 // Update Log (Message gets added)
-export async function updateLogItem(logData) {
+export async function updateLogItem(logData: UpdateLogData) {
   try {
     const response = await fetch(`http://localhost:4000/chatLogs`, {
       method: "PUT",
@@ -58,7 +60,13 @@ export async function updateLogItem(logData) {
 }
 
 // delete Log
-export async function deleteLogItem({ logId, userId }) {
+export async function deleteLogItem({
+  logId,
+  userId,
+}: {
+  logId: string;
+  userId: string;
+}) {
   console.log("UID: ", userId);
   try {
     const response = await fetch(

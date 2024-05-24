@@ -1,26 +1,35 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import createLogTitle, {
   createLogItem,
   updateLogItem,
   deleteLogItem,
 } from "./crudLog";
+import {
+  AddLogParams,
+  LogData,
+  LogSliceType,
+  UpdateLogData,
+  LogErrorCodes,
+  logErrorMessages,
+} from "@/types";
+import { RootState } from "../store";
 
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { msg, modelType, urlPhoto, currentChatId, firebaseUserId },
+    { msg, modelType, urlPhoto, id, firebaseUserId }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
       const logTitle = await createLogTitle(msg, modelType);
       const timestamp = new Date().toISOString(); // Timestamp for log
-      const content = getState().message.msgList; // Accessing message list from the state
+      const content = (getState() as RootState).message.msgList; // Accessing message list from the state
 
       if (logTitle) {
         dispatch(
           addLogList({
-            currentChatId: currentChatId,
+            id: id,
             title: logTitle,
             content: content, // Include the actual content
             timestamp: timestamp, // Include the timestamp
@@ -31,7 +40,7 @@ export const addLog = createAsyncThunk(
       if (firebaseUserId) {
         // Save Log to Database
         const savedLog = await createLogItem({
-          currentChatId,
+          id,
           firebaseUserId,
           title: logTitle,
           content: content, // Ensure the content is included in the DB save
@@ -42,7 +51,7 @@ export const addLog = createAsyncThunk(
       }
     } catch (error) {
       console.error("Failed to create log title: ", error);
-      return rejectWithValue(error.toString());
+      return rejectWithValue(logErrorMessages[LogErrorCodes.CREATE_FAILED]);
     }
   }
 );
@@ -50,7 +59,7 @@ export const addLog = createAsyncThunk(
 // Read (Fetch Logs by UserID)
 export const fetchLogs = createAsyncThunk(
   "log/fetchLogs",
-  async (userId, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue }) => {
     try {
       const response = await fetch(`http://localhost:4000/chatLogs/${userId}`);
       if (!response.ok) {
@@ -61,7 +70,7 @@ export const fetchLogs = createAsyncThunk(
       return logs;
     } catch (error) {
       console.error("Failed to fetch logs: ", error);
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(logErrorMessages[LogErrorCodes.READ_FAILED]);
     }
   }
 );
@@ -70,16 +79,16 @@ export const fetchLogs = createAsyncThunk(
 export const updateLog = createAsyncThunk(
   "log/updateLog",
   async (
-    { logId, firebaseUserId, urlPhoto },
+    { logId, firebaseUserId, urlPhoto }: UpdateLogData,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
       const timestamp = new Date().toISOString(); // Timestamp for updating log
-      const content = getState().message.msgList; // Accessing current message list from the state
+      const content = (getState() as RootState).message.msgList; // Accessing current message list from the state
       console.log("logId: ", logId);
       dispatch(
         updateCurrentChat({
-          currentChatId: logId,
+          id: logId,
           content: content, // Pass the msgList as part of the payload
           timestamp: timestamp,
           urlPhoto,
@@ -98,14 +107,17 @@ export const updateLog = createAsyncThunk(
       }
     } catch (error) {
       console.error("Failed to update log: ", error);
-      return rejectWithValue(error.toString());
+      return rejectWithValue(logErrorMessages[LogErrorCodes.UPDATE_FAILED]);
     }
   }
 );
 
 export const deleteLog = createAsyncThunk(
   "log/deleteLog",
-  async ({ logId, userId }, { dispatch, rejectWithValue }) => {
+  async (
+    { logId, userId }: { logId: string; userId: string },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
       if (logId) {
         const deletedLog = await deleteLogItem({
@@ -119,12 +131,12 @@ export const deleteLog = createAsyncThunk(
       }
     } catch (error) {
       console.log("Failed to delete log: ", error);
-      return rejectWithValue(error.toString());
+      return rejectWithValue(logErrorMessages[LogErrorCodes.DELETE_FAILED]);
     }
   }
 );
 
-const initialState = {
+const initialState: LogSliceType = {
   logList: [],
 };
 
@@ -134,12 +146,10 @@ const logSlice = createSlice({
   reducers: {
     // logList:
     // Reducer to add a new log to the state (CREATE)
-    addLogList: (state, action) => {
-      const { currentChatId, title, content, timestamp, urlPhoto } =
-        action.payload;
-
+    addLogList: (state, action: PayloadAction<LogData>) => {
+      const { id, title, content, timestamp, urlPhoto } = action.payload;
       const newLog = {
-        id: currentChatId,
+        id: id,
         content: [...content], // Use the content passed in the action
         title: title,
         timestamp: timestamp, // Use the timestamp passed in the action
@@ -149,12 +159,10 @@ const logSlice = createSlice({
       state.logList.push(newLog);
     },
     // Reducer to update an existing log in the state (UPDATE)
-    updateCurrentChat: (state, action) => {
-      const { currentChatId, content, timestamp, urlPhoto } = action.payload;
-      const logIndex = state.logList.findIndex(
-        (log) => log.id === currentChatId
-      );
-      console.log("currentChatId: ", currentChatId);
+    updateCurrentChat: (state, action: PayloadAction<LogData>) => {
+      const { id, content, timestamp, urlPhoto } = action.payload;
+      const logIndex = state.logList.findIndex((log) => log.id === id);
+      console.log("currentChatId: ", id);
 
       console.log("LOGINDEX: ", logIndex);
       if (logIndex !== -1) {
@@ -163,7 +171,7 @@ const logSlice = createSlice({
         state.logList[logIndex].urlPhoto = urlPhoto;
       }
     },
-    deleteLogListItem: (state, action) => {
+    deleteLogListItem: (state, action: PayloadAction<{ logId: string }>) => {
       const { logId } = action.payload;
       // console.log("LOG ID IN SLICE B4 DELETING; ", logId);
       state.logList = state.logList.filter((log) => log.id != logId);
@@ -174,7 +182,7 @@ const logSlice = createSlice({
       .addCase(fetchLogs.fulfilled, (state, action) => {
         state.logList = action.payload;
       })
-      .addCase(fetchLogs.rejected, (state, action) => {
+      .addCase(fetchLogs.rejected, (_state, action) => {
         // Optionally handle error state
         console.error("Failed to load logs:", action.payload);
       });

@@ -19,7 +19,7 @@ import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
 // Page Layout
 import GPTLayout from "./components/layout/gpt/GPTLayout.jsx";
 // Loaders:
-import { viewGPTs } from "./redux/gpt/crudGPT.js";
+import { viewGPTs } from "./redux/gpt/crudGPT.ts";
 // Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.jsx";
 import { AuthProvider } from "./contexts/authContext/index.tsx";

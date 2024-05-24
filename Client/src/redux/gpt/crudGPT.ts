@@ -1,5 +1,6 @@
+import { GptType } from "@/types";
 // Create
-export async function createGPT(gptData) {
+export async function createGPT(gptData: GptType) {
   try {
     const response = await fetch("http://localhost:4000/gpts", {
       method: "POST",
@@ -17,7 +18,7 @@ export async function createGPT(gptData) {
 }
 
 // Read
-export async function viewGPTs(userId) {
+export async function viewGPTs(userId: string) {
   try {
     console.log("USER ID USING TO FETCH: ", userId);
     const response = await fetch(`http://localhost:4000/gpts/${userId}`);
@@ -31,7 +32,7 @@ export async function viewGPTs(userId) {
   }
 }
 
-export async function deleteGPT(id) {
+export async function deleteGPT(id: string) {
   try {
     const response = await fetch("http://localhost:4000/gpts", {
       method: "DELETE",

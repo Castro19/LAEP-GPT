@@ -1,4 +1,10 @@
-export default async function sendMessage(currentModel, msg, currentChatId) {
+import { ModelType, SendMessageReturnType } from "@/types";
+
+export default async function sendMessage(
+  currentModel: ModelType,
+  msg: string,
+  currentChatId: string
+): Promise<SendMessageReturnType> {
   if (!msg.trim() || msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");
   }
@@ -11,24 +17,30 @@ export default async function sendMessage(currentModel, msg, currentChatId) {
   };
 
   const timeoutDuration = 10000; // 10 seconds
-  const timeoutPromise = new Promise((_, reject) => {
+  const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
       reject(new Error("Error: Response took too long. Please try again."));
     }, timeoutDuration);
   });
 
   try {
-    const fetchPromise = fetch("http://localhost:4000/llms/respond", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: msg,
-        model: currentModel,
-        chatId: currentChatId,
-      }),
-    });
+    const fetchPromise: Promise<Response> = fetch(
+      "http://localhost:4000/llms/respond",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: msg,
+          model: currentModel,
+          chatId: currentChatId,
+        }),
+      }
+    );
 
-    const response = await Promise.race([fetchPromise, timeoutPromise]);
+    const response: Response = await Promise.race([
+      fetchPromise,
+      timeoutPromise,
+    ]);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -36,7 +48,7 @@ export default async function sendMessage(currentModel, msg, currentChatId) {
 
     console.log("RESPONSE: ", response);
 
-    let botMessageId = Date.now() + 1;
+    const botMessageId = Date.now() + 1;
     let accumulatedText = "";
     const botMessage = {
       id: botMessageId,
@@ -48,7 +60,10 @@ export default async function sendMessage(currentModel, msg, currentChatId) {
     let updateOccurred = false;
 
     // eslint-disable-next-line no-inner-declarations
-    function startTimeout(updateCallback) {
+    function startTimeout(
+      // eslint-disable-next-line no-unused-vars
+      updateCallback: (arg0: number, arg1: string) => void
+    ) {
       setTimeout(() => {
         if (!updateOccurred) {
           updateCallback(
@@ -62,8 +77,15 @@ export default async function sendMessage(currentModel, msg, currentChatId) {
     return {
       newUserMessage,
       botMessage,
-      updateStream: async (updateCallback) => {
+      updateStream: async (
+        // eslint-disable-next-line no-unused-vars
+        updateCallback: (arg0: number, arg1: string) => void
+      ) => {
         const decoder = new TextDecoder("utf-8");
+        // Check if response.body is not null
+        if (!response.body) {
+          throw new Error("Response body is null");
+        }
         const reader = response.body.getReader();
 
         async function processText() {
