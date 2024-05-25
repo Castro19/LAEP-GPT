@@ -6,14 +6,13 @@ import { openai } from "../index.js";
 import {
   addMessageToThread,
   createThread,
-} from "../utils/openAI/threadFunctions.js";
+} from "../helpers/openAI/threadFunctions.js";
 import {
   addThread,
   fetchThreadID,
   deleteThread,
 } from "../db/models/threads/threadServices.js";
 import { getGPT } from "../db/models/gpt/gptServices.js";
-import chooseModel from "../utils/chooseModel.js";
 
 const router = express.Router();
 
@@ -75,12 +74,10 @@ router.post("/respond", async (req, res) => {
 
 router.post("/title", async (req, res) => {
   try {
-    const { message, modelType } = req.body;
+    const { message } = req.body;
 
-    const modelDesc = chooseModel(modelType);
     const contentStr =
-      "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title! Model Description:" +
-      modelDesc;
+      "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
     // console.log("Bot Instructions: ", contentStr);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",

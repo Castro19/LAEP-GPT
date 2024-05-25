@@ -2,7 +2,7 @@ import * as gptModel from "./gptCollection.js";
 import {
   createAssistant,
   deleteAssistant,
-} from "../../../utils/openAI/assistantFunctions.js";
+} from "../../../helpers/openAI/assistantFunctions.js";
 // create
 export const createGpt = async (gptData) => {
   try {

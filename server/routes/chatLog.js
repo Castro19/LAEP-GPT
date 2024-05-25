@@ -18,13 +18,12 @@ router.get("/", async (req, res) => {
 // Creating a new Log: (Create)
 router.post("/", async (req, res) => {
   try {
-    const { currentChatId, firebaseUserId, title, content, timestamp } =
-      req.body;
+    const { id, firebaseUserId, title, content, timestamp } = req.body;
     if (!firebaseUserId) {
       return res.status(400).send("Firebase User ID is required");
     }
     const newLog = {
-      _id: currentChatId,
+      _id: id,
       userId: firebaseUserId,
       title,
       timestamp,
