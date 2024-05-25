@@ -1,9 +1,13 @@
-import React from "react";
 import GPTHeader from "./GPTHeader";
-import { useSelector } from "react-redux";
 import { Toaster } from "@/components/ui/toaster";
-const GPTLayout = ({ children }) => {
-  const isSidebarVisible = useSelector(
+import { ReactNode } from "react";
+import { useAppSelector } from "@/redux";
+
+type GPTLayoutProps = {
+  children: ReactNode;
+};
+const GPTLayout = ({ children }: GPTLayoutProps) => {
+  const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
 

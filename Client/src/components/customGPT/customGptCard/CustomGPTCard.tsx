@@ -1,8 +1,13 @@
-import React from "react";
-import UserAvatar from "@/components/userProfile/UserAvatar";
+import UserAvatar from "@/components/userProfile/UserAvatar.tsx";
 import styles from "./CustomGPTCard.module.css";
 
-const CustomGPT = ({ asst, urlPhoto, title, desc }) => {
+type CustomGPTProps = {
+  asst: string | undefined;
+  urlPhoto: string | undefined;
+  title: string;
+  desc: string;
+};
+const CustomGPT = ({ asst, urlPhoto, title, desc }: CustomGPTProps) => {
   const onCardClick = () => {
     console.log("Assistant ID: ", asst);
   };

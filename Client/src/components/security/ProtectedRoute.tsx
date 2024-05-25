@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/redux";
 
-const ProtectedRoute = ({ children }) => {
+type ProtectedRouteProps = {
+  children: ReactNode;
+};
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { userLoggedIn, userId } = useAuth();
-  const chatId = useSelector((state) => state.message.chatId);
+  const chatId = useAppSelector((state) => state.message.currentChatId);
   const navigate = useNavigate();
   const { userId: urlUserId, chatId: urlChatId } = useParams(); // This captures the userId from the URL
 

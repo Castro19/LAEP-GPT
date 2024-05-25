@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useAppSelector } from "@/redux";
 
 import CustomGPT from "../customGptCard/CustomGPTCard";
 
 const GPTList = () => {
-  const gptList = useSelector((state) => state.gpt.gptList);
-  console.log("GPTTTTT: ", gptList);
+  const gptList = useAppSelector((state) => state.gpt.gptList);
+
   useEffect(() => {
     console.log("GPTLIST: ", gptList);
   }, [gptList]);

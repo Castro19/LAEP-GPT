@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import ModeDropDown from "../customGPT/ModeDropDown";
 import Sidebar from "./Sidebar";
 import { BiChat } from "react-icons/bi";
@@ -7,43 +6,50 @@ import NewChat from "../chat/NewChat";
 // import { useUI } from "../contexts/UIContext";
 
 // Redux:
-import { useSelector, useDispatch } from "react-redux";
-import { setCurrentGpt } from "../../redux/gpt/gptSlice";
-
-import { toggleSidebar as toggleReduxSidebar } from "../../redux/layout/layoutSlice";
+import {
+  useAppSelector,
+  useAppDispatch,
+  gptActions,
+  layoutActions,
+} from "@/redux";
 
 const ChatHeader = () => {
-  // Define State Vars:handleModeSelection
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-
   // Redux:
-  const dispatch = useDispatch();
-  const isSidebarVisible = useSelector(
+  const dispatch = useAppDispatch();
+  const isDropdownVisible = useAppSelector(
+    (state) => state.layout.isDropdownVisible
+  );
+  const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
 
-  // Define Event Handlers for Button on Header being pressed.
-  const toggleSidebar = () => dispatch(toggleReduxSidebar(!isSidebarVisible));
-  const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
-
-  const handleModeSelection = (modelId) => {
+  const handleModeSelection = (modelId: string | undefined) => {
     console.log(modelId);
-    dispatch(setCurrentGpt(modelId));
 
-    setIsDropdownVisible(false);
+    if (modelId) {
+      dispatch(gptActions.setCurrentGpt(modelId));
+      dispatch(layoutActions.toggleDropdown(false));
+    }
   };
 
   return (
     <header className="sticky top-0 bg-white dark:bg-gray-800 text-white p-4 z-50 border-b-2 border-gray-300 dark:border-x-gray-500 shadow-md">
       {" "}
       <div className="flex items-center justify-between">
-        <button onClick={toggleSidebar} className="text-lg hover:text-gray-300">
+        <button
+          onClick={() =>
+            dispatch(layoutActions.toggleSidebar(!isSidebarVisible))
+          }
+          className="text-lg hover:text-gray-300"
+        >
           <BiChat />
         </button>
         <Sidebar />
         <div>
           <button
-            onClick={toggleDropdown}
+            onClick={() =>
+              dispatch(layoutActions.toggleDropdown(!isDropdownVisible))
+            }
             className="relative inline-flex items-center text-lg bg-white dark:bg-gray-800 hover:text-gray-300"
           >
             LAEP Chatbot
@@ -51,12 +57,7 @@ const ChatHeader = () => {
               <IoIosArrowDown />
             </span>
           </button>
-          {isDropdownVisible && (
-            <ModeDropDown
-              isVisible={isDropdownVisible}
-              onSelect={handleModeSelection}
-            />
-          )}
+          {isDropdownVisible && <ModeDropDown onSelect={handleModeSelection} />}
         </div>
         <NewChat />
       </div>

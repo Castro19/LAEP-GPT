@@ -3,8 +3,7 @@ import { LayoutSliceType } from "@/types";
 
 const initialState: LayoutSliceType = {
   isSidebarVisible: false,
-  currentChatId: null,
-  isNewChat: true,
+  isDropdownVisible: false,
 };
 
 const layoutSlice = createSlice({
@@ -14,16 +13,12 @@ const layoutSlice = createSlice({
     toggleSidebar(state, action: PayloadAction<boolean>) {
       state.isSidebarVisible = action.payload;
     },
-    setCurrentChatId(state, action: PayloadAction<string | null>) {
-      state.currentChatId = action.payload;
-    },
-    toggleNewChat(state, action: PayloadAction<boolean>) {
-      state.isNewChat = action.payload;
+    toggleDropdown(state, action: PayloadAction<boolean>) {
+      state.isDropdownVisible = action.payload;
     },
   },
 });
 
-export const { toggleSidebar, setCurrentChatId, toggleNewChat } =
-  layoutSlice.actions;
+export const { toggleSidebar, toggleDropdown } = layoutSlice.actions;
 
 export const layoutReducer = layoutSlice.reducer;

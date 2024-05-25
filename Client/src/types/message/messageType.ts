@@ -26,6 +26,8 @@ export type SendMessageReturnType = {
 
 // Important:
 export interface MessageSliceType {
+  currentChatId: string | null;
+  isNewChat: boolean;
   msgList: MessageObjType[];
   isLoading: boolean;
   error: string | null;

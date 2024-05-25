@@ -1,4 +1,4 @@
-export const adjustTextareaHeight = (textarea) => {
+export const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
   const maxHeight = 250; // Max height you want the textarea to grow to
   textarea.style.height = "auto"; // Reset height so scrollHeight includes only text
   const newHeight =
@@ -8,7 +8,10 @@ export const adjustTextareaHeight = (textarea) => {
   textarea.style.overflowY = newHeight >= maxHeight ? "scroll" : "hidden"; // Show scrollbar only when at max height
 };
 
-export function resetInputAndScrollToBottom(textareaRef, messagesContainerRef) {
+export function resetInputAndScrollToBottom(
+  textareaRef: React.RefObject<HTMLTextAreaElement>,
+  messagesContainerRef: React.RefObject<HTMLDivElement>
+) {
   // Reset textarea height
 
   if (textareaRef.current) {

@@ -1,16 +1,11 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
 // User Auth Context
 import { useAuth } from "@/contexts/authContext";
 // React Redux
-import { useSelector, useDispatch } from "react-redux";
-import {
-  toggleNewChat,
-  setCurrentChatId,
-} from "../../redux/layout/layoutSlice";
-import { fetchBotResponse, clearError } from "../../redux/chat/messageSlice";
-import { addLog, updateLog } from "../../redux/log/logSlice";
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { messageActions, logActions } from "@/redux";
 // Helpers
 import {
   adjustTextareaHeight,
@@ -18,13 +13,18 @@ import {
 } from "./helpers/formatHelper";
 import { v4 as uuidv4 } from "uuid";
 
-const ChatInput = ({ messagesContainerRef }) => {
-  const dispatch = useDispatch();
+type ChatInputProps = {
+  messagesContainerRef: React.RefObject<HTMLDivElement>;
+};
 
-  const currentModel = useSelector((state) => state.gpt.currentModel);
-  const isNewChat = useSelector((state) => state.layout.isNewChat);
-  const currentChatId = useSelector((state) => state.layout.currentChatId);
-  const error = useSelector((state) => state.message.error); // Access the error state from Redux
+const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
+  const dispatch = useAppDispatch();
+
+  const currentModel = useAppSelector((state) => state.gpt.currentModel);
+
+  const isNewChat = useAppSelector((state) => state.message.isNewChat);
+  const currentChatId = useAppSelector((state) => state.message.currentChatId);
+  const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
 
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
@@ -33,52 +33,54 @@ const ChatInput = ({ messagesContainerRef }) => {
   const { currentUser, userId } = useAuth();
   const textareaRef = useRef(null);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMsg(e.target.value);
     adjustTextareaHeight(e.target);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setIsSending(true);
 
     setMsg("");
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
     // Generate a new unique chatId
-    const newChatId = uuidv4();
+    const newLogId = uuidv4();
+
     if (error) {
-      dispatch(clearError()); // Clear error when user starts typing
+      dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
       await dispatch(
-        fetchBotResponse({
+        messageActions.fetchBotResponse({
           currentModel,
           msg,
-          currentChatId: isNewChat ? newChatId : currentChatId,
+          currentChatId: isNewChat ? newLogId : currentChatId,
         })
       ).unwrap();
       console.log("Current Model: ", currentModel);
       if (isNewChat) {
-        dispatch(setCurrentChatId(newChatId));
-        navigate(`/${userId}/chat/${newChatId}`);
-        dispatch(toggleNewChat(false));
+        dispatch(messageActions.setCurrentChatId(newLogId));
+        navigate(`/${userId}/chat/${newLogId}`);
+        dispatch(messageActions.toggleNewChat(false));
         dispatch(
-          addLog({
+          logActions.addLog({
             msg: msg,
             modelType: currentModel.title,
-            urlPhoto: currentModel.urlPhoto,
-            id: newChatId,
+            id: newLogId,
             firebaseUserId: currentUser ? currentUser.uid : null,
           })
         );
       } else {
-        dispatch(
-          updateLog({
-            logId: currentChatId,
-            firebaseUserId: currentUser ? currentUser.uid : null,
-            urlPhoto: currentModel.urlPhoto,
-          })
-        );
+        if (currentChatId) {
+          dispatch(
+            logActions.updateLog({
+              logId: currentChatId,
+              firebaseUserId: currentUser ? currentUser.uid : null,
+              urlPhoto: currentModel.urlPhoto,
+            })
+          );
+        }
       }
     } catch (error) {
       console.error("Failed to send message", error);
@@ -102,7 +104,7 @@ const ChatInput = ({ messagesContainerRef }) => {
           placeholder="Type your message here..."
           rows={1}
           value={msg}
-          maxLength="2000"
+          maxLength={2000}
           onChange={handleInputChange}
         />
         <button className="p-[3px] relative" disabled={isSending}>

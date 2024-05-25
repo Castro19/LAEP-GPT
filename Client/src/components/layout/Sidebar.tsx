@@ -1,52 +1,53 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styles from "./Sidebar.module.css";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../chatLog/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";
 // Redux:
-import { useSelector, useDispatch } from "react-redux";
-import {
-  toggleSidebar as toggleReduxSidebar,
-  toggleNewChat as toggleReduxNewChat,
-  setCurrentChatId as setReduxCurrentChatId,
-} from "../../redux/layout/layoutSlice";
-import { setMsgList as msgReduxSetList } from "../../redux/chat/messageSlice";
-import { fetchLogs as fetchReduxLogs } from "../../redux/log/logSlice";
+import { useAppSelector, useAppDispatch } from "@/redux";
+import { messageActions, logActions, layoutActions } from "@/redux";
+
 import { useAuth } from "../../contexts/authContext";
 
 const Sidebar = () => {
   // Redux:
-  const dispatch = useDispatch();
-  const isSidebarVisible = useSelector(
+  const dispatch = useAppDispatch();
+  const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
-  const logList = useSelector((state) => state.log.logList);
+  const logList = useAppSelector((state) => state.log.logList);
   const { userId } = useAuth();
   useEffect(() => {
-    dispatch(fetchReduxLogs(userId));
+    // Only fetch logs if userId is not null (user is signed in)
+    if (userId) {
+      dispatch(logActions.fetchLogs(userId));
+    }
   }, [dispatch, userId]);
+
   // Added transition classes and conditional translate classes
   const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-800 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
   } border-r border-gray-200 dark:border-gray-700`;
 
   // Handler for selecting a log to view
-  const handleSelectLog = (logId) => {
+  const handleSelectLog = (logId: string) => {
     const chosenLog = logList.find((item) => item.id === logId);
-    // Set the content for the msgList
-    dispatch(msgReduxSetList(chosenLog.content));
-    // Set the current chat id
-    dispatch(setReduxCurrentChatId(logId));
-    dispatch(toggleReduxNewChat(false));
+    if (chosenLog) {
+      // Set the content for the msgList
+      dispatch(messageActions.setMsgList(chosenLog.content));
+      // Set the current chat id
+      dispatch(messageActions.setCurrentChatId(logId));
+      dispatch(messageActions.toggleNewChat(false));
 
-    dispatch(toggleReduxSidebar(false)); // close slidebar
+      dispatch(layoutActions.toggleSidebar(false)); // close slidebar
+    }
   };
 
   return (
     <aside className={`${sidebarClasses} flex flex-col h-full`}>
       <div className="relative text-gray-700 dark:text-white flex-shrink-0">
         <button
-          onClick={() => dispatch(toggleReduxSidebar(false))}
+          onClick={() => dispatch(layoutActions.toggleSidebar(false))}
           className="
             absolute  right-4
             p-2

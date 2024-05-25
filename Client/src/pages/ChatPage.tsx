@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
-import { useSelector, useDispatch } from "react-redux";
-
-import { initGptList } from "../redux/gpt/gptSlice";
 import { useAuth } from "../contexts/authContext";
+import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
 
 const ChatPage = () => {
   const { chatId } = useParams();
   const { userId } = useAuth();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchGptList = async () => {
@@ -19,7 +17,7 @@ const ChatPage = () => {
         try {
           const fetchedGptList = await viewGPTs(userId);
           console.log("FGL: ", fetchedGptList.gptList);
-          dispatch(initGptList(fetchedGptList.gptList));
+          dispatch(gptActions.initGptList(fetchedGptList.gptList));
           console.log("GPT LIST FETCHED: ", fetchedGptList);
         } catch (error) {
           console.error("Error fetching GPT list: ", error);
@@ -31,7 +29,7 @@ const ChatPage = () => {
   }, [userId, dispatch]);
 
   console.log("Chat id in page: ", chatId);
-  const isSidebarVisible = useSelector(
+  const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
 

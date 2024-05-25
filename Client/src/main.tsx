@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { store } from "./redux";
+import { store } from "./redux/index.ts";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -10,18 +10,16 @@ import {
 // Pages
 import Register from "./pages/register/Register.tsx";
 import { SignupFormDemo } from "./pages/register/SignUpForm.tsx";
-import AddInfoForm from "./pages/register/AddInfoForm.jsx";
+import AddInfoForm from "./pages/register/AddInfoForm.js";
 import { LoginFormDemo } from "./pages/register/LoginForm.tsx";
-import ChatPage from "./pages/ChatPage.jsx";
-import GPTPage from "./pages/customGPT/GPTPage.jsx";
-import GPTEditor from "./pages/customGPT/GPTEditorPage.jsx";
-import ErrorPage from "./pages/ErrorPage/ErrorPage.jsx";
+import ChatPage from "./pages/ChatPage.js";
+import GPTPage from "./pages/customGPT/GPTPage.js";
+import GPTEditor from "./pages/customGPT/GPTEditorPage.js";
+import ErrorPage from "./pages/ErrorPage/ErrorPage.js";
 // Page Layout
-import GPTLayout from "./components/layout/gpt/GPTLayout.jsx";
-// Loaders:
-import { viewGPTs } from "./redux/gpt/crudGPT.ts";
+import GPTLayout from "./components/layout/gpt/GPTLayout.js";
 // Auth
-import ProtectedRoute from "./components/security/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
 import { AuthProvider } from "./contexts/authContext/index.tsx";
 import "./index.css";
 
@@ -67,7 +65,6 @@ const router = createBrowserRouter([
         </GPTLayout>
       </ProtectedRoute>
     ),
-    loader: viewGPTs,
   },
   {
     path: "/:userId/gpts/editor",
@@ -80,12 +77,17 @@ const router = createBrowserRouter([
     ),
   },
 ]);
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </Provider>
-  </React.StrictMode>
-);
+
+const rootElement = document.getElementById("root");
+
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <Provider store={store}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </Provider>
+    </React.StrictMode>
+  );
+}

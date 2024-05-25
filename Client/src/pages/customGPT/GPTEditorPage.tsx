@@ -1,4 +1,3 @@
-import React from "react";
 import GPTForm from "@/components/customGPT/CreateGPTForm.tsx";
 const GPTEditor = () => {
   return (

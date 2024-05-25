@@ -18,7 +18,7 @@ import { RootState } from "../store";
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { msg, modelType, urlPhoto, id, firebaseUserId }: AddLogParams,
+    { msg, modelType, id, firebaseUserId }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
@@ -33,7 +33,6 @@ export const addLog = createAsyncThunk(
             title: logTitle,
             content: content, // Include the actual content
             timestamp: timestamp, // Include the timestamp
-            urlPhoto: urlPhoto,
           })
         );
       }
@@ -45,7 +44,6 @@ export const addLog = createAsyncThunk(
           title: logTitle,
           content: content, // Ensure the content is included in the DB save
           timestamp: timestamp, // Ensure the timestamp is included in the DB save
-          urlPhoto: urlPhoto,
         });
         return savedLog;
       }
@@ -115,11 +113,11 @@ export const updateLog = createAsyncThunk(
 export const deleteLog = createAsyncThunk(
   "log/deleteLog",
   async (
-    { logId, userId }: { logId: string; userId: string },
+    { logId, userId }: { logId: string; userId: string | null },
     { dispatch, rejectWithValue }
   ) => {
     try {
-      if (logId) {
+      if (logId && userId) {
         const deletedLog = await deleteLogItem({
           logId,
           userId,

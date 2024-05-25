@@ -1,26 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/redux";
 // UI
 import UserAvatar from "@/components/userProfile/UserAvatar";
-const ModeDropDown = ({ isVisible, onSelect }) => {
+
+type ModeDropDownProps = {
+  // eslint-disable-next-line no-unused-vars
+  onSelect: (modelId: string | undefined) => void;
+};
+const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   const navigate = useNavigate();
-  // Access the modelType from Redux store
-  const currentModel = useSelector((state) => state.gpt.currentModel);
-  const gptList = useSelector((state) => state.gpt.gptList);
+  // Redux Store:
+  const { currentModel, gptList } = useAppSelector((state) => state.gpt);
+  const isDropdownVisible = useAppSelector(
+    (state) => state.layout.isDropdownVisible
+  );
 
   // To manage the dropdown effect of the mode dropdown
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = useState("0");
   console.log("GPTLIST: ", gptList);
   useEffect(() => {
-    if (isVisible) {
+    if (isDropdownVisible && dropdownRef.current) {
       const fullHeight = dropdownRef.current.scrollHeight + "px";
       setMaxHeight(fullHeight);
     } else {
       setMaxHeight("0");
     }
-  }, [isVisible]);
+  }, [isDropdownVisible]);
 
   const onViewGPTs = () => {
     navigate("gpts");
@@ -32,7 +39,7 @@ const ModeDropDown = ({ isVisible, onSelect }) => {
       className="fixed mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md overflow-hidden z-10 transition-max-height duration-500 ease-in-out"
       style={{ maxHeight }}
     >
-      {isVisible &&
+      {isDropdownVisible &&
         gptList.map((option) => (
           <div
             key={option.id}

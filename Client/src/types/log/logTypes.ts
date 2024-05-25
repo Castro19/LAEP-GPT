@@ -3,14 +3,13 @@ import { MessageObjType } from "../message/messageType";
 export type AddLogParams = {
   msg: string;
   modelType: string;
-  urlPhoto: string;
   id: string;
-  firebaseUserId: string;
+  firebaseUserId: string | null;
 };
 
 export type UpdateLogData = {
   logId: string;
-  firebaseUserId: string;
+  firebaseUserId: string | null;
   urlPhoto?: string;
   content?: MessageObjType[];
   timestamp?: string;

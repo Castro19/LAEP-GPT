@@ -3,7 +3,7 @@ import { ModelType, SendMessageReturnType } from "@/types";
 export default async function sendMessage(
   currentModel: ModelType,
   msg: string,
-  currentChatId: string
+  currentChatId: string | null
 ): Promise<SendMessageReturnType> {
   if (!msg.trim() || msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");

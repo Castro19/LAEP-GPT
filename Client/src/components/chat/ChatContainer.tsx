@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ChatInput, ChatMessage } from "@/components/chat";
 // Redux:
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/redux";
 
 const ChatContainer = () => {
-  const msgList = useSelector((state) => state.message.msgList);
-  const logList = useSelector((state) => state.log.logList);
-  const messagesContainerRef = useRef(null);
+  const msgList = useAppSelector((state) => state.message.msgList);
+  const logList = useAppSelector((state) => state.log.logList);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;

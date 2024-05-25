@@ -1,24 +1,29 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { useSelector, useDispatch } from "react-redux";
-import { clearError } from "../../redux/chat/messageSlice";
+import { useAppSelector, useAppDispatch } from "@/redux";
+import { messageActions } from "@/redux";
+import DeleteLog from "./deleteLog/DeleteLog";
+import { LogData } from "@/types";
 
-import DeleteLog from "./DeleteLog";
+type ChatLogProps = {
+  log: LogData;
+  // eslint-disable-next-line no-unused-vars
+  onSelectLog: (logId: string) => void;
+};
 
-const ChatLog = ({ log, onSelectLog }) => {
+const ChatLog = ({ log, onSelectLog }: ChatLogProps) => {
   // Assuming useMessage and useUI contexts are correctly set up and utilized here
   const navigate = useNavigate();
   const { userId } = useAuth();
   // Redux:
-  const dispatch = useDispatch();
-  const error = useSelector((state) => state.message.error); // Access the error state from Redux
+  const dispatch = useAppDispatch();
+  const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
 
-  const handleNewLog = async (logId) => {
+  const handleNewLog = async (logId: string) => {
     onSelectLog(logId);
     navigate(`/${userId}/chat/${logId}}`);
     if (error) {
-      dispatch(clearError()); // Clear error when user starts typing
+      dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
   };
   return (

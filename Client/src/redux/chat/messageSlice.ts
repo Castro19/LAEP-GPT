@@ -7,11 +7,12 @@ import {
   SendMessageReturnType,
   MessageSliceType,
 } from "@/types";
+
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
   currentModel: ModelType;
   msg: string;
-  currentChatId: string;
+  currentChatId: string | null;
 }
 export const fetchBotResponse = createAsyncThunk<
   MessageObjType,
@@ -55,6 +56,8 @@ export const fetchBotResponse = createAsyncThunk<
 );
 
 const initialState: MessageSliceType = {
+  currentChatId: null,
+  isNewChat: true,
   msgList: [],
   isLoading: false,
   error: null,
@@ -90,6 +93,12 @@ const messageSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setCurrentChatId(state, action: PayloadAction<string>) {
+      state.currentChatId = action.payload;
+    },
+    toggleNewChat(state, action: PayloadAction<boolean>) {
+      state.isNewChat = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -115,6 +124,8 @@ export const {
   addUserMessage,
   updateBotMessage,
   clearError,
+  setCurrentChatId,
+  toggleNewChat,
 } = messageSlice.actions;
 
 export const messageReducer = messageSlice.reducer;

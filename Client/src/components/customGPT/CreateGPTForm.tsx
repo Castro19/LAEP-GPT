@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 // Redux:
-import { useDispatch } from "react-redux";
-import { addGpt, deleteGpt } from "@/redux/gpt/gptSlice.js";
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { gptActions } from "@/redux";
 
 // Importing component
 import { cn } from "@/lib/utils";
@@ -21,44 +21,44 @@ export default function GPTForm() {
   const [desc, setDesc] = useState("");
   const [instructions, setInstructions] = useState("");
   const [urlPhoto, setUrlPhoto] = useState("");
-  const [gptError, setGptError] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
-  const [newGptSaved, setNewGptSaved] = useState<string | null>();
-  const newGptSavedRef = useRef(newGptSaved);
+  const [localError, setLocalError] = useState("");
 
   // Auth:
   const { userId } = useAuth();
   // Redux
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { isLoading, error, lastCreatedGpt } = useAppSelector(
+    (state) => state.gpt
+  );
+
   // UI Toast
   const { toast } = useToast();
-
-  useEffect(() => {
-    newGptSavedRef.current = newGptSaved;
-  }, [newGptSaved]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setGptError("");
+    setLocalError("");
 
     if (!title || !desc || !instructions) {
-      setGptError("Please fill in all fields.");
+      setLocalError("Please fill in all fields.");
       return;
     }
 
-    if (!isCreating) {
+    if (!userId) {
+      setLocalError("Please be signed in to create an assistant");
+      return;
+    }
+
+    if (!isLoading) {
       try {
-        setIsCreating(true);
-        setGptError(""); // Clear error on successful sign in
+        setLocalError(""); // Clear error on successful sign in
         console.log("Title: ", title);
         console.log("Desc: ", desc);
         console.log("Instructions: ", instructions);
         const gptResponse = await dispatch(
-          addGpt({ userId, title, urlPhoto, desc, instructions })
+          gptActions.addGpt({ userId, title, urlPhoto, desc, instructions })
         );
         console.log("GPT Response: ", gptResponse);
-        setNewGptSaved(gptResponse.payload.id);
 
         setTitle("");
         setUrlPhoto("");
@@ -74,19 +74,16 @@ export default function GPTForm() {
             </ToastAction>
           ),
         });
-        setIsCreating(false); // Update signing
       } catch (error) {
         console.error(error);
-        setIsCreating(false); // Update signing in state upon error
-        // For other errors, you may want to display a generic error message
-        setGptError("Failed to create GPT. Please try again later.");
       }
     }
   };
 
   const handleUndo = async () => {
-    console.log("Delete the newly created assistant: ", newGptSavedRef);
-    await dispatch(deleteGpt({ id: newGptSavedRef.current }));
+    if (lastCreatedGpt) {
+      await dispatch(gptActions.deleteGpt({ id: lastCreatedGpt }));
+    }
   };
 
   return (
@@ -134,8 +131,11 @@ export default function GPTForm() {
               onChange={(e) => setInstructions(e.target.value)}
             />
           </LabelInputContainer>
-          {gptError ? <ErrorMessage text={gptError} /> : <></>}
-          <Button className="">Create GPT</Button>
+          {localError && <ErrorMessage text={localError} />}
+          {error && <ErrorMessage text={error} />}
+          <Button disabled={isLoading} className="">
+            {isLoading ? "Creating..." : "Create GPT"}
+          </Button>
         </form>
       </div>
     </div>

@@ -1,22 +1,23 @@
-import React from "react";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import styles from "./DeleteLog.module.css";
+import { useAppDispatch, logActions } from "@/redux";
+import { useAuth } from "../../../contexts/authContext";
 
-import styles from "./ChatLog.module.css";
-import { useDispatch } from "react-redux";
-import { deleteLog } from "../../redux/log/logSlice";
-import { useAuth } from "../../contexts/authContext";
+type DeleteLogProps = {
+  logId: string;
+};
 
-const DeleteLog = ({ logId }) => {
+const DeleteLog = ({ logId }: DeleteLogProps) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { userId } = useAuth();
 
-  const onDelete = (logId) => {
+  const onDelete = (logId: string) => {
     console.log("Delete log: ", logId);
     try {
-      dispatch(deleteLog({ logId, userId }));
+      dispatch(logActions.deleteLog({ logId, userId }));
       navigate(`/${userId}`);
     } catch (error) {
       console.log(`Error trying to delete log ${logId}: `, error);

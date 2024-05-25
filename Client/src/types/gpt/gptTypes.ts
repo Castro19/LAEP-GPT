@@ -12,4 +12,7 @@ export type GptType = {
 export interface GptSliceType {
   gptList: GptType[];
   currentModel: ModelType;
+  isLoading: boolean;
+  error: string | null;
+  lastCreatedGpt?: string;
 }

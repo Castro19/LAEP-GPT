@@ -1,12 +1,15 @@
-import React from "react";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 
 import UserAvatar from "@/components/userProfile/UserAvatar";
+import { MessageObjType } from "@/types";
 
 const md = new MarkdownIt();
 
-const ChatMessage = ({ msg }) => {
+type ChatMessageProps = {
+  msg: MessageObjType;
+};
+const ChatMessage = ({ msg }: ChatMessageProps) => {
   // Boolean Variable to style messages differently between user and chatbot
   const isUserMessage = msg.sender === "user";
 

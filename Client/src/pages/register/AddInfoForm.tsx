@@ -1,4 +1,3 @@
-import React from "react";
 import RegisterSettingForm from "../../components/register/registerSettings/RegisterSettingForm";
 
 const AddInfoForm = () => {
