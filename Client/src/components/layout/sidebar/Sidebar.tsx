@@ -7,7 +7,7 @@ import UserMenu from "@/components/userProfile/UserMenu";
 import { useAppSelector, useAppDispatch } from "@/redux";
 import { messageActions, logActions, layoutActions } from "@/redux";
 
-import { useAuth } from "../../../contexts/authContext";
+// import { useAuth } from "../../../contexts/authContext";
 
 const Sidebar = () => {
   // Redux:
@@ -16,9 +16,11 @@ const Sidebar = () => {
     (state) => state.layout.isSidebarVisible
   );
   const logList = useAppSelector((state) => state.log.logList);
-  const { userId } = useAuth();
+  const userId = useAppSelector((state) => state.auth.userId);
+
   useEffect(() => {
     // Only fetch logs if userId is not null (user is signed in)
+    console.log("USERID: ", userId);
     if (userId) {
       dispatch(logActions.fetchLogs(userId));
     }

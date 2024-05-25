@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/authContext";
+// import { useAuth } from "../../contexts/authContext";
 import { useAppSelector, useAppDispatch } from "@/redux";
 import { messageActions } from "@/redux";
 import DeleteLog from "./deleteLog/DeleteLog";
@@ -14,10 +14,11 @@ type ChatLogProps = {
 const ChatLog = ({ log, onSelectLog }: ChatLogProps) => {
   // Assuming useMessage and useUI contexts are correctly set up and utilized here
   const navigate = useNavigate();
-  const { userId } = useAuth();
+
   // Redux:
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const handleNewLog = async (logId: string) => {
     onSelectLog(logId);

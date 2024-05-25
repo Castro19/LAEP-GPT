@@ -3,6 +3,7 @@ import { messageReducer } from "./chat/messageSlice";
 import { gptReducer } from "./gpt/gptSlice";
 import { layoutReducer } from "./layout/layoutSlice";
 import { logReducer } from "./log/logSlice";
+import { authReducer } from "./auth/authSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     gpt: gptReducer,
     layout: layoutReducer,
     log: logReducer,
+    auth: authReducer,
   },
 });
 

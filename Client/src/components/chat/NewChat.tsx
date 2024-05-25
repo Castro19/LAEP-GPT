@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { RiChatNewFill } from "react-icons/ri";
 
 // User Auth Context
-import { useAuth } from "../../contexts/authContext";
+// import { useAuth } from "../../contexts/authContext";
 
 // Redux:
 import { useAppDispatch, useAppSelector } from "@/redux";
@@ -10,10 +10,10 @@ import { messageActions } from "@/redux";
 
 const NewChat = () => {
   const navigate = useNavigate();
-  const { userId } = useAuth();
   // Redux:
   const dispatch = useAppDispatch();
   const currentMsgList = useAppSelector((state) => state.message.msgList);
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
 

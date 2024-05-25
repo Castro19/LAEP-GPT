@@ -11,6 +11,7 @@ type ModeDropDownProps = {
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   const navigate = useNavigate();
   // Redux Store:
+  const userId = useAppSelector((state) => state.auth.userId);
   const { currentModel, gptList } = useAppSelector((state) => state.gpt);
   const isDropdownVisible = useAppSelector(
     (state) => state.layout.isDropdownVisible
@@ -30,7 +31,7 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   }, [isDropdownVisible]);
 
   const onViewGPTs = () => {
-    navigate("gpts");
+    navigate(`/${userId}/gpts`);
   };
 
   return (

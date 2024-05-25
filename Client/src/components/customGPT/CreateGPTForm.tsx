@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ErrorMessage } from "@/components/register/ErrorMessage";
 // Importing Contexts;
-import { useAuth } from "@/contexts/authContext";
+// import { useAuth } from "@/contexts/authContext";
 // Import UI Components
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -24,12 +24,12 @@ export default function GPTForm() {
   const [localError, setLocalError] = useState("");
 
   // Auth:
-  const { userId } = useAuth();
   // Redux
   const dispatch = useAppDispatch();
   const { isLoading, error, lastCreatedGpt } = useAppSelector(
     (state) => state.gpt
   );
+  const userId = useAppSelector((state) => state.auth.userId);
 
   // UI Toast
   const { toast } = useToast();
