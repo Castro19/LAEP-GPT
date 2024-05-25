@@ -1,5 +1,5 @@
 import ModeDropDown from "../customGPT/ModeDropDown";
-import Sidebar from "./Sidebar";
+import Sidebar from "./sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
 import NewChat from "../chat/NewChat";

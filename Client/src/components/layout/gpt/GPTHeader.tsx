@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector, layoutActions } from "@/redux";
-import Sidebar from "../Sidebar";
+import Sidebar from "../sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
 
 const GPTHeader = () => {
