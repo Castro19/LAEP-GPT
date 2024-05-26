@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
-
 import { NavLink, useNavigate } from "react-router-dom";
-// import { useAuth } from "@/contexts/authContext";
-import { doSignOut } from "@/firebase/auth";
-import { Button } from "@/components/ui/button";
+// Icon
 import { FaSignOutAlt } from "react-icons/fa";
-
+// Component
 import UserAvatar from "./UserAvatar";
+import { Button } from "../ui/button";
+// Auth
+import { doSignOut } from "@/firebase/auth";
+// Redux
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 
 const UserMenu = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   const dispatch = useAppDispatch();
-  const { userLoggedIn, userPhoto, userName } = useAppSelector(
-    (state) => state.auth
-  );
+  const { userLoggedIn, currentUser } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     const unsubscribe = dispatch(authActions.listenToAuthChanges());
@@ -39,9 +38,9 @@ const UserMenu = () => {
     <div className="relative">
       {userLoggedIn ? (
         <div className="flex justify-start items-center space-x-4">
-          <UserAvatar userPhoto={userPhoto} />
+          <UserAvatar userPhoto={currentUser?.photoURL} />
           <h4 className="ml-4 text-gray-800 dark:text-gray-300 font-medium text-wrap overflow-y-auto overflow-x-hidden">
-            {userName}
+            {currentUser?.displayName}
           </h4>
           <button
             className="text-lg hover:text-red-500"

@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
-// import { useAuth } from "../contexts/authContext";
 import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
 
 const ChatPage = () => {
@@ -11,7 +10,6 @@ const ChatPage = () => {
   const dispatch = useAppDispatch();
 
   const userId = useAppSelector((state) => state.auth.userId);
-  console.log("USER ID: ", userId);
   const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );

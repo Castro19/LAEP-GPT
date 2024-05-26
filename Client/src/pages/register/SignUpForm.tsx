@@ -1,15 +1,15 @@
 import React, { useState } from "react";
+import { Navigate, Link } from "react-router-dom";
+// Redux
+import { useAppDispatch, useAppSelector, authActions } from "@/redux";
+// Icons
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { IconBrandGoogle } from "@tabler/icons-react";
 // Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
-
 import { cn } from "@/lib/utils";
-import { IconBrandGoogle } from "@tabler/icons-react";
-// import { useAuth } from "@/contexts/authContext";
-import { Navigate, Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 
 export function SignupFormDemo() {
   const [firstName, setFirstName] = useState("");
@@ -20,7 +20,7 @@ export function SignupFormDemo() {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const { userLoggedIn, userId, signUpError, loading } = useAppSelector(
+  const { userLoggedIn, userId, registerError, loading } = useAppSelector(
     (state) => state.auth
   );
 
@@ -73,7 +73,7 @@ export function SignupFormDemo() {
 
   return (
     <>
-      {userLoggedIn && userId && <Navigate to={`/${userId}`} replace={true} />}
+      {userLoggedIn && <Navigate to={`/${userId}`} replace={true} />}
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome
@@ -143,7 +143,7 @@ export function SignupFormDemo() {
               onChange={(e) => setConfirmedPassword(e.target.value)}
             />
           </LabelInputContainer>
-          {signUpError ? <ErrorMessage text={signUpError} /> : <></>}
+          {registerError ? <ErrorMessage text={registerError} /> : <></>}
           <button
             disabled={loading}
             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 mt-8 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"

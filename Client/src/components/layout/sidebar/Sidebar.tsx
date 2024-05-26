@@ -4,10 +4,13 @@ import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../../chatLog/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";
 // Redux:
-import { useAppSelector, useAppDispatch } from "@/redux";
-import { messageActions, logActions, layoutActions } from "@/redux";
-
-// import { useAuth } from "../../../contexts/authContext";
+import {
+  useAppSelector,
+  useAppDispatch,
+  messageActions,
+  logActions,
+  layoutActions,
+} from "@/redux";
 
 const Sidebar = () => {
   // Redux:

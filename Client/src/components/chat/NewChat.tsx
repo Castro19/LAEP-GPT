@@ -1,9 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { RiChatNewFill } from "react-icons/ri";
 
-// User Auth Context
-// import { useAuth } from "../../contexts/authContext";
-
 // Redux:
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions } from "@/redux";

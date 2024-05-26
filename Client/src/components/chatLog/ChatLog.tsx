@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
-// import { useAuth } from "../../contexts/authContext";
-import { useAppSelector, useAppDispatch } from "@/redux";
-import { messageActions } from "@/redux";
+// Redux
+import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import DeleteLog from "./deleteLog/DeleteLog";
 import { LogData } from "@/types";
 

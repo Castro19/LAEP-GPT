@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
-// User Auth Context
-// import { useAuth } from "@/contexts/authContext";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
@@ -24,7 +22,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const { isNewChat, currentChatId, error } = useAppSelector(
     (state) => state.message
   );
-  const { currentUser, userId } = useAppSelector((state) => state.auth);
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
@@ -68,7 +66,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
             msg: msg,
             modelType: currentModel.title,
             id: newLogId,
-            firebaseUserId: currentUser ? userId : null,
+            firebaseUserId: userId ? userId : null,
           })
         );
       } else {
@@ -77,7 +75,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           dispatch(
             logActions.updateLog({
               logId: currentChatId,
-              firebaseUserId: currentUser ? userId : null,
+              firebaseUserId: userId ? userId : null,
               urlPhoto: currentModel.urlPhoto,
             })
           );

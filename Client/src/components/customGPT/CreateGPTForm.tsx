@@ -1,17 +1,13 @@
 import React, { useState } from "react";
 // Redux:
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { gptActions } from "@/redux";
+import { useAppDispatch, useAppSelector, gptActions } from "@/redux";
 
-// Importing component
+// Import UI Components
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ErrorMessage } from "@/components/register/ErrorMessage";
-// Importing Contexts;
-// import { useAuth } from "@/contexts/authContext";
-// Import UI Components
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";

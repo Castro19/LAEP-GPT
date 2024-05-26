@@ -17,12 +17,8 @@ interface AuthState {
   userId: string | null;
   userLoggedIn: boolean;
   isEmailUser: boolean;
-  isGoogleUser: boolean;
-  userPhoto: string | null;
-  userName: string | null;
   loading: boolean;
-  signInError: string | null;
-  signUpError: string | null;
+  registerError: string | null;
 }
 
 // Initial state for the auth slice
@@ -31,12 +27,8 @@ const initialState: AuthState = {
   userId: null,
   userLoggedIn: false,
   isEmailUser: false,
-  isGoogleUser: false,
-  userPhoto: null,
-  userName: null,
   loading: false,
-  signInError: null,
-  signUpError: null,
+  registerError: null,
 };
 
 // Register the listener to track auth state changes
@@ -57,15 +49,12 @@ export const listenToAuthChanges = createAsyncThunk<
       const isEmailUser = user.providerData.some(
         (provider) => provider.providerId === "password"
       );
-      console.log("USER IS HERE: ", user);
       dispatch(
         setAuthState({
           user: user.providerData[0],
-          isEmailUser,
           userId: user.uid,
           userLoggedIn: true,
-          userPhoto: user.photoURL,
-          userName: user.displayName,
+          isEmailUser,
         })
       );
     } else {
@@ -98,11 +87,9 @@ export const signUpWithEmail = createAsyncThunk<
       dispatch(
         setAuthState({
           user: user.providerData[0],
-          isEmailUser,
           userId: user.uid,
+          isEmailUser,
           userLoggedIn: true,
-          userPhoto: user.photoURL,
-          userName: user.displayName,
         })
       );
     } catch (error) {
@@ -129,18 +116,15 @@ export const signInWithEmail = createAsyncThunk<
       password
     );
     const user = userCredential.user;
-    console.log("EMAIL USER: ", user);
     const isEmailUser = user.providerData.some(
       (provider) => provider.providerId === "password"
     );
     dispatch(
       setAuthState({
         user: user.providerData[0],
-        isEmailUser,
         userId: user.uid,
         userLoggedIn: true,
-        userPhoto: user.photoURL,
-        userName: user.displayName,
+        isEmailUser,
       })
     );
   } catch (error) {
@@ -165,16 +149,13 @@ export const signInWithGoogle = createAsyncThunk<
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
-    console.log("google USER: ", user);
 
     dispatch(
       setAuthState({
         user: user.providerData[0],
-        isEmailUser: false,
         userId: user.uid,
         userLoggedIn: true,
-        userPhoto: user.photoURL,
-        userName: user.displayName,
+        isEmailUser: false,
       })
     );
   } catch (error) {
@@ -195,42 +176,31 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{
         user: UserInfo;
-        isEmailUser: boolean;
-        userId: string;
+        userId: string | null;
         userLoggedIn: boolean;
-        userPhoto: string | null;
-        userName: string | null;
+        isEmailUser: boolean;
       }>
     ) {
-      const { user, isEmailUser, userId, userLoggedIn, userPhoto, userName } =
-        action.payload;
+      const { user, userId, userLoggedIn, isEmailUser } = action.payload;
       state.currentUser = user;
-      state.isEmailUser = isEmailUser;
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
-      state.userPhoto = userPhoto;
-      state.userName = userName;
-      state.signUpError = null;
-      state.loading = false;
+      state.isEmailUser = isEmailUser;
     },
     clearAuthState(state) {
       state.currentUser = null;
-      state.isEmailUser = false;
-      state.userId = null;
       state.userLoggedIn = false;
-      state.userPhoto = null;
-      state.userName = null;
-      state.signUpError = null;
+      state.isEmailUser = false;
       state.loading = false;
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
     setSignInError(state, action: PayloadAction<string | null>) {
-      state.signInError = action.payload;
+      state.registerError = action.payload;
     },
     setSignUpError(state, action: PayloadAction<string | null>) {
-      state.signUpError = action.payload;
+      state.registerError = action.payload;
     },
   },
 });

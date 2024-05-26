@@ -39,7 +39,6 @@ export const createGpt = async (gptData) => {
 export const fetchGPTs = async (userId) => {
   try {
     const result = await gptModel.viewGPTs(userId);
-    console.log("RESULT FROM DB: ", result);
 
     const gptList = result.map((gpt) => ({
       id: gpt._id,
