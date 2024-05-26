@@ -8,18 +8,10 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
 } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
+import sendUserToDB from "./crudAuth";
+import { auth } from "@/firebase";
 import { RootState, AppDispatch } from "../store";
-
-// Define the AuthState Type to type our state
-interface AuthState {
-  currentUser: UserInfo | null;
-  userId: string | null;
-  userLoggedIn: boolean;
-  isEmailUser: boolean;
-  loading: boolean;
-  registerError: string | null;
-}
+import { AuthState } from "@/types";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
@@ -79,7 +71,10 @@ export const signUpWithEmail = createAsyncThunk<
         email,
         password
       );
+
       const user = userCredential.user;
+      sendUserToDB(user.uid, firstName, lastName);
+
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
       const isEmailUser = user.providerData.some(
         (provider) => provider.providerId === "password"
@@ -116,6 +111,7 @@ export const signInWithEmail = createAsyncThunk<
       password
     );
     const user = userCredential.user;
+
     const isEmailUser = user.providerData.some(
       (provider) => provider.providerId === "password"
     );
@@ -149,6 +145,8 @@ export const signInWithGoogle = createAsyncThunk<
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
+    // Check if its a new user (not in db): If it is then run this line
+    // sendUserToDB(user.uid, "", "");
 
     dispatch(
       setAuthState({

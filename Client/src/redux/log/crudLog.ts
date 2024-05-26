@@ -38,7 +38,21 @@ export async function createLogItem(logData: LogData) {
   }
 }
 
-// Reading an individual log by logId
+// Reading: Fetch all lofgs by as userID:
+export async function fetchAllLogs(userId: string) {
+  try {
+    const response = await fetch(`http://localhost:4000/chatLogs/${userId}`);
+    if (!response.ok) {
+      console.error("Response Error  fetching chat Logs");
+      return [];
+    }
+    const logs = await response.json();
+    return logs;
+  } catch (error) {
+    console.error("Failed to fetch logs: ", error);
+    return error;
+  }
+}
 
 // Update Log (Message gets added)
 export async function updateLogItem(logData: UpdateLogData) {

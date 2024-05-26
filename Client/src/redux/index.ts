@@ -4,14 +4,14 @@
 export { default as store } from "./store";
 
 // Export all reducers for modular access
-export { messageReducer } from "./chat/messageSlice";
+export { messageReducer } from "./message/messageSlice.ts";
 export { gptReducer } from "./gpt/gptSlice";
 export { layoutReducer } from "./layout/layoutSlice.ts";
 export { logReducer } from "./log/logSlice.ts";
 export { authReducer } from "./auth/authSlice.ts";
 
 // Export all actions for easy dispatching in components
-export * as messageActions from "./chat/messageSlice";
+export * as messageActions from "./message/messageSlice.ts";
 export * as gptActions from "./gpt/gptSlice";
 export * as layoutActions from "./layout/layoutSlice.ts";
 export * as logActions from "./log/logSlice.ts";

@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { messageReducer } from "./chat/messageSlice";
+import { messageReducer } from "./message/messageSlice";
 import { gptReducer } from "./gpt/gptSlice";
 import { layoutReducer } from "./layout/layoutSlice";
 import { logReducer } from "./log/logSlice";
