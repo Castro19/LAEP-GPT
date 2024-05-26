@@ -4,3 +4,4 @@ export * from "./gpt/errorTypes";
 export * from "./layout/layoutTypes";
 export * from "./log/logTypes";
 export * from "./log/logErrorTypes";
+export * from "./auth/authTypes";

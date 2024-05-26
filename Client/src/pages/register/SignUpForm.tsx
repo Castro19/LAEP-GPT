@@ -1,31 +1,28 @@
 import React, { useState } from "react";
+import { Navigate, Link } from "react-router-dom";
+// Redux
+import { useAppDispatch, useAppSelector, authActions } from "@/redux";
+// Icons
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { IconBrandGoogle } from "@tabler/icons-react";
 // Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
-
 import { cn } from "@/lib/utils";
-import { IconBrandGoogle } from "@tabler/icons-react";
-import {
-  doCreateUserWithEmailAndPassword,
-  doSignInWithGoogle,
-} from "@/firebase/auth";
-import { useAuth } from "@/contexts/authContext";
-import { Navigate, Link } from "react-router-dom";
 
 export function SignupFormDemo() {
-  const { userLoggedIn, userId } = useAuth();
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
-  const [signUpError, setSignupError] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false);
-
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
+  const { userLoggedIn, userId, registerError, loading } = useAppSelector(
+    (state) => state.auth
+  );
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -34,86 +31,49 @@ export function SignupFormDemo() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setSignupError("");
+    // setSignupError("");
 
     // Handling Errors:
     // Validate input fields are not empty
     if (!firstName || !lastName || !email || !password || !confirmedPassword) {
-      setSignupError("Please fill in all fields.");
+      dispatch(authActions.setSignUpError("Please fill in all fields."));
       return;
     }
 
     // Validate email format
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      setSignupError("Invalid email format.");
+      dispatch(authActions.setSignUpError("Invalid email format."));
       return;
     }
 
     // Validate password length
     if (password.length < 8) {
-      setSignupError("Password must be at least 8 characters long.");
+      dispatch(
+        authActions.setSignUpError(
+          "Password must be at least 8 characters long."
+        )
+      );
       return;
     }
 
     // Checking if the passwords match
     if (password !== confirmedPassword) {
-      setSignupError("Passwords do not match.");
+      dispatch(authActions.setSignUpError("Passwords do not match."));
       return;
     }
-
-    if (!isRegistering) {
-      try {
-        setIsRegistering(true);
-        await doCreateUserWithEmailAndPassword(
-          email,
-          password,
-          firstName,
-          lastName
-        );
-        setSignupError(""); // Clear error on successful registration
-        // Optionally navigate to a different page on successful registration
-      } catch (error) {
-        console.error(error);
-        setIsRegistering(false); // Update registering state upon error
-
-        // Firebase specific error handling
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            setSignupError(
-              "The email address is already in use by another account."
-            );
-            break;
-          case "auth/invalid-email":
-            setSignupError("The email address is not valid.");
-            break;
-          case "auth/operation-not-allowed":
-            setSignupError("Operation not allowed. Please contact support.");
-            break;
-          case "auth/weak-password":
-            setSignupError(
-              "The password is too weak. Please enter a stronger password."
-            );
-            break;
-          default:
-            setSignupError("An unexpected error occurred. Please try again.");
-            break;
-        }
-      }
-    }
+    dispatch(
+      authActions.signUpWithEmail({ email, password, firstName, lastName })
+    );
   };
 
-  const handleGoogleSignUp = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGoogleSignUp = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!isRegistering) {
-      setIsRegistering(true);
-      await doSignInWithGoogle();
-      setIsRegistering(false);
-    }
+    dispatch(authActions.signInWithGoogle());
   };
 
   return (
     <>
-      {userLoggedIn && userId && <Navigate to={`/${userId}`} replace={true} />}
+      {userLoggedIn && <Navigate to={`/${userId}`} replace={true} />}
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome
@@ -183,13 +143,13 @@ export function SignupFormDemo() {
               onChange={(e) => setConfirmedPassword(e.target.value)}
             />
           </LabelInputContainer>
-          {signUpError ? <ErrorMessage text={signUpError} /> : <></>}
+          {registerError ? <ErrorMessage text={registerError} /> : <></>}
           <button
-            disabled={isRegistering}
+            disabled={loading}
             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 mt-8 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
           >
-            {isRegistering ? "Signing Up..." : "Sign Up"}
+            {loading ? "Signing Up..." : "Sign Up"}
             <BottomGradient />
           </button>
           <div
@@ -209,8 +169,8 @@ export function SignupFormDemo() {
 
           <div className="flex flex-col space-y-4">
             <button
-              onClick={(e) => handleGoogleSignUp(e)}
-              disabled={isRegistering}
+              onClick={handleGoogleSignUp}
+              disabled={loading}
               className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
               type="button"
             >

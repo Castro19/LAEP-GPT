@@ -20,7 +20,7 @@ import ErrorPage from "./pages/ErrorPage/ErrorPage.js";
 import GPTLayout from "./components/layout/gpt/GPTLayout.js";
 // Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
-import { AuthProvider } from "./contexts/authContext/index.tsx";
+// import { AuthProvider } from "./contexts/authContext/index.tsx";
 import "./index.css";
 
 // import App from "./App.jsx";
@@ -84,9 +84,7 @@ if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <Provider store={store}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </Provider>
     </React.StrictMode>
   );

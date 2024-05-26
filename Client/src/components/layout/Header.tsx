@@ -3,7 +3,6 @@ import Sidebar from "./sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
 import NewChat from "../chat/NewChat";
-// import { useUI } from "../contexts/UIContext";
 
 // Redux:
 import {

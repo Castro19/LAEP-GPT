@@ -1,8 +1,7 @@
+import styles from "./DeleteLog.module.css";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import styles from "./DeleteLog.module.css";
-import { useAppDispatch, logActions } from "@/redux";
-import { useAuth } from "../../../contexts/authContext";
+import { useAppDispatch, logActions, useAppSelector } from "@/redux";
 
 type DeleteLogProps = {
   logId: string;
@@ -12,13 +11,15 @@ const DeleteLog = ({ logId }: DeleteLogProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { userId } = useAuth();
+  const { currentUser, userId } = useAppSelector((state) => state.auth);
 
   const onDelete = (logId: string) => {
     console.log("Delete log: ", logId);
     try {
-      dispatch(logActions.deleteLog({ logId, userId }));
-      navigate(`/${userId}`);
+      if (currentUser) {
+        dispatch(logActions.deleteLog({ logId, userId }));
+        navigate(`/${userId}`);
+      }
     } catch (error) {
       console.log(`Error trying to delete log ${logId}: `, error);
     }

@@ -1,31 +1,26 @@
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { cn } from "@/lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 import { Navigate, Link } from "react-router-dom";
 // Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
 
-// Importing Contexts
-import { useAuth } from "@/contexts/authContext";
-
-// Importing Auth Functions
-import {
-  doSignInWithEmailAndPassword,
-  doSignInWithGoogle,
-} from "@/firebase/auth";
+// redux auth:
+import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 
 export function LoginFormDemo() {
-  const { userLoggedIn, userId } = useAuth();
-  const [isSigningIn, setIsSigningIn] = useState(false);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [signInError, setSignInError] = useState("");
-
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
+  const { userLoggedIn, registerError, loading, userId } = useAppSelector(
+    (state) => state.auth
+  );
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -33,50 +28,24 @@ export function LoginFormDemo() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setSignInError("");
+    // setSignInError("");
 
     if (!email || !password) {
-      setSignInError("Please fill in all fields.");
+      dispatch(authActions.setSignInError("Please fill in all fields."));
       return;
     }
 
-    if (!isSigningIn) {
-      try {
-        setIsSigningIn(true);
-        await doSignInWithEmailAndPassword(email, password);
-        setSignInError(""); // Clear error on successful sign in
-        // Redirect to dashboard or home page after successful login if necessary
-      } catch (error) {
-        console.error(error);
-        setIsSigningIn(false); // Update signing in state upon error
-
-        // Check the error code and set a user-friendly error message
-        if (error.code === "auth/invalid-credential") {
-          setSignInError(
-            "The credentials you provided are invalid. Please try again."
-          );
-        } else {
-          // For other errors, you may want to display a generic error message
-          setSignInError(
-            "Failed to sign in. Please check your credentials and try again."
-          );
-        }
-      }
-    }
+    dispatch(authActions.signInWithEmail({ email, password }));
   };
 
-  const handleGoogleSignIn = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGoogleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!isSigningIn) {
-      setIsSigningIn(true);
-      await doSignInWithGoogle();
-      setIsSigningIn(false);
-    }
+    dispatch(authActions.signInWithGoogle());
   };
 
   return (
     <div>
-      {userLoggedIn && userId && <Navigate to={`/${userId}`} replace={true} />}
+      {userLoggedIn && <Navigate to={`/${userId}`} replace={true} />}
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome Back!
@@ -113,12 +82,12 @@ export function LoginFormDemo() {
               {passwordVisible ? <FiEyeOff /> : <FiEye />}
             </button>
           </LabelInputContainer>
-          {signInError ? <ErrorMessage text={signInError} /> : <></>}
+          {registerError ? <ErrorMessage text={registerError} /> : <></>}
           <button
             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full my-8 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
           >
-            {isSigningIn ? "Signing In..." : "Sign In"}
+            {loading ? "Signing In..." : "Sign In"}
             <BottomGradient />
           </button>
           <p className="text-center text-sm dark:text-gray-400">
@@ -138,7 +107,7 @@ export function LoginFormDemo() {
 
           <div className="flex flex-col">
             <button
-              onClick={(e) => handleGoogleSignIn(e)}
+              onClick={handleGoogleSignIn}
               className="relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
               type="button"
             >

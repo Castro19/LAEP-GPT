@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
-// User Auth Context
-import { useAuth } from "@/contexts/authContext";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
@@ -21,16 +19,15 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const dispatch = useAppDispatch();
 
   const currentModel = useAppSelector((state) => state.gpt.currentModel);
-
-  const isNewChat = useAppSelector((state) => state.message.isNewChat);
-  const currentChatId = useAppSelector((state) => state.message.currentChatId);
-  const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
+  const { isNewChat, currentChatId, error } = useAppSelector(
+    (state) => state.message
+  );
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  const { currentUser, userId } = useAuth();
   const textareaRef = useRef(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -59,6 +56,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         })
       ).unwrap();
       console.log("Current Model: ", currentModel);
+      console.log("ISNEWCHAT: ", isNewChat);
       if (isNewChat) {
         dispatch(messageActions.setCurrentChatId(newLogId));
         navigate(`/${userId}/chat/${newLogId}`);
@@ -68,15 +66,16 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
             msg: msg,
             modelType: currentModel.title,
             id: newLogId,
-            firebaseUserId: currentUser ? currentUser.uid : null,
+            firebaseUserId: userId ? userId : null,
           })
         );
       } else {
+        console.log("CCID: ", currentChatId);
         if (currentChatId) {
           dispatch(
             logActions.updateLog({
               logId: currentChatId,
-              firebaseUserId: currentUser ? currentUser.uid : null,
+              firebaseUserId: userId ? userId : null,
               urlPhoto: currentModel.urlPhoto,
             })
           );

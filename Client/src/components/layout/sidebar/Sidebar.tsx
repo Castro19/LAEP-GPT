@@ -4,10 +4,13 @@ import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../../chatLog/ChatLog";
 import UserMenu from "@/components/userProfile/UserMenu";
 // Redux:
-import { useAppSelector, useAppDispatch } from "@/redux";
-import { messageActions, logActions, layoutActions } from "@/redux";
-
-import { useAuth } from "../../../contexts/authContext";
+import {
+  useAppSelector,
+  useAppDispatch,
+  messageActions,
+  logActions,
+  layoutActions,
+} from "@/redux";
 
 const Sidebar = () => {
   // Redux:
@@ -16,9 +19,11 @@ const Sidebar = () => {
     (state) => state.layout.isSidebarVisible
   );
   const logList = useAppSelector((state) => state.log.logList);
-  const { userId } = useAuth();
+  const userId = useAppSelector((state) => state.auth.userId);
+
   useEffect(() => {
     // Only fetch logs if userId is not null (user is signed in)
+    console.log("USERID: ", userId);
     if (userId) {
       dispatch(logActions.fetchLogs(userId));
     }

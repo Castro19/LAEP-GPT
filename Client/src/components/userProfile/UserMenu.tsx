@@ -1,43 +1,30 @@
 import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/authContext";
-import { doSignOut } from "@/firebase/auth";
-import { Button } from "@/components/ui/button";
+// Icon
 import { FaSignOutAlt } from "react-icons/fa";
-
+// Component
 import UserAvatar from "./UserAvatar";
+import { Button } from "../ui/button";
+// Auth
+import { doSignOut } from "@/firebase/auth";
+// Redux
+import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 
 const UserMenu = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
+
+  const dispatch = useAppDispatch();
+  const { userLoggedIn, currentUser } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        setUserPhoto(user.photoURL);
-        setUserName(user.displayName);
-      } else {
-        // User is signed out
-        setUserPhoto(null);
-        setUserName(null);
+    const unsubscribe = dispatch(authActions.listenToAuthChanges());
+
+    return () => {
+      if (unsubscribe instanceof Function) {
+        unsubscribe();
       }
-    });
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    console.log("USER PHOTO: ", userPhoto);
-    console.log("USER NAME: ", userName);
-  }, [userName, userPhoto]);
-
-  const { userLoggedIn } = useAuth();
+    };
+  }, [dispatch]);
 
   const navigate = useNavigate();
 
@@ -51,9 +38,9 @@ const UserMenu = () => {
     <div className="relative">
       {userLoggedIn ? (
         <div className="flex justify-start items-center space-x-4">
-          <UserAvatar userPhoto={userPhoto} />
+          <UserAvatar userPhoto={currentUser?.photoURL} />
           <h4 className="ml-4 text-gray-800 dark:text-gray-300 font-medium text-wrap overflow-y-auto overflow-x-hidden">
-            {userName}
+            {currentUser?.displayName}
           </h4>
           <button
             className="text-lg hover:text-red-500"

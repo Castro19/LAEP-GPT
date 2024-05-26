@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface UserAvatarProps {
-  userPhoto: string | undefined;
+  userPhoto: string | undefined | null;
 }
 export function UserAvatar({ userPhoto }: UserAvatarProps) {
   return (

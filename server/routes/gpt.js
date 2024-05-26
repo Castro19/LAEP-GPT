@@ -31,7 +31,6 @@ router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const result = await fetchGPTs(userId);
-    console.log("RESULT : ", result);
     res
       .status(200)
       .json({ message: `GPT GET userID: ${userId}`, gptList: result });

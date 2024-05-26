@@ -36,6 +36,7 @@ export const addLog = createAsyncThunk(
           })
         );
       }
+      console.log("FBUID: ", firebaseUserId);
       if (firebaseUserId) {
         // Save Log to Database
         const savedLog = await createLogItem({
@@ -81,6 +82,8 @@ export const updateLog = createAsyncThunk(
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
+      console.log("FBUID: ", firebaseUserId);
+
       const timestamp = new Date().toISOString(); // Timestamp for updating log
       const content = (getState() as RootState).message.msgList; // Accessing current message list from the state
       console.log("logId: ", logId);
