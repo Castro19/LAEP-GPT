@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
-  User,
+  UserInfo,
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithEmailAndPassword,
@@ -13,12 +13,12 @@ import { RootState, AppDispatch } from "../store";
 
 // Define the AuthState Type to type our state
 interface AuthState {
-  currentUser: User | null;
+  currentUser: UserInfo | null;
   userId: string | null;
   userLoggedIn: boolean;
   isEmailUser: boolean;
   isGoogleUser: boolean;
-  userPhoto?: string;
+  userPhoto: string | null;
   userName: string | null;
   loading: boolean;
   signInError: string | null;
@@ -32,7 +32,7 @@ const initialState: AuthState = {
   userLoggedIn: false,
   isEmailUser: false,
   isGoogleUser: false,
-  userPhoto: undefined,
+  userPhoto: null,
   userName: null,
   loading: false,
   signInError: null,
@@ -57,9 +57,10 @@ export const listenToAuthChanges = createAsyncThunk<
       const isEmailUser = user.providerData.some(
         (provider) => provider.providerId === "password"
       );
+      console.log("USER IS HERE: ", user);
       dispatch(
         setAuthState({
-          user: user.reloadUserInfo,
+          user: user.providerData[0],
           isEmailUser,
           userId: user.uid,
           userLoggedIn: true,
@@ -96,7 +97,7 @@ export const signUpWithEmail = createAsyncThunk<
       );
       dispatch(
         setAuthState({
-          user: user.reloadUserInfo,
+          user: user.providerData[0],
           isEmailUser,
           userId: user.uid,
           userLoggedIn: true,
@@ -134,7 +135,7 @@ export const signInWithEmail = createAsyncThunk<
     );
     dispatch(
       setAuthState({
-        user: user.reloadUserInfo,
+        user: user.providerData[0],
         isEmailUser,
         userId: user.uid,
         userLoggedIn: true,
@@ -168,7 +169,7 @@ export const signInWithGoogle = createAsyncThunk<
 
     dispatch(
       setAuthState({
-        user: user.re,
+        user: user.providerData[0],
         isEmailUser: false,
         userId: user.uid,
         userLoggedIn: true,
@@ -193,11 +194,11 @@ const authSlice = createSlice({
     setAuthState(
       state,
       action: PayloadAction<{
-        user: User;
+        user: UserInfo;
         isEmailUser: boolean;
         userId: string;
         userLoggedIn: boolean;
-        userPhoto?: string;
+        userPhoto: string | null;
         userName: string | null;
       }>
     ) {
@@ -217,7 +218,7 @@ const authSlice = createSlice({
       state.isEmailUser = false;
       state.userId = null;
       state.userLoggedIn = false;
-      state.userPhoto = undefined;
+      state.userPhoto = null;
       state.userName = null;
       state.signUpError = null;
       state.loading = false;
