@@ -2252,8 +2252,8 @@ To install these extensions, follow these steps:
 
 ### Contact
 
-- [Personal E-mail](cmcastro559@gmail.com)
-- [School E-mail](ccastroo@calpoly.edu)
+- [Personal E-mail](mailto:cmcastro559@gmail.com)
+- [School E-mail](mailto:ccastroo@calpoly.edu)
 
 ## Frequently Asked Questions (FAQ)
 
