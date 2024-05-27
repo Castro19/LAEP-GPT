@@ -2245,7 +2245,9 @@ By following these steps, you can contribute effectively to the project and main
 ### Browser: Firefox Developer Edition
 
 - I recommend avoiding using Chrome when working on Front-end development and instead using a broswer like Firefox Developer
+- [Firefox Developer Edition Download Link](https://www.mozilla.org/en-US/firefox/developer/)
 - **Reason**: The developer tools such as `inspector` or `console` to view the console logs are much better in Firefox
+-
 
 #### Firefox Chrome Extensions (Very helpful)
 
