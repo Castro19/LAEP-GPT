@@ -1,19 +1,25 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import createLogTitle, {
   createLogItem,
+  fetchAllLogs,
   updateLogItem,
   deleteLogItem,
 } from "./crudLog";
 import {
-  AddLogParams,
   LogData,
   LogSliceType,
-  UpdateLogData,
   LogErrorCodes,
   logErrorMessages,
+  MessageObjType,
 } from "@/types";
 import { RootState } from "../store";
 
+export type AddLogParams = {
+  msg: string;
+  modelType: string;
+  id: string;
+  firebaseUserId: string | null;
+};
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
@@ -60,25 +66,26 @@ export const fetchLogs = createAsyncThunk(
   "log/fetchLogs",
   async (userId: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:4000/chatLogs/${userId}`);
-      if (!response.ok) {
-        console.error("Response Error  fetching chat Logs");
-        return [];
-      }
-      const logs = await response.json();
-      return logs;
+      return await fetchAllLogs(userId);
     } catch (error) {
       console.error("Failed to fetch logs: ", error);
       return rejectWithValue(logErrorMessages[LogErrorCodes.READ_FAILED]);
     }
   }
 );
+export type UpdateLogData = {
+  logId: string;
+  firebaseUserId: string | null;
+  urlPhoto?: string;
+  content?: MessageObjType[];
+  timestamp?: string;
+};
 
 // Thunk for updating a log. Combines UPDATE and READ operations.
 export const updateLog = createAsyncThunk(
   "log/updateLog",
   async (
-    { logId, firebaseUserId, urlPhoto }: UpdateLogData,
+    { logId, firebaseUserId }: UpdateLogData,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
@@ -92,7 +99,6 @@ export const updateLog = createAsyncThunk(
           id: logId,
           content: content, // Pass the msgList as part of the payload
           timestamp: timestamp,
-          urlPhoto,
         })
       );
 
@@ -148,20 +154,19 @@ const logSlice = createSlice({
     // logList:
     // Reducer to add a new log to the state (CREATE)
     addLogList: (state, action: PayloadAction<LogData>) => {
-      const { id, title, content, timestamp, urlPhoto } = action.payload;
+      const { id, title, content, timestamp } = action.payload;
       const newLog = {
         id: id,
         content: [...content], // Use the content passed in the action
         title: title,
         timestamp: timestamp, // Use the timestamp passed in the action
-        urlPhoto,
       };
 
       state.logList.push(newLog);
     },
     // Reducer to update an existing log in the state (UPDATE)
     updateCurrentChat: (state, action: PayloadAction<LogData>) => {
-      const { id, content, timestamp, urlPhoto } = action.payload;
+      const { id, content, timestamp } = action.payload;
       const logIndex = state.logList.findIndex((log) => log.id === id);
       console.log("currentChatId: ", id);
 
@@ -169,7 +174,6 @@ const logSlice = createSlice({
       if (logIndex !== -1) {
         state.logList[logIndex].content = [...content]; // Use content from the payload
         state.logList[logIndex].timestamp = timestamp; // Update the timestamp
-        state.logList[logIndex].urlPhoto = urlPhoto;
       }
     },
     deleteLogListItem: (state, action: PayloadAction<{ logId: string }>) => {

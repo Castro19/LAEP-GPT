@@ -5,7 +5,6 @@ import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
-  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -83,7 +82,8 @@ export default function RegisterSettingForm() {
   //   items: ,
   // };
 
-  function onSubmit(values) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function onSubmit(values: any) {
     console.log(values);
     console.log("Submit pressed");
   }

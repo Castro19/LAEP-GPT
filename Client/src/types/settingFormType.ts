@@ -4,6 +4,7 @@ export type CheckBoxItem = {
 };
 // interests: z.array(z.string()),
 export type CheckBoxType = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any;
   boxTitle: string;
   boxDesc: string;

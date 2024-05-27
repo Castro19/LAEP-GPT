@@ -1,12 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import sendMessage from "./handleMessage";
+import sendMessage from "./crudMessage";
 // Types:
-import {
-  ModelType,
-  MessageObjType,
-  SendMessageReturnType,
-  MessageSliceType,
-} from "@/types";
+import { ModelType, MessageObjType, MessageSliceType } from "@/types";
 
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
@@ -14,6 +9,15 @@ interface fetchBotResponseParams {
   msg: string;
   currentChatId: string | null;
 }
+type SendMessageReturnType = {
+  newUserMessage: MessageObjType;
+  botMessage: MessageObjType;
+  updateStream: (
+    // eslint-disable-next-line no-unused-vars
+    updateCallback: (arg0: number, arg1: string) => void
+  ) => Promise<string>;
+};
+
 export const fetchBotResponse = createAsyncThunk<
   MessageObjType,
   fetchBotResponseParams,

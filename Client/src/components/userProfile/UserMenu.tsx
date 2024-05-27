@@ -6,7 +6,7 @@ import { FaSignOutAlt } from "react-icons/fa";
 import UserAvatar from "./UserAvatar";
 import { Button } from "../ui/button";
 // Auth
-import { doSignOut } from "@/firebase/auth";
+import { auth } from "@/firebase";
 // Redux
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 
@@ -28,10 +28,9 @@ const UserMenu = () => {
 
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    doSignOut().then(() => {
-      navigate("/");
-    });
+  const handleSignOut = async (): Promise<void> => {
+    auth.signOut();
+    navigate("/");
   };
 
   return (
