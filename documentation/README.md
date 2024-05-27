@@ -99,13 +99,16 @@
       - [threads Schema](#threads-schema)
       - [users Schema](#users-schema)
   - [Contribution Guidelines](#contribution-guidelines)
-    - [How to Contribute](#how-to-contribute)
     - [Coding Standards](#coding-standards)
       - [**Prettier Configuration:** Prettier is used to format our code.](#prettier-configuration-prettier-is-used-to-format-our-code)
       - [ESLint Configuration: Client](#eslint-configuration-client)
       - [ESLint Configuration: Server](#eslint-configuration-server)
+    - [How to Contribute](#how-to-contribute)
   - [Additional Resources](#additional-resources)
+    - [Github Desktop or Tower (Optional but strongly recommended)](#github-desktop-or-tower-optional-but-strongly-recommended)
     - [MongoDB Compass](#mongodb-compass)
+    - [Browser: Firefox Developer Edition](#browser-firefox-developer-edition)
+      - [Firefox Chrome Extensions (Very helpful)](#firefox-chrome-extensions-very-helpful)
     - [VSCode Extensions](#vscode-extensions)
       - [Installation Instructions](#installation-instructions)
     - [Contact](#contact)
@@ -2035,109 +2038,13 @@ export interface MessageSliceType {
 
 ## Contribution Guidelines
 
-### How to Contribute
-
-Contributing to this project involves a series of steps to ensure that changes are implemented smoothly and consistently. Follow these guidelines to contribute effectively:
-
-1. **Fetch and Pull the Latest Changes**
-
-   - Before starting, make sure you have the latest changes from the main branch.
-   - Run the following commands:
-     ```bash
-     git fetch origin
-     git pull origin main
-     ```
-
-2. **Create a New Branch Off Main**
-
-   - Create a new branch to work on your feature or bug fix. Use a descriptive name for your branch.
-   - Example:
-     ```bash
-     git checkout -b feature/your-feature-name
-     ```
-
-3. **Commit Your Changes**
-
-   - Make your changes and commit them with a clear and concise commit message.
-   - Example:
-     ```bash
-     git add .
-     git commit -m "Add feature to enhance user authentication"
-     ```
-
-4. **Push Your Changes to Your Branch**
-
-   - Push your committed changes to the remote repository.
-   - Example:
-     ```bash
-     git push origin feature/your-feature-name
-     ```
-
-5. **Sync Changes from the Main Branch**
-
-   - Ensure your branch is up to date with the latest changes from the main branch by merging the main branch into your branch.
-   - Example:
-     ```bash
-     git checkout main
-     git pull origin main
-     git checkout feature/your-feature-name
-     git merge main
-     ```
-
-6. **Create the Pull Request and Assign Reviewers**
-
-   - Create a pull request (PR) from your branch to the main branch.
-   - Provide a detailed description of your changes and assign reviewers.
-   - Example:
-
-     ```markdown
-     ## Description
-
-     Detailed explanation of what the new feature or fix does.
-
-     ## Changes
-
-     - List of changes made
-     ```
-
-7. **Wait for Your Pull Request to Be Reviewed**
-
-   - Wait for your PR to be reviewed by the assigned reviewers.
-   - If changes are requested, make the necessary adjustments and commit them to your branch. Repeat steps 3 and 4 as needed.
-
-8. **Squash and Merge into Main**
-
-   - Once your PR is approved, use the `squash and merge` option to merge it into the main branch.
-   - Provide a detailed description of the new feature in the merge commit.
-   - Example:
-
-     ```markdown
-     ## New Feature: Enhanced User Authentication
-
-     - Detailed description of the new feature.
-     ```
-
-9. **Update GitHub Projects**
-
-   - Use GitHub Projects to check off the task associated with your feature and log the hours it took to complete.
-   - Example:
-     ```markdown
-     - [x] Enhanced user authentication (3 hours)
-     ```
-
-10. **Document Your Changes**
-    - Update the `documentation/README.md` file with any relevant changes or new features.
-    - Ensure your documentation is clear and provides sufficient detail for other team members to understand the changes.
-
-By following these steps, you can contribute effectively to the project and maintain a smooth workflow within the team.
-
 ### Coding Standards
 
 - Our current MERN application has the following coding standards
 
 #### **Prettier Configuration:** Prettier is used to format our code.
 
-- The configuration is defined in the [`.prettierrc`]() at the root of the project:
+- The configuration is defined in the [`.prettierrc`](../.prettierrc) at the root of the project:
 
   ```json
   {
@@ -2184,13 +2091,175 @@ By following these steps, you can contribute effectively to the project and main
   cd server && npm run lint
   ```
 
+### How to Contribute
+
+- Contributing to this project involves a series of steps to ensure that changes are implemented smoothly and consistently.
+- Follow these guidelines to contribute effectively:
+
+1. **Fetch and Pull the Latest Changes**
+
+   - Before starting, make sure you have the latest changes from the main branch.
+   - Run the following commands:
+     ```bash
+     git fetch origin
+     git pull origin main
+     ```
+
+2. **Create a New Branch Off Main**
+
+   - Create a new branch to work on your feature or bug fix. Use a descriptive name for your branch.
+   - Example:
+     ```bash
+     git checkout -b feature/your-feature-name
+     ```
+
+3. **Make the changes**:
+
+   - On this branch, make your changes to the code.
+   - Make the changes small and add comments explain what the code does when necessary.
+   - These changes will be reviewed by a teammate in the pull request on step 9.
+
+4. **Ensure Code Quality with ESLint and Prettier**:
+
+   - Run ESLint and Prettier to check and format your code according to the project's coding standards.
+   - Make sure there are no `errors` from ESLint.
+
+   - **Example for the client-side code**:
+
+     ```bash
+     npm run lint:client
+     npm run format:client
+     ```
+
+   - **Example for the server-side code**:
+
+     ```bash
+     npm run lint:server
+     npm run format:server
+     ```
+
+   - **Or to run both in one go**:
+
+     ```bash
+      npm run lint:all
+      npm run format:all
+     ```
+
+5. **Commit Your Changes**
+
+   - Commit your changes with a clear and concise commit message.
+   - Example:
+     ```bash
+     git add .
+     git commit -m "Add feature to enhance user authentication"
+     ```
+
+6. **Push Your Changes to Your Branch**
+
+   - Push your committed changes to the remote repository.
+   - Example:
+     ```bash
+     git push origin feature/your-feature-name
+     ```
+
+7. **Sync Changes from the Main Branch**
+
+   - Ensure your branch is up to date with the latest changes from the main branch by merging the main branch into your branch.
+   - Example:
+     ```bash
+     git checkout main
+     git pull origin main
+     git checkout feature/your-feature-name
+     git merge main
+     ```
+
+8. **Create the Pull Request and Assign Reviewers**
+
+   - Create a pull request (PR) from your branch to the main branch.
+   - Provide a detailed description of your changes and assign reviewers.
+   - Example:
+
+     ```markdown
+     ## Description
+
+     Detailed explanation of what the new feature or fix does.
+
+     ## Changes
+
+     - List of changes made
+     ```
+
+9. **Wait for Your Pull Request to Be Reviewed**
+
+   - Wait for your PR to be reviewed by the assigned reviewers.
+   - If changes are requested, make the necessary adjustments and commit them to your branch. Repeat steps 3,4, and 5 as needed.
+
+10. **Squash and Merge into Main**
+
+    - Once your PR is approved, use the `squash and merge` option to merge it into the main branch.
+    - Provide a detailed description of the new feature in the merge commit.
+    - Example:
+
+      ```markdown
+      ## New Feature: Enhanced User Authentication
+
+      - Detailed description of the new feature.
+      ```
+
+11. **Update GitHub Projects**
+
+    - Use GitHub Projects to check off the task associated with your feature and log the hours it took to complete.
+    - Example:
+      ```markdown
+      - [x] Enhanced user authentication (3 hours)
+      ```
+
+12. **Document Your Changes**
+    - Update the `documentation/README.md` file with any relevant changes or new features.
+    - Ensure your documentation is clear and provides sufficient detail for other team members to understand the changes.
+
+By following these steps, you can contribute effectively to the project and maintain a smooth workflow within the team.
+
 ## Additional Resources
+
+### Github Desktop or Tower (Optional but strongly recommended)
+
+- Using a GUI tool for managing your commits can simplify the process and provide a visual interface for handling your repository.
+
+- Here are two recommended options:
+
+- **Github Desktop**:
+
+  - [Github Desktop Download Link](https://desktop.github.com/)
+
+- **Git Tower**:
+  - A free version is available for students if you register with your school E-mail.
+  - [Git Tower Download Link](https://www.git-tower.com/students)
 
 ### MongoDB Compass
 
-- Download MongoDB Compasss for a GUI to manage your collections
+- Download MongoDB Compass for a GUI to manage your collections
 
 - [Download Link](https://www.mongodb.com/products/tools/compass)
+
+### Browser: Firefox Developer Edition
+
+- I recommend avoiding using Chrome when working on Front-end development and instead using a broswer like Firefox Developer
+- **Reason**: The developer tools such as `inspector` or `console` to view the console logs are much better in Firefox
+
+#### Firefox Chrome Extensions (Very helpful)
+
+- **React Developer Tools**: Inspect the React tree including the component hierarchy, props, state, etc.
+- [React Dev Tools Download Link for Firefox](https://addons.mozilla.org/en-US/firefox/addon/react-devtools/)
+
+- **Redux DevTools**: Allows you to view the `actions history` undo and replay.
+  - A super cool and useful tool for debugging in our application.
+  - Only available because we are using Redux as our global state manager.
+- [Redux Dev Tools Download Link for Firefox](https://addons.mozilla.org/en-US/firefox/addon/reduxdevtools)
+
+- **Debug CSS**: A tool that outlines all elements on the page with a box
+  - Realizing that Web pages are built by HTML elements stored in boxes, managing the layout of these elements can be debugged using this extension by viewing every element on the page as a box.
+- [Debug CSS Download Link for Firefox](https://addons.mozilla.org/en-US/firefox/addon/pranay-joshi/)
 
 ### VSCode Extensions
 

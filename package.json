@@ -12,7 +12,13 @@
     "start:server": "cd server && node index.js",
     "start": "concurrently \"npm run start:Client\" \"npm run start:server\"",
     "build:client": "cd Client && npm run build",
-    "postinstall": "npm run build:client"
+    "postinstall": "npm run build:client",
+    "format:client": "cd Client && npm run format",
+    "format:server": "cd server && npm run format",
+    "format:all": "npm run format:client && npm run format:server",
+    "lint:client": "cd Client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "lint:all": "npm run lint:client && npm run lint:server"
   },
   "keywords": [],
   "author": "Cristian Castro Oliva",
