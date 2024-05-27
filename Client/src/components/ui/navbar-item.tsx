@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -17,6 +18,7 @@ export const MenuItem = ({
   item,
   children,
 }: {
+  // eslint-disable-next-line no-unused-vars
   setActive: (item: string) => void;
   active: string | null;
   item: string;
@@ -58,6 +60,7 @@ export const Menu = ({
   setActive,
   children,
 }: {
+  // eslint-disable-next-line no-unused-vars
   setActive: (item: string | null) => void;
   children: React.ReactNode;
 }) => {

@@ -12,7 +12,6 @@ interface fetchBotResponseParams {
 type SendMessageReturnType = {
   newUserMessage: MessageObjType;
   botMessage: MessageObjType;
-  // eslint-disable-next-line no-unused-vars
   updateStream: (
     // eslint-disable-next-line no-unused-vars
     updateCallback: (arg0: number, arg1: string) => void

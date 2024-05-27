@@ -1,38 +1,90 @@
-# AI Chatbot for Senior Projects
+# LAEP Chatbot for Senior Projects
 
 ## Table of Contents
 
-1. [Project Introduction](#project-introduction)
-   - [Overview](#overview)
-   - [Project Goals](#project-goals)
-2. [Getting Started](#getting-started)
-   - [Prerequisites](#prerequisites)
-   - [Project Structure](#project-structure)
-   - [Explanation of Structure](#explanation-of-structure)
-3. [Frontend Documentation](#frontend-documentation)
-   - [Technologies Used](#technologies-used-frontend)
-   - [Routing](#routing)
-   - [Components](#components)
-   - [Redux](#redux)
-   - [Types](#types)
-   - [UI Component Libraries](#ui-component-libraries)
-   - [Styling](#styling)
-4. [Backend Documentation](#backend-documentation)
-   - [Technologies Used](#technologies-used-backend)
-   - [API Endpoints](#api-endpoints)
-   - [Integration with OpenAI API](#integration-with-openai-api)
-5. [Database Documentation](#database-documentation)
-   - [Database Used](#database-used)
-   - [Collections](#collections)
-   - [Schema Definitions](#schema-definitions)
-6. [Contribution Guidelines](#contribution-guidelines)
-   - [How to Contribute](#how-to-contribute)
-   - [Coding Standards](#coding-standards)
-7. [Additional Resources](#additional-resources)
-   - [Useful Links](#useful-links)
-   - [Contacts](#contacts)
-8. [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
-   - [Common Issues and Solutions](#common-issues-and-solutions)
+- [LAEP Chatbot for Senior Projects](#laep-chatbot-for-senior-projects)
+  - [Table of Contents](#table-of-contents)
+  - [Project Introduction](#project-introduction)
+    - [Overview](#overview)
+    - [Project Goals](#project-goals)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+      - [1. Git](#1-git)
+      - [2. Node.js and npm](#2-nodejs-and-npm)
+      - [3. Express.js](#3-expressjs)
+      - [4. MongoDB](#4-mongodb)
+      - [5. OpenAI API](#5-openai-api)
+      - [6. React](#6-react)
+      - [7. Redux](#7-redux)
+      - [8. React Router](#8-react-router)
+      - [9. Tailwind CSS](#9-tailwind-css)
+      - [10. ShadCN UI](#10-shadcn-ui)
+      - [11. Aceternity UI](#11-aceternity-ui)
+      - [12. Visual Studio Code (Optional)](#12-visual-studio-code-optional)
+    - [Project Structure](#project-structure)
+    - [Explanation of Structure](#explanation-of-structure)
+      - [Client (Front end)](#client-front-end)
+      - [Server (Back-end)](#server-back-end)
+  - [Frontend Documentation](#frontend-documentation)
+    - [Routing](#routing)
+      - [Setting up a new Route](#setting-up-a-new-route)
+      - [Component Wrappers Explanation](#component-wrappers-explanation)
+      - [ProtectedRoute Explanation](#protectedroute-explanation)
+      - [Layout Explanation](#layout-explanation)
+    - [Components](#components)
+    - [Redux](#redux)
+      - [1. **Overview of Redux**:](#1-overview-of-redux)
+      - [2. **Store Configuration**:](#2-store-configuration)
+      - [3. **Slices**:](#3-slices)
+      - [4. **Initial State**:](#4-initial-state)
+      - [5. **Actions**:](#5-actions)
+      - [6. **Reducers**: Most important Redux Concept](#6-reducers-most-important-redux-concept)
+      - [7. **Extra Reducers** and **Async Thunks**:](#7-extra-reducers-and-async-thunks)
+      - [8. **Connecting Redux to React**:](#8-connecting-redux-to-react)
+      - [9. **Selectors**:](#9-selectors)
+      - [10. **Dispatch**](#10-dispatch)
+    - [Types](#types)
+      - [Types in application](#types-in-application)
+    - [UI Component Libraries](#ui-component-libraries)
+    - [Styling](#styling)
+      - [Instructions using Tailwind](#instructions-using-tailwind)
+      - [Pointers for CSS:](#pointers-for-css)
+  - [Backend Documentation](#backend-documentation)
+    - [Server Setup](#server-setup)
+    - [Express Routes](#express-routes)
+      - [API Endpoints](#api-endpoints)
+    - [Integration with OpenAI API](#integration-with-openai-api)
+      - [Assistants](#assistants)
+      - [**How to create an Assistant**:](#how-to-create-an-assistant)
+      - [Threads](#threads)
+    - [Integration with MongoDB](#integration-with-mongodb)
+      - [Benefits of This Approach](#benefits-of-this-approach)
+      - [Instructions](#instructions)
+  - [Database Documentation](#database-documentation)
+    - [Database Used](#database-used)
+    - [Collections](#collections)
+      - [chatLogs](#chatlogs)
+      - [gpts](#gpts)
+      - [threads](#threads-1)
+      - [users](#users)
+    - [Schema Definitions](#schema-definitions)
+      - [chatLogs Schema](#chatlogs-schema)
+      - [gpts Schema](#gpts-schema)
+      - [threads Schema](#threads-schema)
+      - [users Schema](#users-schema)
+  - [Contribution Guidelines](#contribution-guidelines)
+    - [How to Contribute](#how-to-contribute)
+    - [Coding Standards](#coding-standards)
+      - [**Prettier Configuration:** Prettier is used to format our code.](#prettier-configuration-prettier-is-used-to-format-our-code)
+      - [ESLint Configuration: Client](#eslint-configuration-client)
+      - [ESLint Configuration: Server](#eslint-configuration-server)
+  - [Additional Resources](#additional-resources)
+    - [MongoDB Compass](#mongodb-compass)
+    - [VSCode Extensions](#vscode-extensions)
+      - [Installation Instructions](#installation-instructions)
+    - [Contact](#contact)
+  - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
+    - [Common Issues and Solutions](#common-issues-and-solutions)
 
 ## Project Introduction
 
@@ -539,162 +591,162 @@ Visual Studio Code is a source-code editor that includes support for development
 
 ### Redux
 
-1.  **Overview of Redux**:
+#### 1. **Overview of Redux**:
 
-    - **Redux**: A state management tool that helps us keep track of the entire application's state in a predictable and centralized way. This makes it easier to manage and debug the state of our app.
-    - **Benefits**: Centralized state management, easier debugging, predictable state transitions, and improved testability.
+- **Redux**: A state management tool that helps us keep track of the entire application's state in a predictable and centralized way. This makes it easier to manage and debug the state of our app.
+- **Benefits**: Centralized state management, easier debugging, predictable state transitions, and improved testability.
 
-2.  **Store Configuration**:
+#### 2. **Store Configuration**:
 
-    - **Purpose**: The Redux store holds the complete state tree of the application.
-    - **Configuration**: The `store` is configured in the file: `Client/src/redux/store.ts`
-    - **Example**: Create a Redux store with configureStore, providing the messageReducer to handle the message slice of the state. This is how we will be able to access the state and reducers.
+- **Purpose**: The Redux store holds the complete state tree of the application.
+- **Configuration**: The `store` is configured in the file: `Client/src/redux/store.ts`
+- **Example**: Create a Redux store with configureStore, providing the messageReducer to handle the message slice of the state. This is how we will be able to access the state and reducers.
 
-      ```typescript
-      import { messageReducer } from "./chat/messageSlice";
+  ```typescript
+  import { messageReducer } from "./chat/messageSlice";
 
-      const store = configureStore({
-        reducer: {
-          message: messageReducer,
-          // other reducers added here
-        },
-      });
-      // Used for TypeScript Types
-      export type RootState = ReturnType<typeof store.getState>;
-      export type AppDispatch = typeof store.dispatch;
-      ```
+  const store = configureStore({
+    reducer: {
+      message: messageReducer,
+      // other reducers added here
+    },
+  });
+  // Used for TypeScript Types
+  export type RootState = ReturnType<typeof store.getState>;
+  export type AppDispatch = typeof store.dispatch;
+  ```
 
-3.  **Slices**:
+#### 3. **Slices**:
 
-    - **Purpose**: Define a slice of state relating to the Redux reducer logic and actions for a feature of the application.
-    - **Configuration**: Redux Toolkit `createSlice` function simplifies the process of writing redux logic by `combining actions and reducers in one place`.
-    - **Example**:
+- **Purpose**: Define a slice of state relating to the Redux reducer logic and actions for a feature of the application.
+- **Configuration**: Redux Toolkit `createSlice` function simplifies the process of writing redux logic by `combining actions and reducers in one place`.
+- **Example**:
 
-      ```typescript
+  ```typescript
+  const logSlice = createSlice({
+    name: "log",  // Name of the slice
+    initialState, // Initial state for the slice
+    reducers: {
+     // Reducers go here
+    },
+    extraReducers: (builder) => {
+    builder
+    ...
+    },
+  })
+  ```
+
+- **Initial State:** The initialState object defines the default state for the slice. In this example, it has a logList array to hold log entries.
+
+- **Reducers:** The reducers field in createSlice is an object where each key is a reducer function name and the value is the reducer function itself.
+
+  - **addLogList:** This reducer adds a new log entry to the logList array. It takes a PayloadAction<LogData> which contains the new log data.
+
+#### 4. **Initial State**:
+
+- **Definition**: The `initialState` object defines the default state for the slice. Here, logList is an array that will hold log entries of type LogData.
+- **Example**:
+
+  ```typescript
+  type LogSliceType = {
+    logList: LogData[];
+  };
+  const initialState: LogSliceType = {
+    logList: [],
+  };
+  ```
+
+#### 5. **Actions**:
+
+- **Definition**: Actions are payloads of information that send data from your application to your Redux store. They describe what happened in your app.
+- **Action Creators**: Actions in Redux Toolkit are defined within a slice using `createSlice`. The slice automatically generates action creators for each reducer function.
+- **PayloadAction**: In Redux, using `typescript` we specify the type of data passed as the action like this: `PayloadAction<LogData>` where the `LogData` is a type we created.
+
+#### 6. **Reducers**: Most important Redux Concept
+
+- **Definition**: Reducers specify `how the application's state changes in response to actions sent to the store`.
+  - They are [pure functions](https://www.tutorialspoint.com/redux/redux_pure_functions.htm) that take the previous state and an action as arguments and return a new state.
+- **Usage in Redux Toolkit**: We are creating the reducers when we use `createSlice` in the `reducers` property.
+  - Each reducer function handles a single action type, taking the current state and an action as arguments and returning a new state
+- **Example**:
+
+  ```typescript
       const logSlice = createSlice({
         name: "log",  // Name of the slice
         initialState, // Initial state for the slice
         reducers: {
-         // Reducers go here
+          // Reducer to add a new log to the state (CREATE)
+          addLogList: (state, action: PayloadAction<LogData>) => {
+            const { id, title, content, timestamp, urlPhoto } = action.payload;
+            const newLog = {
+              id: id,
+              content: [...content], // Use the content passed in the action
+              title: title,
+              timestamp: timestamp, // Use the timestamp passed in the action
+              urlPhoto,
+            };
+
+            state.logList.push(newLog);
+          },
         },
         extraReducers: (builder) => {
         builder
         ...
         },
       })
-      ```
+  ```
 
-    - **Initial State:** The initialState object defines the default state for the slice. In this example, it has a logList array to hold log entries.
+#### 7. **Extra Reducers** and **Async Thunks**:
 
-    - **Reducers:** The reducers field in createSlice is an object where each key is a reducer function name and the value is the reducer function itself.
+**_Async Thunks_**
 
-      - **addLogList:** This reducer adds a new log entry to the logList array. It takes a PayloadAction<LogData> which contains the new log data.
+- **Definition**: Async Thunks are a middleware for Redux that allow you to perform asynchronous operations (e.g., API calls)
 
-4.  **Initial State**:
+  - In these functions, you can dispatch actions based on the results of those async operations. They help in handling side effects in Redux applications.
 
-    - **Definition**: The `initialState` object defines the default state for the slice. Here, logList is an array that will hold log entries of type LogData.
-    - **Example**:
+- **Usage**: Async Thunks are created using the `createAsyncThunk` function from Redux Toolkit. This function takes a string action type and a payload creator callback that performs the async logic and returns a promise.
+- **Example**: Fetch the chatLogs from the databse
 
-      ```typescript
-      type LogSliceType = {
-        logList: LogData[];
-      };
-      const initialState: LogSliceType = {
-        logList: [],
-      };
-      ```
+  ```typescript
+  // Read (Fetch Logs by UserID)
+  export const fetchLogs = createAsyncThunk(
+    "log/fetchLogs",
+    async (userId: string, { rejectWithValue }) => {
+      try {
+        return await fetchAllLogs(userId);
+      } catch (error) {
+        console.error("Failed to fetch logs: ", error);
+        return rejectWithValue(logErrorMessages[LogErrorCodes.READ_FAILED]);
+      }
+    }
+  );
+  ```
 
-5.  **Actions**:
+  - `fetchAllLogs` is a helper function that will make the client-side request and fetch the associated chat logs from our mongo db database
 
-    - **Definition**: Actions are payloads of information that send data from your application to your Redux store. They describe what happened in your app.
-    - **Action Creators**: Actions in Redux Toolkit are defined within a slice using `createSlice`. The slice automatically generates action creators for each reducer function.
-    - **PayloadAction**: In Redux, using `typescript` we specify the type of data passed as the action like this: `PayloadAction<LogData>` where the `LogData` is a type we created.
+**_Extra Redcuers_**:
 
-6.  **Reducers**: Most important Redux Concept
+- **Definition:** Extra reducers allow a slice to handle actions defined outside of the slice itself, such as actions generated by async thunks. They are defined using the `extraReducers` field in the `createSlice` function.
+- **Usage:** Extra reducers are specified using a builder callback function, which provides methods to handle different action types (`pending`, `fulfilled`, `rejected`) generated by async thunks.
+- **Example**:
 
-    - **Definition**: Reducers specify `how the application's state changes in response to actions sent to the store`.
-      - They are [pure functions](https://www.tutorialspoint.com/redux/redux_pure_functions.htm) that take the previous state and an action as arguments and return a new state.
-    - **Usage in Redux Toolkit**: We are creating the reducers when we use `createSlice` in the `reducers` property.
-      - Each reducer function handles a single action type, taking the current state and an action as arguments and returning a new state
-    - **Example**:
+  ```typescript
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchLogs.fulfilled, (state, action) => {
+        state.logList = action.payload;
+      })
+      .addCase(fetchLogs.rejected, (_state, action) => {
+        console.error('Failed to load logs:', action.payload);
+      });
+    // More builders assigned here
+    builder
+      .addCase(...)
+  },
+  ```
 
-      ```typescript
-          const logSlice = createSlice({
-            name: "log",  // Name of the slice
-            initialState, // Initial state for the slice
-            reducers: {
-              // Reducer to add a new log to the state (CREATE)
-              addLogList: (state, action: PayloadAction<LogData>) => {
-                const { id, title, content, timestamp, urlPhoto } = action.payload;
-                const newLog = {
-                  id: id,
-                  content: [...content], // Use the content passed in the action
-                  title: title,
-                  timestamp: timestamp, // Use the timestamp passed in the action
-                  urlPhoto,
-                };
-
-                state.logList.push(newLog);
-              },
-            },
-            extraReducers: (builder) => {
-            builder
-            ...
-            },
-          })
-      ```
-
-7.  **Extra Reducers** and **Async Thunks**:
-
-    **_Async Thunks_**
-
-    - **Definition**: Async Thunks are a middleware for Redux that allow you to perform asynchronous operations (e.g., API calls)
-
-      - In these functions, you can dispatch actions based on the results of those async operations. They help in handling side effects in Redux applications.
-
-    - **Usage**: Async Thunks are created using the `createAsyncThunk` function from Redux Toolkit. This function takes a string action type and a payload creator callback that performs the async logic and returns a promise.
-    - **Example**: Fetch the chatLogs from the databse
-
-      ```typescript
-      // Read (Fetch Logs by UserID)
-      export const fetchLogs = createAsyncThunk(
-        "log/fetchLogs",
-        async (userId: string, { rejectWithValue }) => {
-          try {
-            return await fetchAllLogs(userId);
-          } catch (error) {
-            console.error("Failed to fetch logs: ", error);
-            return rejectWithValue(logErrorMessages[LogErrorCodes.READ_FAILED]);
-          }
-        }
-      );
-      ```
-
-      - `fetchAllLogs` is a helper function that will make the client-side request and fetch the associated chat logs from our mongo db database
-
-    **_Extra Redcuers_**:
-
-    - **Definition:** Extra reducers allow a slice to handle actions defined outside of the slice itself, such as actions generated by async thunks. They are defined using the `extraReducers` field in the `createSlice` function.
-    - **Usage:** Extra reducers are specified using a builder callback function, which provides methods to handle different action types (`pending`, `fulfilled`, `rejected`) generated by async thunks.
-    - **Example**:
-
-      ```typescript
-      },
-      extraReducers: (builder) => {
-        builder
-          .addCase(fetchLogs.fulfilled, (state, action) => {
-            state.logList = action.payload;
-          })
-          .addCase(fetchLogs.rejected, (_state, action) => {
-            console.error('Failed to load logs:', action.payload);
-          });
-        // More builders assigned here
-        builder
-          .addCase(...)
-      },
-      ```
-
-8.  **Connecting Redux to React**:
+#### 8. **Connecting Redux to React**:
 
 - In the file: `Client/src/redux/index.ts`:
 
@@ -714,7 +766,7 @@ Visual Studio Code is a source-code editor that includes support for development
 
   - **Best Practices**: For this application, make sure to export reducers and actions for modular access when creating a new Redux slice.
 
-9. **Selectors**:
+#### 9. **Selectors**:
 
 - **Definition**: Selectors allow you to `read` data from the global redux store.
 - **Purpose**: They encapsulate the state structure & provide easy access to specific parts of the state.
@@ -730,7 +782,7 @@ Visual Studio Code is a source-code editor that includes support for development
     }
   ```
 
-10. **Dispatch**
+#### 10. **Dispatch**
 
 - **Definition**: In redux, we `dispatch` actions and assign `payloads` (input) in our components.
   - This causes the UI to update based on the action we dispatch and the payload data we assign to it.
@@ -958,53 +1010,539 @@ export interface MessageSliceType {
 
 ## Backend Documentation
 
-### Technologies Used (Backend)
+### Server Setup
 
-- List and describe the backend technologies.
+- In the file `server/index.js`, I have setup the middleware, express routes, and openAI configuration
 
-### API Endpoints
+### Express Routes
 
-- Document the API endpoints with details like URL, method, and description.
+- In the folder, `server/routes`, I have modularized my routes.
+
+#### API Endpoints
+
+- Express Routing is handled at these endpoints from the following steps:
+
+1. **Define Routes in `index.js`** :
+
+- 1a. Import Route definition:
+
+  ```javascript
+  import chatLogs from "./routes/chatLog.js";
+  ```
+
+- 1b. Setup routes:
+
+  ```javascript
+  app.use("/chatLogs", chatLogs);
+  ```
+
+2. In the file `server/routes/chatLog.js`, setup the routrer:
+
+   ```javascript
+   import express from "express";
+   const router = express.Router();
+   ```
+
+3. In the file `server/routes/chatLog.js`, **Setup the endpoint**:
+
+   ```javascript
+   // Test: Access here `http://localhost:4000/chatLogs`
+   router.get("/", async (req, res) => {
+     res.send("ChatLog Backend Working");
+   });
+   ```
+
+- This endpoint can now be reached at `http://localhost:4000/chatLogs`
 
 ### Integration with OpenAI API
 
-- Explain how the OpenAI API is integrated.
-- Provide examples of making requests to the OpenAI API.
+#### Assistants
+
+- The application uses [Assistants overview](https://platform.openai.com/docs/assistants/overview) to manage chats.
+
+  - **Definition**: An Assistant has instructions and can leverage models, tools, and files to respond to user queries.
+  - Use the [Assistant API docs](https://platform.openai.com/docs/api-reference/assistants) to research more on how the assistants API works
+
+#### **How to create an Assistant**:
+
+1. In the file `server/helpers/openAI`, there is a helper function that builds an openAI Assistant:
+
+   ```javascript
+   export async function createAssistant(title, description, instructions) {
+     const gptInstructions =
+       "You are a helpful assistant. When you provide explanations or answers, format them using Markdown syntax. For example, use ** for bold text where emphasis is needed. Make sure this format is in every message! Make sure this format is in every message! Please give responses in a structured way with sections for each instruction response given below:\n" +
+       instructions;
+     const assistant = await openai.beta.assistants.create({
+       name: title,
+       description: description,
+       instructions: gptInstructions,
+       model: "gpt-4o",
+     });
+     return assistant;
+   }
+   ```
+
+- This function will return an [assistant object](https://platform.openai.com/docs/api-reference/assistants/object), which will have a unique id.
+  .
+
+  - **Problem**: If two users try to use the same assistant, at the same time, it will only work for the user that submits the message first.
+
+  - **Solution**: Every user must have a list of their own assistants created at sign-up.
+
+  - **Example**: If we have three total assistants in our application (`Normal`, `Matching`, `Ethical`) and five total users, then we will have 15 total assistants created.
+
+    - Each user has three assistants created for them when they sign up.
+
+    - If a new user creates an assistant, then we will create 5 more assistants and store the assistant ids in our database.
+
+  - When a new user logs in, we need to create new assistants for them
+
+#### Threads
+
+- **Definition**: A [thread](https://platform.openai.com/docs/api-reference/threads/object) is a list of messages created by an `assistant` object where it contains the context of the chat log.
+
+  - In our application, every `chatlog` has a unique `id` that is matched with its `threadId` in the `threads` collection
+
+  - In the file `server/helpers/openAI/threadFunctions.js`, I have created helper functions to create a new thread, add a message to a thread, delete a thread, and more.
+
+### Integration with MongoDB
+
+- This section explains how MongoDB is integrated with the Express application.
+
+- In our express routes, we are accessing our MongoDB collections to perform CRUD operations in the folder `server/db`
+
+- The integration follows a structured approach where Express routes call service functions, which in turn interact with the MongoDB collections.
+
+- This layered architecture promotes separation of concerns and enhances code maintainability.
+
+#### Benefits of This Approach
+
+1. **Separation of Concerns**: Each layer in the architecture has a specific responsibility. Routes handle HTTP requests, services contain business logic, and collections manage database interactions.
+2. **Maintainability**: Changes in one layer (e.g., database schema changes) can be managed without affecting other layers. This makes the code easier to maintain and extend.
+3. **Reusability**: Service functions can be reused across different routes, reducing code duplication.
+4. **Testability**: Each layer can be tested independently, improving the overall test coverage and reliability of the application.
+
+#### Instructions
+
+1. **Express Route Calls a Function in a Service File**:
+
+- In the Express route, a service function is called to **handle the logic of fetching data from the database**.
+
+- Example: file located at `server/routes/chatLog.js`
+
+  ````javascript
+  import { getLogsByUser } from "../db/models/chatlog/chatLogServices.js";
+  // Get the entire LogList: (Read)
+  router.get("/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    try {
+      const logs = await getLogsByUser(userId);
+      res.status(200).json(logs);
+    } catch (error) {
+      console.error("Failed to fetch logs: ", error);
+      res.status(500).send("Failed to fetch logs: " + error.message);
+    }
+  });
+  ```
+  ````
+
+2. **Service Function Calls a Function from the Collections File**
+
+- The service file acts as a middleman between the Express route and the MongoDB collection, ensuring that the business logic is separated from database operations.
+
+- **Example**: file located at `server/db/models/chatLog/chatLogServices.js`
+
+  ```javascript
+  // Read (Fetch ALL logs by userId)
+  export const getLogsByUser = async (userId) => {
+    try {
+      const logs = await ChatLogModel.fetchLogsByUserId(userId);
+      return logs.map((log) => ({
+        id: log._id,
+        content: log.content,
+        title: log.title,
+        timestamp: log.timestamp,
+        urlPhoto: log.urlPhoto,
+      }));
+    } catch (error) {
+      throw new Error("Service error: " + error.message);
+    }
+  };
+  ```
+
+3. **Collections File Performs the Database Query**
+
+- The collections file contains functions that directly interact with the MongoDB database. It performs the necessary queries and returns the results.
+
+- Example (File: `server/db/models/chatLog/chatLogCollection.js`):
+
+  ```javascript
+  // Read
+  export const fetchLogsByUserId = async (userId) => {
+    try {
+      const logs = await chatLogCollection.find({ userId: userId }).toArray();
+      return logs;
+    } catch (error) {
+      throw new Error("Error fetching logs: " + error.message);
+    }
+  };
+  ```
 
 ## Database Documentation
 
 ### Database Used
 
-- Describe MongoDB and its use in the project.
+- MongoDB is a NoSQL database that provides flexibility and scalability for handling large amounts of unstructured data.
+- It stores data in flexible, JSON-like documents, meaning fields can vary from document to document and data structure can change over time.
+- For this project, MongoDB is used to store various collections related to the chatbot application.
 
 ### Collections
 
-- List and describe the collections used in MongoDB.
+- **Note**: The sensitive information below, such as the `_id` property values are all made up and are not the actual values stored in our `mongodb` database.
+
+#### chatLogs
+
+- The `chatLogs` collection stores the logs of conversations between users and the chatbot. Each document represents a single conversation with its metadata and messages.
+
+- **ChatLogs Example Document**:
+
+  ```json
+  {
+    "_id": "a5cf3424-e726-47e4-a7de-b7394353601cd8",
+    "userId": "user123",
+    "title": "Hello there",
+    "timestamp": "2024-05-24T15:46:37.387Z",
+    "content": [
+      {
+        "id": 1716565593851,
+        "sender": "user",
+        "text": "Hi",
+        "model": "Testing Assistant"
+      },
+      {
+        "id": 1716565595993,
+        "sender": "bot",
+        "text": "**Orange**\n\nHello! How can I assist you today?",
+        "urlPhoto": ""
+      }
+    ]
+  }
+  ```
+
+#### gpts
+
+- The `gpts` collection stores information about different GPT (Generative Pre-trained Transformer) assistants available in the application. Each document includes details about an assistant, such as its identifier, description, and associated user.
+
+- **Gpts Example Document**:
+
+  ```json
+  {
+    "_id": {
+      "$oid": "664ca5sdafas43sdf423f09f24"
+    },
+    "assistantId": "asst_exampleId",
+    "userId": "user123",
+    "title": "Ethical",
+    "desc": "An ethical assistant to provide insightful concerns.",
+    "urlPhoto": "https://example.com/photo.jpg"
+  }
+  ```
+
+#### threads
+
+- The `threads` collection stores information about conversation threads. Each document includes a unique thread identifier.
+
+- **Threads Example Document**:
+
+  ```json
+  {
+    "_id": "85a23e246f-69fa-4201-b9a0-430wer237a075",
+    "threadId": "thread_exampleId"
+  }
+  ```
+
+#### users
+
+- The `users` collection stores user profile information. Each document includes details about a user, such as their first and last name.
+
+- **Users Example Document**:
+
+  ```json
+  {
+    "_id": "user123",
+    "firstName": "Cristian",
+    "lastName": "Castro"
+  }
+  ```
+
+- Once the feature for `settingForm` is finished, this users collection will contain information on `interests`, `availability`, etc.
+
+  - This information can then be used to match advisors with students and enhance the effectiveness of their personal assistants.
 
 ### Schema Definitions
 
-- Provide schema definitions for each collection.
+#### chatLogs Schema
+
+- The `chatLogs` schema defines the structure of the chat log documents. Key fields include:
+
+  - `_id`: Unique identifier for the chat log (UUID).
+  - `userId`: Identifier for the user (string).
+  - `title`: Title of the chat session (string).
+  - `timestamp`: Timestamp of when the chat occurred (ISO date).
+  - `content`: Array of message objects, each containing:
+    - `id`: Unique identifier for the message (number).
+    - `sender`: Sender of the message (string, e.g., "user" or "bot").
+    - `text`: Text content of the message (string).
+    - `model`: Model used for generating the bot's response (string).
+    - `urlPhoto`: URL of the photo associated with the message, if any (string).
+
+#### gpts Schema
+
+- The `gpts` schema defines the structure of the GPT assistant documents. Key fields include:
+
+  - `_id`: Unique identifier for the assistant (ObjectId).
+  - `assistantId`: Identifier for the assistant (string).
+  - `userId`: Identifier for the user associated with the assistant (string).
+  - `title`: Title of the assistant (string).
+  - `desc`: Description of the assistant (string).
+  - `urlPhoto`: URL of the photo associated with the assistant (string).
+
+#### threads Schema
+
+- The `threads` schema defines the structure of the thread documents. Key fields include:
+
+  - `_id`: Unique identifier for the thread (UUID).
+  - `threadId`: Identifier for the thread (string).
+
+#### users Schema
+
+- The `users` schema defines the structure of the user documents. Key fields include:
+
+  - `_id`: Unique identifier for the user (string).
+  - `firstName`: First name of the user (string).
+  - `lastName`: Last name of the user (string).
 
 ## Contribution Guidelines
 
 ### How to Contribute
 
-- Explain the process for contributing to the project.
-- Provide guidelines for submitting issues and pull requests.
+Contributing to this project involves a series of steps to ensure that changes are implemented smoothly and consistently. Follow these guidelines to contribute effectively:
+
+1. **Fetch and Pull the Latest Changes**
+
+   - Before starting, make sure you have the latest changes from the main branch.
+   - Run the following commands:
+     ```bash
+     git fetch origin
+     git pull origin main
+     ```
+
+2. **Create a New Branch Off Main**
+
+   - Create a new branch to work on your feature or bug fix. Use a descriptive name for your branch.
+   - Example:
+     ```bash
+     git checkout -b feature/your-feature-name
+     ```
+
+3. **Commit Your Changes**
+
+   - Make your changes and commit them with a clear and concise commit message.
+   - Example:
+     ```bash
+     git add .
+     git commit -m "Add feature to enhance user authentication"
+     ```
+
+4. **Push Your Changes to Your Branch**
+
+   - Push your committed changes to the remote repository.
+   - Example:
+     ```bash
+     git push origin feature/your-feature-name
+     ```
+
+5. **Sync Changes from the Main Branch**
+
+   - Ensure your branch is up to date with the latest changes from the main branch by merging the main branch into your branch.
+   - Example:
+     ```bash
+     git checkout main
+     git pull origin main
+     git checkout feature/your-feature-name
+     git merge main
+     ```
+
+6. **Create the Pull Request and Assign Reviewers**
+
+   - Create a pull request (PR) from your branch to the main branch.
+   - Provide a detailed description of your changes and assign reviewers.
+   - Example:
+
+     ```markdown
+     ## Description
+
+     Detailed explanation of what the new feature or fix does.
+
+     ## Changes
+
+     - List of changes made
+     ```
+
+7. **Wait for Your Pull Request to Be Reviewed**
+
+   - Wait for your PR to be reviewed by the assigned reviewers.
+   - If changes are requested, make the necessary adjustments and commit them to your branch. Repeat steps 3 and 4 as needed.
+
+8. **Squash and Merge into Main**
+
+   - Once your PR is approved, use the `squash and merge` option to merge it into the main branch.
+   - Provide a detailed description of the new feature in the merge commit.
+   - Example:
+
+     ```markdown
+     ## New Feature: Enhanced User Authentication
+
+     - Detailed description of the new feature.
+     ```
+
+9. **Update GitHub Projects**
+
+   - Use GitHub Projects to check off the task associated with your feature and log the hours it took to complete.
+   - Example:
+     ```markdown
+     - [x] Enhanced user authentication (3 hours)
+     ```
+
+10. **Document Your Changes**
+    - Update the `documentation/README.md` file with any relevant changes or new features.
+    - Ensure your documentation is clear and provides sufficient detail for other team members to understand the changes.
+
+By following these steps, you can contribute effectively to the project and maintain a smooth workflow within the team.
 
 ### Coding Standards
 
-- Describe the coding standards and best practices to be followed.
+- Our current MERN application has the following coding standards
+
+#### **Prettier Configuration:** Prettier is used to format our code.
+
+- The configuration is defined in the `.prettierrc` file at the root of the project:
+
+  ```json
+  {
+    "singleQuote": false,
+    "trailingComma": "es5",
+    "printWidth": 80,
+    "tabWidth": 2,
+    "semi": true,
+    "jsxSingleQuote": false
+  }
+  ```
+
+- Always make sure to submit your commits using this format.
+
+1. **Format the Client**:
+
+   ```bash
+   cd Client && npm run format
+   ```
+
+2. **Format the Server**
+
+   ```bash
+   cd server && npm run format
+   ```
+
+#### ESLint Configuration: Client
+
+- The ESLint configuration for the **client-side** code is defined in the file [`client/.eslintrc.cjs`](https://github.com/Castro19/LAEP-GPT/blob/main/Client/.eslintrc.cjs)
+
+- **Run Lint on Client**:
+
+  ```bash
+  cd Client && npm run lint
+  ```
+
+#### ESLint Configuration: Server
+
+- The ESLint configuartion for the **server-side** code is defined in the file [`server/eslint.config.js`]()
+
+- **Run Lint on server **:
+
+  ```bash
+  cd server && npm run lint
+  ```
 
 ## Additional Resources
 
-### Useful Links
+### MongoDB Compass
 
-- Provide links to related documentation, tutorials, and other resources.
+- Download MongoDB Compasss for a GUI to manage your collections
 
-### Contacts
+- [Download Link](https://www.mongodb.com/products/tools/compass)
 
-- Provide contact information for project maintainers or supervisors.
+### VSCode Extensions
+
+- Video on how to setup your VSCode for React: [video](https://www.youtube.com/watch?v=NngvFclfdgI)
+
+- To enhance your development experience and improve productivity, we recommend the following Visual Studio Code (VSCode) extensions. These extensions are tailored to work well with the technologies and tools used in this project.
+
+1. **ESLint**
+
+   - Ensures consistent code quality and style by identifying and fixing linting issues.
+   - [ESLint Extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+
+2. **Prettier - Code Formatter**
+
+   - Automatically formats your code according to a set of defined style rules, ensuring a consistent codebase.
+   - [Prettier Extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+3. **Tailwind CSS IntelliSense**
+
+   - Provides autocompletion, syntax highlighting, and linting for Tailwind CSS, making it easier to work with utility-first CSS.
+   - [Tailwind CSS IntelliSense Extension](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+
+4. **MongoDB for VS Code**
+
+   - Connects to your MongoDB database, allowing you to browse, query, and manage your collections directly from VSCode.
+   - [MongoDB Extension](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode)
+
+5. **React Extension Pack**
+
+   - A collection of essential extensions for React development, including React and Redux snippets, and more.
+   - [React Extension Pack](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippetsk)
+
+6. **JavaScript (ES6) Code Snippets**
+
+   - Provides a comprehensive collection of JavaScript and ES6 code snippets to speed up your development process.
+   - [JavaScript (ES6) Code Snippets Extension](https://marketplace.visualstudio.com/items?itemName=xabikos.JavaScriptSnippets)
+
+7. **Pretty Typescript Errors**
+
+   - Provides easy-to-read Typescript error messages
+   - [Pretty Typescript Errors](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+
+8. **Path Intellisense**
+
+   - Autocompletes filenames and paths in your projects, saving time when importing files.
+   - [Path Intellisense Extension](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense)
+
+9. **Markdown All in One** (Optional)
+   - Provides a comprehensive set of tools for working with Markdown files, including shortcuts, preview, and TOC generation.
+   - [Markdown All in One Extension](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+
+#### Installation Instructions
+
+To install these extensions, follow these steps:
+
+1. Open VSCode.
+2. Go to the Extensions view by clicking on the Extensions icon in the Activity Bar on the side of the window or by pressing `Ctrl+Shift+X`.
+3. Search for each extension by name and click the "Install" button.
+
+### Contact
+
+- Personal E-mail: `cmcastro559@gmail.com`
+- School E-mail: `ccastroo@calpoly.edu`
 
 ## Frequently Asked Questions (FAQ)
 

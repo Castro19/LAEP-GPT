@@ -6,12 +6,6 @@ import {
 } from "../db/models/gpt/gptServices.js";
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  try {
-    res.status(200).json({ message: "GPT GET is working" });
-  } catch (error) {}
-});
-
 // Create
 router.post("/", async (req, res) => {
   const gptData = req.body;

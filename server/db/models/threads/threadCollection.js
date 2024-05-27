@@ -1,6 +1,5 @@
 import db from "../../connection.js";
 const threadCollection = db.collection("threads");
-import { ObjectId } from "mongodb";
 
 // Create
 export const createThread = async (chatId, threadId) => {

@@ -44,7 +44,7 @@ router.post("/respond", async (req, res) => {
   console.log("THREAD ID: ", threadId);
 
   // Add User Message to thread:
-  const threadMessages = await addMessageToThread(threadId, "user", message);
+  await addMessageToThread(threadId, "user", message);
   // console.log("Thread Messages: ", threadMessages);
   // Run Thread
   // Start the stream from OpenAI's API

@@ -38,6 +38,9 @@ jobs:
       - name: Install Server Dependencies
         run: cd server && npm install
 
+      - name: Run lint
+        run: cd server && npm run lint
+
     # Placeholder for future server-side testing
     # - name: Run Server Tests
     #   run: cd server && npm test

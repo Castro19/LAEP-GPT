@@ -11,7 +11,6 @@ export const addThread = async (chatId, threadId) => {
   } catch (error) {
     console.error("Service error: ", error.message);
     throw new Error("Service error: " + error.message);
-    return null;
   }
 };
 

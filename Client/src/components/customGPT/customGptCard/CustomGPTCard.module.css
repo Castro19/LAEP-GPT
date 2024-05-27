@@ -16,7 +16,9 @@
   padding: 16px;
   margin: 16px;
   max-width: 100%;
-  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    box-shadow 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 
 .card:hover {
