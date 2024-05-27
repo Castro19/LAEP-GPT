@@ -33,21 +33,47 @@
       - [Layout Explanation](#layout-explanation)
     - [Components](#components)
     - [Redux](#redux)
-      - [1. **Overview of Redux**:](#1-overview-of-redux)
-      - [2. **Store Configuration**:](#2-store-configuration)
-      - [3. **Slices**:](#3-slices)
-      - [4. **Initial State**:](#4-initial-state)
-      - [5. **Actions**:](#5-actions)
-      - [6. **Reducers**: Most important Redux Concept](#6-reducers-most-important-redux-concept)
-      - [7. **Extra Reducers** and **Async Thunks**:](#7-extra-reducers-and-async-thunks)
-      - [8. **Connecting Redux to React**:](#8-connecting-redux-to-react)
-      - [9. **Selectors**:](#9-selectors)
-      - [10. **Dispatch**](#10-dispatch)
+      - [1. Overview of Redux](#1-overview-of-redux)
+      - [2. Store Configuration](#2-store-configuration)
+      - [3. Slices](#3-slices)
+      - [4. Initial State](#4-initial-state)
+      - [5. Actions:](#5-actions)
+      - [6. Reducers: Most important Redux Concept](#6-reducers-most-important-redux-concept)
+      - [7. Extra Reducers and Async Thunks:](#7-extra-reducers-and-async-thunks)
+      - [8. Connecting Redux to React](#8-connecting-redux-to-react)
+      - [9. Selectors](#9-selectors)
+      - [10. Dispatch](#10-dispatch)
+      - [11. Best Practices:](#11-best-practices)
+    - [Auth Slice](#auth-slice)
+      - [Auth Selector to access the Auth State](#auth-selector-to-access-the-auth-state)
+      - [Dispatching Auth Actions](#dispatching-auth-actions)
+      - [Thunks for Authentication](#thunks-for-authentication)
+      - [Auth Error Handling](#auth-error-handling)
+    - [Gpt Slice (Assistants)](#gpt-slice-assistants)
+      - [Gpt Selector to Access the Gpt State](#gpt-selector-to-access-the-gpt-state)
+      - [Dispatching Gpt Actions](#dispatching-gpt-actions)
+      - [Gpt Asynchronous Thunks](#gpt-asynchronous-thunks)
+      - [Gpt Handling Errors](#gpt-handling-errors)
+    - [Layout Slice](#layout-slice)
+      - [Layout State Selectors](#layout-state-selectors)
+      - [Layout Actions](#layout-actions)
+      - [Reducers in Layout Slice](#reducers-in-layout-slice)
+      - [Handling UI States](#handling-ui-states)
+    - [Log Slice](#log-slice)
+      - [Log Selector to Access the Log State](#log-selector-to-access-the-log-state)
+      - [Dispatching Log Actions](#dispatching-log-actions)
+      - [Chat Log Handling Reducers](#chat-log-handling-reducers)
+      - [Chat Log Error Handling](#chat-log-error-handling)
+    - [Message Slice](#message-slice)
+      - [Message Selector to Access the Message State](#message-selector-to-access-the-message-state)
+      - [Dispatching Message Actions](#dispatching-message-actions)
+      - [Meassage Handling Reducers](#meassage-handling-reducers)
+      - [Message Error Handling](#message-error-handling)
     - [Types](#types)
       - [Types in application](#types-in-application)
     - [UI Component Libraries](#ui-component-libraries)
     - [Styling](#styling)
-      - [Instructions using Tailwind](#instructions-using-tailwind)
+      - [Instructions using CSS Modules](#instructions-using-css-modules)
       - [Pointers for CSS:](#pointers-for-css)
   - [Backend Documentation](#backend-documentation)
     - [Server Setup](#server-setup)
@@ -73,13 +99,17 @@
       - [threads Schema](#threads-schema)
       - [users Schema](#users-schema)
   - [Contribution Guidelines](#contribution-guidelines)
-    - [How to Contribute](#how-to-contribute)
     - [Coding Standards](#coding-standards)
       - [**Prettier Configuration:** Prettier is used to format our code.](#prettier-configuration-prettier-is-used-to-format-our-code)
       - [ESLint Configuration: Client](#eslint-configuration-client)
       - [ESLint Configuration: Server](#eslint-configuration-server)
+    - [How to Contribute](#how-to-contribute)
+      - [Contribution Important Note](#contribution-important-note)
   - [Additional Resources](#additional-resources)
+    - [Github Desktop or Tower (Optional but strongly recommended)](#github-desktop-or-tower-optional-but-strongly-recommended)
     - [MongoDB Compass](#mongodb-compass)
+    - [Browser: Firefox Developer Edition](#browser-firefox-developer-edition)
+      - [Firefox Chrome Extensions (Very helpful)](#firefox-chrome-extensions-very-helpful)
     - [VSCode Extensions](#vscode-extensions)
       - [Installation Instructions](#installation-instructions)
     - [Contact](#contact)
@@ -90,13 +120,97 @@
 
 ### Overview
 
-- Briefly describe the project's purpose and objectives.
-- Explain the significance of the project for students and advisors.
-- Mention the technologies and tools used in the project.
+- Directed under the supervision of Prof. Franz J. Kurfess, this project is part of the Computer Science department at California Polytechnic State University, San Luis Obispo.
+- It is an open-source repository intended to aid students with their senior projects.
+- By leveraging advanced AI capabilities, this project aims to streamline the process of assisting students with their senior project proposals, matching them with advisors, and enhancing the overall senior project experience.
 
 ### Project Goals
 
-- List the primary goals of the project.
+1. **Develop a responsive and intuitive chatbot**:
+
+   - **Description:** Assist students and advisors by leveraging the OpenAI API for advanced conversational capabilities.
+   - **Chat Context**: Using the `Assistant API`, every chat log is associated with a `thread Id`, allowing users to continue their conversation with the context from their previous messages.
+   - **Streaming** Messages are continuously streamed out to the user, and responses are styled in Markdown format, which is converted into HTML.
+   - **Styling Libraries:**
+     - **MarkdownIt:** A Markdown parser that converts Markdown text into HTML. It supports a variety of Markdown features and can be extended with plugins for additional functionality.
+     - **DOMPurify:** A library that sanitizes HTML and prevents XSS (Cross-Site Scripting) attacks by cleaning up the HTML generated from MarkdownIt, ensuring that only safe and allowed HTML elements and attributes are rendered.
+   - **Progress:** Finished
+
+2. **Design an easy-to-navigate interface**:
+
+   - Ensure the interface is accessible to all students at Cal Poly.
+   - Enhance usability to support efficient navigation and interaction.
+   - **Progress**: In progress.
+     - Most features are currently working. However, new features need to be integrated seamlessly to maintain accessibility.
+
+3. **User Authentication**:
+
+   - Users will need to sign-in and view their specific chat history and continue a chat where they left off.
+     - After user is logs on, they are presented with a list of all their chat logs that were fetched from the MongoDB database.
+   - **Firebase** is currently being used to authenticate users by E-mail and password and by Google sign on.
+   - **Change approach to**: Only Allow only Cal Poly students to register for the application using their school Outlook email.
+     - Verify student status through email domain checks and integrate with university authentication systems if possible.
+     - Ensure secure storage and handling of user credentials.
+   - **Progress**: In progress.
+     - Basic authentication setup is in place, but further integration with Cal Poly's email verification and authentication systems is needed.
+
+4. **Access Control**:
+
+   - Users will need to be assigned permissions based on their current role/entity.
+   - Application will need to decide between `RBAC` and `EBAC` to assign permssions to users.
+   - Users will be able to grant permissions to other users to read/write to their chat log
+   - Only allow specific users the power to create assistants
+   - **Progress**: Not yet started
+
+5. **Create custom assistants for professors**:
+
+   - Provide tailored responses based on the professor's expertise.
+   - Enable students to ask questions and receive personalized assistance.
+   - **Progress**: Finished
+     - There is a page that easily allows creation of assistants through submitting a form.
+     - Minor tweaks needed for scalability issues.
+
+6. **Help match students and advisors**:
+
+   - Analyze interests, availability, and previous projects to facilitate matches.
+   - Streamline the process of finding advisors for senior projects.
+   - **Progress**: In progress.
+     - Need to store user information such as interests, availability, previous projects, etc.
+     - Following this, create the action function in `Assistant API` to match students with advisors.
+
+7. **Analyze senior project proposals**:
+
+   - Identify any missing sections or readiness for submission.
+   - Ensure students receive comprehensive feedback on their proposals.
+   - Use action functions in `Assistant API` to run scripts analyzing senior project proposals.
+   - **Progress**: Not started
+     - Assistant API foundation is there, but the action function has yet to be started.
+
+8. **Guide students on class registration**:
+
+   - Provide information on how to register for classes requiring instructor consent, such as senior projects or CSC 400.
+   - Assist students in navigating the registration process smoothly.
+   - **Progress**: In progress.
+     - The foundation is there to create an assistant specializing in helping students register for these classes. Work is ongoing on prompt engineering to provide clear and concise instructions, and continuously update the prompt with recent information.
+
+9. **Create collaborative chat environments**:
+
+   - Develop chat functionality where multiple users can participate in the same conversation.
+   - Allow students and advisors to share chats and collaborate effectively.
+   - **Progress**: Not started.
+     - The foundation is there, with each chat log having a unique ID. This ID can be shared with other users and grant them permissions using Role-based Access Control for read/write access.
+
+10. **Integrate the chatbot with Slack**:
+
+    - Enable seamless communication within the Slack platform.
+    - Facilitate interactions between students and professors through Slack notifications.
+    - **Progress**: Not started.
+
+11. **Implement a message flagging system**:
+
+    - Allow students to flag chatbot responses for further review by a professor.
+    - Ensure accurate and verified information is provided by involving professors in the review process.
+    - **Progress**: Not started.
 
 ## Getting Started
 
@@ -591,12 +705,12 @@ Visual Studio Code is a source-code editor that includes support for development
 
 ### Redux
 
-#### 1. **Overview of Redux**:
+#### 1. Overview of Redux
 
 - **Redux**: A state management tool that helps us keep track of the entire application's state in a predictable and centralized way. This makes it easier to manage and debug the state of our app.
 - **Benefits**: Centralized state management, easier debugging, predictable state transitions, and improved testability.
 
-#### 2. **Store Configuration**:
+#### 2. Store Configuration
 
 - **Purpose**: The Redux store holds the complete state tree of the application.
 - **Configuration**: The `store` is configured in the file: `Client/src/redux/store.ts`
@@ -616,7 +730,7 @@ Visual Studio Code is a source-code editor that includes support for development
   export type AppDispatch = typeof store.dispatch;
   ```
 
-#### 3. **Slices**:
+#### 3. Slices
 
 - **Purpose**: Define a slice of state relating to the Redux reducer logic and actions for a feature of the application.
 - **Configuration**: Redux Toolkit `createSlice` function simplifies the process of writing redux logic by `combining actions and reducers in one place`.
@@ -642,7 +756,7 @@ Visual Studio Code is a source-code editor that includes support for development
 
   - **addLogList:** This reducer adds a new log entry to the logList array. It takes a PayloadAction<LogData> which contains the new log data.
 
-#### 4. **Initial State**:
+#### 4. Initial State
 
 - **Definition**: The `initialState` object defines the default state for the slice. Here, logList is an array that will hold log entries of type LogData.
 - **Example**:
@@ -656,13 +770,13 @@ Visual Studio Code is a source-code editor that includes support for development
   };
   ```
 
-#### 5. **Actions**:
+#### 5. Actions:
 
 - **Definition**: Actions are payloads of information that send data from your application to your Redux store. They describe what happened in your app.
 - **Action Creators**: Actions in Redux Toolkit are defined within a slice using `createSlice`. The slice automatically generates action creators for each reducer function.
 - **PayloadAction**: In Redux, using `typescript` we specify the type of data passed as the action like this: `PayloadAction<LogData>` where the `LogData` is a type we created.
 
-#### 6. **Reducers**: Most important Redux Concept
+#### 6. Reducers: Most important Redux Concept
 
 - **Definition**: Reducers specify `how the application's state changes in response to actions sent to the store`.
   - They are [pure functions](https://www.tutorialspoint.com/redux/redux_pure_functions.htm) that take the previous state and an action as arguments and return a new state.
@@ -696,7 +810,7 @@ Visual Studio Code is a source-code editor that includes support for development
       })
   ```
 
-#### 7. **Extra Reducers** and **Async Thunks**:
+#### 7. Extra Reducers and Async Thunks:
 
 **_Async Thunks_**
 
@@ -746,7 +860,7 @@ Visual Studio Code is a source-code editor that includes support for development
   },
   ```
 
-#### 8. **Connecting Redux to React**:
+#### 8. Connecting Redux to React
 
 - In the file: `Client/src/redux/index.ts`:
 
@@ -766,7 +880,7 @@ Visual Studio Code is a source-code editor that includes support for development
 
   - **Best Practices**: For this application, make sure to export reducers and actions for modular access when creating a new Redux slice.
 
-#### 9. **Selectors**:
+#### 9. Selectors
 
 - **Definition**: Selectors allow you to `read` data from the global redux store.
 - **Purpose**: They encapsulate the state structure & provide easy access to specific parts of the state.
@@ -782,7 +896,7 @@ Visual Studio Code is a source-code editor that includes support for development
     }
   ```
 
-#### 10. **Dispatch**
+#### 10. Dispatch
 
 - **Definition**: In redux, we `dispatch` actions and assign `payloads` (input) in our components.
   - This causes the UI to update based on the action we dispatch and the payload data we assign to it.
@@ -808,7 +922,7 @@ Visual Studio Code is a source-code editor that includes support for development
   - In this example, we are using the actions from `logActions` to fetch the logs by `userId`.
   - The `userId` is the payload value and the `fetchLogs` is the action being dispatched
 
-11. **Best Practices**:
+#### 11. Best Practices:
 
 - **File Organization**: For every slice, it should be stored in its own separate sub folder in the path `Client/src/redux/`.
   - In this subfolder, we will have the `${feature}Slice`.ts file and an optional helper file that will have functions that do the majority of the logic (e.g. `Crud operations that make the client-side requests`)
@@ -818,6 +932,607 @@ Visual Studio Code is a source-code editor that includes support for development
     - The file for `logSlice.ts` is a perfect example of how we can do this.
 
 ---
+
+### Auth Slice
+
+#### Auth Selector to access the Auth State
+
+- **currentUser**: An object that contains the information for our current User
+
+  - **Example**:
+
+    ```json
+    {
+      "providerId": "google.com",
+      "uid": "106582989982319233", // Ignore this
+      "displayName": "Cristian Castro",
+      "email": "Cristian@example.com",
+      "phoneNumber": null,
+      "photoURL": "https:/fake-profile-photo.com"
+    }
+    ```
+
+  - **Access with Selector**:
+
+    ```typescript
+    const currentUser = useAppSelector((state) => state.auth.currentUser);
+    ```
+
+- **userId**: The firebase user id associated with the logged in user
+
+  - **Access with Selector**:
+
+    ```typescript
+    const userId = useAppSelector((state) => state.auth.userId);
+    ```
+
+- **userLoggedIn**: A boolean value on whether the user is currently logged in or not
+
+  - **Access with Selector**:
+
+    ```typescript
+    const userLoggedIn = useAppSelector((state) => state.auth.userLoggedIn);
+    ```
+
+- **isEmailUser**: A boolean value on if the user signed up with email and password. If it is false, then they are a google user or they are not currently logged in.
+
+  - **Access with Selector**:
+
+    ```typescript
+    const isEmailUser = useAppSelector((state) => state.auth.isEmailUser);
+    ```
+
+- **loading**: A boolean value for when a user is registering (login/signup). The short period of time after user enters credentials and before they are granted access to their account
+
+- **registerError**: A string, that displays the error message when registering such as invalid credentials.
+
+- **Access multiple store values from `auth`**:
+
+  ```typescript
+  const { userLoggedIn, registerError, loading, userId } = useAppSelector(
+    (state) => state.auth
+  );
+  ```
+
+#### Dispatching Auth Actions
+
+1. **setAuthState**
+
+   Dispatch this action to update the user's authentication status and details after a successful login.
+
+   ```typescript
+   dispatch(
+     setAuthState({
+       currentUser: user.providerData[0],
+       userId: user.uid,
+       userLoggedIn: true,
+       isEmailUser: isEmailUserDeterminedFromProviderData,
+     })
+   );
+   ```
+
+- **currentUser**: UserInfo object representing the user.
+- **userId**: User's unique identifier from Firebase.
+- **userLoggedIn**: Boolean indicating the user is now logged in.
+- **isEmailUser**: Boolean indicating if the user logged in using email and password.
+
+2. **clearAuthState**: Use this action to clear the authentication state, for example, during `signout`.
+
+   ```typescript
+   dispatch(clearAuthState());
+   ```
+
+3. **setLoading**: This action can be dispatched to control the visibility of loading indicators during async operations like signing in or signing up.
+
+   ```typescript
+   dispatch(setLoading(true)); // Set loading to true at the start of an operation
+   dispatch(setLoading(false)); // Set loading to false once operation completes
+   ```
+
+4. **setSignInError**:
+
+   ```typescript
+   dispatch(
+     setSignInError(
+       "Failed to sign in. Please check your credentials and try again."
+     )
+   );
+   ```
+
+5. **setSignUpError**:
+
+   ```typescript
+   dispatch(setSignUpError("Failed to register. Email already in use."));
+   ```
+
+#### Thunks for Authentication
+
+1. **listenToAuthChanges**
+
+- Listens for authentication state changes (e.g., user logs in or out) and updates the Redux store accordingly.
+- It ensures the UI components stay in sync with the current authentication state.
+
+- **Usage**:
+  ```typescript
+  dispatch(listenToAuthChanges());
+  ```
+
+2. **signUpWithEmail**
+
+- Handles the user registration process using email and password.
+- It also initializes user profiles and logs any registration-specific data into the database.
+
+- Parameters:
+
+- **email**: User's email address.
+- **password**: User's chosen password.
+- **firstName**: User's first name.
+- **lastName**: User's last name.
+
+- **Usage**:
+
+  ```typescript
+  dispatch(signUpWithEmail({ email, password, firstName, lastName }));
+  ```
+
+3. **signInWithEmail**:
+
+- Manages user sign-in using email and password.
+- It updates the Redux store with user details upon successful login.
+
+- **Parameters**:
+
+  - **email**: User's email address.
+  - **password**: User's password.
+
+- **Usage**:
+
+  ```typescript
+  dispatch(signInWithEmail({ email, password }));
+  ```
+
+4. **signInWithGoogle**:
+
+- Facilitates user sign-in using Google as an authentication provider.
+
+  ```typescript
+  dispatch(signInWithGoogle());
+  ```
+
+#### Auth Error Handling
+
+- Errors are captured and handled gracefully, updating the Redux state with appropriate error messages which can then be displayed to the user.
+- Each thunk has `try...catch` blocks to handle exceptions and reject with a value when an error occurs.
+
+  - This value updates the error state in the Redux store.
+
+  ```typescript
+    } catch (error) {
+        if (error instanceof Error) {
+          dispatch(setSignUpError(error.message));
+        }
+      }
+  ```
+
+### Gpt Slice (Assistants)
+
+- This slice handles operations related to GPT models including creating, viewing, and deleting GPTs.
+
+- Below are details on how to access and manipulate the GPT state using selectors and dispatching actions.
+
+#### Gpt Selector to Access the Gpt State
+
+- **currentModel**: The currently active GPT model.
+
+  - **Access with Selector**:
+    ```typescript
+    const currentModel = useAppSelector((state) => state.gpt.currentModel);
+    ```
+
+- **gptList**: Array of all Assistants created and accessible to the user.
+
+  - **Access with Selector**:
+    ```typescript
+    const gptList = useAppSelector((state) => state.gpt.gptList);
+    ```
+
+- **isLoading**: Boolean indicating if the current Assistant is being created.
+
+  - **Access with Selector**:
+    ```typescript
+    const isLoading = useAppSelector((state) => state.gpt.isLoading);
+    ```
+
+- **error**: Error message from an assistant being created
+  - **Access with Selector**:
+    ```typescript
+    const error = useAppSelector((state) => state.gpt.error);
+    ```
+
+#### Dispatching Gpt Actions
+
+1. **addGpt**: Adds a new GPT model to the list.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       addGpt({
+         userId: "user123",
+         title: "New GPT",
+         urlPhoto: "https://example.com/newphoto.jpg",
+         desc: "Description of the new GPT",
+         instructions: "Instructions for using the new GPT",
+       })
+     );
+     ```
+
+2. **viewGpts**: Retrieves all GPT models.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(viewGpts({ gptList }));
+     ```
+
+3. **deleteGpt**: Deletes a GPT model by ID.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(deleteGpt({ id: "gpt123" }));
+     ```
+
+4. **initGptList**: Initializes the list of GPT models.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(initGptList(gptList));
+     ```
+
+5. **setCurrentGpt**: Sets the currently active GPT model by ID.
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(setCurrentGpt("gpt123"));
+     ```
+
+#### Gpt Asynchronous Thunks
+
+- This slice uses asynchronous thunks to handle database operations like creating and deleting GPTs.
+- Thunks handle the asynchronous request and then dispatch actions based on the success or failure of the operation.
+
+#### Gpt Handling Errors
+
+- Errors during operations are handled by the slice and stored in the `error` state.
+- Each action has error handling that updates this part of the state if an operation fails.
+
+- **Error Handling in Thunks**: When a thunk fails, it dispatches an error action which updates the state with an error message.
+  - **Example**:
+    ```typescript
+    if (error) {
+      return rejectWithValue("Failed to perform operation");
+    }
+    ```
+
+### Layout Slice
+
+This slice manages UI layout states such as the visibility of sidebars and dropdowns. It provides a straightforward way to toggle UI components from anywhere within the application using Redux.
+
+#### Layout State Selectors
+
+- **isSidebarVisible**: Boolean indicating whether the sidebar is visible.
+
+  - **Access with Selector**:
+    ```typescript
+    const isSidebarVisible = useAppSelector(
+      (state) => state.layout.isSidebarVisible
+    );
+    ```
+
+- **isDropdownVisible**: Boolean indicating whether any dropdowns are visible.
+  - **Access with Selector**:
+    ```typescript
+    const isDropdownVisible = useAppSelector(
+      (state) => state.layout.isDropdownVisible
+    );
+    ```
+
+#### Layout Actions
+
+- The following actions are available to control the state of UI components like sidebars and dropdowns.
+- They are dispatched using the Redux toolkit's `dispatch` function.
+
+1. **toggleSidebar**: Toggles the visibility of the sidebar based on a boolean value.
+
+   - **Usage**:
+
+     ```typescript
+     // To open the sidebar
+     dispatch(toggleSidebar(true));
+
+     // To close the sidebar
+     dispatch(toggleSidebar(false));
+     ```
+
+2. **toggleDropdown**: Toggles the visibility of dropdowns based on a boolean value.
+
+   - **Usage**:
+
+     ```typescript
+     // To show a dropdown
+     dispatch(toggleDropdown(true));
+
+     // To hide a dropdown
+     dispatch(toggleDropdown(false));
+     ```
+
+#### Reducers in Layout Slice
+
+The layout slice includes reducers to manage the visibility of various UI components:
+
+- **toggleSidebar**: This reducer updates the `isSidebarVisible` state to show or hide the sidebar.
+- **toggleDropdown**: This reducer updates the `isDropdownVisible` state to show or hide dropdown components.
+
+#### Handling UI States
+
+- The use of boolean toggles in this slice provides a flexible and straightforward way to control the visibility of layout components, ensuring a responsive and interactive user interface.
+
+### Log Slice
+
+- This slice manages operations related to logs, such as adding, updating, fetching, and deleting logs.
+  Below are details on how to access and manipulate the log state using selectors and dispatching actions.
+
+#### Log Selector to Access the Log State
+
+- **logList**: Array of all logs stored in the state.
+- **Access with Selector**:
+  ```typescript
+  const logList = useAppSelector((state) => state.log.logList);
+  ```
+
+#### Dispatching Log Actions
+
+1. **addLog**: Adds a new log entry.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       addLog({
+         msg: "User action performed",
+         modelType: "ethical",
+         id: "log123",
+         firebaseUserId: "user123",
+       })
+     );
+     ```
+
+2. **fetchLogs**: Fetches all logs for a specific user.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(fetchLogs("user123"));
+     ```
+
+3. **updateLog**: Updates a specific log entry.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       updateLog({
+         logId: "log123",
+         firebaseUserId: "user123",
+         content: content,
+         timestamp: new Date().toISOString(),
+       })
+     );
+     ```
+
+4. **deleteLog**: Deletes a specific log entry.
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       deleteLog({
+         logId: "log123",
+         userId: "user123",
+       })
+     );
+     ```
+
+#### Chat Log Handling Reducers
+
+- **addLogList**: Adds a new log to the log list in the state.
+
+  - **Usage**:
+    ```typescript
+    dispatch(
+      addLogList({
+        id: "log123",
+        title: "Log Title",
+        content: content,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    ```
+  - The content is the `msgList`, structured like this:
+
+    ```typescript
+    msgList = [{ id: chatId, sender: "user", text: "Log content" }, ...]
+    ```
+
+- **updateCurrentChat**: Updates an existing log in the log list.
+
+  - **Usage**:
+    ```typescript
+    dispatch(
+      updateCurrentChat({
+        id: "log123",
+        content: [{ message: "Updated log content" }],
+        timestamp: new Date().toISOString(),
+      })
+    );
+    ```
+
+- **deleteLogListItem**: Removes a log from the log list based on its ID.
+  - **Usage**:
+    ```typescript
+    dispatch(deleteLogListItem({ logId: "log123" }));
+    ```
+
+#### Chat Log Error Handling
+
+- Errors during operations are handled by the slice and updated in the `error` state part of each action.
+- Each thunk has error handling that captures failures and updates the state with an error message, using `rejectWithValue`.
+
+- **Example**:
+  ```typescript
+  if (error) {
+    return rejectWithValue("Failed to perform operation");
+  }
+  ```
+
+### Message Slice
+
+- This slice handles operations related to messaging, such as fetching responses from a bot, managing message lists, and handling state related to chat interactions.
+- Below are details on how to access and manipulate the message state using selectors and dispatching actions.
+
+#### Message Selector to Access the Message State
+
+- **msgList**: Array of all messages stored in the chat log.
+
+  - **Access with Selector**:
+    ```typescript
+    const msgList = useAppSelector((state) => state.message.msgList);
+    ```
+
+- **currentChatId**: Identifier for the current chat log session.
+
+  - **Access with Selector**:
+    ```typescript
+    const currentChatId = useAppSelector(
+      (state) => state.message.currentChatId
+    );
+    ```
+
+- **isNewChat**: Boolean indicating if the current chat session is new.
+
+  - **Access with Selector**:
+    ```typescript
+    const isNewChat = useAppSelector((state) => state.message.isNewChat);
+    ```
+
+- **isLoading**: Boolean indicating if there is an ongoing operation. (e.g. The message is being streamed out)
+
+  - **Access with Selector**:
+    ```typescript
+    const isLoading = useAppSelector((state) => state.message.isLoading);
+    ```
+
+- **error**: Error message from the latest operation if any.
+  - **Access with Selector**:
+    ```typescript
+    const error = useAppSelector((state) => state.message.error);
+    ```
+
+#### Dispatching Message Actions
+
+1. **fetchBotResponse**: Fetches a response from the bot based on the user message.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       fetchBotResponse({
+         currentModel: selectedModel,
+         msg: "Hello, how can I help?",
+         currentChatId: "chat123",
+       })
+     );
+     ```
+
+2. **setMsgList**: Sets the entire message list (typically used when a user selects a new chat).
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       setMsgList([
+         {
+           id: 1,
+           model: "Normal",
+           sender: "user",
+           text: "Welcome to the chat!",
+         },
+       ])
+     );
+     ```
+
+3. **resetMsgList**: Clears the message list. Occurs when a user clicks for a new chat.
+
+   - **Dispatch Example**:
+
+     ```typescript
+     dispatch(resetMsgList());
+     ```
+
+4. **addUserMessage**: Adds a new message to the message list.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       addUserMessage({
+         id: 3,
+         model: "Ethical",
+         sender: "user",
+         text: "User's new message",
+       })
+     );
+     ```
+
+5. **updateBotMessage**: Updates an existing bot message in the message list.
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(
+       updateBotMessage({
+         id: 4,
+         urlPhoto: "https://example-photo.jpg",
+         sender: "bot",
+         text: "Updated bot response",
+       })
+     );
+     ```
+
+6. **clearError**: Clears any errors currently displayed on the chat container
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(clearError());
+     ```
+
+7. **setCurrentChatId**: Sets the current chat ID. This represents the logID of the chat log
+
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(setCurrentChatId("chat456"));
+     ```
+
+8. **toggleNewChat**: Toggles the state to indicate whether the chat is new or existing.
+   - **Dispatch Example**:
+     ```typescript
+     dispatch(toggleNewChat(true));
+     ```
+
+#### Meassage Handling Reducers
+
+- This slice contains several reducers to manage the state of messages in the application.
+- The reducers handle creation, updates, and deletion of messages as well as managing metadata like chat IDs and loading states.
+
+#### Message Error Handling
+
+- Errors during operations are handled by the slice and updated in the `error` state part of each action.
+- Each thunk has error handling that captures failures and updates the state with an error message, using `rejectWithValue`.
+
+- **Error Example**:
+  ```typescript
+  if (error) {
+    return rejectWithValue({ message: "Failed to perform operation" });
+  }
+  ```
 
 ### Types
 
@@ -835,16 +1550,16 @@ Visual Studio Code is a source-code editor that includes support for development
 
 - **Auth State**:
 
-```typescript
-export type AuthState = {
-  currentUser: UserInfo | null; // displayName, email, photoURL, etc. (others you won't need to use)
-  userId: string | null; // Unique user Id
-  userLoggedIn: boolean; // Whether or not user is logged in
-  isEmailUser: boolean; // Whether or not they are an E-mail user or google Use r
-  loading: boolean; // State for registering
-  registerError: string | null; // Error while log in or sign up
-};
-```
+  ```typescript
+  export type AuthState = {
+    currentUser: UserInfo | null; // displayName, email, photoURL, etc. (others you won't need to use)
+    userId: string | null; // Unique user Id
+    userLoggedIn: boolean; // Whether or not user is logged in
+    isEmailUser: boolean; // Whether or not they are an E-mail user or google Use r
+    loading: boolean; // State for registering
+    registerError: string | null; // Error while log in or sign up
+  };
+  ```
 
 - **GPT Type**:
 
@@ -936,7 +1651,7 @@ export interface MessageSliceType {
 
   - I recommend using `CSS Modules` to allow the `tsx` to look a lot cleaner. It is also easier for new users to work on the code if they don't know tailwind.
 
-#### Instructions using Tailwind
+#### Instructions using CSS Modules
 
 1. Create a new folder and place your `.tsx` file in the folder along with a new file with the extension `.module.css`
 
@@ -1324,109 +2039,13 @@ export interface MessageSliceType {
 
 ## Contribution Guidelines
 
-### How to Contribute
-
-Contributing to this project involves a series of steps to ensure that changes are implemented smoothly and consistently. Follow these guidelines to contribute effectively:
-
-1. **Fetch and Pull the Latest Changes**
-
-   - Before starting, make sure you have the latest changes from the main branch.
-   - Run the following commands:
-     ```bash
-     git fetch origin
-     git pull origin main
-     ```
-
-2. **Create a New Branch Off Main**
-
-   - Create a new branch to work on your feature or bug fix. Use a descriptive name for your branch.
-   - Example:
-     ```bash
-     git checkout -b feature/your-feature-name
-     ```
-
-3. **Commit Your Changes**
-
-   - Make your changes and commit them with a clear and concise commit message.
-   - Example:
-     ```bash
-     git add .
-     git commit -m "Add feature to enhance user authentication"
-     ```
-
-4. **Push Your Changes to Your Branch**
-
-   - Push your committed changes to the remote repository.
-   - Example:
-     ```bash
-     git push origin feature/your-feature-name
-     ```
-
-5. **Sync Changes from the Main Branch**
-
-   - Ensure your branch is up to date with the latest changes from the main branch by merging the main branch into your branch.
-   - Example:
-     ```bash
-     git checkout main
-     git pull origin main
-     git checkout feature/your-feature-name
-     git merge main
-     ```
-
-6. **Create the Pull Request and Assign Reviewers**
-
-   - Create a pull request (PR) from your branch to the main branch.
-   - Provide a detailed description of your changes and assign reviewers.
-   - Example:
-
-     ```markdown
-     ## Description
-
-     Detailed explanation of what the new feature or fix does.
-
-     ## Changes
-
-     - List of changes made
-     ```
-
-7. **Wait for Your Pull Request to Be Reviewed**
-
-   - Wait for your PR to be reviewed by the assigned reviewers.
-   - If changes are requested, make the necessary adjustments and commit them to your branch. Repeat steps 3 and 4 as needed.
-
-8. **Squash and Merge into Main**
-
-   - Once your PR is approved, use the `squash and merge` option to merge it into the main branch.
-   - Provide a detailed description of the new feature in the merge commit.
-   - Example:
-
-     ```markdown
-     ## New Feature: Enhanced User Authentication
-
-     - Detailed description of the new feature.
-     ```
-
-9. **Update GitHub Projects**
-
-   - Use GitHub Projects to check off the task associated with your feature and log the hours it took to complete.
-   - Example:
-     ```markdown
-     - [x] Enhanced user authentication (3 hours)
-     ```
-
-10. **Document Your Changes**
-    - Update the `documentation/README.md` file with any relevant changes or new features.
-    - Ensure your documentation is clear and provides sufficient detail for other team members to understand the changes.
-
-By following these steps, you can contribute effectively to the project and maintain a smooth workflow within the team.
-
 ### Coding Standards
 
 - Our current MERN application has the following coding standards
 
 #### **Prettier Configuration:** Prettier is used to format our code.
 
-- The configuration is defined in the `.prettierrc` file at the root of the project:
+- The configuration is defined in the [`.prettierrc`](../.prettierrc) at the root of the project:
 
   ```json
   {
@@ -1455,7 +2074,7 @@ By following these steps, you can contribute effectively to the project and main
 
 #### ESLint Configuration: Client
 
-- The ESLint configuration for the **client-side** code is defined in the file [`client/.eslintrc.cjs`](https://github.com/Castro19/LAEP-GPT/blob/main/Client/.eslintrc.cjs)
+- The ESLint configuration for the **client-side** code is defined in the file [`client/.eslintrc.cjs`](../Client/.eslintrc.cjs)
 
 - **Run Lint on Client**:
 
@@ -1465,21 +2084,191 @@ By following these steps, you can contribute effectively to the project and main
 
 #### ESLint Configuration: Server
 
-- The ESLint configuartion for the **server-side** code is defined in the file [`server/eslint.config.js`]()
+- The ESLint configuartion for the **server-side** code is defined in the file [`server/eslint.config.js`](../server/eslint.config.js)
 
-- **Run Lint on server **:
+- **Run Lint on server**:
 
   ```bash
   cd server && npm run lint
   ```
 
+### How to Contribute
+
+- Contributing to this project involves a series of steps to ensure that changes are implemented smoothly and consistently.
+- Follow these guidelines to contribute effectively:
+
+1. **Fetch and Pull the Latest Changes**
+
+   - Before starting, make sure you have the latest changes from the main branch.
+   - Run the following commands:
+     ```bash
+     git fetch origin
+     git pull origin main
+     ```
+
+2. **Create a New Branch Off Main**
+
+   - Create a new branch to work on your feature or bug fix. Use a descriptive name for your branch.
+   - Example:
+     ```bash
+     git checkout -b feature/your-feature-name
+     ```
+
+3. **Make the changes**:
+
+   - On this branch, make your changes to the code.
+   - Make the changes small and add comments explain what the code does when necessary.
+   - These changes will be reviewed by a teammate in the pull request on step 9.
+
+4. **Ensure Code Quality with ESLint and Prettier**:
+
+   - Run ESLint and Prettier to check and format your code according to the project's coding standards.
+   - Make sure there are no `errors` from ESLint.
+
+   - **Example for the client-side code**:
+
+     ```bash
+     npm run lint:client
+     npm run format:client
+     ```
+
+   - **Example for the server-side code**:
+
+     ```bash
+     npm run lint:server
+     npm run format:server
+     ```
+
+   - **Or to run both in one go**:
+
+     ```bash
+      npm run lint:all
+      npm run format:all
+     ```
+
+5. **Commit Your Changes**
+
+   - Commit your changes with a clear and concise commit message.
+   - Example:
+     ```bash
+     git add .
+     git commit -m "Add feature to enhance user authentication"
+     ```
+
+6. **Push Your Changes to Your Branch**
+
+   - Push your committed changes to the remote repository.
+   - Example:
+     ```bash
+     git push origin feature/your-feature-name
+     ```
+
+7. **Sync Changes from the Main Branch**
+
+   - Ensure your branch is up to date with the latest changes from the main branch by merging the main branch into your branch.
+   - Example:
+     ```bash
+     git checkout main
+     git pull origin main
+     git checkout feature/your-feature-name
+     git merge main
+     ```
+
+8. **Create the Pull Request and Assign Reviewers**
+
+   - Create a pull request (PR) from your branch to the main branch.
+   - Provide a detailed description of your changes and assign reviewers.
+   - Example:
+
+     ```markdown
+     ## Description
+
+     Detailed explanation of what the new feature or fix does.
+
+     ## Changes
+
+     - List of changes made
+     ```
+
+9. **Wait for Your Pull Request to Be Reviewed**
+
+   - Wait for your PR to be reviewed by the assigned reviewers.
+   - If changes are requested, make the necessary adjustments and commit them to your branch. Repeat steps 3,4, and 5 as needed.
+
+10. **Squash and Merge into Main**
+
+    - Once your PR is approved, use the `squash and merge` option to merge it into the main branch.
+    - Provide a detailed description of the new feature in the merge commit.
+    - Example:
+
+      ```markdown
+      ## New Feature: Enhanced User Authentication
+
+      - Detailed description of the new feature.
+      ```
+
+11. **Update GitHub Projects**
+
+    - Use GitHub Projects to check off the task associated with your feature and log the hours it took to complete.
+    - Example:
+      ```markdown
+      - [x] Enhanced user authentication (3 hours)
+      ```
+
+12. **Document Your Changes**
+    - Update the `documentation/README.md` file with any relevant changes or new features.
+    - Ensure your documentation is clear and provides sufficient detail for other team members to understand the changes.
+
+#### Contribution Important Note
+
+- Please try and keep the `main` branch `commit history` clean.
+  - Each pull request merged should make sure that it passes the `CI/CD` tests and should pass any future tests implemented before approving and merging.
+  - Also do `squash and merge` to make the commits from one branch a single commit when being merged into main.
+
+By following these steps, you can contribute effectively to the project and maintain a smooth workflow within the team.
+
 ## Additional Resources
+
+### Github Desktop or Tower (Optional but strongly recommended)
+
+- Using a GUI tool for managing your commits can simplify the process and provide a visual interface for handling your repository.
+
+- Here are two recommended options:
+
+- **Github Desktop**:
+
+  - [Github Desktop Download Link](https://desktop.github.com/)
+
+- **Git Tower**:
+  - A free version is available for students if you register with your school E-mail.
+  - [Git Tower Download Link](https://www.git-tower.com/students)
 
 ### MongoDB Compass
 
-- Download MongoDB Compasss for a GUI to manage your collections
+- Download MongoDB Compass for a GUI to manage your collections
 
 - [Download Link](https://www.mongodb.com/products/tools/compass)
+
+### Browser: Firefox Developer Edition
+
+- I recommend avoiding using Chrome when working on Front-end development and instead using a broswer like Firefox Developer
+- [Firefox Developer Edition Download Link](https://www.mozilla.org/en-US/firefox/developer/)
+- **Reason**: The developer tools such as `inspector` or `console` to view the console logs are much better in Firefox
+-
+
+#### Firefox Chrome Extensions (Very helpful)
+
+- **React Developer Tools**: Inspect the React tree including the component hierarchy, props, state, etc.
+- [React Dev Tools Download Link for Firefox](https://addons.mozilla.org/en-US/firefox/addon/react-devtools/)
+
+- **Redux DevTools**: Allows you to view the `actions history` undo and replay.
+  - A super cool and useful tool for debugging in our application.
+  - Only available because we are using Redux as our global state manager.
+- [Redux Dev Tools Download Link for Firefox](https://addons.mozilla.org/en-US/firefox/addon/reduxdevtools)
+
+- **Debug CSS**: A tool that outlines all elements on the page with a box
+  - Realizing that Web pages are built by HTML elements stored in boxes, managing the layout of these elements can be debugged using this extension by viewing every element on the page as a box.
+- [Debug CSS Download Link for Firefox](https://addons.mozilla.org/en-US/firefox/addon/pranay-joshi/)
 
 ### VSCode Extensions
 
@@ -1502,7 +2291,7 @@ By following these steps, you can contribute effectively to the project and main
    - Provides autocompletion, syntax highlighting, and linting for Tailwind CSS, making it easier to work with utility-first CSS.
    - [Tailwind CSS IntelliSense Extension](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 
-4. **MongoDB for VS Code**
+4. **MongoDB for VS Code** (Optional if you have MongoDB Compass)
 
    - Connects to your MongoDB database, allowing you to browse, query, and manage your collections directly from VSCode.
    - [MongoDB Extension](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode)
@@ -1541,8 +2330,8 @@ To install these extensions, follow these steps:
 
 ### Contact
 
-- Personal E-mail: `cmcastro559@gmail.com`
-- School E-mail: `ccastroo@calpoly.edu`
+- [Personal E-mail](mailto:cmcastro559@gmail.com)
+- [School E-mail](mailto:ccastroo@calpoly.edu)
 
 ## Frequently Asked Questions (FAQ)
 
