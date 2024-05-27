@@ -104,6 +104,7 @@
       - [ESLint Configuration: Client](#eslint-configuration-client)
       - [ESLint Configuration: Server](#eslint-configuration-server)
     - [How to Contribute](#how-to-contribute)
+      - [Contribution Important Note](#contribution-important-note)
   - [Additional Resources](#additional-resources)
     - [Github Desktop or Tower (Optional but strongly recommended)](#github-desktop-or-tower-optional-but-strongly-recommended)
     - [MongoDB Compass](#mongodb-compass)
@@ -2217,6 +2218,12 @@ export interface MessageSliceType {
 12. **Document Your Changes**
     - Update the `documentation/README.md` file with any relevant changes or new features.
     - Ensure your documentation is clear and provides sufficient detail for other team members to understand the changes.
+
+#### Contribution Important Note
+
+- Please try and keep the `main` branch `commit history` clean.
+  - Each pull request merged should make sure that it passes the `CI/CD` tests and should pass any future tests implemented before approving and merging.
+  - Also do `squash and merge` to make the commits from one branch a single commit when being merged into main.
 
 By following these steps, you can contribute effectively to the project and maintain a smooth workflow within the team.
 
