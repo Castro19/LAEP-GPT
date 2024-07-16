@@ -7,4 +7,5 @@ export type AuthState = {
   isEmailUser: boolean; // Whether or not they are an E-mail user or google Use r
   loading: boolean; // State for registering
   registerError: string | null; // Error while log in or sign up
+  userType: string | null; // Type of user
 };
