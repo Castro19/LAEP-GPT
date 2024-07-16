@@ -21,6 +21,7 @@ const initialState: AuthState = {
   isEmailUser: false,
   loading: false,
   registerError: null,
+  userType: null,
 };
 
 // Register the listener to track auth state changes
@@ -47,6 +48,7 @@ export const listenToAuthChanges = createAsyncThunk<
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser,
+          userType,
         })
       );
     } else {
@@ -56,35 +58,79 @@ export const listenToAuthChanges = createAsyncThunk<
   dispatch(setLoading(false));
 });
 
-// Thunk for email/password sign-up
-export const signUpWithEmail = createAsyncThunk<
+// Thunk for updating user profile
+export const updateUserProfile = createAsyncThunk<
   void,
-  { email: string; password: string; firstName: string; lastName: string },
+  Partial<UserInfo>,
   { dispatch: AppDispatch }
 >(
-  "auth/signUpWithEmail",
-  async ({ email, password, firstName, lastName }, { dispatch }) => {
+  "auth/updateUserProfile",
+  async (updatedInfo, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const user = auth.currentUser;
+      if (!user) throw new Error("No user is currently logged in.");
 
+      // Prepare updated profile data
+      const profileUpdates: { displayName?: string; photoURL?: string } = {};
+      if (updatedInfo.displayName) {
+        profileUpdates.displayName = updatedInfo.displayName;
+      }
+
+      // Update profile in Firebase Auth
+      await updateProfile(user, profileUpdates);
+
+      // Update Redux state with the new user info
+      const updatedUser = {
+        ...user,
+        displayName: updatedInfo.displayName || user.displayName,
+        // Add more fields as needed
+      };
+
+      dispatch(
+        setAuthState({
+          user: updatedUser as UserInfo,
+          userId: user.uid,
+          userLoggedIn: true,
+          isEmailUser: user.providerData.some(provider => provider.providerId === "password"),
+          userType,
+        })
+      );
+    } catch (error) {
+      console.error("Failed to update user profile:", error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
+
+
+// Thunk for email/password sign-up
+export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string }, { dispatch: AppDispatch }>(
+  "auth/signUpWithEmail",
+  async ({ email, password, firstName, lastName, userType }, { dispatch }) => {
+    dispatch(setLoading(true));
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password, userType);
       const user = userCredential.user;
-      sendUserToDB(user.uid, firstName, lastName);
 
+      // Update profile with first name and last name
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-      const isEmailUser = user.providerData.some(
-        (provider) => provider.providerId === "password"
-      );
+
+      // Send user information to database
+      sendUserToDB(user.uid, firstName, lastName, userType);
+
+      // Determine if user is email-based
+      const isEmailUser = user.providerData.some(provider => provider.providerId === "password");
+
       dispatch(
         setAuthState({
           user: user.providerData[0],
           userId: user.uid,
-          isEmailUser,
           userLoggedIn: true,
+          isEmailUser,
+          userType,
         })
       );
     } catch (error) {
@@ -121,6 +167,7 @@ export const signInWithEmail = createAsyncThunk<
         userId: user.uid,
         userLoggedIn: true,
         isEmailUser,
+        userType,
       })
     );
   } catch (error) {
@@ -154,6 +201,7 @@ export const signInWithGoogle = createAsyncThunk<
         userId: user.uid,
         userLoggedIn: true,
         isEmailUser: false,
+        userType,
       })
     );
   } catch (error) {
@@ -177,6 +225,7 @@ const authSlice = createSlice({
         userId: string | null;
         userLoggedIn: boolean;
         isEmailUser: boolean;
+        userType: string | null;
       }>
     ) {
       const { user, userId, userLoggedIn, isEmailUser } = action.payload;
@@ -184,6 +233,7 @@ const authSlice = createSlice({
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
       state.isEmailUser = isEmailUser;
+      state.userType = userType;
     },
     clearAuthState(state) {
       state.currentUser = null;

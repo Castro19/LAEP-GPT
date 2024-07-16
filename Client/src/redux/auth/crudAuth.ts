@@ -1,7 +1,8 @@
 export default async function sendUserToDB(
   firebaseUserId: string,
   firstName: string,
-  lastName: string
+  lastName: string,
+  userType: string
 ): Promise<void> {
   // Now, send a request to your backend to store additional user information
   console.log(
@@ -9,6 +10,7 @@ export default async function sendUserToDB(
       firebaseUserId,
       firstName,
       lastName,
+      userType,
     })
   );
   try {
@@ -21,6 +23,7 @@ export default async function sendUserToDB(
         firebaseUserId,
         firstName,
         lastName,
+        userType,
       }),
     };
     console.log("Body Object: ", options);

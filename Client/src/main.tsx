@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./redux/index.ts";
+import ProfilePage from "./pages/register/ProfilePage.tsx";
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -20,11 +22,7 @@ import ErrorPage from "./pages/ErrorPage/ErrorPage.js";
 import GPTLayout from "./components/layout/gpt/GPTLayout.js";
 // Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
-// import { AuthProvider } from "./contexts/authContext/index.tsx";
 import "./index.css";
-
-// import App from "./App.jsx";
-// Redux Implementation
 
 const router = createBrowserRouter([
   {
@@ -73,6 +71,14 @@ const router = createBrowserRouter([
         <GPTLayout>
           <GPTEditor />
         </GPTLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/profile/:userId",
+    element: (
+      <ProtectedRoute>
+        <ProfilePage />
       </ProtectedRoute>
     ),
   },
