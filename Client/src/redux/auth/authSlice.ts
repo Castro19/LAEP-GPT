@@ -32,23 +32,37 @@ export const listenToAuthChanges = createAsyncThunk<
   void,
   void,
   { dispatch: AppDispatch; state: RootState }
->("auth/listenToAuthChanges", async (_, { dispatch }) => {
+>("auth/listenToAuthChanges", async (_, { dispatch, getState }) => {
   dispatch(setLoading(true));
   if (authListenerUnsubscribe) {
     authListenerUnsubscribe();
   }
-  authListenerUnsubscribe = onAuthStateChanged(auth, (user) => {
+  authListenerUnsubscribe = onAuthStateChanged(auth, async (user) => {
     if (user) {
       const isEmailUser = user.providerData.some(
         (provider) => provider.providerId === "password"
       );
+
+      // Fetch userType from the database or use the existing state value
+      let userType = getState().auth.userType;
+      if (!userType) {
+        // If userType is not in the state, fetch it from the database
+        userType = await getUserTypeFromDB(user.uid);
+      }
+
+      // Ensure user displayName is updated in the state
+      const updatedUser = {
+        ...user.providerData[0],
+        displayName: user.displayName || '',
+      };
+
       dispatch(
         setAuthState({
-          user: user.providerData[0],
+          user: updatedUser,
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser,
-          userType: null,
+          userType,
         })
       );
     } else {
@@ -119,14 +133,20 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
 
       // Send user information to database
-      sendUserToDB(user.uid, firstName, lastName, userType);
+      await sendUserToDB(user.uid, firstName, lastName, userType);
 
       // Determine if user is email-based
       const isEmailUser = user.providerData.some(provider => provider.providerId === "password");
 
+      // Create a new user object with the updated displayName to avoid direct mutation
+      const updatedUser = {
+        ...user.providerData[0],
+        displayName: `${firstName} ${lastName}`,
+      };
+
       dispatch(
         setAuthState({
-          user: user.providerData[0],
+          user: updatedUser,
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser,
