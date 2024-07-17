@@ -48,7 +48,7 @@ export const listenToAuthChanges = createAsyncThunk<
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser,
-          userType,
+          userType: null,
         })
       );
     } else {
@@ -93,7 +93,7 @@ export const updateUserProfile = createAsyncThunk<
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser: user.providerData.some(provider => provider.providerId === "password"),
-          userType,
+          userType: null,
         })
       );
     } catch (error) {
@@ -167,7 +167,7 @@ export const signInWithEmail = createAsyncThunk<
         userId: user.uid,
         userLoggedIn: true,
         isEmailUser,
-        userType,
+        userType: null,
       })
     );
   } catch (error) {
@@ -201,7 +201,7 @@ export const signInWithGoogle = createAsyncThunk<
         userId: user.uid,
         userLoggedIn: true,
         isEmailUser: false,
-        userType,
+        userType: null,
       })
     );
   } catch (error) {
@@ -228,7 +228,7 @@ const authSlice = createSlice({
         userType: string | null;
       }>
     ) {
-      const { user, userId, userLoggedIn, isEmailUser } = action.payload;
+      const { user, userId, userLoggedIn, isEmailUser, userType } = action.payload;
       state.currentUser = user;
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
