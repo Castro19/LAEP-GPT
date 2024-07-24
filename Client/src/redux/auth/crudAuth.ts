@@ -39,3 +39,5 @@ export default async function sendUserToDB(
     console.error("Backend registration failed", error);
   }
 }
+
+

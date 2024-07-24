@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '@/redux';
 import { useNavigate } from 'react-router-dom';
 import { updateUserProfile } from '@/redux/auth/authSlice';
-import { getUserInfoFromDB } from '@/firebase'; // Replace with your Firebase functions
 
 function ProfilePage() {
   const { currentUser } = useAppSelector((state) => state.auth);
@@ -31,6 +30,8 @@ function ProfilePage() {
 
   useEffect(() => {
     if (currentUser) {
+      console.log('Current user type:', currentUser.userType);
+      console.log('Current user name:', currentUser.displayName);
       setEditedValues({
         name: currentUser.displayName || '',
         email: currentUser.email || '',

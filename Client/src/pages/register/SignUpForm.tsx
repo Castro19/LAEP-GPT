@@ -72,7 +72,7 @@ export function SignupFormDemo() {
       );
     } else if (userType === "teacher") {
       dispatch(
-        authActions.signUpWithEmail({ email, password, firstName, lastName, userType, school, subject })
+        authActions.signUpWithEmail({ email, password, firstName, lastName, userType})
       );
     }
   };
