@@ -89,7 +89,7 @@ export const updateUserProfile = createAsyncThunk<
         profileUpdates.displayName = updatedInfo.displayName;
       }
       if (updatedInfo.userType) {
-        profileUpdates.userType = updatedInfo.userType; // Pass userType to profileUpdates
+        profileUpdates.userType = updatedInfo.userType; 
       }
 
       // Update profile in Firebase Auth
@@ -99,6 +99,7 @@ export const updateUserProfile = createAsyncThunk<
       const updatedUser = {
         ...user,
         displayName: updatedInfo.displayName || user.displayName,
+        userType: updatedInfo.userType || user.providerData[5]?.userType,
         // Add more fields as needed
       };
 
@@ -149,7 +150,9 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
       const updatedUser = {
         ...user.providerData[0],
         displayName: `${firstName} ${lastName}`,
+        userType: userType,
       };
+      console.log("User type during updated sign-up:", userType); 
 
       dispatch(
         setAuthState({
@@ -157,7 +160,7 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser,
-          userType,
+          userType: userType,
         })
       );
     } catch (error) {
@@ -184,17 +187,18 @@ export const signInWithEmail = createAsyncThunk<
       password
     );
     const user = userCredential.user;
-
     const isEmailUser = user.providerData.some(
       (provider) => provider.providerId === "password"
     );
+    const userType = user.userType;
+    console.log("User type during sign-in:", userType);
     dispatch(
       setAuthState({
       user: user.providerData[0],
       userId: user.uid,
       userLoggedIn: true,
       isEmailUser,
-      userType: null,
+      userType: user.providerData[5]?.userType,
       })
     );
   } catch (error) {

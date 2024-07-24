@@ -24,7 +24,8 @@
   "author": "Cristian Castro Oliva",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "mongodb": "^6.8.0"
   },
   "devDependencies": {
     "eslint-plugin-prettier": "^5.1.3",
