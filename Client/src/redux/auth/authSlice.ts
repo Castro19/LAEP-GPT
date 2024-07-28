@@ -44,7 +44,7 @@ export const listenToAuthChanges = createAsyncThunk<
       );
 
       const userType = getState().auth.userType;
-      
+
       console.log("ranAuthChange");
       console.log("User type during auth change:", userType);
       // Ensure user displayName is updated in the state
@@ -123,9 +123,9 @@ export const updateUserProfile = createAsyncThunk<
 
 
 // Thunk for email/password sign-up
-export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string }, { dispatch: AppDispatch }>(
+export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string; about?: string }, { dispatch: AppDispatch }>(
   "auth/signUpWithEmail",
-  async ({ email, password, firstName, lastName, userType }, { dispatch }) => {
+  async ({ email, password, firstName, lastName, userType, about }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -139,8 +139,20 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
       console.log("ran1");
       console.log("User type during sign-up:", userType); 
 
+      const userData = {
+        firebaseUserId: user.uid,
+        firstName,
+        lastName,
+        userType,
+      };
+
+      // Include 'about' field if the user is a teacher
+      if (userType === "teacher" && about) {
+        userData.about = about;
+      }
+
       // Send user information to database
-      await sendUserToDB(user.uid, firstName, lastName, userType);
+      await sendUserToDB(userData);
       console.log("ran2");
       // Determine if user is email-based
       const isEmailUser = user.providerData.some(provider => provider.providerId === "password");
