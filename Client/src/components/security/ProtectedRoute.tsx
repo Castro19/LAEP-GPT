@@ -18,6 +18,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     console.log("ProtectedRoute: userLoggedIn", userLoggedIn);
     console.log("ProtectedRoute: currentUser", currentUser);
     console.log("ProtectedRoute: urlUserId", urlUserId);
+    //console.log("ProtectedRoute: userType", currentUser?.userType);
 
     if (loading) {
       console.log("ProtectedRoute: Auth state is loading");

@@ -10,33 +10,25 @@ function ProfilePage() {
   const [editMode, setEditMode] = useState({
     name: false,
     email: false,
-    researchFocus: false,
-    aboutMe: false,
   });
 
   const [editedValues, setEditedValues] = useState({
     name: '',
     email: '',
-    researchFocus: '',
-    aboutMe: '',
   });
 
   const [errors, setErrors] = useState({
     name: '',
     email: '',
-    researchFocus: '',
-    aboutMe: '',
   });
 
   useEffect(() => {
     if (currentUser) {
-      console.log('Current user type:', currentUser.userType);
+      console.log('Current user type in profile:', currentUser.userType);
       console.log('Current user name:', currentUser.displayName);
       setEditedValues({
         name: currentUser.displayName || '',
         email: currentUser.email || '',
-        researchFocus: currentUser.researchFocus || '',
-        aboutMe: currentUser.aboutMe || '',
       });
     }
   }, [currentUser]);
@@ -49,16 +41,16 @@ function ProfilePage() {
     navigate('/chat');
   };
 
-  const handleEdit = (field) => {
+  const handleEdit = (field: string) => {
     setEditMode({ ...editMode, [field]: true });
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return re.test(String(email).toLowerCase());
   };
 
-  const handleSave = async (field) => {
+  const handleSave = async (field: string) => {
     if (field === 'email' && !validateEmail(editedValues.email)) {
       setErrors({ ...errors, email: 'Please enter a valid email address.' });
       return;
@@ -106,7 +98,7 @@ function ProfilePage() {
             User Type
           </label>
           <p className="text-sm text-gray-900 dark:text-gray-100">
-            {currentUser.userType || 'N/A'}
+            {currentUser.userType || 'N/A'} //here is to change the N/A to hardcode it in
           </p>
         </div>
         {currentUser.userType === 'teacher' && (

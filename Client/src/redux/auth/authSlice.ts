@@ -28,7 +28,6 @@ const initialState: AuthState = {
 let authListenerUnsubscribe: () => void;
 
 // Thunk to listen to authentication state changes
-// Thunk to listen to authentication state changes
 export const listenToAuthChanges = createAsyncThunk<
   void,
   void,
@@ -44,8 +43,10 @@ export const listenToAuthChanges = createAsyncThunk<
         (provider) => provider.providerId === "password"
       );
 
-      const userType = getState().auth.userType || null; //likely why always null?
-
+      const userType = getState().auth.userType;
+      
+      console.log("ranAuthChange");
+      console.log("User type during auth change:", userType);
       // Ensure user displayName is updated in the state
       const updatedUser = {
         ...user.providerData[0],
@@ -82,9 +83,12 @@ export const updateUserProfile = createAsyncThunk<
       if (!user) throw new Error("No user is currently logged in.");
 
       // Prepare updated profile data
-      const profileUpdates: { displayName?: string; photoURL?: string } = {};
+      const profileUpdates: { displayName?: string; photoURL?: string; userType?: string } = {};
       if (updatedInfo.displayName) {
         profileUpdates.displayName = updatedInfo.displayName;
+      }
+      if (updatedInfo.userType) {
+        profileUpdates.userType = updatedInfo.userType; 
       }
 
       // Update profile in Firebase Auth
@@ -92,8 +96,9 @@ export const updateUserProfile = createAsyncThunk<
 
       // Update Redux state with the new user info
       const updatedUser = {
-        ...user.providerData[0],
+        ...user,
         displayName: updatedInfo.displayName || user.displayName,
+        userType: updatedInfo.userType || user.providerData[5]?.userType,
         // Add more fields as needed
       };
 
@@ -114,53 +119,47 @@ export const updateUserProfile = createAsyncThunk<
   }
 );
 
+
+
+
 // Thunk for email/password sign-up
-export const signUpWithEmail = createAsyncThunk<
-  void,
-  { email: string; password: string; firstName: string; lastName: string; userType: string },
-  { dispatch: AppDispatch }
->(
+export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string }, { dispatch: AppDispatch }>(
   "auth/signUpWithEmail",
   async ({ email, password, firstName, lastName, userType }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-        userType,
-      );
-
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+      
       // Update profile with first name and last name
       await updateProfile(user, {
         displayName: `${firstName} ${lastName}`,
+        userType: userType, 
       });
-
+      console.log("ran1");
       console.log("User type during sign-up:", userType); 
 
       // Send user information to database
       await sendUserToDB(user.uid, firstName, lastName, userType);
-
+      console.log("ran2");
       // Determine if user is email-based
-      const isEmailUser = user.providerData.some(
-        (provider) => provider.providerId === "password"
-      );
-
+      const isEmailUser = user.providerData.some(provider => provider.providerId === "password");
+      
       // Create a new user object with the updated displayName to avoid direct mutation
       const updatedUser = {
         ...user.providerData[0],
         displayName: `${firstName} ${lastName}`,
+        userType: userType,
       };
-
+      console.log("User type during updated sign-up:", userType); 
+      console.log("ran3");
       dispatch(
         setAuthState({
           user: updatedUser,
           userId: user.uid,
           userLoggedIn: true,
           isEmailUser,
-          userType,
+          userType: userType,
         })
       );
     } catch (error) {
@@ -190,17 +189,15 @@ export const signInWithEmail = createAsyncThunk<
     const isEmailUser = user.providerData.some(
       (provider) => provider.providerId === "password"
     );
-
-    // Retrieve userType from user or set to null if not available
-    const userType = user.providerData[0].userType || null;
-
+    const userType = user.userType;
+    console.log("User type during sign-in:", userType);
     dispatch(
       setAuthState({
-        user: user.providerData[0],
-        userId: user.uid,
-        userLoggedIn: true,
-        isEmailUser,
-        userType,
+      user: user.providerData[0],
+      userId: user.uid,
+      userLoggedIn: true,
+      isEmailUser,
+      userType: user.providerData[5]?.userType,
       })
     );
   } catch (error) {
@@ -225,12 +222,8 @@ export const signInWithGoogle = createAsyncThunk<
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
-
-    // Send user information to database if it's a new user
-    const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
-    if (isNewUser) {
-      await sendUserToDB(user.uid, user.displayName || "", "", "google");
-    }
+    // Check if its a new user (not in db): If it is then run this line
+    // sendUserToDB(user.uid, "", "");
 
     dispatch(
       setAuthState({
@@ -274,10 +267,8 @@ const authSlice = createSlice({
     },
     clearAuthState(state) {
       state.currentUser = null;
-      state.userId = null;
       state.userLoggedIn = false;
       state.isEmailUser = false;
-      state.userType = null;
       state.loading = false;
     },
     setLoading(state, action: PayloadAction<boolean>) {
