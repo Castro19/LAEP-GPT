@@ -1,13 +1,19 @@
-import { MongoClient } from "mongodb";
-
-const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-client.connect();
-const db = client.db("myDatabase");
-const usersCollection = db.collection("users");
+import db from "../../connection.js";
+const userCollection = db.collection("users");
 
 export const createUser = async (userData) => {
-  const result = await usersCollection.insertOne(userData);
-  return result;
+  console.log("USER DATA on UserModeL: ", userData);
+  try {
+    const newUser = {
+      _id: userData.firebaseUserId, // Use Firebase ID as MongoDB document ID
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      userType: userData.userType,
+    };
+
+    const result = await userCollection.insertOne(newUser);
+    return result;
+  } catch (error) {
+    throw new Error("Error creating a new user: " + error.message);
+  }
 };

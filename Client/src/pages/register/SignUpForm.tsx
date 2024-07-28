@@ -68,7 +68,7 @@ export function SignupFormDemo() {
     if (userType === "teacher") {
       userData.about = about; // Add the 'about' field for teachers
     }
-  
+  console.log("User Data passed to signupwithemail thunk: ", userData);
     // Dispatch the signup action
     dispatch(authActions.signUpWithEmail(userData));
   };
@@ -137,7 +137,7 @@ export function SignupFormDemo() {
           />
         </LabelInputContainer>
       </div>
-      <LabelInputContainer className="mb-4">
+      <LabelInputContainer>
         <Label htmlFor="email">Email Address</Label>
         <Input
           id="email"
@@ -147,7 +147,7 @@ export function SignupFormDemo() {
           onChange={(e) => setEmail(e.target.value)}
         />
       </LabelInputContainer>
-      <LabelInputContainer className="mb-4">
+      <LabelInputContainer>
         <Label htmlFor="password">Password</Label>
         <div className="relative">
           <Input
@@ -167,7 +167,7 @@ export function SignupFormDemo() {
           </button>
         </div>
       </LabelInputContainer>
-      <LabelInputContainer className="mb-8">
+      <LabelInputContainer>
         <Label htmlFor="confirmPassword">Confirm password</Label>
         <Input
           id="confirmPassword"
@@ -183,7 +183,7 @@ export function SignupFormDemo() {
   const renderTeacherForm = () => (
     <>
       {renderStudentForm()}
-      <LabelInputContainer className="mb-4">
+      <LabelInputContainer>
         <Label htmlFor="about">About You</Label>
         <textarea
           id="about"
@@ -241,13 +241,13 @@ export function SignupFormDemo() {
             </div>
           </form>
         )}
-        {registerError && <ErrorMessage message={registerError} />}
+        {registerError && <ErrorMessage text={registerError} />}
       </div>
     </>
   );
 }
 
-const LabelInputContainer = ({ children }) => (
+const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
   <div className="flex flex-col space-y-2">{children}</div>
 );
 

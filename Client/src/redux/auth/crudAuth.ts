@@ -12,7 +12,7 @@ export default async function sendUserToDB(
       firstName,
       lastName,
       userType,
-      about,
+      about: about || "",
     })
   );
   try {
@@ -26,7 +26,7 @@ export default async function sendUserToDB(
         firstName,
         lastName,
         userType,
-        about,
+        about: about || "",
       }),
     };
     console.log("Body Object: ", options);
@@ -37,7 +37,7 @@ export default async function sendUserToDB(
       throw new Error("Backend registration failed: " + errorData.message);
     }
     const responseData = await response.json();
-    console.log("Backend Registration worked!: ", responseData);
+    console.log("Backend Registration worked!: ", responseData + "UserType" + userType);
   } catch (error) {
     console.error("Backend registration failed", error);
   }

@@ -1072,7 +1072,7 @@ Visual Studio Code is a source-code editor that includes support for development
 - **Usage**:
 
   ```typescript
-  dispatch(signUpWithEmail({ email, password, firstName, lastName }));
+  dispatch(signUpWithEmail({ email, password, firstName, lastName, userType }));
   ```
 
 3. **signInWithEmail**:
