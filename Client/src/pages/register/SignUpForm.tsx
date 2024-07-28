@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-// Redux
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
-// Icons
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { IconBrandGoogle } from "@tabler/icons-react";
-// Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
 import { cn } from "@/lib/utils";
 
 export function SignupFormDemo() {
-  const [formState, setFormState] = useState("initial"); // 'initial', 'userType', 'student', 'teacher'
+  const [formState, setFormState] = useState("initial");
   const [userType, setUserType] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -20,10 +17,7 @@ export function SignupFormDemo() {
   const [password, setPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-
-  // Additional teacher fields
-  const [school, setSchool] = useState("");
-  const [subject, setSubject] = useState("");
+  const [about, setAbout] = useState("");
 
   const dispatch = useAppDispatch();
   const { userLoggedIn, userId, registerError, loading } = useAppSelector(
@@ -36,45 +30,47 @@ export function SignupFormDemo() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     // Validate input fields are not empty
     if (!firstName || !lastName || !email || !password || !confirmedPassword) {
       dispatch(authActions.setSignUpError("Please fill in all fields."));
       return;
     }
-
+  
     // Validate email format
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
       dispatch(authActions.setSignUpError("Invalid email format."));
       return;
     }
-
+  
     // Validate password length
     if (password.length < 8) {
-      dispatch(
-        authActions.setSignUpError(
-          "Password must be at least 8 characters long."
-        )
-      );
+      dispatch(authActions.setSignUpError("Password must be at least 8 characters long."));
       return;
     }
-
+  
     // Checking if the passwords match
     if (password !== confirmedPassword) {
       dispatch(authActions.setSignUpError("Passwords do not match."));
       return;
     }
-
-    // Different dispatch based on user type
-    if (userType === "student") {
-      dispatch(
-        authActions.signUpWithEmail({ email, password, firstName, lastName, userType })
-      );
-    } else if (userType === "teacher") {
-      dispatch(
-        authActions.signUpWithEmail({ email, password, firstName, lastName, userType})
-      );
+  
+    // Prepare the user data
+    const userData = {
+      email,
+      password,
+      firstName,
+      lastName,
+      userType
+    };
+  
+    // Include additional teacher fields if the user is a teacher
+    if (userType === "teacher") {
+      userData.about = about; // Add the 'about' field for teachers
     }
+  
+    // Dispatch the signup action
+    dispatch(authActions.signUpWithEmail(userData));
   };
 
   const handleGoogleSignUp = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,10 +87,10 @@ export function SignupFormDemo() {
         Log in or create an account
       </p>
       <div className="flex flex-col space-y-4 mt-4">
-        <Link to="/login" className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center">
+        <Link to="/login" className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center">
           Log In
         </Link>
-        <button onClick={() => setFormState("userType")} className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
+        <button onClick={() => setFormState("userType")} className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
           Create Account
         </button>
       </div>
@@ -107,10 +103,10 @@ export function SignupFormDemo() {
         I am a...
       </h2>
       <div className="flex flex-col space-y-4 mt-4">
-        <button onClick={() => { setUserType("student"); setFormState("student"); }} className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
+        <button onClick={() => { setUserType("student"); setFormState("student"); }} className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
           Student
         </button>
-        <button onClick={() => { setUserType("teacher"); setFormState("teacher"); }} className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
+        <button onClick={() => { setUserType("teacher"); setFormState("teacher"); }} className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
           Teacher
         </button>
       </div>
@@ -188,23 +184,14 @@ export function SignupFormDemo() {
     <>
       {renderStudentForm()}
       <LabelInputContainer className="mb-4">
-        <Label htmlFor="school">School</Label>
-        <Input
-          id="school"
-          placeholder="Your school"
-          type="text"
-          value={school}
-          onChange={(e) => setSchool(e.target.value)}
-        />
-      </LabelInputContainer>
-      <LabelInputContainer className="mb-4">
-        <Label htmlFor="subject">Subject</Label>
-        <Input
-          id="subject"
-          placeholder="Your subject"
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+        <Label htmlFor="about">About You</Label>
+        <textarea
+          id="about"
+          placeholder="Tell us about yourself and your research focus"
+          value={about}
+          onChange={(e) => setAbout(e.target.value)}
+          className="dark:bg-neutral-800 dark:text-white p-2 rounded-md"
+          style={{ resize: "none", height: "100px" }}
         />
       </LabelInputContainer>
     </>
@@ -213,65 +200,55 @@ export function SignupFormDemo() {
   return (
     <>
       {userLoggedIn && <Navigate to={`/${userId}`} replace={true} />}
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+      <div className="max-w-md w-full mx-auto rounded-lg overflow-hidden p-4 space-y-8">
         {formState === "initial" && renderInitialState()}
         {formState === "userType" && renderUserTypeSelection()}
-        {(formState === "student" || formState === "teacher") && (
-          <form className="my-8" onSubmit={handleSubmit}>
-            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200 mb-4">
-              Create an account
-            </h2>
-            {formState === "student" ? renderStudentForm() : renderTeacherForm()}
-            {registerError && <ErrorMessage text={registerError} />}
-            <button
-              disabled={loading}
-              className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 mt-8 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-              type="submit"
-            >
-              {loading ? "Signing Up..." : "Sign Up"}
-              <BottomGradient />
-            </button>
-            <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-            <div className="flex flex-col space-y-4">
+        {formState === "student" && (
+          <form onSubmit={handleSubmit}>
+            {renderStudentForm()}
+            <div className="flex flex-col space-y-4 mt-8">
+              <button
+                type="submit"
+                className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+              >
+                Sign Up
+              </button>
               <button
                 onClick={handleGoogleSignUp}
-                disabled={loading}
-                className="relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                type="button"
+                className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
               >
-                <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-                <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-                  Sign up with Google
-                </span>
-                <BottomGradient />
+                <IconBrandGoogle className="mr-2" /> Sign Up with Google
               </button>
             </div>
           </form>
         )}
+        {formState === "teacher" && (
+          <form onSubmit={handleSubmit}>
+            {renderTeacherForm()}
+            <div className="flex flex-col space-y-4 mt-8">
+              <button
+                type="submit"
+                className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+              >
+                Sign Up
+              </button>
+              <button
+                onClick={handleGoogleSignUp}
+                className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
+              >
+                <IconBrandGoogle className="mr-2" /> Sign Up with Google
+              </button>
+            </div>
+          </form>
+        )}
+        {registerError && <ErrorMessage message={registerError} />}
       </div>
     </>
   );
 }
 
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
+const LabelInputContainer = ({ children }) => (
+  <div className="flex flex-col space-y-2">{children}</div>
+);
 
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
+export default SignupFormDemo;
