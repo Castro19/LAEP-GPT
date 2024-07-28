@@ -15,6 +15,7 @@ function ProfilePage() {
   const [editedValues, setEditedValues] = useState({
     name: '',
     email: '',
+    about: '', // Added about field for teachers
   });
 
   const [errors, setErrors] = useState({
@@ -29,6 +30,7 @@ function ProfilePage() {
       setEditedValues({
         name: currentUser.displayName || '',
         email: currentUser.email || '',
+        about: currentUser.about || '', // Initialize about field
       });
     }
   }, [currentUser]);
@@ -98,28 +100,18 @@ function ProfilePage() {
             User Type
           </label>
           <p className="text-sm text-gray-900 dark:text-gray-100">
-            {currentUser.userType || 'N/A'} //here is to change the N/A to hardcode it in
+            {currentUser.userType || 'N/A'}
           </p>
         </div>
         {currentUser.userType === 'teacher' && (
-          <>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Research Focus
-              </label>
-              <p className="text-sm text-gray-900 dark:text-gray-100">
-                {editedValues.researchFocus || 'N/A'}
-              </p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                About Me
-              </label>
-              <p className="text-sm text-gray-900 dark:text-gray-100">
-                {editedValues.aboutMe || 'N/A'}
-              </p>
-            </div>
-          </>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              About Me
+            </label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">
+              {editedValues.about || 'N/A'}
+            </p>
+          </div>
         )}
         <div className="mt-6">
           <button
