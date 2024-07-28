@@ -4,16 +4,23 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { firebaseUserId, firstName, lastName } = req.body;
+    const {
+      firebaseUserId,
+      firstName,
+      lastName,
+      userType,
+      about,
+    } = req.body;
     if (!firebaseUserId) {
       return res.status(400).send("Firebase User ID is required");
     }
-    const result = await addUser({ firebaseUserId, firstName, lastName });
+    const result = await addUser({ firebaseUserId, firstName, lastName, userType, about });
     res.status(201).json(result);
   } catch (error) {
     res.status(500).send("Failed to create user: " + error.message);
     console.error("Failed to create user: ", error);
   }
 });
+
 
 export default router;
