@@ -13,6 +13,7 @@ import { auth } from "@/firebase";
 import { RootState, AppDispatch } from "../store";
 import { AuthState } from "@/types";
 
+
 // Initial state for the auth slice
 const initialState: AuthState = {
   currentUser: null,

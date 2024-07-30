@@ -1,39 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '@/redux';
 import { useNavigate } from 'react-router-dom';
-import { updateUserProfile } from '@/redux/auth/authSlice';
 
 function ProfilePage() {
-  const { currentUser } = useAppSelector((state) => state.auth);
+  const { currentUser, userId } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const [editMode, setEditMode] = useState({
-    name: false,
-    email: false,
-  });
-
-  const [editedValues, setEditedValues] = useState({
-    name: '',
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     about: '', // Added about field for teachers
-  });
-
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
+    userType: ''
   });
 
   useEffect(() => {
-    if (currentUser) {
-      console.log('Current user type in profile:', currentUser.userType);
-      console.log('Current user name:', currentUser.displayName);
-      setEditedValues({
-        name: currentUser.displayName || '',
-        email: currentUser.email || '',
-        about: currentUser.about || '', // Initialize about field
-      });
-    }
-  }, [currentUser]);
+    const fetchUserData = async () => {
+      if (userId) { // Ensure userId is present
+        try {
+          const response = await fetch(`http://localhost:4000/users/${userId}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+          }
+          const data = await response.json();
+          setUserData({
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            email: currentUser.email || '', // Set the email from the currentUser object
+            about: data.about || '',
+            userType: data.userType || ''
+          });
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [userId, currentUser]);
 
   if (!currentUser) {
     return <div>Loading...</div>;
@@ -41,36 +45,6 @@ function ProfilePage() {
 
   const handleBackToChat = () => {
     navigate('/chat');
-  };
-
-  const handleEdit = (field: string) => {
-    setEditMode({ ...editMode, [field]: true });
-  };
-
-  const validateEmail = (email: string) => {
-    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return re.test(String(email).toLowerCase());
-  };
-
-  const handleSave = async (field: string) => {
-    if (field === 'email' && !validateEmail(editedValues.email)) {
-      setErrors({ ...errors, email: 'Please enter a valid email address.' });
-      return;
-    }
-
-    setEditMode({ ...editMode, [field]: false });
-    try {
-      await updateUserProfile({ [field]: editedValues[field] });
-      setErrors({ ...errors, [field]: '' });
-    } catch (error) {
-      console.error(`Failed to update ${field}:`, error);
-      setErrors({ ...errors, [field]: `Failed to update ${field}. Please try again.` });
-    }
-  };
-
-  const handleChange = (field, value) => {
-    setEditedValues({ ...editedValues, [field]: value });
-    setErrors({ ...errors, [field]: '' });
   };
 
   return (
@@ -81,10 +55,18 @@ function ProfilePage() {
         </h1>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Name
+            First Name
           </label>
           <p className="text-sm text-gray-900 dark:text-gray-100">
-            {editedValues.name || 'N/A'}
+            {userData.firstName || 'N/A'}
+          </p>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Last Name
+          </label>
+          <p className="text-sm text-gray-900 dark:text-gray-100">
+            {userData.lastName || 'N/A'}
           </p>
         </div>
         <div className="mb-4">
@@ -92,7 +74,7 @@ function ProfilePage() {
             Email
           </label>
           <p className="text-sm text-gray-900 dark:text-gray-100">
-            {editedValues.email || 'N/A'}
+            {userData.email || 'N/A'}
           </p>
         </div>
         <div className="mb-4">
@@ -100,16 +82,16 @@ function ProfilePage() {
             User Type
           </label>
           <p className="text-sm text-gray-900 dark:text-gray-100">
-            {currentUser.userType || 'N/A'}
+            {userData.userType || 'N/A'}
           </p>
         </div>
-        {currentUser.userType === 'teacher' && (
+        {userData.userType === 'teacher' && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               About Me
             </label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {editedValues.about || 'N/A'}
+              {userData.about || 'N/A'}
             </p>
           </div>
         )}
