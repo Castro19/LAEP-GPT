@@ -73,7 +73,7 @@ export const listenToAuthChanges = createAsyncThunk<
 // Thunk for updating user profile
 export const updateUserProfile = createAsyncThunk<
   void,
-  Partial<UserInfo> & { userType?: string }, 
+  Partial<UserInfo> & { userType?: string; availability?: string }, // Add availability here
   { dispatch: AppDispatch }
 >(
   "auth/updateUserProfile",
@@ -112,6 +112,16 @@ export const updateUserProfile = createAsyncThunk<
           userType: updatedInfo.userType || null, // Update userType in the auth state
         })
       );
+
+      // Update availability in the database
+      if (updatedInfo.availability) {
+        const userData = {
+          firebaseUserId: user.uid,
+          availability: updatedInfo.availability,
+        };
+        await sendUserToDB(userData);
+      }
+
     } catch (error) {
       console.error("Failed to update user profile:", error);
     } finally {
@@ -123,10 +133,11 @@ export const updateUserProfile = createAsyncThunk<
 
 
 
+
 // Thunk for email/password sign-up
-export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string; about?: string }, { dispatch: AppDispatch }>(
+export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string; about?: string; availability: string }, { dispatch: AppDispatch }>(
   "auth/signUpWithEmail",
-  async ({ email, password, firstName, lastName, userType, about }, { dispatch }) => {
+  async ({ email, password, firstName, lastName, userType, about, availability }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -138,13 +149,14 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
         userType: userType, 
       });
       console.log("ran1");
-      console.log("User type during sign-up:", userType); 
+      console.log("User availability during sign-up:", availability); 
 
       const userData = {
         firebaseUserId: user.uid,
         firstName,
         lastName,
         userType,
+        availability, // Include availability
       };
 
       // Include 'about' field if the user is a teacher
@@ -164,7 +176,7 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
         displayName: `${firstName} ${lastName}`,
         userType: userType,
       };
-      console.log("User type during updated sign-up:", userType); 
+      console.log("User availability during updated sign-up:", availability); 
       console.log("ran3");
       dispatch(
         setAuthState({
@@ -184,6 +196,8 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
     }
   }
 );
+
+
 
 // Thunk for email/password sign-in
 export const signInWithEmail = createAsyncThunk<

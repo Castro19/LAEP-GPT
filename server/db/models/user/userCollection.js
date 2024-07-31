@@ -9,6 +9,7 @@ export const createUser = async (userData) => {
       lastName: userData.lastName,
       userType: userData.userType,
       about: userData.about,
+      availability: userData.availability, // Include availability
     };
     const result = await userCollection.insertOne(newUser);
     return result;

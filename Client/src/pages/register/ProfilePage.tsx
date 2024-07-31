@@ -11,7 +11,8 @@ function ProfilePage() {
     lastName: '',
     email: '',
     about: '', // Added about field for teachers
-    userType: ''
+    userType: '',
+    availability: '', // New field
   });
 
   useEffect(() => {
@@ -28,7 +29,8 @@ function ProfilePage() {
             lastName: data.lastName || '',
             email: currentUser.email || '', // Set the email from the currentUser object
             about: data.about || '',
-            userType: data.userType || ''
+            userType: data.userType || '',
+            availability: data.availability || '', // Include availability
           });
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -95,6 +97,14 @@ function ProfilePage() {
             </p>
           </div>
         )}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Availability
+          </label>
+          <p className="text-sm text-gray-900 dark:text-gray-100">
+            {userData.availability || 'N/A'}
+          </p>
+        </div>
         <div className="mt-6">
           <button
             onClick={handleBackToChat}
