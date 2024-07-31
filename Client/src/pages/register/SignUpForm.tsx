@@ -18,6 +18,7 @@ export function SignupFormDemo() {
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [about, setAbout] = useState("");
+  const [availability, setAvailability] = useState(""); // New field
 
   const dispatch = useAppDispatch();
   const { userLoggedIn, userId, registerError, loading } = useAppSelector(
@@ -61,14 +62,16 @@ export function SignupFormDemo() {
       password,
       firstName,
       lastName,
-      userType
+      userType,
+      availability, // Include availability
     };
   
     // Include additional teacher fields if the user is a teacher
     if (userType === "teacher") {
       userData.about = about; // Add the 'about' field for teachers
     }
-  console.log("User Data passed to signupwithemail thunk: ", userData);
+  
+    console.log("User Data passed to signupwithemail thunk: ", userData);
     // Dispatch the signup action
     dispatch(authActions.signUpWithEmail(userData));
   };
@@ -175,6 +178,16 @@ export function SignupFormDemo() {
           type={passwordVisible ? "text" : "password"}
           value={confirmedPassword}
           onChange={(e) => setConfirmedPassword(e.target.value)}
+        />
+      </LabelInputContainer>
+      <LabelInputContainer>
+        <Label htmlFor="availability">Availability</Label>
+        <Input
+          id="availability"
+          placeholder="Your availability"
+          type="text"
+          value={availability}
+          onChange={(e) => setAvailability(e.target.value)}
         />
       </LabelInputContainer>
     </>

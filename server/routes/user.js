@@ -8,7 +8,14 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { firebaseUserId, firstName, lastName, userType, about } = req.body;
+    const {
+      firebaseUserId,
+      firstName,
+      lastName,
+      userType,
+      about,
+      availability,
+    } = req.body; // Include availability
     if (!firebaseUserId) {
       return res.status(400).send("Firebase User ID is required");
     }
@@ -18,6 +25,7 @@ router.post("/signup", async (req, res) => {
       lastName,
       userType,
       about,
+      availability, // Include availability
     });
     res.status(201).json(result);
   } catch (error) {

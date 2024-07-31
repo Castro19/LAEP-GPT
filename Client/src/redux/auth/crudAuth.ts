@@ -4,6 +4,7 @@ export default async function sendUserToDB(userData: {
   lastName: string;
   userType: string;
   about?: string;
+  availability: string;
 }): Promise<void> {
   // Now, send a request to your backend to store additional user information
   try {

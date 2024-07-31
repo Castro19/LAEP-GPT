@@ -8,4 +8,5 @@ export type AuthState = {
   loading: boolean; // State for registering
   registerError: string | null; // Error while log in or sign up
   userType: string | null; // Type of user
+  availability: string | null; // Availability of user
 };

@@ -29,12 +29,16 @@
 
 - Once a user signs up, present a form that allows them to insert information like availability, interest, and etc.
   - Work in progress, seperated teacher vs student accounts, added custom field to teacher called about which is also added to the database and accessable
+  - Availability also added to both database and forms
   - TODO: Add availability section to student and teacher accounts and add that to database info
 
 - Send the information to the back-end to be inserted into the database. 
   - DONE for what is currently implemented
 
-- Either remove or update sign up with email so that it gathers the same information
+- Either remove or update sign up with email so that it gathers the same information + works at all
+
+- Update or remove guest sign in as an option
+  - Allow guests to talk to teacher AI but limit matching capabilities maybe?
 
 ### Task 4: Role-based Access Control
 
