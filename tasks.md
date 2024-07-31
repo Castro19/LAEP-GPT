@@ -2,48 +2,56 @@
 
 ## Front-End
 
-Katie Hallinan, Victor
-
 ## Back-end
 
 ### API Routes
 
-- Katie Hallinan, Victor
-
 ### MongoDB Functions
-
-- Nathan
 
 ### Working with the OpenAI API
 
-- Nathan, Saul
-
 ## Ideas or Tasks
 
-### Task 1: LLM Models: Nathan & Saul
+### Task 1: LLM Models
 
 - Work with creating assistants, threads, and managing scalability.
+    - Katie on adding assistants based on certain teachers tied to said teachers account
 
 - Test what happens when two users send a message at the same time
 
 - [Docs](https://platform.openai.com/docs/assistants/overview)
 
-### Task 2: Mongo DB Functions: Nathan & Katie
+### Task 2: Mongo DB Functions
 
 - When a user signs up, create a new assistant id for each model we currently have.
 
-### Task 3: Setting Form (Katie)
+### Task 3: Setting Form
 
 - Once a user signs up, present a form that allows them to insert information like availability, interest, and etc.
+  - Work in progress, seperated teacher vs student accounts, added custom field to teacher called about which is also added to the database and accessable
+  - TODO: Add availability section to student and teacher accounts and add that to database info
 
-- Send the information to the back-end to be inserted into the database.
+- Send the information to the back-end to be inserted into the database. 
+  - DONE for what is currently implemented
+
+- Either remove or update sign up with email so that it gathers the same information
 
 ### Task 4: Role-based Access Control
 
 - Assigning users to different roles to have different permissions.
+  - Users now have teacher and student roles, but those currently don't effect permissions. What perms can/should be granted?
 
-- Give permissions based on admin, student, or teacher to create custom Assistants
+- Give permissions based on student or teacher to create custom Assistants
 
 - Give permissions based on who can access the custom assistant created
-
   - Maybe the user wants to select which users can have access to this assistant.
+
+## Task 5: Data Scraping
+
+- Scrape data about teachers to feed into the database about each teacher in order for the AI to get a better grasp on the teacher and pair them with students more accurately
+
+## Task 6: Human Testing Permission and Papers
+
+- Write a proposal in order to gain permission for human test trials
+
+- Look into journals for potential publishing
