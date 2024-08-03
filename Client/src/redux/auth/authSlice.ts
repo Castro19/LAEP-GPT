@@ -73,7 +73,7 @@ export const listenToAuthChanges = createAsyncThunk<
 // Thunk for updating user profile
 export const updateUserProfile = createAsyncThunk<
   void,
-  Partial<UserInfo> & { userType?: string; availability?: string }, // Add availability here
+  Partial<UserInfo> & { userType?: string; about?: string; availability?: string }, // Add availability and about here
   { dispatch: AppDispatch }
 >(
   "auth/updateUserProfile",
@@ -113,14 +113,18 @@ export const updateUserProfile = createAsyncThunk<
         })
       );
 
-      // Update availability in the database
-      if (updatedInfo.availability) {
-        const userData = {
-          firebaseUserId: user.uid,
-          availability: updatedInfo.availability,
-        };
-        await sendUserToDB(userData);
-      }
+      // Update about and availability in the database
+      const userData = {
+        firebaseUserId: user.uid,
+        ...updatedInfo,
+      };
+      await fetch(`http://localhost:4000/users/${user.uid}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
 
     } catch (error) {
       console.error("Failed to update user profile:", error);

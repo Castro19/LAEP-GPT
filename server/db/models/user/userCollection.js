@@ -26,3 +26,15 @@ export const findUserByFirebaseId = async (firebaseUserId) => {
     throw new Error("Error finding user: " + error.message);
   }
 };
+
+export const updateUserByFirebaseId = async (firebaseUserId, updateData) => {
+  try {
+    const result = await userCollection.updateOne(
+      { _id: firebaseUserId },
+      { $set: updateData }
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error updating user: " + error.message);
+  }
+};
