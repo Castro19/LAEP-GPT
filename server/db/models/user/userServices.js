@@ -17,3 +17,15 @@ export const getUserByFirebaseId = async (firebaseUserId) => {
     throw new Error("Service error: " + error.message);
   }
 };
+
+export const updateUser = async (firebaseUserId, updateData) => {
+  try {
+    const result = await UserModel.updateUserByFirebaseId(
+      firebaseUserId,
+      updateData
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Service error: " + error.message);
+  }
+};

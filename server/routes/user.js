@@ -2,6 +2,7 @@ import express from "express";
 import {
   addUser,
   getUserByFirebaseId,
+  updateUser,
 } from "../db/models/user/userServices.js";
 
 const router = express.Router();
@@ -44,6 +45,17 @@ router.get("/:firebaseUserId", async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(500).send("Failed to get user: " + error.message);
+  }
+});
+
+router.put("/:firebaseUserId", async (req, res) => {
+  try {
+    const { firebaseUserId } = req.params;
+    const updateData = req.body; // Contains the updated fields
+    const updatedUser = await updateUser(firebaseUserId, updateData);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).send("Failed to update user: " + error.message);
   }
 });
 
