@@ -33,6 +33,15 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+router.get('/gpts', async (req, res) => {
+  try {
+    const gptList = await fetchGPTs();
+    res.status(200).json({ gptList });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Delete
 router.delete("/", async (req, res) => {
   const gptData = req.body;

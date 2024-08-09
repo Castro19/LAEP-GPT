@@ -4,11 +4,13 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { connectToDb } from './db/connection.js';
 // Routes:
 import llms from "./routes/llm.js";
 import users from "./routes/user.js";
 import chatLogs from "./routes/chatLog.js";
 import gpts from "./routes/gpt.js";
+import assistants from './routes/assistants.js';
 
 // LLM API
 import OpenAI from "openai";
@@ -27,6 +29,7 @@ app.use("/llms", llms);
 app.use("/users", users);
 app.use("/chatLogs", chatLogs);
 app.use("/gpts", gpts);
+app.use('/assistants', assistants);
 
 app.use((err, req, res) => {
   console.error(err.stack);
@@ -34,10 +37,14 @@ app.use((err, req, res) => {
 });
 
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // This is also the default, can be omitted
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+// Connect to the database and start the server
+connectToDb().then(() => {
+  app.listen(port, () => {
+    console.log(`Server listening at http://localhost:${port}`);
+  });
+}).catch(error => {
+  console.error('Failed to connect to the database:', error);
 });

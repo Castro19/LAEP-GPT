@@ -8,11 +8,12 @@ type ModeDropDownProps = {
   // eslint-disable-next-line no-unused-vars
   onSelect: (modelId: string | undefined) => void;
 };
+
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   const navigate = useNavigate();
   // Redux Store:
   const userId = useAppSelector((state) => state.auth.userId);
-  const { currentModel, gptList } = useAppSelector((state) => state.gpt);
+  const { currentModel } = useAppSelector((state) => state.gpt);
   const isDropdownVisible = useAppSelector(
     (state) => state.layout.isDropdownVisible
   );
@@ -20,7 +21,8 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   // To manage the dropdown effect of the mode dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = useState("0");
-  console.log("GPTLIST: ", gptList);
+  const [assistants, setAssistants] = useState([]);
+
   useEffect(() => {
     if (isDropdownVisible && dropdownRef.current) {
       const fullHeight = dropdownRef.current.scrollHeight + "px";
@@ -29,6 +31,18 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
       setMaxHeight("0");
     }
   }, [isDropdownVisible]);
+
+  useEffect(() => {
+    fetch('http://localhost:4000/gpts')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch GPTs');
+        }
+        return response.json();
+      })
+      .then(data => setAssistants(data.gptList || []))
+      .catch(error => console.error('Error fetching GPTs:', error));
+  }, []);
 
   const onViewGPTs = () => {
     navigate(`/${userId}/gpts`);
@@ -41,7 +55,7 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
       style={{ maxHeight }}
     >
       {isDropdownVisible &&
-        gptList.map((option) => (
+        assistants.map((option) => (
           <div
             key={option.id}
             className="flex items-center pr-4 py-2 hover:bg-gray-300 hover:text-white"
@@ -54,7 +68,7 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
               {option.title}
               <span
                 className={`${
-                  currentModel.id === option.id
+                  currentModel?.id === option.id
                     ? "bg-blue-500" // Filled circle for selected option
                     : "bg-transparent border border-gray-400" // Empty circle for unselected option
                 } inline-block ml-2 rounded-full w-4 h-4`}
