@@ -24,8 +24,12 @@
   "author": "Cristian Castro Oliva",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",
-    "mongodb": "^6.8.0"
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0",
+    "openai": "^4.54.0"
   },
   "devDependencies": {
     "eslint-plugin-prettier": "^5.1.3",

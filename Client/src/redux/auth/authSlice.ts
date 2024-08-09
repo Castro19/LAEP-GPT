@@ -12,6 +12,11 @@ import sendUserToDB from "./crudAuth";
 import { auth } from "@/firebase";
 import { RootState, AppDispatch } from "../store";
 import { AuthState } from "@/types";
+import { createAssistantOnServer } from '../../apiHelpers';
+
+
+
+
 
 
 // Initial state for the auth slice
@@ -23,6 +28,7 @@ const initialState: AuthState = {
   loading: false,
   registerError: null,
   userType: null,
+  availability: null
 };
 
 // Register the listener to track auth state changes
@@ -152,9 +158,7 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
         displayName: `${firstName} ${lastName}`,
         userType: userType, 
       });
-      console.log("ran1");
-      console.log("User availability during sign-up:", availability); 
-
+      
       const userData = {
         firebaseUserId: user.uid,
         firstName,
@@ -170,7 +174,7 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
 
       // Send user information to database
       await sendUserToDB(userData);
-      console.log("ran2");
+
       // Determine if user is email-based
       const isEmailUser = user.providerData.some(provider => provider.providerId === "password");
       
@@ -180,8 +184,13 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
         displayName: `${firstName} ${lastName}`,
         userType: userType,
       };
-      console.log("User availability during updated sign-up:", availability); 
-      console.log("ran3");
+
+      // Create GPT assistant if user is a teacher
+      if (userType === "teacher" && about) {
+        const assistantPrompt = `You are ${firstName} ${lastName} and you are available ${availability}. Here is some information about you: ${about}. Your job is to see student prompts and decide if you would be a good advisor for their project, and prompt them to send it to the other assistants to refine their prompt based on social justice and ethical guidelines.`;
+        await createAssistantOnServer(`${firstName} ${lastName}`, "Teacher Assistant", assistantPrompt);
+      }
+      
       dispatch(
         setAuthState({
           user: updatedUser,

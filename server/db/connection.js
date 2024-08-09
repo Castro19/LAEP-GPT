@@ -12,16 +12,31 @@ const client = new MongoClient(URI, {
   },
 });
 
-try {
-  // Connect the client to the server
-  await client.connect();
-  // Send a ping to confirm a successful connectionno
-  await client.db("admin").command({ ping: 1 });
-  console.log("Pinged your deployment. You successfully connected to MongoDB!");
-} catch (err) {
-  console.error(err);
+let db;
+
+async function connectToDb() {
+  try {
+    // Connect the client to the server
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    db = client.db("laep");
+  } catch (err) {
+    console.error("Failed to connect to MongoDB", err);
+    throw new Error("Failed to connect to MongoDB");
+  }
 }
 
-let db = client.db("laep");
+function getDb() {
+  if (!db) {
+    throw new Error("Database not connected. Please connect first.");
+  }
+  return db;
+}
 
-export default db;
+// Ensure the connection is established when the module is imported
+await connectToDb().catch(console.error);
+
+export { connectToDb, getDb };
+export default getDb();
