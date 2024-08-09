@@ -18,11 +18,12 @@ export async function createAssistant(name, description, prompt) {
 
     console.log("OpenAI Assistant created:", assistant);
 
+    // Extract the necessary data, including the assistant_id
     const assistantData = {
       name: name,
       description: description,
       prompt: prompt,
-      assistantId: assistant.id,  // Store the assistant's ID
+      assistantId: assistant.id,  // Store the assistant's ID from OpenAI
     };
 
     // Step 2: Save assistant data to MongoDB
@@ -53,7 +54,11 @@ export async function fetchGPTs() {
     const db = getDb();
     const gpts = await db.collection('gpts').find({}).toArray();
 
-    // Map the database objects to the structure expected by the frontend
+    if (!gpts || gpts.length === 0) {
+      console.log('No GPTs found');
+      return [];
+    }
+
     const gptList = gpts.map((gpt) => ({
       id: gpt._id.toString(),
       title: gpt.title,
@@ -62,7 +67,7 @@ export async function fetchGPTs() {
 
     return gptList;
   } catch (error) {
-    console.error('Error fetching GPTs:', error);
+    console.error('Error fetching GPTs:', error.message);
     throw new Error('Failed to fetch GPTs');
   }
 }
