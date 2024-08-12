@@ -1,9 +1,9 @@
-import express from 'express';
-import { createAssistant } from '../helpers/openAI/assistantFunctions.js';
+import express from "express";
+import { createAssistant } from "../helpers/openAI/assistantFunctions.js";
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const { name, description, prompt } = req.body;
   try {
     const assistant = await createAssistant(name, description, prompt);

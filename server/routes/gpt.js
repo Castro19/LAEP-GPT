@@ -33,7 +33,7 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-router.get('/gpts', async (req, res) => {
+router.get("/gpts", async (req, res) => {
   try {
     const gptList = await fetchGPTs();
     res.status(200).json({ gptList });
@@ -54,6 +54,7 @@ router.delete("/", async (req, res) => {
     console.error("Failed to delete gpt: ", error);
   }
 });
+
 /*
 _id,
 title (50)
