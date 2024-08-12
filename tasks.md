@@ -15,7 +15,8 @@
 ### Task 1: LLM Models
 
 - Work with creating assistants, threads, and managing scalability.
-    - Katie on adding assistants based on certain teachers tied to said teachers account
+    - Teacher-account based assistants made
+    - Ethics assessor and social justice assessor assistants to be made
 
 - Test what happens when two users send a message at the same time
 
@@ -24,6 +25,7 @@
 ### Task 2: Mongo DB Functions
 
 - When a user signs up, create a new assistant id for each model we currently have.
+  - Currently creates a new teacher assistant based on that teacher on teacher account creation
 
 ### Task 3: Setting Form
 
@@ -57,5 +59,12 @@
 ## Task 6: Human Testing Permission and Papers
 
 - Write a proposal in order to gain permission for human test trials
+  - IRB accounts made and to be connected
 
 - Look into journals for potential publishing
+
+## Task 7: Ongoing
+  - Fix the dropdown menu to display the available assistants correctly
+
+## Task 8: Poster Board
+  - Continue working on Poster board, due around Sept 29th if past year's due date holds
