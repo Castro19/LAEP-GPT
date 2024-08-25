@@ -5,6 +5,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { IconBrandGoogle } from "@tabler/icons-react";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
 import { cn } from "@/lib/utils";
 
@@ -84,15 +85,22 @@ export function SignupFormDemo() {
   const renderInitialState = () => (
     <>
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome
+        Welcome to the AI4ESJ Portal!
       </h2>
-      <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        Log in or create an account
+      <p 
+        className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300"
+        style={{ marginTop: "15px" }}>
+        Please log in or create a new account to continue.
       </p>
       <div className="flex flex-col space-y-4 mt-4">
         <Link to="/login" className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center">
           Log In
         </Link>
+        <div className="flex flex-row text-center w-full my-4 dark:text-gray-400">
+            <div className="border-b-2 border-gray-500 mb-2.5 mr-4 w-full"></div>
+            <div className="text-sm font-bold w-fit">OR</div>
+            <div className="border-b-2 border-gray-500 mb-2.5 ml-4 w-full"></div>
+          </div>
         <button onClick={() => setFormState("userType")} className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]">
           Create Account
         </button>
@@ -113,6 +121,15 @@ export function SignupFormDemo() {
           Teacher
         </button>
       </div>
+      <p className="text-center text-sm dark:text-gray-400">
+            Already have an account?
+            <Link
+              to={"/login"}
+              className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
+            >
+              Log in
+            </Link>
+        </p>
     </>
   );
 
@@ -144,7 +161,7 @@ export function SignupFormDemo() {
         <Label htmlFor="email">Email Address</Label>
         <Input
           id="email"
-          placeholder="example@gmail.com"
+          placeholder="example@calpoly.edu"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -184,7 +201,7 @@ export function SignupFormDemo() {
         <Label htmlFor="availability">Availability</Label>
         <Input
           id="availability"
-          placeholder="Your availability"
+          placeholder="I'm available on..."
           type="text"
           value={availability}
           onChange={(e) => setAvailability(e.target.value)}
@@ -197,13 +214,12 @@ export function SignupFormDemo() {
     <>
       {renderStudentForm()}
       <LabelInputContainer>
-        <Label htmlFor="about">About You</Label>
-        <textarea
+        <Label htmlFor="about">About Yourself</Label>
+        <Textarea
           id="about"
-          placeholder="Tell us about yourself and your research focus"
+          placeholder="Tell us about yourself and your research focus; the more detailed you are, the better we can match you with students."
           value={about}
           onChange={(e) => setAbout(e.target.value)}
-          className="dark:bg-neutral-800 dark:text-white p-2 rounded-md"
           style={{ resize: "none", height: "100px" }}
         />
       </LabelInputContainer>
@@ -226,12 +242,22 @@ export function SignupFormDemo() {
               >
                 Sign Up
               </button>
+              <p className="text-center text-sm dark:text-gray-400">
+                Already have an account?
+                <Link
+                  to={"/login"}
+                  className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
+                >
+                  Log in
+                </Link>
+              </p>
+              {/* LEGACY GOOGLE SIGN UP
               <button
                 onClick={handleGoogleSignUp}
                 className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
               >
                 <IconBrandGoogle className="mr-2" /> Sign Up with Google
-              </button>
+              </button> */}
             </div>
           </form>
         )}
@@ -245,12 +271,22 @@ export function SignupFormDemo() {
               >
                 Sign Up
               </button>
+              <p className="text-center text-sm dark:text-gray-400">
+                Already have an account?
+                <Link
+                  to={"/login"}
+                  className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
+                >
+                  Log in
+                </Link>
+              </p>
+              {/* LEGACY GOOGLE SIGN UP
               <button
                 onClick={handleGoogleSignUp}
                 className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex items-center justify-center"
               >
                 <IconBrandGoogle className="mr-2" /> Sign Up with Google
-              </button>
+              </button> */}
             </div>
           </form>
         )}

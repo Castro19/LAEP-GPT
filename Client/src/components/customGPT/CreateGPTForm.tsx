@@ -63,7 +63,7 @@ export default function GPTForm() {
         // Apply toast
         toast({
           title: "Custom Assistant Added",
-          description: `Congratulations, your custom assisstant was just created!`,
+          description: `Congratulations, your custom assistant was just created!`,
           action: (
             <ToastAction onClick={handleUndo} altText="Delete Schedule">
               Undo

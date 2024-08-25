@@ -28,6 +28,7 @@
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "firebase": "^10.12.5",
     "mongodb": "^6.8.0",
     "openai": "^4.54.0"
   },

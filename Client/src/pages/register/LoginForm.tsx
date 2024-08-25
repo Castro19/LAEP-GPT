@@ -51,7 +51,7 @@ export function LoginFormDemo() {
           Welcome Back!
         </h2>
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          Login
+          Log in with your email and password.
         </p>
 
         <form className="my-8" onSubmit={handleSubmit}>
@@ -59,7 +59,7 @@ export function LoginFormDemo() {
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
-              placeholder="example@gmail.com"
+              placeholder="example@calpoly.edu"  // while calpoly.edu is required
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -90,6 +90,11 @@ export function LoginFormDemo() {
             {loading ? "Signing In..." : "Sign In"}
             <BottomGradient />
           </button>
+          <div className="flex flex-row text-center w-full my-4 dark:text-gray-400">
+            <div className="border-b-2 border-gray-500 mb-2.5 mr-2 w-full"></div>
+            <div className="text-sm font-bold w-fit">OR</div>
+            <div className="border-b-2 border-gray-500 mb-2.5 ml-2 w-full"></div>
+          </div>
           <p className="text-center text-sm dark:text-gray-400">
             Don&apos;t have an account?
             <Link
@@ -99,12 +104,7 @@ export function LoginFormDemo() {
               Sign up
             </Link>
           </p>
-          <div className="flex flex-row text-center w-full my-4 dark:text-gray-400">
-            <div className="border-b-2 border-gray-500 mb-2.5 mr-2 w-full"></div>
-            <div className="text-sm font-bold w-fit">OR</div>
-            <div className="border-b-2 border-gray-500 mb-2.5 ml-2 w-full"></div>
-          </div>
-
+          {/* LEGACY GOOGLE LOG IN
           <div className="flex flex-col">
             <button
               onClick={handleGoogleSignIn}
@@ -117,7 +117,7 @@ export function LoginFormDemo() {
               </span>
               <BottomGradient />
             </button>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>
