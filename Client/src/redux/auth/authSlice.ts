@@ -55,7 +55,8 @@ export const listenToAuthChanges = createAsyncThunk<
       const userType = getState().auth.userType;
 
       console.log("ranAuthChange");
-      console.log("User type during auth change:", userType);
+      console.log("User type after auth change:", userType);
+      console.log("UserID after auth change:", user.uid);
       // Ensure user displayName is updated in the state
       const updatedUser = {
         ...user.providerData[0],
