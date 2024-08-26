@@ -11,12 +11,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   const { userId: urlUserId } = useParams<{ userId: string }>();
 
-  const { userLoggedIn, currentUser, loading, emailVerified } = useAppSelector((state) => state.auth);
+  const { userLoggedIn, currentUser, loading, emailVerified, userId } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     console.log("ProtectedRoute: Current path", location.pathname);
     console.log("ProtectedRoute: userLoggedIn", userLoggedIn);
     console.log("ProtectedRoute: currentUser", currentUser);
+    console.log("ProtectedRoute: userId", userId);
     console.log("ProtectedRoute: urlUserId", urlUserId);
     //console.log("ProtectedRoute: userType", currentUser?.userType);
 
@@ -40,11 +41,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         console.log("ProtectedRoute: Unauthorized profile access, redirecting to own profile");
         navigate(`/profile/${currentUser.uid}`, { replace: true });
       }
-    } else if (urlUserId && urlUserId !== currentUser.uid) {
+    } else if (urlUserId && urlUserId !== userId) {
       console.log("ProtectedRoute: URL userId does not match logged-in userId, redirecting");
       navigate(`/${currentUser.uid}`, { replace: true });
     }
-  }, [navigate, userLoggedIn, currentUser, urlUserId, location.pathname, loading]);
+  }, [navigate, userLoggedIn, currentUser, urlUserId, location.pathname, loading, emailVerified]);
 
   if (loading) {
     return <div>Loading...</div>;
