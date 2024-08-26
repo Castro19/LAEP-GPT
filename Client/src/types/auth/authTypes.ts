@@ -9,4 +9,5 @@ export type AuthState = {
   registerError: string | null; // Error while log in or sign up
   userType: string | null; // Type of user
   availability: string | null; // Availability of user
+  emailVerified: boolean; // Whether or not the user's email is verified
 };

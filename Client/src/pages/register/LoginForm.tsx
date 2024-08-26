@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { IconBrandGoogle } from "@tabler/icons-react";
+// import { IconBrandGoogle } from "@tabler/icons-react"; legacy google import
 import { cn } from "@/lib/utils";
 import { Navigate, Link } from "react-router-dom";
 // Importing component
@@ -38,15 +38,17 @@ export function LoginFormDemo() {
     dispatch(authActions.signInWithEmail({ email, password }));
   };
 
+  {/* Legacy Google sign in
   const handleGoogleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     dispatch(authActions.signInWithGoogle());
   };
+  */}
 
   return (
     <div>
       {userLoggedIn && <Navigate to={`/${userId}`} replace={true} />}
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome Back!
         </h2>

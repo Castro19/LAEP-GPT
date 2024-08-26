@@ -7,6 +7,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendEmailVerification
 } from "firebase/auth";
 import sendUserToDB from "./crudAuth";
 import { auth } from "@/firebase";
@@ -28,7 +29,8 @@ const initialState: AuthState = {
   loading: false,
   registerError: null,
   userType: null,
-  availability: null
+  availability: null,
+  emailVerified: false
 };
 
 // Register the listener to track auth state changes
@@ -67,6 +69,7 @@ export const listenToAuthChanges = createAsyncThunk<
           userLoggedIn: true,
           isEmailUser,
           userType,
+          emailVerified: user.emailVerified,
         })
       );
     } else {
@@ -116,6 +119,7 @@ export const updateUserProfile = createAsyncThunk<
           userLoggedIn: true,
           isEmailUser: user.providerData.some(provider => provider.providerId === "password"),
           userType: updatedInfo.userType || null, // Update userType in the auth state
+          emailVerified: user.emailVerified
         })
       );
 
@@ -158,6 +162,9 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
         displayName: `${firstName} ${lastName}`,
         userType: userType, 
       });
+
+      // Send verification email immediately after sign-up
+      await sendEmailVerification(user);
       
       const userData = {
         firebaseUserId: user.uid,
@@ -198,6 +205,7 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
           userLoggedIn: true,
           isEmailUser,
           userType: userType,
+          emailVerified: user.emailVerified,
         })
       );
     } catch (error) {
@@ -238,6 +246,7 @@ export const signInWithEmail = createAsyncThunk<
       userLoggedIn: true,
       isEmailUser,
       userType: user.providerData[5]?.userType,
+      emailVerified: user.emailVerified
       })
     );
   } catch (error) {
@@ -251,8 +260,8 @@ export const signInWithEmail = createAsyncThunk<
   }
 });
 
-// Thunk for Google sign-in
-export const signInWithGoogle = createAsyncThunk<
+// Thunk for Google sign-in (LEGACY)
+{/* export const signInWithGoogle = createAsyncThunk<
   void,
   void,
   { dispatch: AppDispatch }
@@ -282,6 +291,7 @@ export const signInWithGoogle = createAsyncThunk<
     dispatch(setLoading(false));
   }
 });
+*/}
 
 // Creating the slice
 const authSlice = createSlice({
@@ -296,20 +306,23 @@ const authSlice = createSlice({
         userLoggedIn: boolean;
         isEmailUser: boolean;
         userType: string | null;
+        emailVerified: boolean;
       }>
     ) {
-      const { user, userId, userLoggedIn, isEmailUser, userType } = action.payload;
+      const { user, userId, userLoggedIn, isEmailUser, userType, emailVerified } = action.payload;
       state.currentUser = user;
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
       state.isEmailUser = isEmailUser;
       state.userType = userType;
+      state.emailVerified = emailVerified;
     },
     clearAuthState(state) {
       state.currentUser = null;
       state.userLoggedIn = false;
       state.isEmailUser = false;
       state.loading = false;
+      state.emailVerified = false;
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -320,6 +333,9 @@ const authSlice = createSlice({
     setSignUpError(state, action: PayloadAction<string | null>) {
       state.registerError = action.payload;
     },
+    setEmailVerifyError(state, action: PayloadAction<string | null>) {
+      state.registerError = action.payload;
+    }
   },
 });
 
@@ -329,6 +345,7 @@ export const {
   setLoading,
   setSignInError,
   setSignUpError,
+  setEmailVerifyError
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

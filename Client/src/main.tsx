@@ -14,6 +14,7 @@ import Register from "./pages/register/Register.tsx";
 import { SignupFormDemo } from "./pages/register/SignUpForm.tsx";
 import AddInfoForm from "./pages/register/AddInfoForm.js";
 import { LoginFormDemo } from "./pages/register/LoginForm.tsx";
+import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
 import ChatPage from "./pages/ChatPage.js";
 import GPTPage from "./pages/customGPT/GPTPage.js";
 import GPTEditor from "./pages/customGPT/GPTEditorPage.js";
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       { path: "login", element: <LoginFormDemo /> },
       { path: "settingForm", element: <AddInfoForm /> },
     ],
+  },
+  { // Intermediate page for email verification--user is signed in but email is not verified
+    path: "/email-verification-needed",
+    element: <VerifyEmail />,
   },
   {
     path: "/:userId",
