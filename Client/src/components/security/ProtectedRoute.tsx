@@ -45,7 +45,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       console.log("ProtectedRoute: URL userId does not match logged-in userId, redirecting");
       navigate(`/${currentUser.uid}`, { replace: true });
     }
-  }, [navigate, userLoggedIn, currentUser, urlUserId, location.pathname, loading, emailVerified]);
+  }, [navigate, userLoggedIn, currentUser, urlUserId, location.pathname, loading, emailVerified, userId]);
 
   if (loading) {
     return <div>Loading...</div>;

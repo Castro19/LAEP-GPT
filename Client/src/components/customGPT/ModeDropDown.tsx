@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
 // UI
-import UserAvatar from "@/components/userProfile/UserAvatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type ModeDropDownProps = {
   onSelect: (modelId: string | undefined) => void;
@@ -65,9 +65,10 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
             key={option.id}
             className="flex items-center pr-4 py-2 hover:bg-gray-300 hover:text-white"
           >
-            {/* Non-clickable UserAvatar */}
             <div className="pointer-events-none">
-              <UserAvatar userPhoto={option.urlPhoto} />
+              <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
+                <AvatarImage src={option.urlPhoto || "/imgs/test.png"} alt="Assistant Photo" />
+              </Avatar>
             </div>
             <button
               onClick={() => onSelect(option.id)}

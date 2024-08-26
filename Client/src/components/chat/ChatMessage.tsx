@@ -1,7 +1,6 @@
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
-
-import UserAvatar from "@/components/userProfile/UserAvatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { MessageObjType } from "@/types";
 
 const md = new MarkdownIt();
@@ -24,7 +23,9 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
     >
       {!isUserMessage && (
         <div className="pr-2 pt-1">
-          <UserAvatar userPhoto={msg.urlPhoto} />
+          <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
+            <AvatarImage src={msg.urlPhoto || "/imgs/test.png"} alt="Assistant Photo" />
+          </Avatar>
         </div>
       )}
       <div

@@ -1,4 +1,4 @@
-import UserAvatar from "@/components/userProfile/UserAvatar.tsx";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import styles from "./CustomGPTCard.module.css";
 
 type CustomGPTProps = {
@@ -15,7 +15,9 @@ const CustomGPT = ({ asst, urlPhoto, title, desc }: CustomGPTProps) => {
   return (
     <button onClick={onCardClick} className={styles.cardButton}>
       <div className={styles.card}>
-        <UserAvatar userPhoto={urlPhoto} />
+        <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
+          <AvatarImage src={urlPhoto || "/imgs/test.png"} alt="Assistant Photo" />
+        </Avatar>
         <div className={styles.title}>{title}</div>
         <p className={styles.description}>{desc}</p>
       </div>
