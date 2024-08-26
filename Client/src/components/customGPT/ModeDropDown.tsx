@@ -5,23 +5,22 @@ import { useAppSelector } from "@/redux";
 import UserAvatar from "@/components/userProfile/UserAvatar";
 
 type ModeDropDownProps = {
-  // eslint-disable-next-line no-unused-vars
   onSelect: (modelId: string | undefined) => void;
 };
 
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   const navigate = useNavigate();
-  // Redux Store:
   const userId = useAppSelector((state) => state.auth.userId);
-  const { currentModel } = useAppSelector((state) => state.gpt);
+  const { currentModel, gptList } = useAppSelector((state) => state.gpt);
+
+  console.log("Received GPT List in ModeDropDown:", gptList);
+
   const isDropdownVisible = useAppSelector(
     (state) => state.layout.isDropdownVisible
   );
 
-  // To manage the dropdown effect of the mode dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = useState("0");
-  const [assistants, setAssistants] = useState([]);
 
   useEffect(() => {
     if (isDropdownVisible && dropdownRef.current) {
@@ -32,17 +31,23 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
     }
   }, [isDropdownVisible]);
 
-  useEffect(() => {
-    fetch('http://localhost:4000/gpts')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch GPTs');
-        }
-        return response.json();
-      })
-      .then(data => setAssistants(data.gptList || []))
-      .catch(error => console.error('Error fetching GPTs:', error));
-  }, []);
+  // Transform gptList to prioritize 'name' over 'title'
+  const transformedGptList = gptList.map((option) => {
+    console.log("Option Data Before Transformation:", option);
+
+    // Prioritize displaying 'name', fallback to 'title' if 'name' is not available
+    const title = option.name || option.title || "Unnamed Assistant";
+    const description = option.description || "No description available";
+
+    console.log("Resolved Title After Transformation:", title);
+
+    return {
+      id: option.id,
+      title,
+      desc: description,
+      urlPhoto: option.urlPhoto || "", // Default to an empty string if no photo is provided
+    };
+  });
 
   const onViewGPTs = () => {
     navigate(`/${userId}/gpts`);
@@ -55,22 +60,25 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
       style={{ maxHeight }}
     >
       {isDropdownVisible &&
-        assistants.map((option) => (
+        transformedGptList.map((option) => (
           <div
             key={option.id}
             className="flex items-center pr-4 py-2 hover:bg-gray-300 hover:text-white"
           >
-            <UserAvatar userPhoto={option.urlPhoto} />
+            {/* Non-clickable UserAvatar */}
+            <div className="pointer-events-none">
+              <UserAvatar userPhoto={option.urlPhoto} />
+            </div>
             <button
               onClick={() => onSelect(option.id)}
               className="flex justify-between items-center w-full ml-2 text-left text-sm text-gray-700"
             >
-              {option.title}
+              {option.title} {/* Ensure the title or name is displayed */}
               <span
                 className={`${
-                  currentModel?.id === option.id
-                    ? "bg-blue-500" // Filled circle for selected option
-                    : "bg-transparent border border-gray-400" // Empty circle for unselected option
+                  currentModel.id === option.id
+                    ? "bg-blue-500"
+                    : "bg-transparent border border-gray-400"
                 } inline-block ml-2 rounded-full w-4 h-4`}
               ></span>
             </button>
