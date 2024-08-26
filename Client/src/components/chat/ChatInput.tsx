@@ -109,7 +109,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         <button className="p-[3px] relative" disabled={isSending}>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-800 rounded-lg" />
           <div
-            className={`px-8 py-2 bg-black rounded-[6px] relative group transition duration-200 text-white ${
+            className={`px-8 py-2 bg-zinc-900 rounded-[6px] relative group transition duration-200 text-white ${
               isSending
                 ? "bg-gray-400 cursor-not-allowed flex justify-center"
                 : "hover:bg-transparent"

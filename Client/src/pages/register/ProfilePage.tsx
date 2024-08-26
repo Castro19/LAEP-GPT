@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/redux';
 import { useNavigate } from 'react-router-dom';
 import { updateUserProfile } from "../../redux/auth/authSlice"; // Adjust the path
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
 
 function ProfilePage() {
   const { currentUser, userId } = useAppSelector((state) => state.auth);
@@ -68,107 +70,111 @@ function ProfilePage() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-md">
-      <div className="bg-white dark:bg-black rounded-2xl p-8 shadow-md">
-        <h1 className="font-bold text-2xl text-neutral-800 dark:text-neutral-200 mb-6">
-          User Profile
-        </h1>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            First Name
-          </label>
-          <p className="text-sm text-gray-900 dark:text-gray-100">
-            {userData.firstName || 'N/A'}
-          </p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Last Name
-          </label>
-          <p className="text-sm text-gray-900 dark:text-gray-100">
-            {userData.lastName || 'N/A'}
-          </p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Email
-          </label>
-          <p className="text-sm text-gray-900 dark:text-gray-100">
-            {userData.email || 'N/A'}
-          </p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            User Type
-          </label>
-          <p className="text-sm text-gray-900 dark:text-gray-100">
-            {userData.userType || 'N/A'}
-          </p>
-        </div>
-        {userData.userType === 'teacher' && (
+    <div className="min-h-screen flex flex-col items-center justify-center dark:bg-zinc-900">
+      <div className="container mx-auto p-4 max-w-md">
+        <div className="bg-white dark:bg-zinc-800 rounded-2xl p-8 shadow-md">
+          <h1 className="font-bold text-2xl text-neutral-800 dark:text-neutral-200 mb-6">
+            User Profile
+          </h1>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              About Me
+              First Name
             </label>
-            {isEditing.about ? (
+            <p className="text-sm text-gray-900 dark:text-gray-100">
+              {userData.firstName || 'N/A'}
+            </p>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Last Name
+            </label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">
+              {userData.lastName || 'N/A'}
+            </p>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Email
+            </label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">
+              {userData.email || 'N/A'}
+            </p>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              User Type
+            </label>
+            <p className="text-sm text-gray-900 dark:text-gray-100">
+              {userData.userType || 'N/A'}
+            </p>
+          </div>
+          {userData.userType === 'teacher' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                About Me
+              </label>
+              {isEditing.about ? (
+                <div className="flex flex-col">
+                  <div className="mb-2">
+                    <Textarea
+                      name="about"
+                      value={userData.about}
+                      onChange={handleChange}
+                      style={{ resize: "none", height: "100px" }}
+                    />
+                  </div>
+                  <button onClick={() => handleSave('about')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-900 dark:text-gray-100">
+                    {userData.about || 'N/A'}
+                  </p>
+                  <button onClick={() => handleEdit('about')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
+                    Edit
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Availability
+            </label>
+            {isEditing.availability ? (
               <div className="flex flex-col">
-                <textarea
-                  name="about"
-                  value={userData.about}
-                  onChange={handleChange}
-                  className="dark:bg-neutral-800 dark:text-white p-2 rounded-md mb-2"
-                  style={{ resize: "none", height: "100px" }}
-                />
-                <button onClick={() => handleSave('about')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <div className="mb-2">
+                  <Input
+                    name="availability"
+                    value={userData.availability}
+                    onChange={handleChange}
+                  />
+                </div>
+                <button onClick={() => handleSave('availability')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
                   Save
                 </button>
               </div>
             ) : (
               <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-900 dark:text-gray-100">
-                  {userData.about || 'N/A'}
+                  {userData.availability || 'N/A'}
                 </p>
-                <button onClick={() => handleEdit('about')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <button onClick={() => handleEdit('availability')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
                   Edit
                 </button>
               </div>
             )}
           </div>
-        )}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Availability
-          </label>
-          {isEditing.availability ? (
-            <div className="flex flex-col">
-              <input
-                name="availability"
-                value={userData.availability}
-                onChange={handleChange}
-                className="dark:bg-neutral-800 dark:text-white p-2 rounded-md mb-2"
-              />
-              <button onClick={() => handleSave('availability')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                Save
-              </button>
-            </div>
-          ) : (
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-900 dark:text-gray-100">
-                {userData.availability || 'N/A'}
-              </p>
-              <button onClick={() => handleEdit('availability')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                Edit
-              </button>
-            </div>
-          )}
-        </div>
-        <div className="mt-6">
-          <button
-            onClick={handleBackToChat}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300"
-          >
-            Back to Chat
-          </button>
+          <div className="mt-6">
+            <button
+              onClick={handleBackToChat}
+              className="w-full bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+              Back to Chat
+            </button>
+          </div>
         </div>
       </div>
     </div>

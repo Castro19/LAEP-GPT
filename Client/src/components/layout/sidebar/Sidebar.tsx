@@ -30,7 +30,7 @@ const Sidebar = () => {
   }, [dispatch, userId]);
 
   // Added transition classes and conditional translate classes
-  const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-800 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
+  const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-900 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
   } border-r border-gray-200 dark:border-gray-700`;
 
@@ -57,7 +57,7 @@ const Sidebar = () => {
             absolute  right-4
             p-2
             rounded-full
-            bg-gray-200 dark:bg-gray-700
+            bg-gray-200 dark:bg-gray-800
             text-gray-600 dark:text-gray-300
             hover:bg-gray-300 dark:hover:bg-gray-600
             focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-300 text-xl
