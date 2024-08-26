@@ -4,8 +4,8 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
+  // signInWithPopup, legacy google import
+  // GoogleAuthProvider, legacy google import
   onAuthStateChanged,
   sendEmailVerification
 } from "firebase/auth";
