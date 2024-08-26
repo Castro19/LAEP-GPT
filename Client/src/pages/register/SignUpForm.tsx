@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { IconBrandGoogle } from "@tabler/icons-react";
+// import { IconBrandGoogle } from "@tabler/icons-react"; legacy google import
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
@@ -77,10 +77,12 @@ export function SignupFormDemo() {
     dispatch(authActions.signUpWithEmail(userData));
   };
 
-  const handleGoogleSignUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+  {/* Legacy Google sign up
+    const handleGoogleSignUp = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     dispatch(authActions.signInWithGoogle());
   };
+  */}
 
   const renderInitialState = () => (
     <>

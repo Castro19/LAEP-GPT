@@ -50,7 +50,7 @@ export async function fetchAllLogs(userId: string) {
     return logs;
   } catch (error) {
     console.error("Failed to fetch logs: ", error);
-    return error;
+    return []; // serialiazable fallback
   }
 }
 

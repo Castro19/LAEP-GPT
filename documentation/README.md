@@ -364,8 +364,19 @@ Visual Studio Code is a source-code editor that includes support for development
         auth.ts
       /pages
         /customGPT
+          /GPTEditorPage.tsx
+          /GPTPage.tsx
         /ErrorPage
+          /ErrorPage.module.css
+          /ErrorPage.tsx
         /register
+          /AddInfoForm.tsx
+          /LoginForm.tsx
+          /ProfilePage.tsx
+          /ProfilePage.tsx
+          /Register.tsx
+          /SignUpForm.tsx
+          /VerifyEmail.tsx
         ChatPage.tsx
       /redux
         /auth
@@ -477,7 +488,7 @@ Visual Studio Code is a source-code editor that includes support for development
 
   - **/customGPT**: Custom GPT pages.
   - **/ErrorPage**: Error page.
-  - **/register**: Registration page.
+  - **/register**: Registration and email verification page.
   - **ChatPage.tsx**: Chat page.
 
 - **/redux**
@@ -679,7 +690,7 @@ Visual Studio Code is a source-code editor that includes support for development
 
 #### ProtectedRoute Explanation
 
-- The `ProtectedRoute` component ensures that only authenticated users can access certain routes. It checks the authentication status and redirects users to the login page if they are not logged in, or to the appropriate user-specific route if the user ID in the URL does not match the logged-in user.
+- The `ProtectedRoute` component ensures that only authenticated users can access certain routes. It checks the authentication status and redirects users to the login page if they are not logged in, to the email verification page if they are logged in but not verified, or to the appropriate user-specific route if the user ID in the URL does not match the logged-in user.
 
   - If you find your new route automatically being directed back to the homepage, try modifying the file `Client/src/security/ProtectedRoute.tsx`
 
@@ -986,6 +997,12 @@ Visual Studio Code is a source-code editor that includes support for development
 
 - **registerError**: A string, that displays the error message when registering such as invalid credentials.
 
+- **userType**: A string,
+
+- **availability**: A string, 
+
+- **emailVerified**: A boolean value that represents whether or not the user's email is verified.
+
 - **Access multiple store values from `auth`**:
 
   ```typescript
@@ -1043,6 +1060,12 @@ Visual Studio Code is a source-code editor that includes support for development
 
    ```typescript
    dispatch(setSignUpError("Failed to register. Email already in use."));
+   ```
+
+6. **setEmailVerifyError**:
+
+   ```typescript
+   dispatch(setEmailVerifyError("Too many attempts to resend email verification. Try again later."));
    ```
 
 #### Thunks for Authentication
