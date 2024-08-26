@@ -20,7 +20,7 @@ export async function createAssistant(name, description, prompt) {
 
     // Extract the necessary data, including the assistant_id
     const assistantData = {
-      name: name,
+      title: name,
       description: description,
       prompt: prompt,
       assistantId: assistant.id, // Store the assistant's ID from OpenAI
