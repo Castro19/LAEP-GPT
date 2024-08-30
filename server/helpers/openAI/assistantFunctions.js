@@ -13,7 +13,7 @@ export async function createAssistant(name, description, prompt) {
       name: name,
       instructions: prompt,
       model: "gpt-4o-mini", // Use the correct model name
-      tools: [], // Add tools if necessary, like Code Interpreter
+      tools: [{ type: "file_search" }], // Add tools if necessary, like Code Interpreter
     });
 
     console.log("OpenAI Assistant created:", assistant);

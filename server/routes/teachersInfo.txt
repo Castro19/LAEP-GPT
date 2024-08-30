@@ -1,0 +1,33 @@
+This is information on every teacher in the database.
+name: Test Painter
+availability: Always
+about: I know all about painting
+
+name: Test Knit
+availability: 2-3 PM every weekday
+about: I know all about knitting and helping people learn about knitting.
+
+name: Test Painter
+availability: Always
+about: I know and love all about painting
+
+name: Test CPE
+availability: Always
+about: I know all about computers
+
+name: Test Writer
+availability: Always
+about: I like writing
+
+name: Test Door
+availability: Never
+about: I like doors
+
+name: Test Please
+availability: Always
+about: Manners are great
+
+name: Test Cmon
+availability: Never
+about: SDF
+

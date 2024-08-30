@@ -29,3 +29,13 @@ export const updateUser = async (firebaseUserId, updateData) => {
     throw new Error("Service error: " + error.message);
   }
 };
+
+// Add the function to get all users
+export const getAllUsers = async () => {
+  try {
+    const users = await UserModel.findAllUsers();
+    return users;
+  } catch (error) {
+    throw new Error("Service error: " + error.message);
+  }
+};

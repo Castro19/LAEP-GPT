@@ -18,8 +18,6 @@ import { createAssistantOnServer } from '../../apiHelpers';
 
 
 
-
-
 // Initial state for the auth slice
 const initialState: AuthState = {
   currentUser: null,
@@ -35,6 +33,25 @@ const initialState: AuthState = {
 
 // Register the listener to track auth state changes
 let authListenerUnsubscribe: () => void;
+
+
+// Thunk for triggering file upload
+export const uploadFileToAssistant = createAsyncThunk<
+  void,
+  { assistantId: string },
+  { dispatch: AppDispatch }
+>(
+  "auth/uploadFileToAssistant",
+  async ({ assistantId }, { dispatch }) => {
+    try {
+      // Trigger file upload to the server with the assistant ID
+      await axios.post(`http://localhost:4000/fileOperations/upload/${assistantId}`);
+      console.log('File uploaded successfully.');
+    } catch (error) {
+      console.error('Failed to upload file:', error);
+    }
+  }
+);
 
 // Thunk to listen to authentication state changes
 export const listenToAuthChanges = createAsyncThunk<
@@ -57,7 +74,7 @@ export const listenToAuthChanges = createAsyncThunk<
       console.log("ranAuthChange");
       console.log("User type after auth change:", userType);
       console.log("UserID after auth change:", user.uid);
-      // Ensure user displayName is updated in the state
+
       const updatedUser = {
         ...user.providerData[0],
         displayName: user.displayName || '',
@@ -73,6 +90,22 @@ export const listenToAuthChanges = createAsyncThunk<
           emailVerified: user.emailVerified,
         })
       );
+
+      // Trigger file generation whenever auth state changes
+      try {
+        await axios.post('http://localhost:4000/generateTeacherFile');
+        console.log('Teacher file generation triggered successfully.');
+
+        // Clear all files and vector store
+        await axios.delete('http://localhost:4000/fileOperations/clear');
+        console.log('All files and vector store cleared successfully.');
+
+        // Upload the new file
+        // Matching assist id: 'asst_n0Jkta8iZlD573iR79IaJ6fi'
+        dispatch(uploadFileToAssistant({ assistantId: 'asst_n0Jkta8iZlD573iR79IaJ6fi' }));
+      } catch (error) {
+        console.error('Failed to trigger teacher file generation, delete files, or upload file:', error);
+      }
     } else {
       dispatch(clearAuthState());
     }
