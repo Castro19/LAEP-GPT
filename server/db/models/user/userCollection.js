@@ -1,4 +1,5 @@
 import db from "../../connection.js";
+
 const userCollection = db.collection("users");
 
 export const createUser = async (userData) => {
@@ -36,5 +37,15 @@ export const updateUserByFirebaseId = async (firebaseUserId, updateData) => {
     return result;
   } catch (error) {
     throw new Error("Error updating user: " + error.message);
+  }
+};
+
+// Add the function to find all users
+export const findAllUsers = async () => {
+  try {
+    const users = await userCollection.find({}).toArray();
+    return users;
+  } catch (error) {
+    throw new Error("Error retrieving all users: " + error.message);
   }
 };
