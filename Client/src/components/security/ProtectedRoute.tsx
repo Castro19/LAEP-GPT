@@ -29,12 +29,12 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     if (!userLoggedIn || !currentUser) {
       console.log("ProtectedRoute: User not logged in, redirecting to login");
       navigate("/login", { replace: true });
-    //} else if (!emailVerified) {
+    } else if (!emailVerified) {
        //Check that the email is verified, and redirect to verification page if not
-      //console.log("ProtectedRoute: Email not verified, redirecting to verify email page");
-      //if (!location.pathname.endsWith("/email-verification-needed")) {
-      //  navigate("/email-verification-needed", { replace: true });
-     // }
+      console.log("ProtectedRoute: Email not verified, redirecting to verify email page");
+      if (!location.pathname.endsWith("/email-verification-needed")) {
+        navigate("/email-verification-needed", { replace: true });
+      }
     } else if (location.pathname.startsWith("/profile/")) {
       console.log("ProtectedRoute: On profile page");
       if (urlUserId !== currentUser.uid) {
