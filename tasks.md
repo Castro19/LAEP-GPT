@@ -17,6 +17,7 @@
 - Work with creating assistants, threads, and managing scalability.
     - Teacher-account based assistants made
     - Ethics assessor and social justice assessor assistants to be made
+    - Matching assistant created + given information on teachers in order to match
 
 - Test what happens when two users send a message at the same time
 
@@ -30,17 +31,11 @@
 ### Task 3: Setting Form
 
 - Once a user signs up, present a form that allows them to insert information like availability, interest, and etc.
-  - Work in progress, seperated teacher vs student accounts, added custom field to teacher called about which is also added to the database and accessable
+  - Seperated teacher vs student accounts, added custom field to teacher called about which is also added to the database and accessable
   - Availability also added to both database and forms
-  - TODO: Add availability section to student and teacher accounts and add that to database info
 
 - Send the information to the back-end to be inserted into the database. 
   - DONE for what is currently implemented
-
-- Either remove or update sign up with email so that it gathers the same information + works at all
-
-- Update or remove guest sign in as an option
-  - Allow guests to talk to teacher AI but limit matching capabilities maybe?
 
 ### Task 4: Role-based Access Control
 
@@ -64,7 +59,8 @@
 - Look into journals for potential publishing
 
 ## Task 7: Ongoing
-  - Fix the dropdown menu to display the available assistants correctly
+
+  - Make chats clear when the selected assistant is changed, and when you log in (currently displays last chat if you log out and log back in on a different account on the same computer, unknown how it behaives outside of that)
 
 ## Task 8: Poster Board
   - Continue working on Poster board, due around Sept 29th if past year's due date holds
