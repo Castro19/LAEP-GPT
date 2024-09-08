@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import multer from "multer";
+import rateLimit from "express-rate-limit";
 
 import { openai } from "../index.js";
 import {
@@ -18,24 +18,23 @@ import fs from "fs";
 
 const router = express.Router();
 
-//init storage for user documents
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
+// Rate limiter for GPT messages
+const messageRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window (in milliseconds)
+  max: 25, // limit each user to 25 messages per hour
+  message:
+    "You have exceeded the message limit of 25 messages per hour. Please try again later.",
+  headers: true,
+  keyGenerator: (req) => req.userId, // requests are tracked per firebase userId
 });
-
-const upload = multer({ storage: storage });
 
 router.get("/"),
   (res) => {
     res.send("LLM Backend Working");
   };
 
-router.post("/respond", upload.single("file"), async (req, res) => {
+router.post("/respond", messageRateLimiter, async (req, res) => {
+  console.log(`User ID validated through rate limiter: ${req.userId}`);
   res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
   res.setHeader("Transfer-Encoding", "chunked");
 
@@ -52,21 +51,20 @@ router.post("/respond", upload.single("file"), async (req, res) => {
       })
     : null;
 
-
   const fetchedModel = await getGPT(model.id);
 
   // Fetch the assistant ID with the model from gpt collection
   let assistant_id = fetchedModel.assistantId;
-  console.log("ASSISSTANT: ", assistant_id)
+  console.log("ASSISSTANT: ", assistant_id);
 
   console.log("CHAT ID: ", chatId);
   let threadId = null;
   let vectorStoreId = null;
   const Ids = await fetchIds(chatId);
-  if(Ids){
+  if (Ids) {
     ({ threadId, vectorStoreId } = await fetchIds(chatId));
   }
-  console.log("VECTOR ID: ", vectorStoreId)
+  console.log("VECTOR ID: ", vectorStoreId);
   console.log("THREAD ID: ", threadId);
 
   // New Chat: Create thread and insert threadID here
@@ -75,41 +73,40 @@ router.post("/respond", upload.single("file"), async (req, res) => {
     threadId = threadObj.id;
 
     const vectorStore = await openai.beta.vectorStores.create({
-      name: String(threadId)
-    })
+      name: String(threadId),
+    });
 
-    console.log(vectorStore)
+    console.log(vectorStore);
 
+    vectorStoreId = await vectorStore.id;
 
-    vectorStoreId = await vectorStore.id
-    
     const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
     console.log(addedThreadId);
   }
   console.log("THREAD ID: ", threadId);
-  console.log("VECTOR STORE ID: ", vectorStoreId)
+  console.log("VECTOR STORE ID: ", vectorStoreId);
 
   //add file to vector store
   const vectoreStorefile = userFile
-  ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
-      file_id: userFile.id,
-    })
-  : null;
+    ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
+        file_id: userFile.id,
+      })
+    : null;
   console.log("VECTOR STORE FILE");
   console.log(vectoreStorefile);
 
   // delete file after vectorizing it
-  if(file){
+  if (file) {
     fs.unlink(`uploads/${file.originalname}`, (err) => {
       if (err) {
-        console.error('Error deleting file:', err);
+        console.error("Error deleting file:", err);
       } else {
-        console.log('File deleted successfully');
+        console.log("File deleted successfully");
       }
     });
   }
 
-    //update the assisstant to access resources if user submits file
+  //update the assisstant to access resources if user submits file
   if (file) {
     await openai.beta.assistants.update(assistant_id, {
       tool_resources: { file_search: { vector_store_ids: [vectorStoreId] } },

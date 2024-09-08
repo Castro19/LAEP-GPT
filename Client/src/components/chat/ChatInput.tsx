@@ -50,12 +50,14 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
+      console.log("Current user sending message: ", userId);
       await dispatch(
         messageActions.fetchBotResponse({
           file, //add pdf file
           currentModel,
           msg,
           currentChatId: isNewChat ? newLogId : currentChatId,
+          userId: userId ? userId : "",
         })
       ).unwrap();
       console.log("Current Model: ", currentModel);

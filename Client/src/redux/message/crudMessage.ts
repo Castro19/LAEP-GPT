@@ -5,7 +5,8 @@ export default async function sendMessage(
   currentModel: ModelType,
   file: File | null, //include file as arguement
   msg: string,
-  currentChatId: string | null
+  currentChatId: string | null,
+  userId: string
 ): Promise<SendMessageReturnType> {
   if (!msg.trim() || msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");
@@ -41,7 +42,13 @@ export default async function sendMessage(
       "http://localhost:4000/llms/respond",
       {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: msg,
+          model: currentModel,
+          chatId: currentChatId,
+          userId: userId,
+        }),
       }
     );
 
@@ -51,6 +58,11 @@ export default async function sendMessage(
     ]);
 
     if (!response.ok) {
+      if (response.status === 429) {
+        // 429 = rate limiting: too many GPT message requests
+        const errorData = await response.text();
+        throw new Error(errorData);
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
