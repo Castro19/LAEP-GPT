@@ -14,4 +14,9 @@ export default defineConfig({
       localsConvention: "camelCaseOnly",
     },
   },
+  build: {
+    rollupOptions: {
+      external: ['axios'],
+    },
+  },
 });
