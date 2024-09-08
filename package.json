@@ -29,6 +29,7 @@
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
     "firebase": "^10.12.5",
     "form-data": "^4.0.0",
     "FormData": "^0.10.1",

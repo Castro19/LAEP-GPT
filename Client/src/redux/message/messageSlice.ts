@@ -10,6 +10,7 @@ interface fetchBotResponseParams {
   file: File | null;
   msg: string; //replace with formData
   currentChatId: string | null;
+  userId: string;
 }
 type SendMessageReturnType = {
   newUserMessage: MessageObjType;
@@ -27,7 +28,7 @@ export const fetchBotResponse = createAsyncThunk<
 >(
   "message/fetchBotResponse",
   async (
-    { currentModel, file, msg, currentChatId }: fetchBotResponseParams,
+    { currentModel, msg, currentChatId, userId }: fetchBotResponseParams,
     { dispatch, rejectWithValue }
   ) => {
     try {
@@ -39,7 +40,8 @@ export const fetchBotResponse = createAsyncThunk<
         currentModel,
         file,
         msg,
-        currentChatId
+        currentChatId,
+        userId
       );
 
       console.log("New User Message: ");
