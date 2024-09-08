@@ -18,7 +18,6 @@ const fetchTeachersData = async () => {
 export const generateTeacherFile = async () => {
   try {
     const teachers = await fetchTeachersData();
-    console.log("Fetched teachers:", teachers); // Log fetched teachers data
 
     let fileContent = "This is information on every teacher in the database.\n";
 

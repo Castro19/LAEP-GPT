@@ -65,7 +65,16 @@ export const listenToAuthChanges = createAsyncThunk<
         (provider) => provider.providerId === "password"
       );
 
-      const userType = getState().auth.userType;
+      let userType = null
+
+      // fetch user data from MongoDB database
+      try {
+        const response = await fetch(`http://localhost:4000/users/${user.uid}`);
+        const data = await response.json();
+        userType = data.userType;
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
 
       console.log("ranAuthChange");
       console.log("User type after auth change:", userType);
