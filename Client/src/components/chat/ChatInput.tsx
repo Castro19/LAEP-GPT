@@ -26,6 +26,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
 
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
+  const [file, setFile] = useState<File | null>(null); //add pdf file, null if user does not submit file
   const [isSending, setIsSending] = useState(false);
 
   const textareaRef = useRef(null);
@@ -41,6 +42,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
 
     setMsg("");
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
+
     // Generate a new unique chatId
     const newLogId = uuidv4();
 
@@ -50,6 +52,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
     try {
       await dispatch(
         messageActions.fetchBotResponse({
+          file, //add pdf file
           currentModel,
           msg,
           currentChatId: isNewChat ? newLogId : currentChatId,
@@ -87,6 +90,12 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       setIsSending(false);
     }
   };
+
+  //add function to handle file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target.files ? e.target.files[0] : null);
+  };
+
   return (
     <div className="w-full p-4 bg-white dark:bg-gray-800 sticky bottom-0">
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
@@ -96,6 +105,12 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         </div>
       )}
       <form onSubmit={handleSubmit} className="flex items-end gap-2">
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileChange}
+          className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+        />
         <textarea
           ref={textareaRef}
           id="ChatInput"

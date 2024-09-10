@@ -1,7 +1,9 @@
 import { ModelType, SendMessageReturnType } from "@/types";
+import { current } from "@reduxjs/toolkit";
 
 export default async function sendMessage(
   currentModel: ModelType,
+  file: File | null, //include file as arguement
   msg: string,
   currentChatId: string | null
 ): Promise<SendMessageReturnType> {
@@ -12,7 +14,7 @@ export default async function sendMessage(
   const newUserMessage = {
     id: Date.now(),
     sender: "user",
-    text: msg,
+    text: msg, //form
     model: currentModel.title,
   };
 
@@ -24,16 +26,22 @@ export default async function sendMessage(
   });
 
   try {
+    //create FormData to send data + file to backend
+    const formData = new FormData();
+    formData.append("message", msg);
+    formData.append("currentModel", JSON.stringify(currentModel));
+    if (file) {
+      formData.append("file", file);
+    }
+    if (currentChatId) {
+      formData.append("chatId", currentChatId);
+    }
+
     const fetchPromise: Promise<Response> = fetch(
       "http://localhost:4000/llms/respond",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: msg,
-          model: currentModel,
-          chatId: currentChatId,
-        }),
+        body: formData,
       }
     );
 
