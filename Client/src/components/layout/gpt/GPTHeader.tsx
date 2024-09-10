@@ -3,7 +3,6 @@ import Sidebar from "../sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
 import NewChat from "../../chat/NewChat";
 
-
 const GPTHeader = () => {
   const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible

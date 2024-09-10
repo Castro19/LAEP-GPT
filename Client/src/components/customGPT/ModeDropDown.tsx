@@ -67,7 +67,10 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
           >
             <div className="pointer-events-none">
               <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
-                <AvatarImage src={option.urlPhoto || "/imgs/test.png"} alt="Assistant Photo" />
+                <AvatarImage
+                  src={option.urlPhoto || "/imgs/test.png"}
+                  alt="Assistant Photo"
+                />
               </Avatar>
             </div>
             <button

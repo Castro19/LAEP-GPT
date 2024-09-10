@@ -16,7 +16,10 @@ const CustomGPT = ({ asst, urlPhoto, title, desc }: CustomGPTProps) => {
     <button onClick={onCardClick} className={styles.cardButton}>
       <div className={styles.card}>
         <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
-          <AvatarImage src={urlPhoto || "/imgs/test.png"} alt="Assistant Photo" />
+          <AvatarImage
+            src={urlPhoto || "/imgs/test.png"}
+            alt="Assistant Photo"
+          />
         </Avatar>
         <div className={styles.title}>{title}</div>
         <p className={styles.description}>{desc}</p>
