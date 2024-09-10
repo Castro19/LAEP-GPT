@@ -9,13 +9,20 @@ export async function createThread() {
     console.log("Error creating messageThread: ", error);
   }
 }
-
-export async function addMessageToThread(threadId, role, message) {
+//add fileId. fileId can be null if user does not submit file
+export async function addMessageToThread(threadId, role, message, fileId) {
   try {
-    const threadMessages = await openai.beta.threads.messages.create(threadId, {
-      role: role,
-      content: message,
-    });
+    // null check fileIf
+    const threadMessages = fileId
+      ? await openai.beta.threads.messages.create(threadId, {
+          role: role,
+          content: message,
+          attachments: [{ file_id: fileId, tools: [{ type: "file_search" }] }],
+        })
+      : await openai.beta.threads.messages.create(threadId, {
+          role: role,
+          content: message,
+        });
     return threadMessages;
   } catch (error) {
     console.error(

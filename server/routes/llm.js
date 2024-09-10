@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
+import multer from "multer";
 
 import { openai } from "../index.js";
 import {
@@ -13,22 +14,69 @@ import {
   deleteThread,
 } from "../db/models/threads/threadServices.js";
 import { getGPT } from "../db/models/gpt/gptServices.js";
+import fs from "fs";
+import path from "path";
 
 const router = express.Router();
+
+//init storage for user documents
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 router.get("/"),
   (res) => {
     res.send("LLM Backend Working");
   };
 
-router.post("/respond", async (req, res) => {
+router.post("/respond", upload.single("file"), async (req, res) => {
   res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
   res.setHeader("Transfer-Encoding", "chunked");
-  const { message, model, chatId } = req.body;
+
+  const { message, chatId } = req.body;
+  const model = JSON.parse(req.body.currentModel);
+
+  const file = req.file ? await req.file : null; //retrieve file and other data from FormData
+
+  //create file stream
+  const userFile = file
+    ? await openai.files.create({
+        file: fs.createReadStream(file.path),
+        purpose: "assistants",
+      })
+    : null;
+
+  //init vectore store
+  let vectoreStore = await openai.beta.vectorStores.create({
+    name: "User Prompt Proposal",
+  });
+
+  const vectoreStoreFile = userFile
+    ? await openai.beta.vectorStores.files.createAndPoll(vectoreStore.id, {
+        file_id: userFile.id,
+      })
+    : null;
+  console.log("VECTOR STORE FILE");
+  console.log(vectoreStoreFile);
+
   const fetchedModel = await getGPT(model.id);
   // Fetch the assistant ID with the model from gpt collection
 
-  const assistant_id = fetchedModel.assistantId;
+  let assistant_id = fetchedModel.assistantId;
+
+  //update the assisstant
+  if (file) {
+    await openai.beta.assistants.update(assistant_id, {
+      tool_resources: { file_search: { vector_store_ids: [vectoreStore.id] } },
+    });
+  }
 
   console.log("CHAT ID: ", chatId);
   let threadId = await fetchThreadID(chatId);
@@ -44,15 +92,40 @@ router.post("/respond", async (req, res) => {
   console.log("THREAD ID: ", threadId);
 
   // Add User Message to thread:
-  await addMessageToThread(threadId, "user", message);
-  // console.log("Thread Messages: ", threadMessages);
+  if (userFile) {
+    await addMessageToThread(threadId, "user", message, userFile.id);
+  } else {
+    await addMessageToThread(threadId, "user", message, null);
+  }
+
+  //console.log("Thread Messages: ", threadMessages);
   // Run Thread
   // Start the stream from OpenAI's API
+
+  if (userFile) {
+    const instr = `
+    You are a helpful assistant. Also act as a helpful assistant that responds to the prompt in a structured format.
+    You are also an expert at understanding documents.
+    `;
+
+    openai.beta.assistants.update((assistant_id = assistant_id), {
+      tools: [{ type: "file_search" }],
+      instructions: instr,
+    });
+  }
+
+  const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
+
+  //console log to check if tools and tools_resources are added to the assisstant
+  // console.log("ASSISTANT");
+  // console.log(myAssistant);
+
   const run = openai.beta.threads.runs.stream(threadId, {
     assistant_id,
   });
 
   run.on("textDelta", (textDelta) => {
+    //
     // console.log(textDelta.value); // Optionally log to server console
     res.write(textDelta.value);
   });
