@@ -7,16 +7,13 @@ import {
   // signInWithPopup, legacy google import
   // GoogleAuthProvider, legacy google import
   onAuthStateChanged,
-  sendEmailVerification
+  sendEmailVerification,
 } from "firebase/auth";
 import sendUserToDB from "./crudAuth";
 import { auth } from "@/firebase";
 import { RootState, AppDispatch } from "../store";
 import { AuthState } from "@/types";
-import { createAssistantOnServer } from '../../apiHelpers';
-
-
-
+import { createAssistantOnServer } from "../../apiHelpers";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
@@ -28,30 +25,28 @@ const initialState: AuthState = {
   registerError: null,
   userType: null,
   availability: null,
-  emailVerified: false
+  emailVerified: false,
 };
 
 // Register the listener to track auth state changes
 let authListenerUnsubscribe: () => void;
-
 
 // Thunk for triggering file upload
 export const uploadFileToAssistant = createAsyncThunk<
   void,
   { assistantId: string },
   { dispatch: AppDispatch }
->(
-  "auth/uploadFileToAssistant",
-  async ({ assistantId }, { dispatch }) => {
-    try {
-      // Trigger file upload to the server with the assistant ID
-      await axios.post(`http://localhost:4000/fileOperations/upload/${assistantId}`);
-      console.log('File uploaded successfully.');
-    } catch (error) {
-      console.error('Failed to upload file:', error);
-    }
+>("auth/uploadFileToAssistant", async ({ assistantId }, { dispatch }) => {
+  try {
+    // Trigger file upload to the server with the assistant ID
+    await axios.post(
+      `http://localhost:4000/fileOperations/upload/${assistantId}`
+    );
+    console.log("File uploaded successfully.");
+  } catch (error) {
+    console.error("Failed to upload file:", error);
   }
-);
+});
 
 // Thunk to listen to authentication state changes
 export const listenToAuthChanges = createAsyncThunk<
@@ -77,7 +72,7 @@ export const listenToAuthChanges = createAsyncThunk<
 
       const updatedUser = {
         ...user.providerData[0],
-        displayName: user.displayName || '',
+        displayName: user.displayName || "",
       };
 
       dispatch(
@@ -93,18 +88,25 @@ export const listenToAuthChanges = createAsyncThunk<
 
       // Trigger file generation whenever auth state changes
       try {
-        await axios.post('http://localhost:4000/generateTeacherFile');
-        console.log('Teacher file generation triggered successfully.');
+        await axios.post("http://localhost:4000/generateTeacherFile");
+        console.log("Teacher file generation triggered successfully.");
 
         // Clear all files and vector store
-        await axios.delete('http://localhost:4000/fileOperations/clear');
-        console.log('All files and vector store cleared successfully.');
+        await axios.delete("http://localhost:4000/fileOperations/clear");
+        console.log("All files and vector store cleared successfully.");
 
         // Upload the new file
         // Matching assist id: 'asst_n0Jkta8iZlD573iR79IaJ6fi'
-        dispatch(uploadFileToAssistant({ assistantId: 'asst_n0Jkta8iZlD573iR79IaJ6fi' }));
+        dispatch(
+          uploadFileToAssistant({
+            assistantId: "asst_n0Jkta8iZlD573iR79IaJ6fi",
+          })
+        );
       } catch (error) {
-        console.error('Failed to trigger teacher file generation, delete files, or upload file:', error);
+        console.error(
+          "Failed to trigger teacher file generation, delete files, or upload file:",
+          error
+        );
       }
     } else {
       dispatch(clearAuthState());
@@ -116,90 +118,111 @@ export const listenToAuthChanges = createAsyncThunk<
 // Thunk for updating user profile
 export const updateUserProfile = createAsyncThunk<
   void,
-  Partial<UserInfo> & { userType?: string; about?: string; availability?: string }, // Add availability and about here
+  Partial<UserInfo> & {
+    userType?: string;
+    about?: string;
+    availability?: string;
+  }, // Add availability and about here
   { dispatch: AppDispatch }
->(
-  "auth/updateUserProfile",
-  async (updatedInfo, { dispatch }) => {
-    dispatch(setLoading(true));
-    try {
-      const user = auth.currentUser;
-      if (!user) throw new Error("No user is currently logged in.");
+>("auth/updateUserProfile", async (updatedInfo, { dispatch }) => {
+  dispatch(setLoading(true));
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error("No user is currently logged in.");
 
-      // Prepare updated profile data
-      const profileUpdates: { displayName?: string; photoURL?: string; userType?: string } = {};
-      if (updatedInfo.displayName) {
-        profileUpdates.displayName = updatedInfo.displayName;
-      }
-      if (updatedInfo.userType) {
-        profileUpdates.userType = updatedInfo.userType; 
-      }
-
-      // Update profile in Firebase Auth
-      await updateProfile(user, profileUpdates);
-
-      // Update Redux state with the new user info
-      const updatedUser = {
-        ...user,
-        displayName: updatedInfo.displayName || user.displayName,
-        userType: updatedInfo.userType || user.providerData[5]?.userType,
-        // Add more fields as needed
-      };
-
-      dispatch(
-        setAuthState({
-          user: updatedUser as UserInfo,
-          userId: user.uid,
-          userLoggedIn: true,
-          isEmailUser: user.providerData.some(provider => provider.providerId === "password"),
-          userType: updatedInfo.userType || null, // Update userType in the auth state
-          emailVerified: user.emailVerified
-        })
-      );
-
-      // Update about and availability in the database
-      const userData = {
-        firebaseUserId: user.uid,
-        ...updatedInfo,
-      };
-      await fetch(`http://localhost:4000/users/${user.uid}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-    } catch (error) {
-      console.error("Failed to update user profile:", error);
-    } finally {
-      dispatch(setLoading(false));
+    // Prepare updated profile data
+    const profileUpdates: {
+      displayName?: string;
+      photoURL?: string;
+      userType?: string;
+    } = {};
+    if (updatedInfo.displayName) {
+      profileUpdates.displayName = updatedInfo.displayName;
     }
+    if (updatedInfo.userType) {
+      profileUpdates.userType = updatedInfo.userType;
+    }
+
+    // Update profile in Firebase Auth
+    await updateProfile(user, profileUpdates);
+
+    // Update Redux state with the new user info
+    const updatedUser = {
+      ...user,
+      displayName: updatedInfo.displayName || user.displayName,
+      userType: updatedInfo.userType || user.providerData[5]?.userType,
+      // Add more fields as needed
+    };
+
+    dispatch(
+      setAuthState({
+        user: updatedUser as UserInfo,
+        userId: user.uid,
+        userLoggedIn: true,
+        isEmailUser: user.providerData.some(
+          (provider) => provider.providerId === "password"
+        ),
+        userType: updatedInfo.userType || null, // Update userType in the auth state
+        emailVerified: user.emailVerified,
+      })
+    );
+
+    // Update about and availability in the database
+    const userData = {
+      firebaseUserId: user.uid,
+      ...updatedInfo,
+    };
+    await fetch(`http://localhost:4000/users/${user.uid}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+  } catch (error) {
+    console.error("Failed to update user profile:", error);
+  } finally {
+    dispatch(setLoading(false));
   }
-);
-
-
-
-
+});
 
 // Thunk for email/password sign-up
-export const signUpWithEmail = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; userType: string; about?: string; availability: string }, { dispatch: AppDispatch }>(
+export const signUpWithEmail = createAsyncThunk<
+  void,
+  {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    userType: string;
+    about?: string;
+    availability: string;
+  },
+  { dispatch: AppDispatch }
+>(
   "auth/signUpWithEmail",
-  async ({ email, password, firstName, lastName, userType, about, availability }, { dispatch }) => {
+  async (
+    { email, password, firstName, lastName, userType, about, availability },
+    { dispatch }
+  ) => {
     dispatch(setLoading(true));
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-      
+
       // Update profile with first name and last name
       await updateProfile(user, {
         displayName: `${firstName} ${lastName}`,
-        userType: userType, 
+        userType: userType,
       });
 
       // Send verification email immediately after sign-up
       await sendEmailVerification(user);
-      
+
       const userData = {
         firebaseUserId: user.uid,
         firstName,
@@ -217,8 +240,10 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
       await sendUserToDB(userData);
 
       // Determine if user is email-based
-      const isEmailUser = user.providerData.some(provider => provider.providerId === "password");
-      
+      const isEmailUser = user.providerData.some(
+        (provider) => provider.providerId === "password"
+      );
+
       // Create a new user object with the updated displayName to avoid direct mutation
       const updatedUser = {
         ...user.providerData[0],
@@ -229,9 +254,13 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
       // Create GPT assistant if user is a teacher
       if (userType === "teacher" && about) {
         const assistantPrompt = `You are ${firstName} ${lastName} and you are available ${availability}. Here is some information about you: ${about}. Your job is to see student prompts and decide if you would be a good advisor for their project, and prompt them to send it to the other assistants to refine their prompt based on social justice and ethical guidelines.`;
-        await createAssistantOnServer(`${firstName} ${lastName}`, "Teacher Assistant", assistantPrompt);
+        await createAssistantOnServer(
+          `${firstName} ${lastName}`,
+          "Teacher Assistant",
+          assistantPrompt
+        );
       }
-      
+
       dispatch(
         setAuthState({
           user: updatedUser,
@@ -251,8 +280,6 @@ export const signUpWithEmail = createAsyncThunk<void, { email: string; password:
     }
   }
 );
-
-
 
 // Thunk for email/password sign-in
 export const signInWithEmail = createAsyncThunk<
@@ -275,12 +302,12 @@ export const signInWithEmail = createAsyncThunk<
     console.log("User type during sign-in:", userType);
     dispatch(
       setAuthState({
-      user: user.providerData[0],
-      userId: user.uid,
-      userLoggedIn: true,
-      isEmailUser,
-      userType: user.providerData[5]?.userType,
-      emailVerified: user.emailVerified
+        user: user.providerData[0],
+        userId: user.uid,
+        userLoggedIn: true,
+        isEmailUser,
+        userType: user.providerData[5]?.userType,
+        emailVerified: user.emailVerified,
       })
     );
   } catch (error) {
@@ -295,7 +322,8 @@ export const signInWithEmail = createAsyncThunk<
 });
 
 // Thunk for Google sign-in (LEGACY)
-{/* export const signInWithGoogle = createAsyncThunk<
+{
+  /* export const signInWithGoogle = createAsyncThunk<
   void,
   void,
   { dispatch: AppDispatch }
@@ -325,7 +353,8 @@ export const signInWithEmail = createAsyncThunk<
     dispatch(setLoading(false));
   }
 });
-*/}
+*/
+}
 
 // Creating the slice
 const authSlice = createSlice({
@@ -343,7 +372,14 @@ const authSlice = createSlice({
         emailVerified: boolean;
       }>
     ) {
-      const { user, userId, userLoggedIn, isEmailUser, userType, emailVerified } = action.payload;
+      const {
+        user,
+        userId,
+        userLoggedIn,
+        isEmailUser,
+        userType,
+        emailVerified,
+      } = action.payload;
       state.currentUser = user;
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
@@ -369,7 +405,7 @@ const authSlice = createSlice({
     },
     setEmailVerifyError(state, action: PayloadAction<string | null>) {
       state.registerError = action.payload;
-    }
+    },
   },
 });
 
@@ -379,7 +415,7 @@ export const {
   setLoading,
   setSignInError,
   setSignUpError,
-  setEmailVerifyError
+  setEmailVerifyError,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

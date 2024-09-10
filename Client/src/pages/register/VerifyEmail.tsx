@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { auth } from "@/firebase";
 import { sendEmailVerification, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { listenToAuthChanges, setEmailVerifyError } from "@/redux/auth/authSlice.ts";
+import {
+  listenToAuthChanges,
+  setEmailVerifyError,
+} from "@/redux/auth/authSlice.ts";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
 
 // redux auth:
@@ -12,7 +15,7 @@ export function VerifyEmail() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { userLoggedIn, userId, registerError, emailVerified} = useAppSelector(
+  const { userLoggedIn, userId, registerError, emailVerified } = useAppSelector(
     (state) => state.auth
   );
 
@@ -24,8 +27,8 @@ export function VerifyEmail() {
     // Redirect to main chat page when email is verified
     console.log("Email verification check:", { emailVerified });
     if (emailVerified) {
-        navigate(`/${userId}`);
-      }
+      navigate(`/${userId}`);
+    }
   }, [emailVerified, userId, userLoggedIn, navigate]);
 
   const handleSendVerificationEmail = async () => {
@@ -33,15 +36,25 @@ export function VerifyEmail() {
     if (auth.currentUser) {
       sendEmailVerification(auth.currentUser)
         .then(() => {
-          alert("Your verification email has been resent! Please allow up to 5 minutes for the email to arrive and check your spam folder if you do not see it in your inbox.");
+          alert(
+            "Your verification email has been resent! Please allow up to 5 minutes for the email to arrive and check your spam folder if you do not see it in your inbox."
+          );
         })
         .catch((error) => {
           console.error("Error sending verification email:", error);
-  
-          if (error.code === 'auth/too-many-requests') {
-            dispatch(setEmailVerifyError("Too many requests. Please wait a while before trying again."));
+
+          if (error.code === "auth/too-many-requests") {
+            dispatch(
+              setEmailVerifyError(
+                "Too many requests. Please wait a while before trying again."
+              )
+            );
           } else {
-            dispatch(setEmailVerifyError("Failed to send verification email. Please try again later."));
+            dispatch(
+              setEmailVerifyError(
+                "Failed to send verification email. Please try again later."
+              )
+            );
           }
         });
     }
@@ -54,7 +67,7 @@ export function VerifyEmail() {
       navigate("/signup");
     }
   };
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-500 to-indigo-700">
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
@@ -62,7 +75,8 @@ export function VerifyEmail() {
           Please Verify Your Email
         </h2>
         <p className="text-center text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          You need to verify your email address before continuing. Please refresh this page after verifying your email.
+          You need to verify your email address before continuing. Please
+          refresh this page after verifying your email.
         </p>
 
         <button
@@ -81,13 +95,12 @@ export function VerifyEmail() {
         </div>
 
         <p className="text-center text-sm dark:text-gray-400">
-        <button
-          onClick={handleSignOut} // Use the function here
-          className="hover:underline font-bold dark:text-white text-blue-500 mr-2"
-        >
-          Sign in
-        </button>
-
+          <button
+            onClick={handleSignOut} // Use the function here
+            className="hover:underline font-bold dark:text-white text-blue-500 mr-2"
+          >
+            Sign in
+          </button>
           with a different account.
         </p>
       </div>

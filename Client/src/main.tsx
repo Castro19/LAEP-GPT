@@ -37,7 +37,8 @@ const router = createBrowserRouter([
       { path: "settingForm", element: <AddInfoForm /> },
     ],
   },
-  { // Intermediate page for email verification--user is signed in but email is not verified
+  {
+    // Intermediate page for email verification--user is signed in but email is not verified
     path: "/email-verification-needed",
     element: <VerifyEmail />,
   },

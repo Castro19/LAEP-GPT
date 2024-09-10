@@ -38,12 +38,14 @@ export function LoginFormDemo() {
     dispatch(authActions.signInWithEmail({ email, password }));
   };
 
-  {/* Legacy Google sign in
+  {
+    /* Legacy Google sign in
   const handleGoogleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     dispatch(authActions.signInWithGoogle());
   };
-  */}
+  */
+  }
 
   return (
     <div>
@@ -61,7 +63,7 @@ export function LoginFormDemo() {
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
-              placeholder="example@calpoly.edu"  // while calpoly.edu is required
+              placeholder="example@calpoly.edu" // while calpoly.edu is required
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

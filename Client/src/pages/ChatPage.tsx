@@ -4,6 +4,7 @@ import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
 import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
+import GPTList from "@/components/customGPT/GPTList/GPTList";
 
 const ChatPage = () => {
   const { chatId } = useParams();
@@ -21,7 +22,6 @@ const ChatPage = () => {
           const fetchedGptList = await viewGPTs(userId);
           console.log("FGL: ", fetchedGptList.gptList);
           dispatch(gptActions.initGptList(fetchedGptList.gptList));
-          console.log("GPT LIST FETCHED: ", fetchedGptList);
         } catch (error) {
           console.error("Error fetching GPT list: ", error);
         }

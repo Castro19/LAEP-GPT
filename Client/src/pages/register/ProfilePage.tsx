@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '@/redux';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "@/redux";
+import { useNavigate } from "react-router-dom";
 import { updateUserProfile } from "../../redux/auth/authSlice"; // Adjust the path
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
@@ -11,15 +11,18 @@ function ProfilePage() {
   const dispatch = useAppDispatch();
 
   const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    about: '',
-    userType: '',
-    availability: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    about: "",
+    userType: "",
+    availability: "",
   });
 
-  const [isEditing, setIsEditing] = useState({ about: false, availability: false });
+  const [isEditing, setIsEditing] = useState({
+    about: false,
+    availability: false,
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -27,19 +30,19 @@ function ProfilePage() {
         try {
           const response = await fetch(`http://localhost:4000/users/${userId}`);
           if (!response.ok) {
-            throw new Error('Failed to fetch user data');
+            throw new Error("Failed to fetch user data");
           }
           const data = await response.json();
           setUserData({
-            firstName: data.firstName || '',
-            lastName: data.lastName || '',
-            email: currentUser.email || '',
-            about: data.about || '',
-            userType: data.userType || '',
-            availability: data.availability || '',
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            email: currentUser.email || "",
+            about: data.about || "",
+            userType: data.userType || "",
+            availability: data.availability || "",
           });
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Error fetching user data:", error);
         }
       }
     };
@@ -52,7 +55,7 @@ function ProfilePage() {
   }
 
   const handleBackToChat = () => {
-    navigate('/chat');
+    navigate("/chat");
   };
 
   const handleEdit = (field) => {
@@ -81,7 +84,7 @@ function ProfilePage() {
               First Name
             </label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.firstName || 'N/A'}
+              {userData.firstName || "N/A"}
             </p>
           </div>
           <div className="mb-4">
@@ -89,7 +92,7 @@ function ProfilePage() {
               Last Name
             </label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.lastName || 'N/A'}
+              {userData.lastName || "N/A"}
             </p>
           </div>
           <div className="mb-4">
@@ -97,7 +100,7 @@ function ProfilePage() {
               Email
             </label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.email || 'N/A'}
+              {userData.email || "N/A"}
             </p>
           </div>
           <div className="mb-4">
@@ -105,10 +108,10 @@ function ProfilePage() {
               User Type
             </label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.userType || 'N/A'}
+              {userData.userType || "N/A"}
             </p>
           </div>
-          {userData.userType === 'teacher' && (
+          {userData.userType === "teacher" && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 About Me
@@ -123,16 +126,22 @@ function ProfilePage() {
                       style={{ resize: "none", height: "100px" }}
                     />
                   </div>
-                  <button onClick={() => handleSave('about')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
+                  <button
+                    onClick={() => handleSave("about")}
+                    className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
+                  >
                     Save
                   </button>
                 </div>
               ) : (
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-gray-900 dark:text-gray-100">
-                    {userData.about || 'N/A'}
+                    {userData.about || "N/A"}
                   </p>
-                  <button onClick={() => handleEdit('about')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
+                  <button
+                    onClick={() => handleEdit("about")}
+                    className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
+                  >
                     Edit
                   </button>
                 </div>
@@ -152,16 +161,22 @@ function ProfilePage() {
                     onChange={handleChange}
                   />
                 </div>
-                <button onClick={() => handleSave('availability')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
+                <button
+                  onClick={() => handleSave("availability")}
+                  className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
+                >
                   Save
                 </button>
               </div>
             ) : (
               <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-900 dark:text-gray-100">
-                  {userData.availability || 'N/A'}
+                  {userData.availability || "N/A"}
                 </p>
-                <button onClick={() => handleEdit('availability')} className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded">
+                <button
+                  onClick={() => handleEdit("availability")}
+                  className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
+                >
                   Edit
                 </button>
               </div>
