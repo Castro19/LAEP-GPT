@@ -10,12 +10,11 @@ import {
 } from "../helpers/openAI/threadFunctions.js";
 import {
   addThread,
-  fetchThreadID,
+  fetchIds,
   deleteThread,
 } from "../db/models/threads/threadServices.js";
 import { getGPT } from "../db/models/gpt/gptServices.js";
 import fs from "fs";
-import path from "path";
 
 const router = express.Router();
 
@@ -45,7 +44,7 @@ router.post("/respond", upload.single("file"), async (req, res) => {
 
   const file = req.file ? await req.file : null; //retrieve file and other data from FormData
 
-  //create file stream
+  // create file stream
   const userFile = file
     ? await openai.files.create({
         file: fs.createReadStream(file.path),
@@ -53,44 +52,69 @@ router.post("/respond", upload.single("file"), async (req, res) => {
       })
     : null;
 
-  //init vectore store
-  let vectoreStore = await openai.beta.vectorStores.create({
-    name: "User Prompt Proposal",
-  });
-
-  const vectoreStoreFile = userFile
-    ? await openai.beta.vectorStores.files.createAndPoll(vectoreStore.id, {
-        file_id: userFile.id,
-      })
-    : null;
-  console.log("VECTOR STORE FILE");
-  console.log(vectoreStoreFile);
 
   const fetchedModel = await getGPT(model.id);
+
   // Fetch the assistant ID with the model from gpt collection
-
   let assistant_id = fetchedModel.assistantId;
-
-  //update the assisstant
-  if (file) {
-    await openai.beta.assistants.update(assistant_id, {
-      tool_resources: { file_search: { vector_store_ids: [vectoreStore.id] } },
-    });
-  }
+  console.log("ASSISSTANT: ", assistant_id)
 
   console.log("CHAT ID: ", chatId);
-  let threadId = await fetchThreadID(chatId);
+  let threadId = null;
+  let vectorStoreId = null;
+  const Ids = await fetchIds(chatId);
+  if(Ids){
+    ({ threadId, vectorStoreId } = await fetchIds(chatId));
+  }
+  console.log("VECTOR ID: ", vectorStoreId)
   console.log("THREAD ID: ", threadId);
 
   // New Chat: Create thread and insert threadID here
   if (threadId === null) {
     const threadObj = await createThread();
     threadId = threadObj.id;
-    const addedThreadId = await addThread(chatId, threadId);
+
+    const vectorStore = await openai.beta.vectorStores.create({
+      name: String(threadId)
+    })
+
+    console.log(vectorStore)
+
+
+    vectorStoreId = await vectorStore.id
+    
+    const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
     console.log(addedThreadId);
   }
   console.log("THREAD ID: ", threadId);
+  console.log("VECTOR STORE ID: ", vectorStoreId)
 
+  //add file to vector store
+  const vectoreStorefile = userFile
+  ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
+      file_id: userFile.id,
+    })
+  : null;
+  console.log("VECTOR STORE FILE");
+  console.log(vectoreStorefile);
+
+  // delete file after vectorizing it
+  if(file){
+    fs.unlink(`uploads/${file.originalname}`, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      } else {
+        console.log('File deleted successfully');
+      }
+    });
+  }
+
+    //update the assisstant to access resources if user submits file
+  if (file) {
+    await openai.beta.assistants.update(assistant_id, {
+      tool_resources: { file_search: { vector_store_ids: [vectorStoreId] } },
+    });
+  }
   // Add User Message to thread:
   if (userFile) {
     await addMessageToThread(threadId, "user", message, userFile.id);
@@ -117,8 +141,8 @@ router.post("/respond", upload.single("file"), async (req, res) => {
   const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
 
   //console log to check if tools and tools_resources are added to the assisstant
-  // console.log("ASSISTANT");
-  // console.log(myAssistant);
+  console.log("ASSISTANT");
+  console.log(myAssistant);
 
   const run = openai.beta.threads.runs.stream(threadId, {
     assistant_id,
