@@ -5,8 +5,9 @@ import {
   updateLog,
   deleteLog,
 } from "../db/models/chatlog/chatLogServices.js";
-import { fetchThreadID } from "../db/models/threads/threadServices.js";
+import { fetchIds } from "../db/models/threads/threadServices.js";
 import { deleteThreadById } from "./llm.js";
+import { openai } from "../index.js";
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post("/", async (req, res) => {
     if (!firebaseUserId) {
       return res.status(400).send("Firebase User ID is required");
     }
+
     const newLog = {
       _id: id,
       userId: firebaseUserId,
@@ -83,13 +85,16 @@ router.put("/", async (req, res) => {
 router.delete("/:userId/:logId", async (req, res) => {
   const { logId, userId } = req.params;
   console.log(`Deleting log ${logId} for user ${userId}`);
-  const threadId = await fetchThreadID(logId);
+  const { threadId, vectorStoreId } = await fetchIds(logId);
+
+  const deletedVectorStore = await openai.beta.vectorStores.del(String(vectorStoreId))
 
   try {
     const response = await deleteLog(logId, userId);
     const deleteResponse = await deleteThreadById(threadId);
     console.log("Response: ", response);
     console.log("Deleted Response: ", deleteResponse);
+    console.log("Deleted Vector Store", deletedVectorStore);
     res.status(204).json({ response, deleteResponse }); // 204 No Content is typical for a delete operation.
   } catch (error) {
     console.error("Failed to Delete log: ", error);
