@@ -1,7 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginPrettier from "eslint-plugin-prettier";
-import { fixupConfigRules } from "@eslint/compat";
 
 export default [
   {

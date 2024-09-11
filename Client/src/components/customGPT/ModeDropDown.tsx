@@ -5,7 +5,7 @@ import { useAppSelector } from "@/redux";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type ModeDropDownProps = {
-  onSelect: (modelId: string | undefined) => void;
+  onSelect: () => void;
 };
 
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {

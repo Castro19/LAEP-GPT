@@ -14,7 +14,7 @@ export const addGpt = async (gptData) => {
 };
 
 // Read
-export const viewGPTs = async (userId) => {
+export const viewGPTs = async () => {
   try {
     const result = await gptCollection.find({}).toArray();
     return result;

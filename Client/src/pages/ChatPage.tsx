@@ -4,7 +4,6 @@ import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
 import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
-import GPTList from "@/components/customGPT/GPTList/GPTList";
 
 const ChatPage = () => {
   const { chatId } = useParams();

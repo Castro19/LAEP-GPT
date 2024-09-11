@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import rateLimit from "express-rate-limit";
+import multer from "multer";
 
 import { openai } from "../index.js";
 import {
@@ -18,6 +19,18 @@ import fs from "fs";
 
 const router = express.Router();
 
+//init storage for user documents
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 // Rate limiter for GPT messages
 const messageRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour window (in milliseconds)
@@ -33,138 +46,143 @@ router.get("/"),
     res.send("LLM Backend Working");
   };
 
-router.post("/respond", messageRateLimiter, async (req, res) => {
-  console.log(`User ID validated through rate limiter: ${req.userId}`);
-  res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
-  res.setHeader("Transfer-Encoding", "chunked");
+router.post(
+  "/respond",
+  messageRateLimiter,
+  upload.single("file"),
+  async (req, res) => {
+    console.log(`User ID validated through rate limiter: ${req.userId}`);
+    res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
+    res.setHeader("Transfer-Encoding", "chunked");
 
-  const { message, chatId } = req.body;
-  const model = JSON.parse(req.body.currentModel);
+    const { message, chatId } = req.body;
+    const model = JSON.parse(req.body.currentModel);
 
-  const file = req.file ? await req.file : null; //retrieve file and other data from FormData
+    const file = req.file ? await req.file : null; //retrieve file and other data from FormData
 
-  // create file stream
-  const userFile = file
-    ? await openai.files.create({
-        file: fs.createReadStream(file.path),
-        purpose: "assistants",
-      })
-    : null;
+    // create file stream
+    const userFile = file
+      ? await openai.files.create({
+          file: fs.createReadStream(file.path),
+          purpose: "assistants",
+        })
+      : null;
 
-  const fetchedModel = await getGPT(model.id);
+    const fetchedModel = await getGPT(model.id);
 
-  // Fetch the assistant ID with the model from gpt collection
-  let assistant_id = fetchedModel.assistantId;
-  console.log("ASSISSTANT: ", assistant_id);
+    // Fetch the assistant ID with the model from gpt collection
+    let assistant_id = fetchedModel.assistantId;
+    console.log("ASSISSTANT: ", assistant_id);
 
-  console.log("CHAT ID: ", chatId);
-  let threadId = null;
-  let vectorStoreId = null;
-  const Ids = await fetchIds(chatId);
-  if (Ids) {
-    ({ threadId, vectorStoreId } = await fetchIds(chatId));
-  }
-  console.log("VECTOR ID: ", vectorStoreId);
-  console.log("THREAD ID: ", threadId);
+    console.log("CHAT ID: ", chatId);
+    let threadId = null;
+    let vectorStoreId = null;
+    const Ids = await fetchIds(chatId);
+    if (Ids) {
+      ({ threadId, vectorStoreId } = await fetchIds(chatId));
+    }
+    console.log("VECTOR ID: ", vectorStoreId);
+    console.log("THREAD ID: ", threadId);
 
-  // New Chat: Create thread and insert threadID here
-  if (threadId === null) {
-    const threadObj = await createThread();
-    threadId = threadObj.id;
+    // New Chat: Create thread and insert threadID here
+    if (threadId === null) {
+      const threadObj = await createThread();
+      threadId = threadObj.id;
 
-    const vectorStore = await openai.beta.vectorStores.create({
-      name: String(threadId),
-    });
+      const vectorStore = await openai.beta.vectorStores.create({
+        name: String(threadId),
+      });
 
-    console.log(vectorStore);
+      console.log(vectorStore);
 
-    vectorStoreId = await vectorStore.id;
+      vectorStoreId = await vectorStore.id;
 
-    const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
-    console.log(addedThreadId);
-  }
-  console.log("THREAD ID: ", threadId);
-  console.log("VECTOR STORE ID: ", vectorStoreId);
+      const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
+      console.log(addedThreadId);
+    }
+    console.log("THREAD ID: ", threadId);
+    console.log("VECTOR STORE ID: ", vectorStoreId);
 
-  //add file to vector store
-  const vectoreStorefile = userFile
-    ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
-        file_id: userFile.id,
-      })
-    : null;
-  console.log("VECTOR STORE FILE");
-  console.log(vectoreStorefile);
+    //add file to vector store
+    const vectoreStorefile = userFile
+      ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
+          file_id: userFile.id,
+        })
+      : null;
+    console.log("VECTOR STORE FILE");
+    console.log(vectoreStorefile);
 
-  // delete file after vectorizing it
-  if (file) {
-    fs.unlink(`uploads/${file.originalname}`, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      } else {
-        console.log("File deleted successfully");
-      }
-    });
-  }
+    // delete file after vectorizing it
+    if (file) {
+      fs.unlink(`uploads/${file.originalname}`, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        } else {
+          console.log("File deleted successfully");
+        }
+      });
+    }
 
-  //update the assisstant to access resources if user submits file
-  if (file) {
-    await openai.beta.assistants.update(assistant_id, {
-      tool_resources: { file_search: { vector_store_ids: [vectorStoreId] } },
-    });
-  }
-  // Add User Message to thread:
-  if (userFile) {
-    await addMessageToThread(threadId, "user", message, userFile.id);
-  } else {
-    await addMessageToThread(threadId, "user", message, null);
-  }
+    //update the assisstant to access resources if user submits file
+    if (file) {
+      await openai.beta.assistants.update(assistant_id, {
+        tool_resources: { file_search: { vector_store_ids: [vectorStoreId] } },
+      });
+    }
+    // Add User Message to thread:
+    if (userFile) {
+      await addMessageToThread(threadId, "user", message, userFile.id);
+    } else {
+      await addMessageToThread(threadId, "user", message, null);
+    }
 
-  //console.log("Thread Messages: ", threadMessages);
-  // Run Thread
-  // Start the stream from OpenAI's API
+    //console.log("Thread Messages: ", threadMessages);
+    // Run Thread
+    // Start the stream from OpenAI's API
 
-  if (userFile) {
-    const instr = `
+    if (userFile) {
+      const instr = `
     You are a helpful assistant. Also act as a helpful assistant that responds to the prompt in a structured format.
     You are also an expert at understanding documents.
     `;
 
-    openai.beta.assistants.update((assistant_id = assistant_id), {
-      tools: [{ type: "file_search" }],
-      instructions: instr,
+      openai.beta.assistants.update(assistant_id, {
+        tools: [{ type: "file_search" }],
+        instructions: instr,
+      });
+    }
+
+    const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
+
+    //console log to check if tools and tools_resources are added to the assisstant
+    console.log("ASSISTANT");
+    console.log(myAssistant);
+
+    const run = openai.beta.threads.runs.stream(threadId, {
+      assistant_id,
+    });
+
+    run.on("textDelta", (textDelta) => {
+      //
+      // console.log(textDelta.value); // Optionally log to server console
+      res.write(textDelta.value);
+    });
+
+    run.on("end", () => {
+      console.log("Stream completed");
+      res.end();
+    });
+
+    run.on("errors", (error) => {
+      console.error("Error streaming from OpenAI:", error);
+      if (!res.headersSent) {
+        res.status(500).send("Failed to process stream.");
+      } else {
+        res.end(); // End the response properly if headers are already sent
+      }
     });
   }
-
-  const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
-
-  //console log to check if tools and tools_resources are added to the assisstant
-  console.log("ASSISTANT");
-  console.log(myAssistant);
-
-  const run = openai.beta.threads.runs.stream(threadId, {
-    assistant_id,
-  });
-
-  run.on("textDelta", (textDelta) => {
-    //
-    // console.log(textDelta.value); // Optionally log to server console
-    res.write(textDelta.value);
-  });
-
-  run.on("end", () => {
-    console.log("Stream completed");
-    res.end();
-  });
-
-  run.on("errors", (error) => {
-    console.error("Error streaming from OpenAI:", error);
-    if (!res.headersSent) {
-      res.status(500).send("Failed to process stream.");
-    } else {
-      res.end(); // End the response properly if headers are already sent
-    }
-  });
-});
+);
 
 router.post("/title", async (req, res) => {
   try {

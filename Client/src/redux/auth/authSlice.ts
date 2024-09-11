@@ -37,7 +37,7 @@ export const uploadFileToAssistant = createAsyncThunk<
   void,
   { assistantId: string },
   { dispatch: AppDispatch }
->("auth/uploadFileToAssistant", async ({ assistantId }, { dispatch }) => {
+>("auth/uploadFileToAssistant", async ({ assistantId }) => {
   try {
     // Trigger file upload to the server with the assistant ID
     await axios.post(
@@ -54,7 +54,7 @@ export const listenToAuthChanges = createAsyncThunk<
   void,
   void,
   { dispatch: AppDispatch; state: RootState }
->("auth/listenToAuthChanges", async (_, { dispatch, getState }) => {
+>("auth/listenToAuthChanges", async (_, { dispatch }) => {
   dispatch(setLoading(true));
   if (authListenerUnsubscribe) {
     authListenerUnsubscribe();
@@ -65,7 +65,7 @@ export const listenToAuthChanges = createAsyncThunk<
         (provider) => provider.providerId === "password"
       );
 
-      let userType = null
+      let userType = null;
 
       // fetch user data from MongoDB database
       try {
@@ -73,7 +73,7 @@ export const listenToAuthChanges = createAsyncThunk<
         const data = await response.json();
         userType = data.userType;
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
 
       console.log("ranAuthChange");
