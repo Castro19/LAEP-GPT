@@ -18,7 +18,7 @@ export default async function sendMessage(
     model: currentModel.title,
   };
 
-  const timeoutDuration = 10000; // 10 seconds
+  const timeoutDuration = 17000; // 17 seconds
   const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
       reject(new Error("Error: Response took too long. Please try again."));

@@ -2,11 +2,12 @@ import db from "../../connection.js";
 const threadCollection = db.collection("threads");
 
 // Create
-export const createThread = async (chatId, threadId) => {
+export const createThread = async (chatId, threadId, vectorStoreId) => {
   try {
     const newThread = {
       _id: chatId, // Use Firebase ID as MongoDB document ID
-      threadId,
+      threadId: threadId,
+      vectorStoreId: vectorStoreId
     };
 
     const result = await threadCollection.insertOne(newThread);
@@ -17,11 +18,11 @@ export const createThread = async (chatId, threadId) => {
 };
 
 // Read
-export const getThreadId = async (chatId) => {
+export const getIds = async (chatId) => {
   try {
-    const document = await threadCollection.findOne({ _id: chatId });
+    const { threadId, vectorStoreId } = await threadCollection.findOne({ _id: chatId });
 
-    return document ? document.threadId : null;
+    return { threadId, vectorStoreId } ? { threadId, vectorStoreId } : null;
   } catch (error) {
     throw new Error("Error retrieving threadID: " + error.message);
   }
