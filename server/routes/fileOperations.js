@@ -49,7 +49,6 @@ router.delete("/clear", async (req, res) => {
 
 // Endpoint to upload a file to OpenAI for a specific assistant and add to a vector store
 router.post("/upload/:assistantId", async (req, res) => {
-  const { assistantId } = req.params;
   const filePath = path.join(__dirname, "..", "teachersInfo.txt"); // Adjust the file path as needed
   const purpose = "assistants";
 

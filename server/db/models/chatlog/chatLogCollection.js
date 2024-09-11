@@ -47,7 +47,7 @@ export const updateLogContent = async (
 };
 
 // Delete
-export const deleteLogItem = async (logId, userId) => {
+export const deleteLogItem = async (logId) => {
   try {
     const result = await chatLogCollection.deleteOne({ _id: logId });
     return result;

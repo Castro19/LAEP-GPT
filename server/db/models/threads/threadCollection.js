@@ -7,7 +7,7 @@ export const createThread = async (chatId, threadId, vectorStoreId) => {
     const newThread = {
       _id: chatId, // Use Firebase ID as MongoDB document ID
       threadId: threadId,
-      vectorStoreId: vectorStoreId
+      vectorStoreId: vectorStoreId,
     };
 
     const result = await threadCollection.insertOne(newThread);
@@ -20,9 +20,11 @@ export const createThread = async (chatId, threadId, vectorStoreId) => {
 // Read
 export const getIds = async (chatId) => {
   try {
-    const { threadId, vectorStoreId } = await threadCollection.findOne({ _id: chatId });
+    const { threadId, vectorStoreId } = await threadCollection.findOne({
+      _id: chatId,
+    });
 
-    return { threadId, vectorStoreId } ? { threadId, vectorStoreId } : null;
+    return threadId && vectorStoreId ? { threadId, vectorStoreId } : null;
   } catch (error) {
     throw new Error("Error retrieving threadID: " + error.message);
   }

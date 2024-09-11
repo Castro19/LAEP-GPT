@@ -1,5 +1,4 @@
 import { ModelType, SendMessageReturnType } from "@/types";
-import { current } from "@reduxjs/toolkit";
 
 export default async function sendMessage(
   currentModel: ModelType,
@@ -19,7 +18,7 @@ export default async function sendMessage(
     model: currentModel.title,
   };
 
-  const timeoutDuration = 17000; // 17 seconds
+  const timeoutDuration = 20000; // 20 seconds
   const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
       reject(new Error("Error: Response took too long. Please try again."));
@@ -31,6 +30,7 @@ export default async function sendMessage(
     const formData = new FormData();
     formData.append("message", msg);
     formData.append("currentModel", JSON.stringify(currentModel));
+    formData.append("userId", userId);
     if (file) {
       formData.append("file", file);
     }
@@ -42,13 +42,7 @@ export default async function sendMessage(
       "http://localhost:4000/llms/respond",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: msg,
-          model: currentModel,
-          chatId: currentChatId,
-          userId: userId,
-        }),
+        body: formData,
       }
     );
 

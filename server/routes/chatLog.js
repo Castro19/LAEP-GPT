@@ -87,7 +87,9 @@ router.delete("/:userId/:logId", async (req, res) => {
   console.log(`Deleting log ${logId} for user ${userId}`);
   const { threadId, vectorStoreId } = await fetchIds(logId);
 
-  const deletedVectorStore = await openai.beta.vectorStores.del(String(vectorStoreId))
+  const deletedVectorStore = await openai.beta.vectorStores.del(
+    String(vectorStoreId)
+  );
 
   try {
     const response = await deleteLog(logId, userId);

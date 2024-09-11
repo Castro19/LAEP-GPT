@@ -11,6 +11,7 @@ import llms from "./routes/llm.js";
 import users from "./routes/user.js";
 import chatLogs from "./routes/chatLog.js";
 import gpts from "./routes/gpt.js";
+import signupAccessRouter from "./routes/signupAccess.js";
 import assistants from "./routes/assistants.js";
 import generateTeacherFileRoute from "./routes/teacherFile.js";
 import fileOperations from "./routes/fileOperations.js";
@@ -32,12 +33,13 @@ app.use("/llms", llms);
 app.use("/users", users);
 app.use("/chatLogs", chatLogs);
 app.use("/gpts", gpts);
+app.use("/signupAccess", signupAccessRouter);
 app.use("/assistants", assistants);
 app.use("/generateTeacherFile", generateTeacherFileRoute);
 app.use("/fileOperations", fileOperations);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong...");
 });

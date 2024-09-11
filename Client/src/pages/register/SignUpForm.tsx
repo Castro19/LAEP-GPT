@@ -7,7 +7,6 @@ import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
-import { cn } from "@/lib/utils";
 
 export function SignupFormDemo() {
   const [formState, setFormState] = useState("initial");
@@ -22,12 +21,29 @@ export function SignupFormDemo() {
   const [availability, setAvailability] = useState(""); // New field
 
   const dispatch = useAppDispatch();
-  const { userLoggedIn, userId, registerError, loading } = useAppSelector(
+  const { userLoggedIn, userId, registerError } = useAppSelector(
     (state) => state.auth
   );
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
+  };
+
+  const validateEmailWithBackend = async (email: string) => {
+    try {
+      console.log("email: ", email);
+      const response = await fetch(
+        `http://localhost:4000/signupAccess/${email}`
+      );
+      if (!response.ok) {
+        throw new Error("Invalid email access.");
+      }
+      console.log("response: ", response);
+      const data = await response.json();
+      return data; // return the data if email is valid
+    } catch (error) {
+      throw new Error("Email validation failed");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,6 +75,32 @@ export function SignupFormDemo() {
     if (password !== confirmedPassword) {
       dispatch(authActions.setSignUpError("Passwords do not match."));
       return;
+    }
+
+    // Check for Cal Poly email address
+    {
+      /* commented out for now for ease of testing
+    const calPolyEmailRegex = /^[A-Z0-9._%+-]+@calpoly\.edu$/i;
+    if (!calPolyEmailRegex.test(email)) {
+      dispatch(authActions.setSignUpError("You must use a valid Cal Poly email address."));
+      return;
+    }
+    */
+    }
+
+    // Validate email is part of the signupAccess collection if the user is attempting to make a teacher account
+    if (userType === "teacher") {
+      try {
+        const emailValidationResult = await validateEmailWithBackend(email);
+        console.log("Email validation successful:", emailValidationResult);
+      } catch (error) {
+        dispatch(
+          authActions.setSignUpError(
+            "This email is not authorized to register for a teacher account at this time."
+          )
+        );
+        return;
+      }
     }
 
     // Prepare the user data

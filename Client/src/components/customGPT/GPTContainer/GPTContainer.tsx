@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import GPTList from "../GPTList/GPTList";
 import styles from "./GPTContainer.module.css";
-import { useAppSelector } from "@/redux"; 
+import { useAppSelector } from "@/redux";
 
 const GPTContainer = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const GPTContainer = () => {
     <div>
       <h1 className={styles.pageTitle}>Select a CalPoly Assistant</h1>
       <GPTList />
-      
+
       {/* only render the button if userType is not student */}
       {userType !== "student" && (
         <Button className="w-full" onClick={onClick}>
