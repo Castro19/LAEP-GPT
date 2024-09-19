@@ -15,7 +15,7 @@ const GPTContainer = () => {
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>Select a CalPoly Assistant</h1>
+      <h1 className={styles.pageTitle}>CalPoly Assistant Details</h1>
       <GPTList />
 
       {/* only render the button if userType is not student */}

@@ -5,7 +5,7 @@ import { useAppSelector } from "@/redux";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type ModeDropDownProps = {
-  onSelect: () => void;
+  onSelect: (modelId: string | undefined) => void;
 };
 
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
@@ -92,7 +92,7 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
         onClick={onViewGPTs}
         className="flex justify-between items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-900 hover:text-white"
       >
-        View more Assistants
+        View Assistant Details
       </button>
     </div>
   );
