@@ -15,6 +15,8 @@ import {
   deleteThread,
 } from "../db/models/threads/threadServices.js";
 import { getGPT } from "../db/models/gpt/gptServices.js";
+import { fileURLToPath } from "url";
+import path from "path";
 import fs from "fs";
 
 const router = express.Router();
@@ -250,6 +252,26 @@ router.post(
 
         const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
         console.log(addedThreadId);
+
+        //if matching assistant, add teacher file
+        if (assistant_id === "asst_n0Jkta8iZlD573iR79IaJ6fi") {
+          console.log("TRUE");
+          //get teacher file path
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = path.dirname(__filename);
+
+          const filePath = path.join(__dirname, "teachersInfo.txt");
+
+          //add teacher file to the vector store for match making
+          const teacherFile = await openai.files.create({
+            file: fs.createReadStream(filePath),
+            purpose: "assistants",
+          });
+
+          await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
+            file_id: teacherFile.id,
+          });
+        }
       }
       console.log("THREAD ID: ", threadId);
       console.log("VECTOR STORE ID: ", vectorStoreId);
@@ -274,12 +296,13 @@ router.post(
         });
       }
 
-      //update the assistant to access resources if user submits file
+      //update the assisstant to access resources if user submits file
       if (file) {
         await openai.beta.assistants.update(assistant_id, {
           tool_resources: {
             file_search: { vector_store_ids: [vectorStoreId] },
           },
+          tools: [{ type: "file_search" }],
         });
       }
       // Add User Message to thread:
@@ -292,18 +315,6 @@ router.post(
       //console.log("Thread Messages: ", threadMessages);
       // Run Thread
       // Start the stream from OpenAI's API
-
-      if (userFile) {
-        const instr = `
-      You are a helpful assistant. Also act as a helpful assistant that responds to the prompt in a structured format.
-      You are also an expert at understanding documents.
-      `;
-
-        openai.beta.assistants.update(assistant_id, {
-          tools: [{ type: "file_search" }],
-          instructions: instr,
-        });
-      }
 
       const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
 
@@ -326,15 +337,99 @@ router.post(
         res.end();
       });
 
-      run.on("errors", (error) => {
-        console.error("Error streaming from OpenAI:", error);
-        if (!res.headersSent) {
-          res.status(500).send("Failed to process stream.");
+      const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
+      console.log(addedThreadId);
+
+      //if matching assisstant, add teacher file
+      if (assistant_id === "asst_n0Jkta8iZlD573iR79IaJ6fi") {
+        console.log("TRUE");
+        //get teacher file path
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+
+        const filePath = path.join(__dirname, "teachersInfo.txt");
+
+        //add teacher file to the vector store for match making
+        const teacherFile = await openai.files.create({
+          file: fs.createReadStream(filePath),
+          purpose: "assistants",
+        });
+
+        await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
+          file_id: teacherFile.id,
+        });
+      }
+    }
+    console.log("THREAD ID: ", threadId);
+    console.log("VECTOR STORE ID: ", vectorStoreId);
+
+    //add file to vector store
+    const vectoreStorefile = userFile
+      ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
+          file_id: userFile.id,
+        })
+      : null;
+    console.log("VECTOR STORE FILE");
+    console.log(vectoreStorefile);
+
+    // delete file after vectorizing it
+    if (file) {
+      fs.unlink(`uploads/${file.originalname}`, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
         } else {
           res.end(); // End the response properly if headers are already sent
         }
       });
     }
+
+    //update the assisstant to access resources if user submits file
+    if (file) {
+      await openai.beta.assistants.update(assistant_id, {
+        tool_resources: { file_search: { vector_store_ids: [vectorStoreId] } },
+        tools: [{ type: "file_search" }],
+      });
+    }
+    // Add User Message to thread:
+    if (userFile) {
+      await addMessageToThread(threadId, "user", message, userFile.id);
+    } else {
+      await addMessageToThread(threadId, "user", message, null);
+    }
+
+    //console.log("Thread Messages: ", threadMessages);
+    // Run Thread
+    // Start the stream from OpenAI's API
+
+    const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
+
+    //console log to check if tools and tools_resources are added to the assisstant
+    console.log("ASSISTANT");
+    console.log(myAssistant);
+
+    const run = openai.beta.threads.runs.stream(threadId, {
+      assistant_id,
+    });
+
+    run.on("textDelta", (textDelta) => {
+      //
+      // console.log(textDelta.value); // Optionally log to server console
+      res.write(textDelta.value);
+    });
+
+    run.on("end", () => {
+      console.log("Stream completed");
+      res.end();
+    });
+
+    run.on("errors", (error) => {
+      console.error("Error streaming from OpenAI:", error);
+      if (!res.headersSent) {
+        res.status(500).send("Failed to process stream.");
+      } else {
+        res.end(); // End the response properly if headers are already sent
+      }
+    });
   }
 );
 
