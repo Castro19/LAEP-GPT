@@ -18,12 +18,7 @@ export default async function sendMessage(
     model: currentModel.title,
   };
 
-  let timeoutDuration = 200000; // 20 seconds default timeout
-
-  if (currentModel.title === "Enhanced ESJ Assistant") {
-    timeoutDuration = 600000; // 1 minute timeout for multi-agent model
-  }
-
+  const timeoutDuration = 30000; // 30 seconds
   const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
       reject(new Error("Error: Response took too long. Please try again."));
