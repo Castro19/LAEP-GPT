@@ -61,6 +61,18 @@ router.post(
 
     const file = req.file ? await req.file : null; //retrieve file and other data from FormData
 
+    // create file stream
+    const userFile = file
+      ? await openai.files.create({
+          file: fs.createReadStream(file.path),
+          purpose: "assistants",
+        })
+      : null;
+
+    console.log("MESSAGE: ", message);
+    console.log("FILE: ");
+    console.log(file);
+
     const isMultiAgentModel = model.title === "Enhanced ESJ Assistant";
 
     if (isMultiAgentModel) {
@@ -94,13 +106,9 @@ router.post(
             });
             vectorStoreIds.push(vectorStore.id);
 
-            let vectorStoreFile =
-              await openai.beta.vectorStores.files.createAndPoll(
-                vectorStore.id,
-                {
-                  file_id: file.id,
-                }
-              );
+            await openai.beta.vectorStores.files.createAndPoll(vectorStore.id, {
+              file_id: userFile.id,
+            });
 
             await openai.beta.assistants.update(assistantIds[i], {
               tool_resources: {
@@ -113,7 +121,7 @@ router.post(
             threadObj.id,
             "user",
             message,
-            file ? file.id : null
+            file ? userFile.id : null
           );
         }
 
@@ -155,7 +163,7 @@ router.post(
           });
 
           await openai.beta.vectorStores.files.createAndPoll(vectorStore.id, {
-            file_id: file.id,
+            file_id: userFile.id,
           });
 
           // update final assistant to access the vector store
@@ -213,14 +221,6 @@ router.post(
         }
       }
     } else {
-      // create file stream
-      const userFile = file
-        ? await openai.files.create({
-            file: fs.createReadStream(file.path),
-            purpose: "assistants",
-          })
-        : null;
-
       const fetchedModel = await getGPT(model.id);
 
       // Fetch the assistant ID with the model from gpt collection
