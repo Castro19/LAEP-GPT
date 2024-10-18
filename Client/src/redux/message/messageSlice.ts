@@ -28,7 +28,7 @@ export const fetchBotResponse = createAsyncThunk<
 >(
   "message/fetchBotResponse",
   async (
-    { currentModel, msg, currentChatId, userId }: fetchBotResponseParams,
+    { currentModel, file, msg, currentChatId, userId }: fetchBotResponseParams,
     { dispatch, rejectWithValue }
   ) => {
     try {
