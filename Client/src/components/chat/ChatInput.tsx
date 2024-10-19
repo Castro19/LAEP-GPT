@@ -19,14 +19,13 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const dispatch = useAppDispatch();
 
   const currentModel = useAppSelector((state) => state.gpt.currentModel);
-  const { isNewChat, currentChatId, error } = useAppSelector(
+  const { isNewChat, currentChatId, currentFile, error } = useAppSelector(
     (state) => state.message
   );
   const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
-  const [file, setFile] = useState<File | null>(null); //add pdf file, null if user does not submit file
   const [isSending, setIsSending] = useState(false);
 
   const textareaRef = useRef(null);
@@ -43,6 +42,13 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
     setMsg("");
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
 
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+
     // Generate a new unique chatId
     const newLogId = uuidv4();
 
@@ -53,13 +59,14 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       console.log("Current user sending message: ", userId);
       await dispatch(
         messageActions.fetchBotResponse({
-          file, //add pdf file
           currentModel,
+          file: currentFile, //add pdf file
           msg,
           currentChatId: isNewChat ? newLogId : currentChatId,
           userId: userId ? userId : "",
         })
       ).unwrap();
+      dispatch(messageActions.setCurrentFile(null)); // Clear file in Redux
       console.log("Current Model: ", currentModel);
       console.log("ISNEWCHAT: ", isNewChat);
       if (isNewChat) {
@@ -95,7 +102,9 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
 
   //add function to handle file change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files ? e.target.files[0] : null);
+    dispatch(
+      messageActions.setCurrentFile(e.target.files ? e.target.files[0] : null)
+    ); // Use Redux action
   };
 
   return (

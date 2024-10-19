@@ -14,6 +14,7 @@
   "author": "Cristian Castro Oliva",
   "license": "ISC",
   "dependencies": {
+    "@azure/storage-blob": "^12.25.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

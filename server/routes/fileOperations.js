@@ -1,12 +1,12 @@
 import express from "express";
 import { openai } from "../index.js";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+// import fs from "fs";
+// import path from "path";
+// import { fileURLToPath } from "url";
 
 // Create a __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
@@ -22,8 +22,8 @@ async function getFiles() {
 
 async function deleteFile(fileId) {
   try {
-    await openai.files.del(fileId);
-    console.log(`File ${fileId} deleted successfully.`);
+    // await openai.files.del(fileId);
+    console.log(`File ${fileId} NOT deleted successfully.`);
   } catch (error) {
     console.error(`Error deleting file ${fileId}:`, error);
     throw error;
@@ -37,6 +37,7 @@ router.delete("/clear", async (req, res) => {
 
     // Delete each file
     for (const file of files) {
+      console.log("Deleting file: ", file.id);
       await deleteFile(file.id);
     }
 
@@ -49,26 +50,27 @@ router.delete("/clear", async (req, res) => {
 
 // Endpoint to upload a file to OpenAI for a specific assistant and add to a vector store
 router.post("/upload/:assistantId", async (req, res) => {
-  const filePath = path.join(__dirname, "..", "teachersInfo.txt"); // Adjust the file path as needed
-  const purpose = "assistants";
+  // const filePath = path.join(__dirname, "..", "teachersInfo.txt"); // Adjust the file path as needed
+  // const purpose = "assistants";
 
   try {
     // Upload the file
-    const file = await openai.files.create({
-      file: fs.createReadStream(filePath),
-      purpose: purpose,
-    });
+    // const file = await openai.files.create({
+    //   file: fs.createReadStream(filePath),
+    //   purpose: purpose,
+    // });
 
     // Save the file ID
-    const fileId = file.id;
+    // const fileId = file.id;
 
     // Create and poll the vector store file
-    const vectorStoreFile = await openai.beta.vectorStores.files.createAndPoll(
-      "vs_5DPfGbeH32XVaSU2NQ0HwLrC", // Your vector store ID
-      { file_id: fileId }
-    );
+    // const vectorStoreFile = await openai.beta.vectorStores.files.createAndPoll(
+    //   "vs_5DPfGbeH32XVaSU2NQ0HwLrC", // Your vector store ID
+    //   { file_id: fileId }
+    // );
 
-    res.status(200).json(vectorStoreFile);
+    // res.status(200).json(vectorStoreFile);
+    res.status(200).json({ message: "File uploaded successfully." });
   } catch (error) {
     console.error("Error uploading file:", error);
     res
