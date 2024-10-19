@@ -19,19 +19,12 @@ import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
 
+import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
+
 const router = express.Router();
 
 //init storage for user documents
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
+const upload = multer({ dest: "temp/" }); // 'temp/' is where Multer stores uploaded files
 
 // Rate limiter for GPT messages
 const messageRateLimiter = rateLimit({
@@ -58,20 +51,20 @@ router.post(
 
     const { message, chatId } = req.body;
     const model = JSON.parse(req.body.currentModel);
+    let userFile = null;
+    const file = req.file;
 
-    const file = req.file ? await req.file : null; //retrieve file and other data from FormData
-
-    // create file stream
-    const userFile = file
-      ? await openai.files.create({
-          file: fs.createReadStream(file.path),
-          purpose: "assistants",
-        })
-      : null;
+    if (file) {
+      console.log("FILE FROM CLIENT: ", file);
+      try {
+        userFile = await handleFileUpload(file);
+      } catch (error) {
+        console.error("Error uploading file to Azure Blob Storage:", error);
+      }
+    }
 
     console.log("MESSAGE: ", message);
-    console.log("FILE: ");
-    console.log(file);
+    console.log("USER FILE: ", userFile);
 
     const isMultiAgentModel = model.title === "Enhanced ESJ Assistant";
 
@@ -201,17 +194,6 @@ router.post(
             res.end();
           }
         });
-
-        // cleanup: delete threads and vector stores
-        if (file) {
-          fs.unlink(`uploads/${file.originalname}`, (err) => {
-            if (err) {
-              console.error("Error deleting file:", err);
-            } else {
-              console.log("File deleted successfully");
-            }
-          });
-        }
       } catch (error) {
         console.error("Error in multi-agent logic:", error);
         if (!res.headersSent) {
@@ -248,12 +230,12 @@ router.post(
 
         console.log(vectorStore);
 
-        vectorStoreId = await vectorStore.id;
+        vectorStoreId = vectorStore.id;
 
         const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
         console.log(addedThreadId);
 
-        //if matching assistant, add teacher file
+        // FIX: if matching assistant, add teacher file
         if (assistant_id === "asst_n0Jkta8iZlD573iR79IaJ6fi") {
           console.log("TRUE");
           //get teacher file path
@@ -285,19 +267,12 @@ router.post(
       console.log("VECTOR STORE FILE");
       console.log(vectoreStorefile);
 
-      // delete file after vectorizing it
-      if (file) {
-        fs.unlink(`uploads/${file.originalname}`, (err) => {
-          if (err) {
-            console.error("Error deleting file:", err);
-          } else {
-            console.log("File deleted successfully");
-          }
-        });
-      }
+      const vectorStoreFiles =
+        await openai.beta.vectorStores.files.list(vectorStoreId);
+      console.log("VECTOR STORE FILES: ", vectorStoreFiles);
 
       //update the assisstant to access resources if user submits file
-      if (file) {
+      if (vectorStoreFiles.data.length > 0) {
         await openai.beta.assistants.update(assistant_id, {
           tool_resources: {
             file_search: { vector_store_ids: [vectorStoreId] },
@@ -305,6 +280,7 @@ router.post(
           tools: [{ type: "file_search" }],
         });
       }
+      // FIX: This function and condition
       // Add User Message to thread:
       if (userFile) {
         await addMessageToThread(threadId, "user", message, userFile.id);

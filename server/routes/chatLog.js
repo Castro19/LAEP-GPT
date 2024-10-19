@@ -85,13 +85,18 @@ router.put("/", async (req, res) => {
 router.delete("/:userId/:logId", async (req, res) => {
   const { logId, userId } = req.params;
   console.log(`Deleting log ${logId} for user ${userId}`);
-  const { threadId, vectorStoreId } = await fetchIds(logId);
-
-  const deletedVectorStore = await openai.beta.vectorStores.del(
-    String(vectorStoreId)
-  );
 
   try {
+    const { threadId, vectorStoreId } = await fetchIds(logId);
+    const vectorStoreFiles =
+      await openai.beta.vectorStores.files.list(vectorStoreId);
+    for (const file of vectorStoreFiles.data) {
+      const deletedFile = await openai.files.del(file.id);
+      console.log("File Deleted: ", deletedFile);
+    }
+    const deletedVectorStore = await openai.beta.vectorStores.del(
+      String(vectorStoreId)
+    );
     const response = await deleteLog(logId, userId);
     const deleteResponse = await deleteThreadById(threadId);
     console.log("Response: ", response);
@@ -100,7 +105,7 @@ router.delete("/:userId/:logId", async (req, res) => {
     res.status(204).json({ response, deleteResponse }); // 204 No Content is typical for a delete operation.
   } catch (error) {
     console.error("Failed to Delete log: ", error);
-    res.status(500).send("Failed to Delete log in database: " + error.message);
+    res.status(404).send("Failed to Delete log in database: " + error.message);
   }
 });
 
