@@ -11,3 +11,7 @@ export type AuthState = {
   availability: string | null; // Availability of user
   emailVerified: boolean; // Whether or not the user's email is verified
 };
+
+export type Availability = {
+  [day: string]: [number, number][];
+};
