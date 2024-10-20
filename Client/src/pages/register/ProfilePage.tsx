@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux";
 import { useNavigate } from "react-router-dom";
 import { updateUserProfile } from "../../redux/auth/authSlice"; // Adjust the path
-import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
+import { Label } from "../../components/ui/label"; // Assuming you have a Label component
+import WeeklyCalendar from "../../components/register/WeeklyCalendar";
+import { Availability } from "@/types";
+
+const underlineStyle = "underline"; // Define a class for underline
 
 function ProfilePage() {
   const { currentUser, userId } = useAppSelector((state) => state.auth);
@@ -16,12 +20,7 @@ function ProfilePage() {
     email: "",
     about: "",
     userType: "",
-    availability: "",
-  });
-
-  const [isEditing, setIsEditing] = useState({
-    about: false,
-    availability: false,
+    availability: {} as Availability,
   });
 
   useEffect(() => {
@@ -36,10 +35,10 @@ function ProfilePage() {
           setUserData({
             firstName: data.firstName || "",
             lastName: data.lastName || "",
-            email: currentUser.email || "",
+            email: currentUser?.email || "",
             about: data.about || "",
             userType: data.userType || "",
-            availability: data.availability || "",
+            availability: data.availability,
           });
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -58,130 +57,86 @@ function ProfilePage() {
     navigate("/chat");
   };
 
-  const handleEdit = (field) => {
-    setIsEditing({ ...isEditing, [field]: true });
-  };
-
-  const handleSave = (field) => {
+  const handleSave = (field: keyof typeof userData) => {
     dispatch(updateUserProfile({ [field]: userData[field] }));
-    setIsEditing({ ...isEditing, [field]: false });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
 
+  const handleAvailabilityChange = (newAvailability: Availability) => {
+    setUserData({ ...userData, availability: newAvailability });
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center dark:bg-zinc-900">
-      <div className="container mx-auto p-4 max-w-md">
-        <div className="bg-white dark:bg-zinc-800 rounded-2xl p-8 shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900">
+      <div className="flex w-full max-w-4xl bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="w-full flex flex-col justify-center p-8">
           <h1 className="font-bold text-2xl text-neutral-800 dark:text-neutral-200 mb-6">
             User Profile
           </h1>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              First Name
-            </label>
+          <LabelInputContainer>
+            <Label className={underlineStyle}>Name</Label>
+            {/* Apply the underline class */}
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.firstName || "N/A"}
+              {userData.firstName + " " + userData.lastName || "N/A"}
             </p>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Last Name
-            </label>
-            <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.lastName || "N/A"}
-            </p>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Email
-            </label>
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label className={underlineStyle}>Email</Label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
               {userData.email || "N/A"}
             </p>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              User Type
-            </label>
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label className={underlineStyle}>User Type</Label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
               {userData.userType || "N/A"}
             </p>
-          </div>
+          </LabelInputContainer>
+
           {userData.userType === "teacher" && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                About Me
-              </label>
-              {isEditing.about ? (
-                <div className="flex flex-col">
-                  <div className="mb-2">
-                    <Textarea
-                      name="about"
-                      value={userData.about}
-                      onChange={handleChange}
-                      style={{ resize: "none", height: "100px" }}
-                    />
-                  </div>
-                  <button
-                    onClick={() => handleSave("about")}
-                    className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-gray-900 dark:text-gray-100">
-                    {userData.about || "N/A"}
-                  </p>
-                  <button
-                    onClick={() => handleEdit("about")}
-                    className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Edit
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Availability
-            </label>
-            {isEditing.availability ? (
+            <LabelInputContainer>
+              <Label className={underlineStyle}>About Me</Label>
               <div className="flex flex-col">
                 <div className="mb-2">
-                  <Input
-                    name="availability"
-                    value={userData.availability}
+                  <Textarea
+                    name="about"
+                    value={userData.about}
                     onChange={handleChange}
+                    style={{ resize: "none", height: "100px" }}
                   />
                 </div>
                 <button
-                  onClick={() => handleSave("availability")}
+                  onClick={() => handleSave("about")}
                   className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
                 >
                   Save
                 </button>
               </div>
-            ) : (
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-900 dark:text-gray-100">
-                  {userData.availability || "N/A"}
-                </p>
-                <button
-                  onClick={() => handleEdit("availability")}
-                  className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
-                >
-                  Edit
-                </button>
+            </LabelInputContainer>
+          )}
+          <LabelInputContainer>
+            <Label className={underlineStyle}>Availability</Label>
+            <div className="flex flex-col">
+              <div className="mb-2">
+                <WeeklyCalendar
+                  availability={userData?.availability || {}} // Parse safely
+                  onChange={handleAvailabilityChange}
+                />
               </div>
-            )}
-          </div>
+              <button
+                onClick={() => handleSave("availability")}
+                className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
+              >
+                Save
+              </button>
+            </div>
+          </LabelInputContainer>
           <div className="mt-6">
             <button
               onClick={handleBackToChat}
@@ -195,5 +150,9 @@ function ProfilePage() {
     </div>
   );
 }
+
+const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex flex-col space-y-2 mb-4 items-center">{children}</div>
+);
 
 export default ProfilePage;
