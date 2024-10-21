@@ -8,7 +8,7 @@ export function UserAvatar() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { userLoggedIn, currentUser, loading } = useAppSelector(
+  const { userLoggedIn, currentUser, userId, loading } = useAppSelector(
     (state) => state.auth
   );
 
@@ -28,7 +28,7 @@ export function UserAvatar() {
     e.preventDefault();
     console.log(
       "Avatar clicked, attempting to navigate to:",
-      `/profile/${currentUser?.uid}`
+      `/profile/edit/${currentUser?.uid}`
     );
     console.log("Current auth state:", { userLoggedIn, currentUser });
 
@@ -41,7 +41,7 @@ export function UserAvatar() {
     }
 
     console.log("Navigating to profile page");
-    navigate(`/profile/${currentUser.uid}`);
+    navigate(`/profile/edit/${userId}`);
   };
 
   if (loading) {

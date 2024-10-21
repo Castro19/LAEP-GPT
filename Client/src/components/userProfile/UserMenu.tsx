@@ -30,7 +30,7 @@ const UserMenu = () => {
 
   const handleSignOut = async (): Promise<void> => {
     auth.signOut();
-    navigate("/");
+    navigate("/login");
   };
 
   return (

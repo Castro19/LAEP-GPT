@@ -2,6 +2,7 @@ import * as UserModel from "./userCollection.js";
 
 export const addUser = async (userData) => {
   try {
+    // Find whether the role of the user
     const result = await UserModel.createUser(userData);
     return { message: "User created successfully", userId: result.insertedId };
   } catch (error) {

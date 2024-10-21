@@ -4,6 +4,7 @@ import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
 import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
+import ChatPageLayout from "@/components/layout/ChatPageLayout";
 
 const ChatPage = () => {
   const { chatId } = useParams();
@@ -32,16 +33,18 @@ const ChatPage = () => {
   console.log("Chat id in page: ", chatId);
 
   return (
-    <div
-      className={`dark:bg-gray-800 dark:text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
-        isSidebarVisible ? "ml-64" : ""
-      }`}
-    >
-      <ChatHeader />
-      <div className="flex-1">
-        <ChatContainer />
-      </div>{" "}
-    </div>
+    <ChatPageLayout>
+      <div
+        className={`dark:bg-gray-800 dark:text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
+          isSidebarVisible ? "ml-64" : ""
+        }`}
+      >
+        <ChatHeader />
+        <div className="flex-1">
+          <ChatContainer />
+        </div>
+      </div>
+    </ChatPageLayout>
   );
 };
 
