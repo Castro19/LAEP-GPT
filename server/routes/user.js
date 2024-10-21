@@ -11,26 +11,27 @@ const router = express.Router();
 // Route to add a new user
 router.post("/signup", async (req, res) => {
   try {
-    const {
-      firebaseUserId,
-      firstName,
-      lastName,
-      userType,
-      about,
-      availability,
-    } = req.body;
-    if (!firebaseUserId) {
+    const { userId, name } = req.body;
+    if (!userId) {
       return res.status(400).send("Firebase User ID is required");
     }
+    console.log("USER ID: ", userId);
+    // Check if user already exists
+    const existingUser = await getUserByFirebaseId(userId);
+    if (existingUser) {
+      return res.status(200).send("User already exists");
+    }
+
+    console.log("Adding user to database");
     const result = await addUser({
-      firebaseUserId,
-      firstName,
-      lastName,
-      userType,
-      about,
-      availability,
+      userId,
+      name,
     });
-    res.status(201).json(result);
+    const userResponse = {
+      ...result,
+      isNewUser: true,
+    };
+    res.status(201).json(userResponse);
   } catch (error) {
     res.status(500).send("Failed to create user: " + error.message);
     console.error("Failed to create user: ", error);
@@ -38,10 +39,10 @@ router.post("/signup", async (req, res) => {
 });
 
 // Route to get a specific user by Firebase ID
-router.get("/:firebaseUserId", async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
-    const { firebaseUserId } = req.params;
-    const user = await getUserByFirebaseId(firebaseUserId);
+    const { userId } = req.params;
+    const user = await getUserByFirebaseId(userId);
     if (!user) {
       return res.status(404).send("User not found");
     }
@@ -52,11 +53,11 @@ router.get("/:firebaseUserId", async (req, res) => {
 });
 
 // Route to update a specific user by Firebase ID
-router.put("/:firebaseUserId", async (req, res) => {
+router.put("/:userId", async (req, res) => {
   try {
-    const { firebaseUserId } = req.params;
+    const { userId } = req.params;
     const updateData = req.body; // Contains the updated fields
-    const updatedUser = await updateUser(firebaseUserId, updateData);
+    const updatedUser = await updateUser(userId, updateData);
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).send("Failed to update user: " + error.message);

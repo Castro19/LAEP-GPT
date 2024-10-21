@@ -985,21 +985,13 @@ Visual Studio Code is a source-code editor that includes support for development
     const userLoggedIn = useAppSelector((state) => state.auth.userLoggedIn);
     ```
 
-- **isEmailUser**: A boolean value on if the user signed up with email and password. If it is false, then they are a google user or they are not currently logged in.
-
-  - **Access with Selector**:
-
-    ```typescript
-    const isEmailUser = useAppSelector((state) => state.auth.isEmailUser);
-    ```
-
 - **loading**: A boolean value for when a user is registering (login/signup). The short period of time after user enters credentials and before they are granted access to their account
 
 - **registerError**: A string, that displays the error message when registering such as invalid credentials.
 
 - **userType**: A string,
 
-- **availability**: A string, 
+- **availability**: A string,
 
 - **emailVerified**: A boolean value that represents whether or not the user's email is verified.
 
@@ -1023,7 +1015,6 @@ Visual Studio Code is a source-code editor that includes support for development
        currentUser: user.providerData[0],
        userId: user.uid,
        userLoggedIn: true,
-       isEmailUser: isEmailUserDeterminedFromProviderData,
      })
    );
    ```
@@ -1031,22 +1022,21 @@ Visual Studio Code is a source-code editor that includes support for development
 - **currentUser**: UserInfo object representing the user.
 - **userId**: User's unique identifier from Firebase.
 - **userLoggedIn**: Boolean indicating the user is now logged in.
-- **isEmailUser**: Boolean indicating if the user logged in using email and password.
 
-2. **clearAuthState**: Use this action to clear the authentication state, for example, during `signout`.
+1. **clearAuthState**: Use this action to clear the authentication state, for example, during `signout`.
 
    ```typescript
    dispatch(clearAuthState());
    ```
 
-3. **setLoading**: This action can be dispatched to control the visibility of loading indicators during async operations like signing in or signing up.
+2. **setLoading**: This action can be dispatched to control the visibility of loading indicators during async operations like signing in or signing up.
 
    ```typescript
    dispatch(setLoading(true)); // Set loading to true at the start of an operation
    dispatch(setLoading(false)); // Set loading to false once operation completes
    ```
 
-4. **setSignInError**:
+3. **setSignInError**:
 
    ```typescript
    dispatch(
@@ -1054,18 +1044,6 @@ Visual Studio Code is a source-code editor that includes support for development
        "Failed to sign in. Please check your credentials and try again."
      )
    );
-   ```
-
-5. **setSignUpError**:
-
-   ```typescript
-   dispatch(setSignUpError("Failed to register. Email already in use."));
-   ```
-
-6. **setEmailVerifyError**:
-
-   ```typescript
-   dispatch(setEmailVerifyError("Too many attempts to resend email verification. Try again later."));
    ```
 
 #### Thunks for Authentication
@@ -1128,14 +1106,6 @@ Visual Studio Code is a source-code editor that includes support for development
 - Each thunk has `try...catch` blocks to handle exceptions and reject with a value when an error occurs.
 
   - This value updates the error state in the Redux store.
-
-  ```typescript
-    } catch (error) {
-        if (error instanceof Error) {
-          dispatch(setSignUpError(error.message));
-        }
-      }
-  ```
 
 ### Gpt Slice (Assistants)
 
@@ -1578,7 +1548,6 @@ The layout slice includes reducers to manage the visibility of various UI compon
     currentUser: UserInfo | null; // displayName, email, photoURL, etc. (others you won't need to use)
     userId: string | null; // Unique user Id
     userLoggedIn: boolean; // Whether or not user is logged in
-    isEmailUser: boolean; // Whether or not they are an E-mail user or google Use r
     loading: boolean; // State for registering
     registerError: string | null; // Error while log in or sign up
   };

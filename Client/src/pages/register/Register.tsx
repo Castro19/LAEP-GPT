@@ -1,6 +1,6 @@
 // HomePage.tsx
-import { Outlet } from "react-router-dom";
-import TitleCard from "@/components/register/TitleCard"; // Make sure the import path is correct
+import TitleCard from "@/components/register/TitleCard";
+import LoginForm from "./LoginForm";
 
 const Register = () => {
   return (
@@ -10,7 +10,7 @@ const Register = () => {
         <TitleCard />
         {/* Right Side: Login or Signup Form based on route */}
         <div className="w-1/2 flex flex-col justify-center">
-          <Outlet />
+          <LoginForm />
         </div>
       </div>
     </div>

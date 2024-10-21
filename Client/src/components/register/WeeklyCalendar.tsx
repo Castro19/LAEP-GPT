@@ -17,6 +17,7 @@ interface WeeklyCalendarProps {
   availability: {
     [day: string]: [number, number][];
   };
+  // eslint-disable-next-line no-unused-vars
   onChange: (newAvailability: { [day: string]: [number, number][] }) => void;
 }
 
@@ -68,7 +69,7 @@ const addHourToIntervals = (
     if (mergedIntervals.length === 0) {
       mergedIntervals.push([currentStart, currentEnd]);
     } else {
-      const [lastStart, lastEnd] = mergedIntervals[mergedIntervals.length - 1];
+      const [, lastEnd] = mergedIntervals[mergedIntervals.length - 1];
       if (currentStart <= lastEnd + 1) {
         // Merge intervals
         mergedIntervals[mergedIntervals.length - 1][1] = Math.max(
@@ -160,7 +161,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
       {daysOfWeek.map((day) => (
         <div key={day} className="mb-5">
           <h3 className="text-base mb-2 dark:text-white">{day}</h3>
-          <div className="flex">
+          <div className="flex flex-wrap">
             {timeSlots.map((hour) => {
               const isAvailable = availability[day]?.some(
                 ([start, end]) => hour >= start && hour <= end
@@ -168,7 +169,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               return (
                 <div
                   key={hour}
-                  className={`w-12 h-8 m-0.5 text-xs flex items-center justify-center border cursor-pointer select-none ${
+                  className={`w-12 h-8 m-0.5 text-xs flex flex-wrap items-center justify-center border cursor-pointer select-none ${
                     isAvailable ? "bg-green-500" : "bg-gray-200"
                   }`}
                   onMouseDown={() => handleTimeSlotMouseDown(day, hour)}

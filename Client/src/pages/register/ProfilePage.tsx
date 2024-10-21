@@ -3,29 +3,64 @@ import { useAppSelector, useAppDispatch } from "@/redux";
 import { useNavigate } from "react-router-dom";
 import { updateUserProfile } from "../../redux/auth/authSlice"; // Adjust the path
 import { Textarea } from "../../components/ui/textarea";
-import { Label } from "../../components/ui/label"; // Assuming you have a Label component
+import { Label } from "../../components/ui/label";
 import WeeklyCalendar from "../../components/register/WeeklyCalendar";
 import { Availability } from "@/types";
+import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
+import InterestDropdown from "@/components/register/InterestDropdown";
+import { Button } from "@/components/ui/button";
 
-const underlineStyle = "underline"; // Define a class for underline
+const underlineStyle = "underline";
+const csInterests = [
+  "Artificial Intelligence",
+  "Cybersecurity",
+  "Data Science",
+  "Software Engineering",
+  "Web Development",
+  "Mobile Development",
+  "Game Development",
+  "Machine Learning",
+  "Computer Vision",
+  "Natural Language Processing",
+  "Virtual Reality",
+  "Robotics",
+  "Blockchain",
+  "Quantum Computing",
+  "Augmented Reality",
+  "3D Printing",
+];
+
+type UserInfo = {
+  availability: Availability;
+  bio: string | undefined;
+  canShareData: boolean;
+  interests: string[];
+  major: string | undefined;
+  userType: string;
+  year: string | undefined;
+};
 
 function ProfilePage() {
-  const { currentUser, userId } = useAppSelector((state) => state.auth);
+  const { currentUser, userId, loading } = useAppSelector(
+    (state) => state.auth
+  );
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    about: "",
-    userType: "",
+  const [userData, setUserData] = useState<UserInfo>({
     availability: {} as Availability,
+    bio: "",
+    canShareData: false,
+    interests: [],
+    major: "",
+    userType: "student",
+    year: "",
   });
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (userId) {
+    if (!loading && userId) {
+      const fetchUserData = async () => {
         try {
           const response = await fetch(`http://localhost:4000/users/${userId}`);
           if (!response.ok) {
@@ -33,32 +68,51 @@ function ProfilePage() {
           }
           const data = await response.json();
           setUserData({
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
-            email: currentUser?.email || "",
-            about: data.about || "",
-            userType: data.userType || "",
-            availability: data.availability,
+            availability: data?.availability || {},
+            bio: data?.bio || "",
+            canShareData: data?.canShareData || false,
+            interests: data?.interests || [],
+            major: data?.major || "",
+            userType: data?.userType || "student",
+            year: data?.year || "",
           });
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
+      };
+
+      fetchUserData();
+    }
+  }, [loading, userId]);
+
+  // Handle adding a new interest
+  const handleAddInterest = (value: string) => {
+    setUserData((prevState: UserInfo) => {
+      // Avoid adding duplicates
+      if (!prevState.interests.includes(value)) {
+        return {
+          ...prevState,
+          interests: [...prevState.interests, value],
+        };
       }
-    };
+      return prevState;
+    });
+  };
 
-    fetchUserData();
-  }, [userId, currentUser]);
-
-  if (!currentUser) {
-    return <div>Loading...</div>;
-  }
+  // Handle removing an interest
+  const handleRemoveInterest = (value: string) => {
+    setUserData((prevState) => ({
+      ...prevState,
+      interests: prevState.interests.filter((interest) => interest !== value),
+    }));
+  };
 
   const handleBackToChat = () => {
     navigate("/chat");
   };
 
-  const handleSave = (field: keyof typeof userData) => {
-    dispatch(updateUserProfile({ [field]: userData[field] }));
+  const handleSave = () => {
+    dispatch(updateUserProfile(userData));
   };
 
   const handleChange = (
@@ -81,15 +135,14 @@ function ProfilePage() {
           </h1>
           <LabelInputContainer>
             <Label className={underlineStyle}>Name</Label>
-            {/* Apply the underline class */}
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.firstName + " " + userData.lastName || "N/A"}
+              {currentUser?.displayName || "N/A"}
             </p>
           </LabelInputContainer>
           <LabelInputContainer>
             <Label className={underlineStyle}>Email</Label>
             <p className="text-sm text-gray-900 dark:text-gray-100">
-              {userData.email || "N/A"}
+              {currentUser?.email || "N/A"}
             </p>
           </LabelInputContainer>
           <LabelInputContainer>
@@ -99,51 +152,97 @@ function ProfilePage() {
             </p>
           </LabelInputContainer>
 
-          {userData.userType === "teacher" && (
-            <LabelInputContainer>
-              <Label className={underlineStyle}>About Me</Label>
-              <div className="flex flex-col">
-                <div className="mb-2">
-                  <Textarea
-                    name="about"
-                    value={userData.about}
-                    onChange={handleChange}
-                    style={{ resize: "none", height: "100px" }}
-                  />
-                </div>
-                <button
-                  onClick={() => handleSave("about")}
-                  className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </LabelInputContainer>
-          )}
           <LabelInputContainer>
             <Label className={underlineStyle}>Availability</Label>
-            <div className="flex flex-col">
-              <div className="mb-2">
-                <WeeklyCalendar
-                  availability={userData?.availability || {}} // Parse safely
-                  onChange={handleAvailabilityChange}
-                />
-              </div>
-              <button
-                onClick={() => handleSave("availability")}
-                className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded"
-              >
-                Save
-              </button>
+            <div className="mb-2">
+              <WeeklyCalendar
+                availability={userData.availability}
+                onChange={handleAvailabilityChange}
+              />
             </div>
           </LabelInputContainer>
-          <div className="mt-6">
-            <button
-              onClick={handleBackToChat}
-              className="w-full bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded transition duration-300"
+          <LabelInputContainer>
+            <Label className={underlineStyle}>About Me</Label>
+            <Textarea
+              name="bio"
+              value={userData.bio || ""}
+              placeholder="Tell us about yourself..."
+              onChange={handleChange}
+              style={{ width: "75%", height: "100px" }}
+            />
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label className={underlineStyle}>Year</Label>
+            <RadioGroup
+              value={userData.year || ""}
+              onValueChange={(value) =>
+                setUserData({ ...userData, year: value })
+              }
             >
-              Back to Chat
+              <div className="flex flex-row space-x-4 flex-wrap">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="1" id="year1" />
+                  <Label htmlFor="year1">Year 1</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2" id="year2" />
+                  <Label htmlFor="year2">Year 2</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="3" id="year3" />
+                  <Label htmlFor="year3">Year 3</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="4" id="year4" />
+                  <Label htmlFor="year4">Year 4</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="5" id="year5" />
+                  <Label htmlFor="year5">Year 5</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="6" id="year6" />
+                  <Label htmlFor="year6">Year 6</Label>
+                </div>
+              </div>
+            </RadioGroup>
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label className={underlineStyle}>Interests</Label>
+            <InterestDropdown
+              name="interests"
+              labelText="Select an interest"
+              handleFunction={handleAddInterest}
+              listOfItems={csInterests.sort()}
+              selectedValue={""}
+            />
+          </LabelInputContainer>
+          <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap" }}>
+            {userData.interests.map((interest, index) => (
+              <Button
+                key={index}
+                onClick={() => handleRemoveInterest(interest)}
+                style={{ margin: "5px" }}
+              >
+                {interest} ✕
+              </Button>
+            ))}
+          </div>
+          <div className="flex flex-col">
+            <button
+              onClick={handleSave}
+              className="bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded mt-4"
+            >
+              Save
             </button>
+            <div className="mt-6">
+              <button
+                onClick={handleBackToChat}
+                className="w-full bg-gradient-to-b from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white font-bold py-2 px-4 rounded transition duration-300"
+              >
+                Back to Chat
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -152,7 +251,7 @@ function ProfilePage() {
 }
 
 const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col space-y-2 mb-4 items-center">{children}</div>
+  <div className="flex flex-col space-y-2 mb-4">{children}</div>
 );
 
 export default ProfilePage;

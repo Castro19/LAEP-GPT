@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useAppSelector } from "@/redux";
+import { authActions, useAppDispatch, useAppSelector } from "@/redux";
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -10,18 +10,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { userId: urlUserId } = useParams<{ userId: string }>();
-
-  const { userLoggedIn, currentUser, loading, emailVerified, userId } =
+  const dispatch = useAppDispatch();
+  const { userLoggedIn, currentUser, loading, userId, isNewUser } =
     useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    console.log("ProtectedRoute: Current path", location.pathname);
-    console.log("ProtectedRoute: userLoggedIn", userLoggedIn);
-    console.log("ProtectedRoute: currentUser", currentUser);
-    console.log("ProtectedRoute: userId", userId);
-    console.log("ProtectedRoute: urlUserId", urlUserId);
-    //console.log("ProtectedRoute: userType", currentUser?.userType);
+  console.log("CURRENT USER: ", currentUser);
 
+  useEffect(() => {
     if (loading) {
       console.log("ProtectedRoute: Auth state is loading");
       return;
@@ -30,42 +25,43 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     if (!userLoggedIn || !currentUser) {
       console.log("ProtectedRoute: User not logged in, redirecting to login");
       navigate("/login", { replace: true });
-    } else if (!emailVerified) {
-      //Check that the email is verified, and redirect to verification page if not
-      console.log(
-        "ProtectedRoute: Email not verified, redirecting to verify email page"
-      );
-      if (!location.pathname.endsWith("/email-verification-needed")) {
-        navigate("/email-verification-needed", { replace: true });
-      }
-    } else if (location.pathname.startsWith("/profile/")) {
+      return;
+    }
+
+    if (isNewUser) {
+      console.log("ProtectedRoute: User is new, redirecting to onboarding");
+      navigate(`/profile/edit/${userId}`, { replace: true });
+      dispatch(authActions.setIsNewUser(undefined)); // Reset the flag
+      return;
+    }
+
+    if (location.pathname.startsWith("/profile/")) {
       console.log("ProtectedRoute: On profile page");
-      if (urlUserId !== currentUser.uid) {
+      if (urlUserId !== userId) {
         console.log(
           "ProtectedRoute: Unauthorized profile access, redirecting to own profile"
         );
-        navigate(`/profile/${currentUser.uid}`, { replace: true });
+        navigate(`/profile/edit/${userId}`, { replace: true });
+        return;
       }
     } else if (urlUserId && urlUserId !== userId) {
       console.log(
         "ProtectedRoute: URL userId does not match logged-in userId, redirecting"
       );
-      navigate(`/${currentUser.uid}`, { replace: true });
+      navigate(`/${userId}`, { replace: true });
+      return;
     }
   }, [
-    navigate,
+    loading,
     userLoggedIn,
     currentUser,
+    isNewUser,
+    userId,
     urlUserId,
     location.pathname,
-    loading,
-    emailVerified,
-    userId,
+    navigate,
+    dispatch,
   ]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return <>{children}</>;
 };
