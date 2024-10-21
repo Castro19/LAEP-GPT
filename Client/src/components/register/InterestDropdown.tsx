@@ -10,6 +10,7 @@ import {
 type InterestDropdownProps = {
   name: string;
   labelText: string;
+  // eslint-disable-next-line no-unused-vars
   handleFunction: (value: string) => void;
   listOfItems: string[];
   selectedValue: string;

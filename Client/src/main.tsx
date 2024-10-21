@@ -80,6 +80,7 @@ const router = createBrowserRouter([
 ]);
 
 // Create the App component
+// eslint-disable-next-line react-refresh/only-export-components
 function App() {
   const dispatch = useAppDispatch();
 

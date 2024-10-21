@@ -17,6 +17,7 @@ interface WeeklyCalendarProps {
   availability: {
     [day: string]: [number, number][];
   };
+  // eslint-disable-next-line no-unused-vars
   onChange: (newAvailability: { [day: string]: [number, number][] }) => void;
 }
 
@@ -68,7 +69,7 @@ const addHourToIntervals = (
     if (mergedIntervals.length === 0) {
       mergedIntervals.push([currentStart, currentEnd]);
     } else {
-      const [lastStart, lastEnd] = mergedIntervals[mergedIntervals.length - 1];
+      const [, lastEnd] = mergedIntervals[mergedIntervals.length - 1];
       if (currentStart <= lastEnd + 1) {
         // Merge intervals
         mergedIntervals[mergedIntervals.length - 1][1] = Math.max(

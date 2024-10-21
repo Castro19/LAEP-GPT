@@ -5,6 +5,7 @@ import { useAppSelector } from "@/redux";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type ModeDropDownProps = {
+  // eslint-disable-next-line no-unused-vars
   onSelect: (modelId: string | undefined) => void;
 };
 

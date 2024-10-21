@@ -32,6 +32,7 @@
 export async function registerUserToDB(userData: {
   userId: string;
   name: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): Promise<any> {
   // Now, send a request to your backend to store additional user information
   try {
