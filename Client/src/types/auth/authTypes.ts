@@ -10,10 +10,19 @@ export type AuthState = {
   userType: string | null; // Type of user
   isNewUser: boolean | undefined; // Whether or not the user is new
   availability: string | null; // Availability of user
+  userData: MyUserInfo | null; // Add this line
 };
 
 export type Availability = {
   [day: string]: [number, number][];
 };
 
-export type Interests = string[];
+export interface MyUserInfo {
+  availability?: Availability;
+  bio?: string;
+  canShareData?: boolean;
+  interests?: string[];
+  major?: string;
+  userType?: string;
+  year?: string;
+}

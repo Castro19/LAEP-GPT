@@ -29,8 +29,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
 
     if (isNewUser) {
+      // Swap for non-testing purposes
       console.log("ProtectedRoute: User is new, redirecting to onboarding");
-      navigate(`/profile/edit/${userId}`, { replace: true });
+      navigate(`/sign-in-flow/about-me`, { replace: true });
       dispatch(authActions.setIsNewUser(undefined)); // Reset the flag
       return;
     }

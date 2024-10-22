@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useUserData } from "@/hooks/useUserData";
 
 const daysOfWeek = [
   "Monday",
@@ -12,14 +13,6 @@ const daysOfWeek = [
 
 // Time slots from 8 AM to 8 PM in 1-hour intervals
 const timeSlots = Array.from({ length: 13 }, (_, i) => 8 + i); // [8, 9, ..., 20]
-
-interface WeeklyCalendarProps {
-  availability: {
-    [day: string]: [number, number][];
-  };
-  // eslint-disable-next-line no-unused-vars
-  onChange: (newAvailability: { [day: string]: [number, number][] }) => void;
-}
 
 // Helper functions to add or remove an hour from intervals
 const removeHourFromIntervals = (
@@ -91,14 +84,13 @@ const formatTime = (hour: number) => {
   const standardHour = hour % 12 === 0 ? 12 : hour % 12;
   return `${standardHour} ${period}`;
 };
-const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
-  availability,
-  onChange,
-}) => {
+const WeeklyCalendar = () => {
   const [isDragging, setIsDragging] = useState(false);
+  const { userData, handleAvailabilityChange } = useUserData();
   const [draggingToSelect, setDraggingToSelect] = useState<boolean | null>(
     null
   );
+  const availability = userData?.availability || {};
 
   const handleTimeSlotMouseDown = (day: string, hour: number) => {
     const dayIntervals = availability[day] || [];
@@ -148,18 +140,18 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
       [day]: newDayIntervals,
     };
 
-    // Call onChange with the new availability
-    onChange(newAvailability);
+    // Call handleAvailabilityChange with the new availability
+    handleAvailabilityChange(newAvailability);
   };
 
   return (
     <div
-      className="flex flex-col"
+      className="flex flex-col justify-center align-center"
       onMouseLeave={handleMouseUp} // In case the mouse leaves the calendar while dragging
       onMouseUp={handleMouseUp} // Ensure dragging stops when mouse is released
     >
       {daysOfWeek.map((day) => (
-        <div key={day} className="mb-5">
+        <div key={day} className="self-center mb-5">
           <h3 className="text-base mb-2 dark:text-white">{day}</h3>
           <div className="flex flex-wrap">
             {timeSlots.map((hour) => {
