@@ -7,8 +7,7 @@ export const createUser = async (userData) => {
     const newUser = {
       _id: userData.userId, // Use Firebase ID as MongoDB document ID
       name: userData.name,
-      // User Type is set to student by default
-      // userType: "student",
+      userType: userData.userType,
     };
     const result = await userCollection.insertOne(newUser);
     return result;

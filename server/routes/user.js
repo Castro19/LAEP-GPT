@@ -21,11 +21,14 @@ router.post("/signup", async (req, res) => {
     if (existingUser) {
       return res.status(200).send("User already exists");
     }
-
+    // FIX: [userType] Find userType from database
     console.log("Adding user to database");
+    const userType = "student";
+
     const result = await addUser({
       userId,
       name,
+      userType,
     });
     const userResponse = {
       ...result,

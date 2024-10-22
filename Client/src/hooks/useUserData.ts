@@ -47,6 +47,12 @@ export function useUserData() {
     }
   };
 
+  const handleShareData = (value: boolean) => {
+    if (userData) {
+      dispatch(updateUserData({ canShareData: value }));
+    }
+  };
+
   const handleSave = () => {
     if (userData) {
       dispatch(updateUserProfile(userData));
@@ -61,6 +67,7 @@ export function useUserData() {
     handleRemoveInterest,
     handleChange,
     handleAvailabilityChange,
+    handleShareData,
     handleSave,
   };
 }

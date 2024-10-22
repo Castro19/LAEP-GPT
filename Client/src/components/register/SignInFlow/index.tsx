@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons for arrows
 import { useUserData } from "@/hooks/useUserData";
 
-const signInFlowSteps = ["about-me", "interests", "availability"];
+const signInFlowSteps = ["about-me", "interests", "availability", "terms"];
 
 const SignInFlow = () => {
   const { currentUser } = useAppSelector((state) => state.auth);
@@ -34,6 +34,10 @@ const SignInFlow = () => {
       case "availability":
         setTitle("When are you available?");
         setDescription("Tell us when you're available");
+        break;
+      case "terms":
+        setTitle("Terms of Agreement");
+        setDescription("Please read and accept the terms of agreement");
         break;
       default:
         setTitle("Welcome!");
