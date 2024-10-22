@@ -5,15 +5,16 @@ import WeeklyCalendar from "../../components/register/WeeklyCalendar";
 import { useUserData } from "@/hooks/useUserData";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import InterestDropdown from "@/components/register/InterestDropdown";
+import Terms from "@/components/register/SignInFlow/Terms";
 
 export const labelStyle = "underline text-lg self-center";
 
 function ProfilePage() {
-  const { currentUser } = useAppSelector((state) => state.auth);
+  const { currentUser, userType } = useAppSelector((state) => state.auth);
 
   const navigate = useNavigate();
 
-  const { userData, handleSave } = useUserData();
+  const { handleSave } = useUserData();
 
   const handleBackToChat = () => {
     navigate("/chat");
@@ -41,7 +42,7 @@ function ProfilePage() {
           <LabelInputContainer>
             <Label className={labelStyle}>User Type</Label>
             <p className="text-sm text-gray-900 dark:text-gray-100 self-center">
-              {userData?.userType || "N/A"}
+              {userType || "N/A"}
             </p>
           </LabelInputContainer>
 
@@ -53,6 +54,8 @@ function ProfilePage() {
           </LabelInputContainer>
           <AboutMe />
           <InterestDropdown />
+          <Terms />
+
           <div className="flex flex-col">
             <button
               onClick={handleSave}

@@ -18,9 +18,8 @@ const initialState: AuthState = {
   userLoggedIn: false,
   loading: true,
   registerError: null,
-  userType: null,
-  availability: null,
   isNewUser: undefined,
+  userType: "student",
   userData: null,
 };
 
@@ -57,13 +56,15 @@ export const listenToAuthChanges = createAsyncThunk<
   }
   authListenerUnsubscribe = onAuthStateChanged(auth, async (user) => {
     if (user) {
-      let userType = null;
+      let userType = "student";
       const userId = user.uid; // Use user.uid instead of getState().auth
       let userData: MyUserInfo | null = null;
+      updateUserProfile;
       // fetch user data from MongoDB database
       try {
         const response = await fetch(`http://localhost:4000/users/${userId}`);
         const data = await response.json();
+        console.log("DATA: ", data);
         userType = data.userType;
         userData = data;
       } catch (error) {
@@ -97,10 +98,9 @@ export const updateUserProfile = createAsyncThunk<
   {
     availability?: Availability;
     bio?: string;
-    canShareData?: boolean;
+    canShareData: boolean;
     interests?: string[];
     major?: string;
-    userType?: string;
     year?: string;
   }, // Add availability and about here
   { dispatch: AppDispatch }
@@ -119,7 +119,6 @@ export const updateUserProfile = createAsyncThunk<
       },
       body: JSON.stringify(updatedInfo),
     });
-    // Optionally update the userData in the store
     dispatch(setUserData(updatedInfo));
   } catch (error) {
     console.error("Failed to update user profile:", error);
@@ -144,6 +143,7 @@ export const signInWithMicrosoft = createAsyncThunk<
       const userData = {
         userId: user.uid,
         name: user.displayName,
+        email: user.email,
       };
 
       // Send user information to database
@@ -155,7 +155,7 @@ export const signInWithMicrosoft = createAsyncThunk<
           user: user.providerData[0],
           userId: user.uid,
           userLoggedIn: true,
-          userType: null,
+          userType: userResponse.userType,
         })
       );
       if (userResponse.isNewUser) {
@@ -190,7 +190,7 @@ const authSlice = createSlice({
         user: UserInfo;
         userId: string | null;
         userLoggedIn: boolean;
-        userType: string | null;
+        userType: string;
       }>
     ) {
       const { user, userId, userLoggedIn, userType } = action.payload;

@@ -35,7 +35,13 @@ const AboutMe = () => {
         <RadioGroup
           value={userData?.year || ""}
           onValueChange={(value) =>
-            dispatch(authActions.setUserData({ ...userData, year: value }))
+            dispatch(
+              authActions.setUserData({
+                ...userData,
+                year: value,
+                canShareData: userData?.canShareData || false,
+              })
+            )
           }
         >
           <div className="flex flex-row space-x-4 flex-wrap justify-center gap-y-2">
