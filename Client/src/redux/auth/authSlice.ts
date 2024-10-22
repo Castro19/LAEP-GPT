@@ -64,6 +64,7 @@ export const listenToAuthChanges = createAsyncThunk<
       try {
         const response = await fetch(`http://localhost:4000/users/${userId}`);
         const data = await response.json();
+        console.log("DATA: ", data);
         userType = data.userType;
         userData = data;
       } catch (error) {
@@ -118,7 +119,6 @@ export const updateUserProfile = createAsyncThunk<
       },
       body: JSON.stringify(updatedInfo),
     });
-    // Optionally update the userData in the store
     dispatch(setUserData(updatedInfo));
   } catch (error) {
     console.error("Failed to update user profile:", error);
@@ -155,7 +155,7 @@ export const signInWithMicrosoft = createAsyncThunk<
           user: user.providerData[0],
           userId: user.uid,
           userLoggedIn: true,
-          userType: userResponse.userType || "student", // FIX: [userType] Return role type from database
+          userType: userResponse.userType,
         })
       );
       if (userResponse.isNewUser) {

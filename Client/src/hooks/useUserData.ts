@@ -1,8 +1,13 @@
 // useUserData.ts
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { updateUserProfile, updateUserData } from "../redux/auth/authSlice";
+import {
+  updateUserProfile,
+  updateUserData,
+  setUserData,
+} from "../redux/auth/authSlice";
 import { MyUserInfo, Availability } from "../types";
 import { RootState } from "@/redux/store";
+import { useEffect } from "react";
 
 export function useUserData() {
   const dispatch = useAppDispatch();
@@ -10,6 +15,19 @@ export function useUserData() {
     (state: RootState) => state.auth
   );
 
+  useEffect(() => {
+    if (!userData) {
+      dispatch(
+        setUserData({
+          bio: "",
+          year: "",
+          interests: [],
+          availability: {},
+          canShareData: false,
+        })
+      );
+    }
+  }, [dispatch, userData]);
   const handleAddInterest = (value: string) => {
     if (userData) {
       if (userData?.interests) {

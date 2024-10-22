@@ -5,30 +5,30 @@ import {
   updateUser,
   getAllUsers,
 } from "../db/models/user/userServices.js";
-
+import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices.js";
 const router = express.Router();
 
 // Route to add a new user
 router.post("/signup", async (req, res) => {
   try {
-    const { userId, name } = req.body;
+    const { userId, name, email } = req.body;
     if (!userId) {
       return res.status(400).send("Firebase User ID is required");
     }
-    console.log("USER ID: ", userId);
+    const userType = await getSignupAccessByEmail(email);
+
     // Check if user already exists
     const existingUser = await getUserByFirebaseId(userId);
     if (existingUser) {
-      return res.status(200).send("User already exists");
+      return res.status(200).json({ userType });
     }
-    // FIX: [userType] Find userType from database
-    console.log("Adding user to database");
-    const userType = "student";
 
+    console.log("Adding user to database");
     const result = await addUser({
       userId,
       name,
       userType,
+      email,
     });
     const userResponse = {
       ...result,

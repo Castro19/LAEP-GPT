@@ -5,8 +5,11 @@ const signupAccessCollection = db.collection("signupAccess");
 export const getSignupAccessByEmail = async (email) => {
   try {
     const signupAccessEntry = await signupAccessCollection.findOne({ email });
-    return signupAccessEntry;
+    console.log("Signup access entry: ", signupAccessEntry);
+    return signupAccessEntry.role;
   } catch (error) {
-    throw new Error("Error retrieving signup access entry: " + error.message);
+    console.log("No sign up access entry found");
+    const defaultRole = "student";
+    return defaultRole;
   }
 };

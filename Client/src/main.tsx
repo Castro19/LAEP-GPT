@@ -38,7 +38,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/sign-in-flow",
-    element: <SignInFlow />,
+    element: (
+      <ProtectedRoute>
+        <SignInFlow />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "about-me",
