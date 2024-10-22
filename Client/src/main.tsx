@@ -16,13 +16,12 @@ import GPTLayout from "./components/layout/gpt/GPTLayout.js";
 // Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
 import "./index.css";
+import SignInFlow from "./components/register/SignInFlow";
+import AboutMe from "./components/register/SignInFlow/AboutMe.tsx";
+import WeeklyCalendar from "./components/register/WeeklyCalendar.tsx";
+import InterestDropdown from "./components/register/InterestDropdown.tsx";
 
 const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <Register />,
-    errorElement: <ErrorPage />,
-  },
   {
     path: "/",
     element: (
@@ -30,6 +29,29 @@ const router = createBrowserRouter([
         <ChatPage />
       </ProtectedRoute>
     ),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/login",
+    element: <Register />,
+  },
+  {
+    path: "/sign-in-flow",
+    element: <SignInFlow />,
+    children: [
+      {
+        path: "about-me",
+        element: <AboutMe />,
+      },
+      {
+        path: "interests",
+        element: <InterestDropdown />,
+      },
+      {
+        path: "availability",
+        element: <WeeklyCalendar />,
+      },
+    ],
   },
   {
     path: "/:userId",

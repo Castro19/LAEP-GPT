@@ -1,10 +1,14 @@
 // TitleCard.tsx
+type TitleCardProps = {
+  title: string;
+  description: string;
+};
 
-const TitleCard = () => {
+const TitleCard = ({ title, description }: TitleCardProps) => {
   return (
     <div className="w-1/2 p-8 flex flex-col justify-center items-start bg-gradient-to-b from-indigo-500 to-indigo-700 text-white">
-      <h1 className="text-4xl font-bold mb-3">Welcome!</h1>
-      <p className="mb-5">Sign in & get access to the AI4ESJ Chatbot!</p>
+      <h1 className="text-4xl font-bold mb-3">{title}</h1>
+      <p className="mb-5">{description}</p>
       {/* LEGACY GUEST SIGN IN BUTTON
       <button
         onClick={() => navigate("/")}

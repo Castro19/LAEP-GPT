@@ -8,7 +8,7 @@ import {
 import { registerUserToDB } from "./crudAuth";
 import { auth } from "@/firebase";
 import { RootState, AppDispatch } from "../store";
-import { AuthState, Availability } from "@/types";
+import { AuthState, Availability, MyUserInfo } from "@/types";
 import axios from "axios";
 
 // Initial state for the auth slice
@@ -21,6 +21,7 @@ const initialState: AuthState = {
   userType: null,
   availability: null,
   isNewUser: undefined,
+  userData: null,
 };
 
 // Register the listener to track auth state changes
@@ -58,11 +59,13 @@ export const listenToAuthChanges = createAsyncThunk<
     if (user) {
       let userType = null;
       const userId = user.uid; // Use user.uid instead of getState().auth
+      let userData: MyUserInfo | null = null;
       // fetch user data from MongoDB database
       try {
         const response = await fetch(`http://localhost:4000/users/${userId}`);
         const data = await response.json();
         userType = data.userType;
+        userData = data;
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -80,6 +83,7 @@ export const listenToAuthChanges = createAsyncThunk<
           userType,
         })
       );
+      dispatch(setUserData(userData));
     } else {
       dispatch(clearAuthState());
     }
@@ -96,6 +100,7 @@ export const updateUserProfile = createAsyncThunk<
     canShareData?: boolean;
     interests?: string[];
     major?: string;
+    userType?: string;
     year?: string;
   }, // Add availability and about here
   { dispatch: AppDispatch }
@@ -114,6 +119,8 @@ export const updateUserProfile = createAsyncThunk<
       },
       body: JSON.stringify(updatedInfo),
     });
+    // Optionally update the userData in the store
+    dispatch(setUserData(updatedInfo));
   } catch (error) {
     console.error("Failed to update user profile:", error);
   } finally {
@@ -192,6 +199,14 @@ const authSlice = createSlice({
       state.userLoggedIn = userLoggedIn;
       state.userType = userType;
     },
+    setUserData(state, action: PayloadAction<MyUserInfo | null>) {
+      state.userData = action.payload;
+    },
+    updateUserData(state, action: PayloadAction<Partial<MyUserInfo>>) {
+      if (state.userData) {
+        state.userData = { ...state.userData, ...action.payload };
+      }
+    },
     setIsNewUser(state, action: PayloadAction<boolean | undefined>) {
       state.isNewUser = action.payload;
     },
@@ -212,6 +227,8 @@ const authSlice = createSlice({
 
 export const {
   setAuthState,
+  setUserData,
+  updateUserData,
   setIsNewUser,
   clearAuthState,
   setLoading,

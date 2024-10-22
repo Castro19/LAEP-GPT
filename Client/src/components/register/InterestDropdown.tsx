@@ -6,24 +6,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUserData } from "@/hooks/useUserData";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
-type InterestDropdownProps = {
-  name: string;
-  labelText: string;
-  // eslint-disable-next-line no-unused-vars
-  handleFunction: (value: string) => void;
-  listOfItems: string[];
-  selectedValue: string;
-};
+const underlineStyle = "underline";
 
-const InterestDropdown = ({
-  name,
-  handleFunction,
-  listOfItems,
-  selectedValue,
-}: InterestDropdownProps): JSX.Element => {
+const csInterests = [
+  "Artificial Intelligence",
+  "Cybersecurity",
+  "Data Science",
+  "Software Engineering",
+  "Web Development",
+  "Mobile Development",
+  "Game Development",
+  "Machine Learning",
+  "Computer Vision",
+  "Natural Language Processing",
+  "Virtual Reality",
+  "Robotics",
+  "Blockchain",
+  "Quantum Computing",
+  "Augmented Reality",
+  "3D Printing",
+];
+
+const name = "interests";
+
+const InterestDropdown = (): JSX.Element => {
   const [position, setPosition] = useState<"item-aligned" | "popper">("popper");
-
+  const { userData, handleAddInterest, handleRemoveInterest } = useUserData();
+  console.log("USER DATA", userData);
   useEffect(() => {
     const adjustDropdownPosition = () => {
       const selectElem = document.getElementById(name);
@@ -45,38 +58,56 @@ const InterestDropdown = ({
     return () => {
       window.removeEventListener("resize", adjustDropdownPosition);
     };
-  }, [name]);
+  }, []);
 
   return (
     <>
-      <Select
-        onValueChange={(value) => handleFunction(value)}
-        value={selectedValue} // Controlled component
-      >
-        <SelectTrigger id={name}>
-          <SelectValue
-            placeholder="Select an Interest"
-            style={{ color: "black" }}
-          />
-        </SelectTrigger>
-        <SelectContent
-          position={position}
-          data-testid={`home-dropdown-${name}-list`}
+      <LabelInputContainer>
+        <Label className={underlineStyle}>Interests</Label>
+        <Select
+          onValueChange={(value) => handleAddInterest(value)}
+          value={""} // Controlled component
         >
-          {listOfItems.map((value: string, index: number) => (
-            <SelectItem
-              key={index}
-              value={value}
-              onClick={() => handleFunction(value)}
-              data-testid={`home-dropdown-${name}-item-${index}`}
-            >
-              {value}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectTrigger id={name}>
+            <SelectValue
+              placeholder="Select an Interest"
+              style={{ color: "black" }}
+            />
+          </SelectTrigger>
+          <SelectContent
+            position={position}
+            data-testid={`home-dropdown-${name}-list`}
+          >
+            {csInterests.map((value: string, index: number) => (
+              <SelectItem
+                key={index}
+                value={value}
+                onClick={() => handleAddInterest(value)}
+                data-testid={`home-dropdown-${name}-item-${index}`}
+              >
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </LabelInputContainer>
+      <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap" }}>
+        {userData?.interests?.map((interest: string, index: number) => (
+          <Button
+            key={index}
+            onClick={() => handleRemoveInterest(interest)}
+            style={{ margin: "5px" }}
+          >
+            {interest} ✕
+          </Button>
+        ))}
+      </div>
     </>
   );
 };
 
 export default InterestDropdown;
+
+const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex flex-col space-y-2 mb-4">{children}</div>
+);
