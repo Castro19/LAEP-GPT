@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSpinner } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
+import { Loader2 } from "lucide-react";
+
 import { FileUpload } from "../ui/file-upload";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
@@ -11,6 +13,7 @@ import {
   resetInputAndScrollToBottom,
 } from "./helpers/formatHelper";
 import { v4 as uuidv4 } from "uuid";
+import { Button } from "../ui/button";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -121,18 +124,18 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           maxLength={2000}
           onChange={handleInputChange}
         />
-        <button className="p-[3px] relative" disabled={isSending}>
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-800 rounded-lg" />
-          <div
-            className={`px-8 py-2 bg-zinc-900 rounded-[6px] relative group transition duration-200 text-white ${
-              isSending
-                ? "bg-gray-400 cursor-not-allowed flex justify-center"
-                : "hover:bg-transparent"
-            }`}
-          >
-            {isSending ? <FaSpinner className="animate-spin" /> : "Send"}
-          </div>
-        </button>
+        <Button
+          className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
+          type="submit"
+          variant="outline"
+          disabled={isSending}
+        >
+          {isSending ? (
+            <Loader2 className="h-5 w-5 animate-spin " />
+          ) : (
+            <IoSend className="text-2xl" />
+          )}
+        </Button>
       </form>
     </div>
   );
