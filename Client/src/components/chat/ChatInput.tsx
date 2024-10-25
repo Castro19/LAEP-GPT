@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
+import { FileUpload } from "../ui/file-upload";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
@@ -19,7 +20,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const dispatch = useAppDispatch();
 
   const currentModel = useAppSelector((state) => state.gpt.currentModel);
-  const { isNewChat, currentChatId, currentFile, error } = useAppSelector(
+  const { isNewChat, currentChatId, error } = useAppSelector(
     (state) => state.message
   );
   const userId = useAppSelector((state) => state.auth.userId);
@@ -27,6 +28,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const textareaRef = useRef(null);
 
@@ -59,13 +61,13 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       await dispatch(
         messageActions.fetchBotResponse({
           currentModel,
-          file: currentFile, //add pdf file
+          file: selectedFile, //add pdf file
           msg,
           currentChatId: isNewChat ? newLogId : currentChatId,
           userId: userId ? userId : "",
         })
       ).unwrap();
-      dispatch(messageActions.setCurrentFile(null)); // Clear file in Redux
+      setSelectedFile(null);
       if (isNewChat) {
         dispatch(messageActions.setCurrentChatId(newLogId));
         navigate(`/${userId}/chat/${newLogId}`);
@@ -96,13 +98,6 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
     }
   };
 
-  //add function to handle file change
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      messageActions.setCurrentFile(e.target.files ? e.target.files[0] : null)
-    ); // Use Redux action
-  };
-
   return (
     <div className="w-full p-4 bg-white dark:bg-gray-800 sticky bottom-0">
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
@@ -112,11 +107,9 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         </div>
       )}
       <form onSubmit={handleSubmit} className="flex items-end gap-2">
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={handleFileChange}
-          className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+        <FileUpload
+          onChange={(file) => setSelectedFile(file)}
+          selectedFile={selectedFile}
         />
         <textarea
           ref={textareaRef}

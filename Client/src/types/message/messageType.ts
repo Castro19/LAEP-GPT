@@ -19,7 +19,6 @@ export interface MessageSliceType {
   currentChatId: string | null; // The log Id associated with the chat
   isNewChat: boolean; // If its a new chat or not
   msgList: MessageObjType[]; // The entire list of messages associated with a chat log
-  currentFile: File | null; // The current file the user is uploading
   isLoading: boolean; // If the message is currently being streamed out
   error: string | null; // The error for the chat message
 }
