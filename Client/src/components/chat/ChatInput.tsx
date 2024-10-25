@@ -56,7 +56,6 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
-      console.log("Current user sending message: ", userId);
       await dispatch(
         messageActions.fetchBotResponse({
           currentModel,
@@ -67,8 +66,6 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         })
       ).unwrap();
       dispatch(messageActions.setCurrentFile(null)); // Clear file in Redux
-      console.log("Current Model: ", currentModel);
-      console.log("ISNEWCHAT: ", isNewChat);
       if (isNewChat) {
         dispatch(messageActions.setCurrentChatId(newLogId));
         navigate(`/${userId}/chat/${newLogId}`);
@@ -82,7 +79,6 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           })
         );
       } else {
-        console.log("CCID: ", currentChatId);
         if (currentChatId) {
           dispatch(
             logActions.updateLog({

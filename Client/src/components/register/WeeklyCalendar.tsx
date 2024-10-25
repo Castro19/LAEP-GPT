@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUserData } from "@/hooks/useUserData";
+import { useAppSelector } from "@/redux";
 
 const daysOfWeek = [
   "Monday",
@@ -86,7 +87,8 @@ const formatTime = (hour: number) => {
 };
 const WeeklyCalendar = () => {
   const [isDragging, setIsDragging] = useState(false);
-  const { userData, handleAvailabilityChange } = useUserData();
+  const { handleAvailabilityChange } = useUserData();
+  const userData = useAppSelector((state) => state.user.userData);
   const [draggingToSelect, setDraggingToSelect] = useState<boolean | null>(
     null
   );

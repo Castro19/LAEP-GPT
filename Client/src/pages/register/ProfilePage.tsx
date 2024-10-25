@@ -10,8 +10,8 @@ import Terms from "@/components/register/SignInFlow/Terms";
 export const labelStyle = "underline text-lg self-center";
 
 function ProfilePage() {
-  const { currentUser, userType } = useAppSelector((state) => state.auth);
-
+  const { userType } = useAppSelector((state) => state.auth);
+  const { userData } = useAppSelector((state) => state.user);
   const navigate = useNavigate();
 
   const { handleSave } = useUserData();
@@ -30,13 +30,13 @@ function ProfilePage() {
           <LabelInputContainer>
             <Label className={labelStyle}>Name</Label>
             <p className="text-sm text-gray-900 dark:text-gray-100 self-center">
-              {currentUser?.displayName || "N/A"}
+              {userData?.name || "N/A"}
             </p>
           </LabelInputContainer>
           <LabelInputContainer>
             <Label className={labelStyle}>Email</Label>
             <p className="text-sm text-gray-900 dark:text-gray-100 self-center">
-              {currentUser?.email || "N/A"}
+              {userData?.email || "N/A"}
             </p>
           </LabelInputContainer>
           <LabelInputContainer>

@@ -1,69 +1,34 @@
 import { ReactNode, useEffect } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { authActions, useAppDispatch, useAppSelector } from "@/redux";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/redux";
 
 type ProtectedRouteProps = {
   children: ReactNode;
 };
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { userLoggedIn, loading, isNewUser } = useAppSelector(
+    (state) => state.auth
+  );
   const navigate = useNavigate();
-  const location = useLocation();
-  const { userId: urlUserId } = useParams<{ userId: string }>();
-  const dispatch = useAppDispatch();
-  const { userLoggedIn, currentUser, loading, userId, isNewUser } =
-    useAppSelector((state) => state.auth);
-
-  console.log("CURRENT USER: ", currentUser);
 
   useEffect(() => {
     if (loading) {
-      console.log("ProtectedRoute: Auth state is loading");
+      // Optionally, render a loading indicator or return null
+      console.log("Loading indicator displayed");
       return;
     }
-
-    if (!userLoggedIn || !currentUser) {
-      console.log("ProtectedRoute: User not logged in, redirecting to login");
+    // App is not loading and user is not authenticated
+    else if (!userLoggedIn) {
+      // User is not authenticated, redirect to login page
       navigate("/login", { replace: true });
-      return;
+    } else if (isNewUser) {
+      // User is new, redirect to onboarding page
+      navigate("/sign-in-flow/about-me", { replace: true });
     }
+  }, [userLoggedIn, isNewUser, navigate, loading]); // Add dependencies
 
-    if (isNewUser) {
-      // Swap for non-testing purposes
-      console.log("ProtectedRoute: User is new, redirecting to onboarding");
-      navigate(`/sign-in-flow/about-me`, { replace: true });
-      dispatch(authActions.setIsNewUser(undefined)); // Reset the flag
-      return;
-    }
-
-    if (location.pathname.startsWith("/profile/")) {
-      console.log("ProtectedRoute: On profile page");
-      if (urlUserId !== userId) {
-        console.log(
-          "ProtectedRoute: Unauthorized profile access, redirecting to own profile"
-        );
-        navigate(`/profile/edit/${userId}`, { replace: true });
-        return;
-      }
-    } else if (urlUserId && urlUserId !== userId) {
-      console.log(
-        "ProtectedRoute: URL userId does not match logged-in userId, redirecting"
-      );
-      navigate(`/${userId}`, { replace: true });
-      return;
-    }
-  }, [
-    loading,
-    userLoggedIn,
-    currentUser,
-    isNewUser,
-    userId,
-    urlUserId,
-    location.pathname,
-    navigate,
-    dispatch,
-  ]);
-
+  // User is authenticated, render the protected content
   return <>{children}</>;
 };
 

@@ -55,16 +55,12 @@ router.post(
     const file = req.file;
 
     if (file) {
-      console.log("FILE FROM CLIENT: ", file);
       try {
         userFile = await handleFileUpload(file);
       } catch (error) {
         console.error("Error uploading file to Azure Blob Storage:", error);
       }
     }
-
-    console.log("MESSAGE: ", message);
-    console.log("USER FILE: ", userFile);
 
     const isMultiAgentModel = model.title === "Enhanced ESJ Assistant";
 
@@ -207,17 +203,12 @@ router.post(
 
       // Fetch the assistant ID with the model from gpt collection
       let assistant_id = fetchedModel.assistantId;
-      console.log("ASSISTANT: ", assistant_id);
-
-      console.log("CHAT ID: ", chatId);
       let threadId = null;
       let vectorStoreId = null;
       const Ids = await fetchIds(chatId);
       if (Ids) {
         ({ threadId, vectorStoreId } = await fetchIds(chatId));
       }
-      console.log("VECTOR ID: ", vectorStoreId);
-      console.log("THREAD ID: ", threadId);
 
       // New Chat: Create thread and insert threadID here
       if (threadId === null) {
@@ -228,16 +219,12 @@ router.post(
           name: String(threadId),
         });
 
-        console.log(vectorStore);
-
         vectorStoreId = vectorStore.id;
 
-        const addedThreadId = await addThread(chatId, threadId, vectorStoreId);
-        console.log(addedThreadId);
+        await addThread(chatId, threadId, vectorStoreId);
 
         // FIX: if matching assistant, add teacher file
         if (assistant_id === "asst_n0Jkta8iZlD573iR79IaJ6fi") {
-          console.log("TRUE");
           //get teacher file path
           const __filename = fileURLToPath(import.meta.url);
           const __dirname = path.dirname(__filename);
@@ -255,8 +242,6 @@ router.post(
           });
         }
       }
-      console.log("THREAD ID: ", threadId);
-      console.log("VECTOR STORE ID: ", vectorStoreId);
 
       //add file to vector store
       const vectoreStorefile = userFile
@@ -264,12 +249,11 @@ router.post(
             file_id: userFile.id,
           })
         : null;
-      console.log("VECTOR STORE FILE");
-      console.log(vectoreStorefile);
+
+      console.log("Vector Store File: ", vectoreStorefile);
 
       const vectorStoreFiles =
         await openai.beta.vectorStores.files.list(vectorStoreId);
-      console.log("VECTOR STORE FILES: ", vectorStoreFiles);
 
       //update the assisstant to access resources if user submits file
       if (vectorStoreFiles.data.length > 0) {
@@ -287,8 +271,6 @@ router.post(
       } else {
         await addMessageToThread(threadId, "user", message, null);
       }
-
-      //console.log("Thread Messages: ", threadMessages);
       // Run Thread
       // Start the stream from OpenAI's API
 
@@ -303,8 +285,6 @@ router.post(
       });
 
       run.on("textDelta", (textDelta) => {
-        //
-        // console.log(textDelta.value); // Optionally log to server console
         res.write(textDelta.value);
       });
 
@@ -331,7 +311,6 @@ router.post("/title", async (req, res) => {
 
     const contentStr =
       "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
-    // console.log("Bot Instructions: ", contentStr);
     // model: "gpt-3.5-turbo-0125",
     // model: "gpt-4-0613",
     const chatCompletion = await openai.chat.completions.create({
@@ -347,7 +326,6 @@ router.post("/title", async (req, res) => {
 
     // Send the ChatGPT response back to the client
     const title = chatCompletion.choices[0].message.content;
-    console.log("TITLE: ", title);
     res.json({ title: title });
   } catch (error) {
     console.error("Error calling OpenAI:", error);

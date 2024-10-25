@@ -2,8 +2,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "../../../components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserData } from "@/hooks/useUserData";
-import { authActions, useAppDispatch } from "@/redux";
+import { userActions, useAppDispatch, useAppSelector } from "@/redux";
 import { labelStyle } from "../../../pages/register/ProfilePage";
+import { RootState } from "@/redux/store";
 
 const years = [
   { value: "1", label: "Year 1" },
@@ -15,7 +16,8 @@ const years = [
 ];
 
 const AboutMe = () => {
-  const { userData, handleChange } = useUserData();
+  const { handleChange } = useUserData();
+  const { userData } = useAppSelector((state: RootState) => state.user);
   const dispatch = useAppDispatch();
 
   return (
@@ -36,10 +38,17 @@ const AboutMe = () => {
           value={userData?.year || ""}
           onValueChange={(value) =>
             dispatch(
-              authActions.setUserData({
+              userActions.updateUserData({
                 ...userData,
                 year: value,
-                canShareData: userData?.canShareData || false,
+                canShareData: userData?.canShareData ?? false,
+                availability: userData?.availability ?? null,
+                bio: userData?.bio ?? null,
+                interests: userData?.interests ?? null,
+                name: userData?.name ?? null,
+                email: userData?.email ?? null,
+                major: userData?.major ?? null,
+                userId: userData?.userId ?? "",
               })
             )
           }

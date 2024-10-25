@@ -66,7 +66,6 @@ export async function updateLogItem(logData: UpdateLogData) {
       throw new Error(`Error: ${response.status}`);
     }
     const data = await response.json();
-    console.log("UPDATED DATA: ", data);
     return data;
   } catch (error) {
     console.error("Failed to update chatlog on server side: ", error);
@@ -81,7 +80,6 @@ export async function deleteLogItem({
   logId: string;
   userId: string;
 }) {
-  console.log("UID: ", userId);
   try {
     const response = await fetch(
       `http://localhost:4000/chatLogs/${userId}/${logId}`,
@@ -89,15 +87,14 @@ export async function deleteLogItem({
     );
     if (!response.ok) {
       const errorData = await response.json();
-      console.log(`Error: ${errorData}`);
+      console.error("Error: ", errorData);
       throw new Error(
         "Failed to reach server when deleting log: " + errorData.message
       );
     }
     const responseData = await response.json();
-    console.log("Response Data: ", responseData);
     return responseData;
   } catch (error) {
-    console.log(`Error: `, error);
+    console.error("Error: ", error);
   }
 }

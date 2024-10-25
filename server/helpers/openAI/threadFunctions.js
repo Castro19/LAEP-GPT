@@ -6,7 +6,7 @@ export async function createThread() {
     const messageThread = await openai.beta.threads.create();
     return messageThread;
   } catch (error) {
-    console.log("Error creating messageThread: ", error);
+    console.error("Error creating messageThread: ", error);
   }
 }
 //add fileId. fileId can be null if user does not submit file
@@ -48,6 +48,6 @@ export async function runThread(openai, threadId) {
     });
     return stream;
   } catch (error) {
-    console.log("Streaming output RUN Failed: ", error);
+    console.error("Streaming output RUN Failed: ", error);
   }
 }

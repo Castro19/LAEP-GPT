@@ -2,9 +2,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useUserData } from "@/hooks/useUserData";
 import { labelStyle } from "@/pages/register/ProfilePage";
+import { useAppSelector } from "@/redux";
 
 export default function Terms() {
-  const { userData, handleShareData } = useUserData();
+  const { handleShareData } = useUserData();
+  const userData = useAppSelector((state) => state.user.userData);
 
   const description =
     "By accepting these terms, you authorize us to share your data with other users to enhance your experience and facilitate connections within our platform.";

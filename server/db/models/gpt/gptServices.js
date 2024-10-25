@@ -48,7 +48,7 @@ export const fetchGPTs = async (userId) => {
     }));
     return gptList;
   } catch (error) {
-    console.log("CONSOLE LOG ERROR: ", error);
+    console.error("CONSOLE LOG ERROR: ", error);
   }
 };
 
@@ -58,7 +58,7 @@ export const getGPT = async (gptId) => {
     const result = await gptModel.getGptById(gptId);
     return result;
   } catch (error) {
-    console.log("Error finding model: ", error);
+    console.error("Error finding model: ", error);
   }
 };
 // Delete
@@ -67,7 +67,6 @@ export const deleteGpt = async (gptId) => {
     // 1. Fetch the assistant id from databse with given gpt ID
     const assistantResponse = await gptModel.findAsstId(gptId);
     const assistantId = assistantResponse.assistantId;
-    console.log("ASST ID: ", assistantId);
     // 2. Delete the assistant id from openai w/ api
     await deleteAssistant(assistantId);
     // 3. Delete the row from database collection

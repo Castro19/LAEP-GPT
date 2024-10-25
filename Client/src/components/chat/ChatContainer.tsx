@@ -5,7 +5,6 @@ import { useAppSelector } from "@/redux";
 
 const ChatContainer = () => {
   const msgList = useAppSelector((state) => state.message.msgList);
-  const logList = useAppSelector((state) => state.log.logList);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,10 +13,6 @@ const ChatContainer = () => {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }, [msgList]);
-
-  useEffect(() => {
-    console.log("Log List: ", logList);
-  }, [logList]);
 
   return (
     <div className="flex flex-col h-screen justify-between bg-white dark:bg-gray-800 ">

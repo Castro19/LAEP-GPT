@@ -13,9 +13,6 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   const navigate = useNavigate();
   const userId = useAppSelector((state) => state.auth.userId);
   const { currentModel, gptList } = useAppSelector((state) => state.gpt);
-
-  console.log("Received GPT List in ModeDropDown:", gptList);
-
   const isDropdownVisible = useAppSelector(
     (state) => state.layout.isDropdownVisible
   );
@@ -34,13 +31,9 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
 
   // Transform gptList to prioritize 'name' over 'title'
   const transformedGptList = gptList.map((option) => {
-    console.log("Option Data Before Transformation:", option);
-
     // Prioritize displaying 'name', fallback to 'title' if 'name' is not available
-    const title = option.name || option.title || "Unnamed Assistant";
-    const description = option.description || "No description available";
-
-    console.log("Resolved Title After Transformation:", title);
+    const title = option.title || "Unnamed Assistant";
+    const description = option.desc || "No description available";
 
     return {
       id: option.id,

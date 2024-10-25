@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import ModeDropDown from "../customGPT/ModeDropDown";
 import Sidebar from "./sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
@@ -24,13 +24,14 @@ const ChatHeader = () => {
   );
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined);
+  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(
+    undefined
+  );
 
   const handleModeSelection = (modelId: string | undefined) => {
-    console.log(modelId);
-
     if (modelId) {
-      if (modelId === '66ec7a68194da294fe19139e') {  // if multi-agent model is selected
+      if (modelId === "66ec7a68194da294fe19139e") {
+        // FIX: Remove hard coded value of multi-agent model is selected
         setSelectedModelId(modelId);
         dispatch(layoutActions.toggleDropdown(false));
         setIsPopupVisible(true);
@@ -74,8 +75,10 @@ const ChatHeader = () => {
           <div className="dark:bg-zinc-800 p-6 rounded shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Notice</h2>
             <p className="mb-4">
-              The enhanced ethics and social justice assistant uses a multi-agent model to improve the quality of responses, <br>
-              </br>but may also take up to a minute to process each message. Do you wish to continue?
+              The enhanced ethics and social justice assistant uses a
+              multi-agent model to improve the quality of responses, <br></br>
+              but may also take up to a minute to process each message. Do you
+              wish to continue?
             </p>
             <div className="flex justify-end">
               <button

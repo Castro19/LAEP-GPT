@@ -3,9 +3,10 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
 import { connectToDb } from "./db/connection.js";
-
+import { readFileSync } from "fs";
+import admin from "firebase-admin";
+import cookieParser from "cookie-parser";
 // Routes
 import llms from "./routes/llm.js";
 import users from "./routes/user.js";
@@ -15,20 +16,35 @@ import signupAccessRouter from "./routes/signupAccess.js";
 import assistants from "./routes/assistants.js";
 import generateTeacherFileRoute from "./routes/teacherFile.js";
 import fileOperations from "./routes/fileOperations.js";
-
+import authRouter from "./routes/auth.js";
 // LLM API
 import OpenAI from "openai";
 
 // Initialize express app
 const app = express();
 const port = process.env.PORT || 4000;
+const serviceAccount = JSON.parse(
+  readFileSync("./helpers/firebase/laep-firebase.json", "utf8")
+);
 
 // Middleware
-app.use(bodyParser.json()); // Parses JSON bodies
-app.use(cors()); // Enable CORS
-app.use(express.text()); // Allows handling of text/plain bodies (if needed)
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+); // Enable CORS
+app.use(express.json()); // Parses JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
+app.use(express.text({ type: "text/plain" }));
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 // Routes
+app.use("/auth", authRouter);
 app.use("/llms", llms);
 app.use("/users", users);
 app.use("/chatLogs", chatLogs);

@@ -9,6 +9,7 @@ export { gptReducer } from "./gpt/gptSlice";
 export { layoutReducer } from "./layout/layoutSlice.ts";
 export { logReducer } from "./log/logSlice.ts";
 export { authReducer } from "./auth/authSlice.ts";
+export { userReducer } from "./user/userSlice.ts";
 
 // Export all actions for easy dispatching in components
 export * as messageActions from "./message/messageSlice.ts";
@@ -16,6 +17,7 @@ export * as gptActions from "./gpt/gptSlice";
 export * as layoutActions from "./layout/layoutSlice.ts";
 export * as logActions from "./log/logSlice.ts";
 export * as authActions from "./auth/authSlice.ts";
+export * as userActions from "./user/userSlice.ts";
 // Custom hooks for using dispatch and selector with TypeScript
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "./store";

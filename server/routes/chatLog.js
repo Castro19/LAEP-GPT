@@ -31,8 +31,6 @@ router.post("/", async (req, res) => {
       timestamp,
       content,
     };
-    console.log("---------Creating the Log--------");
-    console.log("New Log in ChatLog.js: ", newLog._id);
     const result = await createLog(newLog);
     res.status(201).json(result);
   } catch (error) {
@@ -56,22 +54,15 @@ router.get("/:userId", async (req, res) => {
 // Retreive a specific Log: (Read)
 // FIX: Add in check for authorization
 router.get("/:userId/chat/:logId", async (req, res) => {
-  console.log(`Fetching log ${req.params.logId} for user ${req.params.userId}`);
   res.status(200).send(`Log ${req.params.logId} for user ${req.params.userId}`);
 });
 
 // Updating a Log: (Update)
 router.put("/", async (req, res) => {
   const { logId, firebaseUserId, content, timestamp } = req.body;
-  console.log("-----Updating the Log-------");
-  console.log("Log ID: ", logId);
-  console.log("Firebase User ID: ", firebaseUserId);
-  console.log("Content: ", content);
-  console.log("Timestamp: ", timestamp);
+
   try {
     const result = await updateLog(logId, firebaseUserId, content, timestamp);
-    // Log the response before sending
-    console.log("Response:", JSON.stringify(result));
 
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify(result));
@@ -84,24 +75,17 @@ router.put("/", async (req, res) => {
 // Deleting a Log
 router.delete("/:userId/:logId", async (req, res) => {
   const { logId, userId } = req.params;
-  console.log(`Deleting log ${logId} for user ${userId}`);
 
   try {
     const { threadId, vectorStoreId } = await fetchIds(logId);
     const vectorStoreFiles =
       await openai.beta.vectorStores.files.list(vectorStoreId);
     for (const file of vectorStoreFiles.data) {
-      const deletedFile = await openai.files.del(file.id);
-      console.log("File Deleted: ", deletedFile);
+      await openai.files.del(file.id);
     }
-    const deletedVectorStore = await openai.beta.vectorStores.del(
-      String(vectorStoreId)
-    );
+    await openai.beta.vectorStores.del(String(vectorStoreId));
     const response = await deleteLog(logId, userId);
     const deleteResponse = await deleteThreadById(threadId);
-    console.log("Response: ", response);
-    console.log("Deleted Response: ", deleteResponse);
-    console.log("Deleted Vector Store", deletedVectorStore);
     res.status(204).json({ response, deleteResponse }); // 204 No Content is typical for a delete operation.
   } catch (error) {
     console.error("Failed to Delete log: ", error);

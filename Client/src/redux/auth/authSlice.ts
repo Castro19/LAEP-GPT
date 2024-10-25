@@ -1,181 +1,114 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import {
-  UserInfo,
-  signInWithPopup,
-  onAuthStateChanged,
-  OAuthProvider,
-} from "firebase/auth";
-import { registerUserToDB } from "./crudAuth";
+import { signInWithPopup, OAuthProvider } from "firebase/auth";
+import { loginUser } from "./crudAuth";
 import { auth } from "@/firebase";
-import { RootState, AppDispatch } from "../store";
-import { AuthState, Availability, MyUserInfo } from "@/types";
-import axios from "axios";
+import { AppDispatch } from "../store";
+import { AuthState } from "@/types";
+import { setUserData } from "../user/userSlice";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
-  currentUser: null,
   userId: null,
   userLoggedIn: false,
   loading: true,
   registerError: null,
-  isNewUser: undefined,
+  isNewUser: null,
   userType: "student",
-  userData: null,
 };
 
-// Register the listener to track auth state changes
-let authListenerUnsubscribe: () => void;
-
-// Thunk for triggering file upload
-export const uploadFileToAssistant = createAsyncThunk<
+export const checkAuthentication = createAsyncThunk<
   void,
-  { assistantId: string },
+  void,
   { dispatch: AppDispatch }
->("auth/uploadFileToAssistant", async ({ assistantId }) => {
-  try {
-    // Trigger file upload to the server with the assistant ID
-    await axios.post(
-      `http://localhost:4000/fileOperations/upload/${assistantId}`
-    );
-    console.log("File uploaded successfully.");
-  } catch (error) {
-    console.error("Failed to upload file:", error);
-  }
-});
-
-// Thunk to listen to authentication state changes
-export const listenToAuthChanges = createAsyncThunk<
-  void,
-  void,
-  { dispatch: AppDispatch; state: RootState }
->("auth/listenToAuthChanges", async (_, { dispatch }) => {
+>("auth/checkAuthentication", async (_, { dispatch }) => {
   dispatch(setLoading(true));
-  console.log("LISTENING TO AUTH CHANGES");
-  if (authListenerUnsubscribe) {
-    authListenerUnsubscribe();
-  }
-  authListenerUnsubscribe = onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      let userType = "student";
-      const userId = user.uid; // Use user.uid instead of getState().auth
-      let userData: MyUserInfo | null = null;
-      updateUserProfile;
-      // fetch user data from MongoDB database
-      try {
-        const response = await fetch(`http://localhost:4000/users/${userId}`);
-        const data = await response.json();
-        console.log("DATA: ", data);
-        userType = data.userType;
-        userData = data;
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
 
-      const updatedUser = {
-        ...user.providerData[0],
-        displayName: user.displayName || "",
-      };
+  try {
+    // Make a request to your server to check authentication
+    const response = await fetch("http://localhost:4000/auth/check", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
 
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Data: ", data);
       dispatch(
         setAuthState({
-          user: updatedUser,
-          userId: userId,
+          userId: data.userId,
           userLoggedIn: true,
-          userType,
+          userType: data.userType,
         })
       );
-      dispatch(setUserData(userData));
+      dispatch(setUserData(data));
     } else {
+      // Not authenticated
       dispatch(clearAuthState());
     }
-    dispatch(setLoading(false));
-  });
-});
-
-// Thunk for updating user profile
-export const updateUserProfile = createAsyncThunk<
-  void,
-  {
-    availability?: Availability;
-    bio?: string;
-    canShareData: boolean;
-    interests?: string[];
-    major?: string;
-    year?: string;
-  }, // Add availability and about here
-  { dispatch: AppDispatch }
->("auth/updateUserProfile", async (updatedInfo, { dispatch }) => {
-  dispatch(setLoading(true));
-  const userId = auth.currentUser?.uid;
-  console.log("UPDATING USER PROFILE WITH: ", updatedInfo);
-  try {
-    const user = auth.currentUser;
-    if (!user) throw new Error("No user is currently logged in.");
-
-    await fetch(`http://localhost:4000/users/${userId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedInfo),
-    });
-    dispatch(setUserData(updatedInfo));
   } catch (error) {
-    console.error("Failed to update user profile:", error);
+    console.error("Failed to check authentication:", error);
+    dispatch(clearAuthState());
   } finally {
     dispatch(setLoading(false));
   }
 });
+
 export const signInWithMicrosoft = createAsyncThunk<
   void,
-  void,
+  // eslint-disable-next-line no-unused-vars
+  { navigate: (path: string) => void },
   { dispatch: AppDispatch }
->("auth/signInWithMicrosoft", async (_, { dispatch }) => {
+>("auth/signInWithMicrosoft", async ({ navigate }, { dispatch }) => {
   dispatch(setLoading(true));
+  const provider = new OAuthProvider("microsoft.com");
+  const userCredential = await signInWithPopup(auth, provider);
+  const user = userCredential.user;
+  const token = await user.getIdToken(); // Get the Firebase ID token
+  // Send the token to server to set the HTTP-only cookie
   try {
-    const provider = new OAuthProvider("microsoft.com");
-    const userCredential = await signInWithPopup(auth, provider);
-    const user = userCredential.user;
-
-    console.log("USER CREDENTIAL: ", userCredential);
     // Check if the user's email ends with '@calpoly.edu'
     if (user.email && user.email.endsWith("@calpoly.edu")) {
-      const userData = {
-        userId: user.uid,
-        name: user.displayName,
-        email: user.email,
-      };
-
-      // Send user information to database
-      const userResponse = await registerUserToDB(userData);
-      console.log("USER RESPONSE: ", userResponse);
-
-      dispatch(
-        setAuthState({
-          user: user.providerData[0],
-          userId: user.uid,
-          userLoggedIn: true,
-          userType: userResponse.userType,
-        })
-      );
+      const userResponse = await loginUser(token);
       if (userResponse.isNewUser) {
         dispatch(setIsNewUser(userResponse.isNewUser));
       }
+      dispatch(checkAuthentication());
     } else {
       // Invalid email domain, sign out the user
-      await auth.signOut();
+      dispatch(signOutUser({ navigate }));
       dispatch(
         setSignInError("Access restricted to @calpoly.edu email addresses.")
       );
     }
   } catch (error) {
-    // Handle other errors
+    // FIX: Handle other errors
     dispatch(
       setSignInError("Failed to sign in with Microsoft. Please try again.")
     );
     console.error("Authentication error:", error);
   } finally {
     dispatch(setLoading(false));
+  }
+});
+
+// Define the sign-out thunk
+export const signOutUser = createAsyncThunk<
+  void,
+  // eslint-disable-next-line no-unused-vars
+  { navigate: (path: string) => void },
+  { dispatch: AppDispatch }
+>("auth/signOutUser", async ({ navigate }, { dispatch }) => {
+  try {
+    // Request the server to clear the cookie
+    await fetch("http://localhost:4000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    // Clear the user data in Redux
+    dispatch(clearAuthState());
+    navigate("/login");
+  } catch (error) {
+    console.error("Failed to sign out:", error);
   }
 });
 
@@ -187,34 +120,26 @@ const authSlice = createSlice({
     setAuthState(
       state,
       action: PayloadAction<{
-        user: UserInfo;
         userId: string | null;
         userLoggedIn: boolean;
         userType: string;
       }>
     ) {
-      const { user, userId, userLoggedIn, userType } = action.payload;
-      state.currentUser = user;
+      const { userId, userLoggedIn, userType } = action.payload;
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
       state.userType = userType;
     },
-    setUserData(state, action: PayloadAction<MyUserInfo | null>) {
-      state.userData = action.payload;
-    },
-    updateUserData(state, action: PayloadAction<Partial<MyUserInfo>>) {
-      if (state.userData) {
-        state.userData = { ...state.userData, ...action.payload };
-      }
-    },
-    setIsNewUser(state, action: PayloadAction<boolean | undefined>) {
+
+    setIsNewUser(state, action: PayloadAction<boolean | null>) {
       state.isNewUser = action.payload;
     },
     clearAuthState(state) {
-      state.currentUser = null;
+      state.userId = null;
       state.userLoggedIn = false;
       state.loading = false;
-      state.isNewUser = undefined;
+      state.isNewUser = null;
+      state.userType = "student";
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -227,8 +152,6 @@ const authSlice = createSlice({
 
 export const {
   setAuthState,
-  setUserData,
-  updateUserData,
   setIsNewUser,
   clearAuthState,
   setLoading,
@@ -236,3 +159,14 @@ export const {
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;
+
+/* 
+Concerns:
+
+1. Token Expiration: Check token refresh or token validity before using it
+2. Security: Move to HTTP-only cookies for storing token (Completed)
+3. Error Handling: Invalid or expired tokens, will prompt user to sign in again
+4. Middleware: Add middleware to intercept actions and check for token validity before proceeding
+5. API Requests: For any API requests that require authentication, include the token from local storage in the request headers
+
+*/
