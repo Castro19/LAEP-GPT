@@ -5,11 +5,10 @@ import { AppDispatch } from "../store"; // Adjust the import path as needed
 import { putUserProfile } from "./crudUser"; // Adjust the import path as needed
 import { auth } from "@/firebase";
 import { MyUserInfo } from "@/types";
-import { Availability } from "@/types/auth/authTypes";
 
 // Define the initial state for the user
 interface UserState {
-  userData: MyUserInfo | null;
+  userData: MyUserInfo;
   loading: boolean;
   error: string | null;
 }
@@ -19,8 +18,16 @@ const initialState: UserState = {
     userId: "",
     bio: "",
     year: "",
-    interests: null,
-    availability: null,
+    interests: [],
+    availability: {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
+      Saturday: [],
+      Sunday: [],
+    },
     canShareData: false,
     name: "",
     email: "",
@@ -43,7 +50,7 @@ export const updateUserProfile = createAsyncThunk<
       // Convert UserProfile to MyUserInfo
       const myUserInfo: MyUserInfo = {
         ...updatedInfo,
-        availability: updatedInfo.availability as Availability,
+        availability: updatedInfo.availability,
       };
       await putUserProfile(myUserInfo);
       dispatch(setUserData(myUserInfo));
@@ -63,8 +70,42 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    // FIX Tech Debt: Potentially set this data in the backend for new users
     setUserData(state, action) {
-      state.userData = action.payload;
+      state.userData = {
+        userId: action.payload.userId ?? initialState.userData.userId,
+        bio: action.payload.bio ?? initialState.userData.bio,
+        year: action.payload.year ?? initialState.userData.year,
+        interests: action.payload.interests ?? initialState.userData.interests,
+        availability: {
+          Monday:
+            action.payload.availability?.Monday ??
+            initialState.userData.availability.Monday,
+          Tuesday:
+            action.payload.availability?.Tuesday ??
+            initialState.userData.availability.Tuesday,
+          Wednesday:
+            action.payload.availability?.Wednesday ??
+            initialState.userData.availability.Wednesday,
+          Thursday:
+            action.payload.availability?.Thursday ??
+            initialState.userData.availability.Thursday,
+          Friday:
+            action.payload.availability?.Friday ??
+            initialState.userData.availability.Friday,
+          Saturday:
+            action.payload.availability?.Saturday ??
+            initialState.userData.availability.Saturday,
+          Sunday:
+            action.payload.availability?.Sunday ??
+            initialState.userData.availability.Sunday,
+        },
+        canShareData:
+          action.payload.canShareData ?? initialState.userData.canShareData,
+        name: action.payload.name ?? initialState.userData.name,
+        email: action.payload.email ?? initialState.userData.email,
+        major: action.payload.major ?? initialState.userData.major,
+      };
     },
     setUserLoading(state, action) {
       state.loading = action.payload;

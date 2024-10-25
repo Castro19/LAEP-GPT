@@ -15,12 +15,12 @@ export type Availability = {
 // All information stored in the database
 export interface MyUserInfo {
   userId: string;
-  name: string | null;
-  email: string | null;
-  availability: Availability | null;
-  bio: string | null;
+  name: string;
+  email: string;
+  availability: Availability;
+  bio: string;
   canShareData: boolean;
-  interests: string[] | null;
-  major: string | null;
-  year: string | null;
+  interests: string[];
+  major: string;
+  year: string;
 }
