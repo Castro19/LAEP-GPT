@@ -16,7 +16,7 @@ export const FileUpload = ({
   selectedFile?: File | null;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const iconStyles = selectedFile ? "text-green-500" : "text-white";
+  const iconStyles = selectedFile ? "text-emerald-500" : "text-white";
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (onChange) {
