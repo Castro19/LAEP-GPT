@@ -21,6 +21,7 @@ import AboutMe from "./components/register/SignInFlow/AboutMe.tsx";
 import WeeklyCalendar from "./components/register/WeeklyCalendar.tsx";
 import InterestDropdown from "./components/register/InterestDropdown.tsx";
 import Terms from "./components/register/SignInFlow/Terms.tsx";
+import { Toaster } from "./components/ui/toaster.tsx";
 
 const router = createBrowserRouter([
   {
@@ -105,6 +106,7 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <ProfilePage />
+        <Toaster />
       </ProtectedRoute>
     ),
   },
