@@ -74,7 +74,6 @@ const initialState: MessageSliceType = {
   currentChatId: null,
   isNewChat: true,
   msgList: [],
-  currentFile: null as File | null, // New state property for the current file
   isLoading: false,
   error: null,
 };
@@ -96,9 +95,6 @@ const messageSlice = createSlice({
       if (message) {
         message.text = action.payload.text;
       }
-    },
-    setCurrentFile: (state, action: PayloadAction<File | null>) => {
-      state.currentFile = action.payload; // Reducer to update the current file
     },
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
     setMsgList: (state, action: PayloadAction<MessageObjType[]>) => {
@@ -145,7 +141,6 @@ export const {
   clearError,
   setCurrentChatId,
   toggleNewChat,
-  setCurrentFile,
 } = messageSlice.actions;
 
 export const messageReducer = messageSlice.reducer;
