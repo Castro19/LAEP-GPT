@@ -65,7 +65,10 @@ export const fetchLogs = createAsyncThunk(
   "log/fetchLogs",
   async (userId: string, { rejectWithValue }) => {
     try {
-      return await fetchAllLogs(userId);
+      const fetchedLogs = await fetchAllLogs(userId);
+      // reverse the order of the logs
+      const logs = fetchedLogs.reverse();
+      return logs;
     } catch (error) {
       console.error("Failed to fetch logs: ", error);
       return rejectWithValue(logErrorMessages[LogErrorCodes.READ_FAILED]);

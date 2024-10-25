@@ -115,6 +115,8 @@
     - [Contact](#contact)
   - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
     - [Common Issues and Solutions](#common-issues-and-solutions)
+  - [Tech Debt to Potentially Fix in the Future](#tech-debt-to-potentially-fix-in-the-future)
+    - [Easier Tech Debt to Fix](#easier-tech-debt-to-fix)
 
 ## Project Introduction
 
@@ -2330,3 +2332,17 @@ To install these extensions, follow these steps:
 ### Common Issues and Solutions
 
 - List common issues faced by new developers and their solutions.
+
+## Tech Debt to Potentially Fix in the Future
+
+1. **Convert Backend to use Typescript**:
+
+   - Currently the backend is in JavaScript and not Typescript.
+   - Convert the backend and create types for the data.
+
+### Easier Tech Debt to Fix
+
+1. **Type UpadateLogData**: NIT Fix to fix the type for the updateLogItem function in the crudLog file.
+
+- Replace `logId` with `id`
+- Need to make sure changes are reflected in the backend.
