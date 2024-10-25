@@ -1,4 +1,4 @@
-import { LogData, UpdateLogData } from "@/types";
+import { LogData, MessageObjType } from "@/types";
 
 export default async function createLogTitle(msg: string, modelTitle: string) {
   try {
@@ -54,6 +54,13 @@ export async function fetchAllLogs(userId: string) {
   }
 }
 
+type UpdateLogData = {
+  logId: string;
+  firebaseUserId: string | null;
+  urlPhoto?: string;
+  content?: MessageObjType[];
+  timestamp?: string;
+};
 // Update Log (Message gets added)
 export async function updateLogItem(logData: UpdateLogData) {
   try {
