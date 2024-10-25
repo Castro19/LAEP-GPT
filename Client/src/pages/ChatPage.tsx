@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
@@ -7,7 +7,7 @@ import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
 import ChatPageLayout from "@/components/layout/ChatPageLayout";
 
 const ChatPage = () => {
-  const { chatId } = useParams();
+  // const { chatId } = useParams(); [Potential Fix]: Fetch chat logs from chatID given the chatId]
   const dispatch = useAppDispatch();
 
   const userId = useAppSelector((state) => state.auth.userId);

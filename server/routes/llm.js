@@ -250,6 +250,8 @@ router.post(
           })
         : null;
 
+      console.log("Vector Store File: ", vectoreStorefile);
+
       const vectorStoreFiles =
         await openai.beta.vectorStores.files.list(vectorStoreId);
 
