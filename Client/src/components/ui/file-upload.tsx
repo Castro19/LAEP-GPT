@@ -33,30 +33,28 @@ export const FileUpload = ({
     <div className="flex items-center">
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild>
             <button
-              type="button"
               onClick={handleClick}
               className="p-2 border rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
             >
               <IconUpload className={`h-5 w-5 ${iconStyles}`} />
             </button>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <TooltipContent>
-              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs">
-                {selectedFile ? selectedFile.name : "Upload a PDF"}
-              </span>
-            </TooltipContent>
           </TooltipTrigger>
+          <TooltipContent>
+            <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs">
+              {selectedFile ? selectedFile.name : "Upload a PDF"}
+            </span>
+          </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf"
+        onChange={handleFileChange}
+        className="hidden"
+      />
     </div>
   );
 };
