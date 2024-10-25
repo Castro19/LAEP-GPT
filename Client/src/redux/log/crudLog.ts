@@ -93,11 +93,8 @@ export async function deleteLogItem({
       { method: "DELETE" }
     );
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error: ", errorData);
-      throw new Error(
-        "Failed to reach server when deleting log: " + errorData.message
-      );
+      console.error("Error: ", response.status);
+      throw new Error("Failed to reach server when deleting log: " + response);
     }
     const responseData = await response.json();
     return responseData;
