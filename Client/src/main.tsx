@@ -22,6 +22,7 @@ import WeeklyCalendar from "./components/register/WeeklyCalendar.tsx";
 import InterestDropdown from "./components/register/InterestDropdown.tsx";
 import Terms from "./components/register/SignInFlow/Terms.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
+import NewUserRoute from "./components/security/NewUserRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -40,9 +41,9 @@ const router = createBrowserRouter([
   {
     path: "/sign-in-flow",
     element: (
-      <ProtectedRoute>
+      <NewUserRoute>
         <SignInFlow />
-      </ProtectedRoute>
+      </NewUserRoute>
     ),
     children: [
       {

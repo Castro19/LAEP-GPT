@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { updateUserProfile, updateUserData } from "../redux/user/userSlice";
 import { MyUserInfo, Availability } from "../types";
 import { RootState } from "@/redux/store";
-import { toast } from "@/components/ui/use-toast";
 
 export function useUserData() {
   const dispatch = useAppDispatch();
@@ -42,12 +41,7 @@ export function useUserData() {
   };
 
   const handleSave = () => {
-    console.log("Saving user data");
     dispatch(updateUserProfile(userData));
-    toast({
-      title: "User Profile Updated",
-      description: "Your profile has been updated successfully",
-    });
   };
 
   return {
