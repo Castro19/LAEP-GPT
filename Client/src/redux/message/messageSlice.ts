@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import sendMessage from "./crudMessage";
 // Types:
 import { ModelType, MessageObjType, MessageSliceType } from "@/types";
-import { updateLog } from "../log/logSlice";
 
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
@@ -50,13 +49,6 @@ export const fetchBotResponse = createAsyncThunk<
         userId
       );
 
-      console.log("New User Message: ");
-      console.log(newUserMessage);
-      console.log("Bot Message: ");
-      console.log(botMessage);
-      console.log("Update Stream");
-      console.log(updateLog);
-
       dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
 
       dispatch(addUserMessage(botMessage)); // Dispatching to add bot message to the state
@@ -93,8 +85,6 @@ const messageSlice = createSlice({
   reducers: {
     // Reducer to add user or bot message to the state (CREATE)
     addUserMessage: (state, action: PayloadAction<MessageObjType>) => {
-      console.log("ACTION PAYLOAD");
-      console.log(action.payload);
       state.msgList.push(action.payload);
     },
     // Reducer to update an existing bot message in the state (UPDATE)

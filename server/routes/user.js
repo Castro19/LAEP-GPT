@@ -1,65 +1,38 @@
 import express from "express";
 import {
-  addUser,
   getUserByFirebaseId,
   updateUser,
   getAllUsers,
 } from "../db/models/user/userServices.js";
-import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices.js";
+import { authenticate } from "../middlewares/authMiddleware.js"; // Import the middleware
+
 const router = express.Router();
 
-// Route to add a new user
-router.post("/signup", async (req, res) => {
+// Apply authentication middleware to all routes in this router
+router.use(authenticate);
+
+// Route to get the authenticated user's data
+router.get("/me", async (req, res) => {
   try {
-    const { userId, name, email } = req.body;
-    if (!userId) {
-      return res.status(400).send("Firebase User ID is required");
-    }
-    const userType = await getSignupAccessByEmail(email);
-
-    // Check if user already exists
-    const existingUser = await getUserByFirebaseId(userId);
-    if (existingUser) {
-      return res.status(200).json({ userType });
-    }
-
-    console.log("Adding user to database");
-    const result = await addUser({
-      userId,
-      name,
-      userType,
-      email,
-    });
-    const userResponse = {
-      ...result,
-      isNewUser: true,
-    };
-    res.status(201).json(userResponse);
-  } catch (error) {
-    res.status(500).send("Failed to create user: " + error.message);
-    console.error("Failed to create user: ", error);
-  }
-});
-
-// Route to get a specific user by Firebase ID
-router.get("/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
+    const userId = req.user.uid;
     const user = await getUserByFirebaseId(userId);
+
     if (!user) {
       return res.status(404).send("User not found");
     }
+
     res.status(200).json(user);
   } catch (error) {
     res.status(500).send("Failed to get user: " + error.message);
   }
 });
 
-// Route to update a specific user by Firebase ID
-router.put("/:userId", async (req, res) => {
+// Route to update the authenticated user's data
+router.put("/me", async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.uid;
     const updateData = req.body; // Contains the updated fields
+
     const updatedUser = await updateUser(userId, updateData);
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -67,9 +40,10 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
-// Route to get all users
+// Route to get all users (restricted to admins, for example)
 router.get("/", async (req, res) => {
   try {
+    // You might want to check if the user has admin privileges
     const users = await getAllUsers(); // Fetch all users from MongoDB
     res.status(200).json(users);
   } catch (error) {

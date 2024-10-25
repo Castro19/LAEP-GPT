@@ -9,6 +9,8 @@ import {
 import { useUserData } from "@/hooks/useUserData";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
+import { RootState } from "@/redux/store";
+import { useAppSelector } from "@/redux";
 
 const underlineStyle = "underline";
 
@@ -35,8 +37,8 @@ const name = "interests";
 
 const InterestDropdown = (): JSX.Element => {
   const [position, setPosition] = useState<"item-aligned" | "popper">("popper");
-  const { userData, handleAddInterest, handleRemoveInterest } = useUserData();
-  console.log("USER DATA", userData);
+  const { handleAddInterest, handleRemoveInterest } = useUserData();
+  const { userData } = useAppSelector((state: RootState) => state.user);
   useEffect(() => {
     const adjustDropdownPosition = () => {
       const selectElem = document.getElementById(name);

@@ -65,8 +65,6 @@ export default async function sendMessage(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    console.log("RESPONSE: ", response);
-
     const botMessageId = Date.now() + 1;
     let accumulatedText = "";
     const botMessage = {

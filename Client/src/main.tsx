@@ -116,7 +116,7 @@ function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(authActions.listenToAuthChanges());
+    dispatch(authActions.checkAuthentication());
   }, [dispatch]);
 
   return <RouterProvider router={router} />;

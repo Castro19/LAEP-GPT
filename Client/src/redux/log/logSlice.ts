@@ -42,7 +42,6 @@ export const addLog = createAsyncThunk(
           })
         );
       }
-      console.log("FBUID: ", firebaseUserId);
       if (firebaseUserId) {
         // Save Log to Database
         const savedLog = await createLogItem({
@@ -89,11 +88,8 @@ export const updateLog = createAsyncThunk(
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
-      console.log("FBUID: ", firebaseUserId);
-
       const timestamp = new Date().toISOString(); // Timestamp for updating log
       const content = (getState() as RootState).message.msgList; // Accessing current message list from the state
-      console.log("logId: ", logId);
       dispatch(
         updateCurrentChat({
           id: logId,
@@ -131,13 +127,12 @@ export const deleteLog = createAsyncThunk(
           logId,
           userId,
         });
-        console.log("DELETED LOG RESPONSE: ", deletedLog);
         dispatch(deleteLogListItem({ logId }));
 
         return deletedLog;
       }
     } catch (error) {
-      console.log("Failed to delete log: ", error);
+      console.error("Failed to delete log: ", error);
       return rejectWithValue(logErrorMessages[LogErrorCodes.DELETE_FAILED]);
     }
   }
@@ -168,9 +163,7 @@ const logSlice = createSlice({
     updateCurrentChat: (state, action: PayloadAction<LogData>) => {
       const { id, content, timestamp } = action.payload;
       const logIndex = state.logList.findIndex((log) => log.id === id);
-      console.log("currentChatId: ", id);
 
-      console.log("LOGINDEX: ", logIndex);
       if (logIndex !== -1) {
         state.logList[logIndex].content = [...content]; // Use content from the payload
         state.logList[logIndex].timestamp = timestamp; // Update the timestamp
@@ -178,7 +171,6 @@ const logSlice = createSlice({
     },
     deleteLogListItem: (state, action: PayloadAction<{ logId: string }>) => {
       const { logId } = action.payload;
-      // console.log("LOG ID IN SLICE B4 DELETING; ", logId);
       state.logList = state.logList.filter((log) => log.id != logId);
     },
   },

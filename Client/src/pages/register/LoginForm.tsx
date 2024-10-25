@@ -1,6 +1,6 @@
 import React from "react";
 import { IconBrandOffice } from "@tabler/icons-react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 // Importing component
 
 // redux auth:
@@ -9,13 +9,14 @@ import { ErrorMessage } from "@/components/register/ErrorMessage";
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { userLoggedIn, registerError, userId } = useAppSelector(
     (state) => state.auth
   );
 
   const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(authActions.signInWithMicrosoft());
+    dispatch(authActions.signInWithMicrosoft({ navigate }));
   };
 
   return (

@@ -4,16 +4,17 @@ import {
   updateUserProfile,
   updateUserData,
   setUserData,
-} from "../redux/auth/authSlice";
+} from "../redux/user/userSlice";
 import { MyUserInfo, Availability } from "../types";
 import { RootState } from "@/redux/store";
 import { useEffect } from "react";
 
 export function useUserData() {
   const dispatch = useAppDispatch();
-  const { userData, loading, registerError } = useAppSelector(
+  const { loading, registerError } = useAppSelector(
     (state: RootState) => state.auth
   );
+  const userData = useAppSelector((state: RootState) => state.user.userData);
 
   useEffect(() => {
     if (!userData) {
@@ -21,17 +22,21 @@ export function useUserData() {
         setUserData({
           bio: "",
           year: "",
-          interests: [],
-          availability: {},
+          interests: null,
+          availability: null,
           canShareData: false,
+          name: "",
+          email: "",
+          major: "",
         })
       );
     }
   }, [dispatch, userData]);
+
   const handleAddInterest = (value: string) => {
     if (userData) {
-      if (userData?.interests) {
-        if (!userData?.interests.includes(value)) {
+      if (userData.interests) {
+        if (!userData.interests.includes(value)) {
           const updatedInterests = [...userData.interests, value];
           dispatch(updateUserData({ interests: updatedInterests }));
         }
@@ -78,7 +83,6 @@ export function useUserData() {
   };
 
   return {
-    userData,
     loading,
     registerError,
     handleAddInterest,

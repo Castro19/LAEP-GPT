@@ -20,7 +20,6 @@ const ChatPage = () => {
       if (userId) {
         try {
           const fetchedGptList = await viewGPTs(userId);
-          console.log("FGL: ", fetchedGptList.gptList);
           dispatch(gptActions.initGptList(fetchedGptList.gptList));
         } catch (error) {
           console.error("Error fetching GPT list: ", error);
@@ -29,8 +28,6 @@ const ChatPage = () => {
     };
     fetchGptList();
   }, [userId, dispatch]);
-
-  console.log("Chat id in page: ", chatId);
 
   return (
     <ChatPageLayout>

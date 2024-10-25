@@ -7,13 +7,10 @@ interface ChatPageLayoutProps {
 
 const ChatPageLayout = ({ children }: ChatPageLayoutProps) => {
   return (
-    <html lang="en">
-      <head />
-      <body>
-        <main>{children}</main>
-        {/* <Toaster /> */}
-      </body>
-    </html>
+    <div>
+      <main>{children}</main>
+      {/* <Toaster /> */}
+    </div>
   );
 };
 

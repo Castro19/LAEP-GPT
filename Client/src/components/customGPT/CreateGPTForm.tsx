@@ -48,13 +48,9 @@ export default function GPTForm() {
     if (!isLoading) {
       try {
         setLocalError(""); // Clear error on successful sign in
-        console.log("Title: ", title);
-        console.log("Desc: ", desc);
-        console.log("Instructions: ", instructions);
-        const gptResponse = await dispatch(
+        await dispatch(
           gptActions.addGpt({ userId, title, urlPhoto, desc, instructions })
         );
-        console.log("GPT Response: ", gptResponse);
 
         setTitle("");
         setUrlPhoto("");

@@ -9,7 +9,6 @@ const router = express.Router();
 // Create
 router.post("/", async (req, res) => {
   const gptData = req.body;
-  console.log("GPT DATA: ", gptData);
 
   try {
     const newGpt = await createGpt(gptData);
@@ -45,7 +44,7 @@ router.get("/gpts", async (req, res) => {
 // Delete
 router.delete("/", async (req, res) => {
   const gptData = req.body;
-  console.log("gpt Deleting: ", gptData);
+
   try {
     const deletedGpt = await deleteGpt(gptData.gptId);
     res.status(204).json({ message: deletedGpt });

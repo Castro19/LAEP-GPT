@@ -64,7 +64,6 @@ async function uploadFileToOpenAI(filePath) {
       purpose: "assistants", // Replace this purpose as per your requirement
     });
 
-    console.log("--------------USER FILE UPLOADED TO OPENAI: ", userFile);
     return userFile;
   } catch (error) {
     console.error("Error uploading file to OpenAI:", error);

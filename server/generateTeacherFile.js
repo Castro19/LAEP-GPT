@@ -38,7 +38,6 @@ export const generateTeacherFile = async () => {
 
     // Write the file
     fs.writeFileSync(filePath, fileContent, "utf8");
-    console.log("Teacher file written to:", filePath);
   } catch (error) {
     console.error("Error generating teacher file:", error);
     throw error; // Rethrow to be caught by the route handler

@@ -2,14 +2,16 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import TitleCard from "../TitleCard";
-import { useAppSelector } from "@/redux";
+import { useAppDispatch, useAppSelector } from "@/redux";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons for arrows
 import { useUserData } from "@/hooks/useUserData";
+import { setIsNewUser } from "@/redux/auth/authSlice";
 
 const signInFlowSteps = ["about-me", "interests", "availability", "terms"];
 
 const SignInFlow = () => {
-  const { currentUser } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const { userData } = useAppSelector((state) => state.user);
   const { handleSave } = useUserData();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -24,7 +26,7 @@ const SignInFlow = () => {
   useEffect(() => {
     switch (currentStep) {
       case "about-me":
-        setTitle(`Welcome, ${currentUser?.displayName}!`);
+        setTitle(`Welcome, ${userData?.name}!`);
         setDescription("Tell us a little about yourself");
         break;
       case "interests":
@@ -43,7 +45,7 @@ const SignInFlow = () => {
         setTitle("Welcome!");
         setDescription("");
     }
-  }, [currentStep, currentUser]);
+  }, [currentStep, userData]);
 
   // Navigation Handlers
   const handleNext = () => {
@@ -62,6 +64,7 @@ const SignInFlow = () => {
 
   const handleCompleteProfile = () => {
     handleSave();
+    dispatch(setIsNewUser(false));
     navigate("/"); // Example navigation
   };
 

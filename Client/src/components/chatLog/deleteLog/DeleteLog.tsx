@@ -11,17 +11,16 @@ const DeleteLog = ({ logId }: DeleteLogProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { currentUser, userId } = useAppSelector((state) => state.auth);
+  const { userId } = useAppSelector((state) => state.auth);
 
   const onDelete = (logId: string) => {
-    console.log("Delete log: ", logId);
     try {
-      if (currentUser) {
+      if (userId) {
         dispatch(logActions.deleteLog({ logId, userId }));
         navigate(`/${userId}`);
       }
     } catch (error) {
-      console.log(`Error trying to delete log ${logId}: `, error);
+      console.error(`Error trying to delete log ${logId}: `, error);
     }
   };
 

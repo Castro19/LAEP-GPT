@@ -13,14 +13,13 @@ export async function createGPT(gptData: GptType) {
     const responseData = await response.json();
     return responseData;
   } catch (error) {
-    console.log(`Error: `);
+    console.error("Error: ", error);
   }
 }
 
 // Read
 export async function viewGPTs(userId: string) {
   try {
-    console.log("USER ID USING TO FETCH: ", userId);
     const response = await fetch(`http://localhost:4000/gpts/${userId}`);
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
@@ -28,7 +27,7 @@ export async function viewGPTs(userId: string) {
     const responseData = await response.json();
     return responseData;
   } catch (error) {
-    console.log(`Error: `, error);
+    console.error("Error: ", error);
   }
 }
 
@@ -45,6 +44,6 @@ export async function deleteGPT(id: string) {
     const responseData = await response.json();
     console.log("Response Data: ", responseData);
   } catch (error) {
-    console.log(`Error: `, error);
+    console.error("Error: ", error);
   }
 }

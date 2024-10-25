@@ -4,6 +4,7 @@ import { gptReducer } from "./gpt/gptSlice";
 import { layoutReducer } from "./layout/layoutSlice";
 import { logReducer } from "./log/logSlice";
 import { authReducer } from "./auth/authSlice";
+import { userReducer } from "./user/userSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     layout: layoutReducer,
     log: logReducer,
     auth: authReducer,
+    user: userReducer,
   },
 });
 
