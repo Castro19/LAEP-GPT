@@ -44,7 +44,7 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   });
 
   const onViewGPTs = () => {
-    navigate(`/${userId}/gpts`);
+    navigate(`/user/${userId}/gpts`);
   };
 
   return (

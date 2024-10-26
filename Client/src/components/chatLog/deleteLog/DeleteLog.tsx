@@ -17,7 +17,7 @@ const DeleteLog = ({ logId }: DeleteLogProps) => {
     try {
       if (userId) {
         dispatch(logActions.deleteLog({ logId }));
-        navigate(`/${userId}`);
+        navigate(`/user/${userId}`);
       }
     } catch (error) {
       console.error(`Error trying to delete log ${logId}: `, error);

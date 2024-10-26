@@ -10,14 +10,14 @@ import Terms from "@/components/register/SignInFlow/Terms";
 export const labelStyle = "underline text-lg self-center";
 
 function ProfilePage() {
-  const { userType } = useAppSelector((state) => state.auth);
+  const { userType, userId } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
   const navigate = useNavigate();
 
   const { handleSave } = useUserData();
 
   const handleBackToChat = () => {
-    navigate("/chat");
+    navigate(`/user/${userId}`);
   };
 
   return (

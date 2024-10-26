@@ -73,7 +73,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       setSelectedFile(null);
       if (isNewChat) {
         dispatch(messageActions.setCurrentChatId(newLogId));
-        navigate(`/${userId}/chat/${newLogId}`);
+        navigate(`/user/${userId}/chat/${newLogId}`);
         dispatch(messageActions.toggleNewChat(false));
         dispatch(
           logActions.addLog({

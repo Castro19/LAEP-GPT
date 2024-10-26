@@ -21,7 +21,7 @@ export default function LoginForm() {
 
   return (
     <div>
-      {userLoggedIn && <Navigate to={`/${userId}`} replace={true} />}
+      {userLoggedIn && <Navigate to={`/user/${userId}`} replace={true} />}
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
         {registerError ? <ErrorMessage text={registerError} /> : <></>}
 

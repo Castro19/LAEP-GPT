@@ -22,7 +22,7 @@ const NewChat = () => {
         dispatch(messageActions.clearError()); // Clear error when user starts typing
       }
     }
-    navigate(`/${userId}`);
+    navigate(`/user/${userId}`);
   };
 
   return (
