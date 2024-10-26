@@ -4,10 +4,11 @@ import {
   fetchGPTs,
   deleteGpt,
 } from "../db/models/gpt/gptServices.js";
+import { authorizeRoles } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Create
-router.post("/", async (req, res) => {
+router.post("/", authorizeRoles(["admin", "teacher"]), async (req, res) => {
   try {
     const userId = req.user.uid;
     const gptData = req.body;
@@ -33,9 +34,9 @@ router.get("/", async (req, res) => {
 });
 
 // Delete
-router.delete("/", async (req, res) => {
+router.delete("/", authorizeRoles(["admin", "teacher"]), async (req, res) => {
   const gptData = req.body;
-
+  // FIX Later: Only allow admins and teachers who made the gpt to delete it
   try {
     const deletedGpt = await deleteGpt(gptData.gptId);
     res.status(204).json({ message: deletedGpt });
@@ -44,20 +45,5 @@ router.delete("/", async (req, res) => {
     console.error("Failed to delete gpt: ", error);
   }
 });
-
-/*
-_id,
-title (50)
-desc (350), 
-instructions (2500)
----
-
-Future features?
-permissions = [
-    {userId, role}, ...
-]
-
-role: [admin, viewer, editor]
-*/
 
 export default router;

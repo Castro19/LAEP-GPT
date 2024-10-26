@@ -4,7 +4,7 @@ import {
   updateUser,
   getAllUsers,
 } from "../db/models/user/userServices.js";
-
+import { authorizeRoles } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Route to get the authenticated user's data
@@ -37,7 +37,7 @@ router.put("/me", async (req, res) => {
 });
 
 // Route to get all users (restricted to admins, for example)
-router.get("/", async (req, res) => {
+router.get("/", authorizeRoles(["admin"]), async (req, res) => {
   try {
     // You might want to check if the user has admin privileges
     const users = await getAllUsers(); // Fetch all users from MongoDB
