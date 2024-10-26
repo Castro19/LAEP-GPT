@@ -65,7 +65,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/:userId",
+    path: "/user/:userId",
     element: (
       <ProtectedRoute>
         <ChatPage />
@@ -83,7 +83,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/:userId/gpts",
+    path: "/user/:userId/gpts",
     element: (
       <ProtectedRoute>
         <GPTLayout>
@@ -93,7 +93,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/:userId/gpts/editor",
+    path: "/user/:userId/gpts/editor",
     element: (
       <ProtectedRoute>
         <GPTLayout>

@@ -19,7 +19,7 @@ const ChatPage = () => {
     const fetchGptList = async () => {
       if (userId) {
         try {
-          const fetchedGptList = await viewGPTs(userId);
+          const fetchedGptList = await viewGPTs();
           dispatch(gptActions.initGptList(fetchedGptList.gptList));
         } catch (error) {
           console.error("Error fetching GPT list: ", error);

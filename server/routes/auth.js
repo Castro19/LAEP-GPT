@@ -77,14 +77,10 @@ router.get("/check", async (req, res) => {
     return res.status(401).send({ error: "Unauthorized" });
   }
 
-  console.log("Session cookie:", sessionCookie);
-
   try {
     const decodedToken = await admin
       .auth()
       .verifySessionCookie(sessionCookie, true);
-
-    console.log("Decoded token:", decodedToken);
 
     // Fetch additional user data from your database if needed
     const userId = decodedToken.uid;
@@ -96,7 +92,6 @@ router.get("/check", async (req, res) => {
       return res.status(404).send({ error: "User not found" });
     }
 
-    console.log("User found:", user);
     res.status(200).send(user);
   } catch (error) {
     console.error("Failed to verify session cookie:", error);

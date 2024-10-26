@@ -11,7 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 export const labelStyle = "underline text-lg self-center";
 
 function ProfilePage() {
-  const { userType } = useAppSelector((state) => state.auth);
+  const { userType, userId } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ function ProfilePage() {
     });
   };
   const handleBackToChat = () => {
-    navigate("/chat");
+    navigate(`/user/${userId}`);
   };
 
   return (

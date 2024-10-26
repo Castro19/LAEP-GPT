@@ -18,13 +18,12 @@ export type AddLogParams = {
   msg: string;
   modelType: string;
   id: string;
-  firebaseUserId: string | null;
 };
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { msg, modelType, id, firebaseUserId }: AddLogParams,
+    { msg, modelType, id }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
@@ -42,17 +41,14 @@ export const addLog = createAsyncThunk(
           })
         );
       }
-      if (firebaseUserId) {
-        // Save Log to Database
-        const savedLog = await createLogItem({
-          id,
-          firebaseUserId,
-          title: logTitle,
-          content: content, // Ensure the content is included in the DB save
-          timestamp: timestamp, // Ensure the timestamp is included in the DB save
-        });
-        return savedLog;
-      }
+      // Save Log to Database
+      const savedLog = await createLogItem({
+        id,
+        title: logTitle,
+        content: content, // Ensure the content is included in the DB save
+        timestamp: timestamp, // Ensure the timestamp is included in the DB save
+      });
+      return savedLog;
     } catch (error) {
       console.error("Failed to create log title: ", error);
       return rejectWithValue(logErrorMessages[LogErrorCodes.CREATE_FAILED]);
@@ -63,9 +59,9 @@ export const addLog = createAsyncThunk(
 // Read (Fetch Logs by UserID)
 export const fetchLogs = createAsyncThunk(
   "log/fetchLogs",
-  async (userId: string, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const fetchedLogs = await fetchAllLogs(userId);
+      const fetchedLogs = await fetchAllLogs();
       // reverse the order of the logs
       const logs = fetchedLogs.reverse();
       return logs;
@@ -120,20 +116,14 @@ export const updateLog = createAsyncThunk(
 
 export const deleteLog = createAsyncThunk(
   "log/deleteLog",
-  async (
-    { logId, userId }: { logId: string; userId: string | null },
-    { dispatch, rejectWithValue }
-  ) => {
+  async ({ logId }: { logId: string }, { dispatch, rejectWithValue }) => {
     try {
-      if (logId && userId) {
-        const deletedLog = await deleteLogItem({
-          logId,
-          userId,
-        });
-        dispatch(deleteLogListItem({ logId }));
+      const deletedLog = await deleteLogItem({
+        logId,
+      });
+      dispatch(deleteLogListItem({ logId }));
 
-        return deletedLog;
-      }
+      return deletedLog;
     } catch (error) {
       console.error("Failed to delete log: ", error);
       return rejectWithValue(logErrorMessages[LogErrorCodes.DELETE_FAILED]);

@@ -25,6 +25,7 @@ export async function createLogItem(logData: LogData) {
   try {
     const response = await fetch("http://localhost:4000/chatLogs", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(logData),
     });
@@ -39,9 +40,11 @@ export async function createLogItem(logData: LogData) {
 }
 
 // Reading: Fetch all lofgs by as userID:
-export async function fetchAllLogs(userId: string) {
+export async function fetchAllLogs() {
   try {
-    const response = await fetch(`http://localhost:4000/chatLogs/${userId}`);
+    const response = await fetch("http://localhost:4000/chatLogs", {
+      credentials: "include",
+    });
     if (!response.ok) {
       console.error("Response Error  fetching chat Logs");
       return [];
@@ -66,6 +69,7 @@ export async function updateLogItem(logData: UpdateLogData) {
   try {
     const response = await fetch(`http://localhost:4000/chatLogs`, {
       method: "PUT",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(logData),
     });
@@ -80,18 +84,12 @@ export async function updateLogItem(logData: UpdateLogData) {
 }
 
 // delete Log
-export async function deleteLogItem({
-  logId,
-  userId,
-}: {
-  logId: string;
-  userId: string;
-}) {
+export async function deleteLogItem({ logId }: { logId: string }) {
   try {
-    const response = await fetch(
-      `http://localhost:4000/chatLogs/${userId}/${logId}`,
-      { method: "DELETE" }
-    );
+    const response = await fetch(`http://localhost:4000/chatLogs/${logId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
     if (!response.ok) {
       console.error("Error: ", response.status);
       throw new Error("Failed to reach server when deleting log: " + response);

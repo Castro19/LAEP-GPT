@@ -21,7 +21,7 @@ const ChatLog = ({ log, onSelectLog }: ChatLogProps) => {
 
   const handleNewLog = async (logId: string) => {
     onSelectLog(logId);
-    navigate(`/${userId}/chat/${logId}}`);
+    navigate(`/user/${userId}/chat/${logId}}`);
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }

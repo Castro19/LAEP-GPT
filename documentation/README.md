@@ -670,7 +670,7 @@ Visual Studio Code is a source-code editor that includes support for development
 
   ```typescript
   const onViewGPTs = () => {
-    navigate(`/${userId}/gpts`);
+    navigate(`/user/${userId}/gpts`);
   };
   ```
 

@@ -7,16 +7,17 @@ import { connectToDb } from "./db/connection.js";
 import { readFileSync } from "fs";
 import admin from "firebase-admin";
 import cookieParser from "cookie-parser";
+import { authenticate } from "./middlewares/authMiddleware.js";
 // Routes
-import llms from "./routes/llm.js";
+import authRouter from "./routes/auth.js";
 import users from "./routes/user.js";
+import llms from "./routes/llm.js";
 import chatLogs from "./routes/chatLog.js";
 import gpts from "./routes/gpt.js";
-import signupAccessRouter from "./routes/signupAccess.js";
-import assistants from "./routes/assistants.js";
-import generateTeacherFileRoute from "./routes/teacherFile.js";
-import fileOperations from "./routes/fileOperations.js";
-import authRouter from "./routes/auth.js";
+// import assistants from "./routes/assistants.js";
+// import signupAccessRouter from "./routes/signupAccess.js";
+// import generateTeacherFileRoute from "./routes/teacherFile.js";
+// import fileOperations from "./routes/fileOperations.js";
 // LLM API
 import OpenAI from "openai";
 
@@ -46,16 +47,16 @@ admin.initializeApp({
 // Routes
 app.use("/auth", authRouter);
 app.use("/llms", llms);
-app.use("/users", users);
-app.use("/chatLogs", chatLogs);
-app.use("/gpts", gpts);
-app.use("/signupAccess", signupAccessRouter);
-app.use("/assistants", assistants);
-app.use("/generateTeacherFile", generateTeacherFileRoute);
-app.use("/fileOperations", fileOperations);
+app.use("/users", authenticate, users);
+app.use("/chatLogs", authenticate, chatLogs);
+app.use("/gpts", authenticate, gpts);
+// app.use("/assistants", authenticate, assistants);
+// app.use("/signupAccess", signupAccessRouter);
+// app.use("/generateTeacherFile", generateTeacherFileRoute);
+// app.use("/fileOperations", fileOperations);
 
-// Error handling middleware
-app.use((err, req, res) => {
+// Corrected Error handling middleware
+app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong...");
 });

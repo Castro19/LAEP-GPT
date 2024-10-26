@@ -4,14 +4,15 @@ import {
   fetchGPTs,
   deleteGpt,
 } from "../db/models/gpt/gptServices.js";
+import { authorizeRoles } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Create
-router.post("/", async (req, res) => {
-  const gptData = req.body;
-
+router.post("/", authorizeRoles(["admin", "teacher"]), async (req, res) => {
   try {
-    const newGpt = await createGpt(gptData);
+    const userId = req.user.uid;
+    const gptData = req.body;
+    const newGpt = await createGpt(gptData, userId);
     res.status(201).json(newGpt);
   } catch (error) {
     res.status(500).send("Failed to create gpt: " + error.message);
@@ -20,9 +21,9 @@ router.post("/", async (req, res) => {
 });
 
 // Read
-router.get("/:userId", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.uid;
     const result = await fetchGPTs(userId);
     res
       .status(200)
@@ -32,19 +33,10 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-router.get("/gpts", async (req, res) => {
-  try {
-    const gptList = await fetchGPTs();
-    res.status(200).json({ gptList });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Delete
-router.delete("/", async (req, res) => {
+router.delete("/", authorizeRoles(["admin", "teacher"]), async (req, res) => {
   const gptData = req.body;
-
+  // FIX Later: Only allow admins and teachers who made the gpt to delete it
   try {
     const deletedGpt = await deleteGpt(gptData.gptId);
     res.status(204).json({ message: deletedGpt });
@@ -53,20 +45,5 @@ router.delete("/", async (req, res) => {
     console.error("Failed to delete gpt: ", error);
   }
 });
-
-/*
-_id,
-title (50)
-desc (350), 
-instructions (2500)
----
-
-Future features?
-permissions = [
-    {userId, role}, ...
-]
-
-role: [admin, viewer, editor]
-*/
 
 export default router;

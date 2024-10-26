@@ -4,7 +4,7 @@ import {
   deleteAssistant,
 } from "../../../helpers/openAI/assistantFunctions.js";
 // create
-export const createGpt = async (gptData) => {
+export const createGpt = async (gptData, userId) => {
   try {
     const newAssistant = await createAssistant(
       gptData.title,
@@ -14,8 +14,8 @@ export const createGpt = async (gptData) => {
     console.log("NEW ASSISTANT: ", newAssistant);
 
     const dbAssistant = {
+      userId,
       assistantId: newAssistant.id,
-      userId: gptData.userId,
       title: gptData.title,
       desc: gptData.desc,
       urlPhoto: gptData.urlPhoto,
