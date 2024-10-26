@@ -36,10 +36,9 @@ const messageRateLimiter = rateLimit({
   keyGenerator: (req) => req.body.userId, // requests are tracked per firebase userId
 });
 
-router.get("/"),
-  (res) => {
-    res.send("LLM Backend Working");
-  };
+router.get("/", (req, res) => {
+  res.send("LLM Backend Working");
+});
 
 router.post(
   "/respond",
@@ -48,6 +47,8 @@ router.post(
   async (req, res) => {
     res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
     res.setHeader("Transfer-Encoding", "chunked");
+
+    console.log("req.body: ", req.body);
 
     const { message, chatId } = req.body;
     const model = JSON.parse(req.body.currentModel);

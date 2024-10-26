@@ -24,7 +24,7 @@ const Sidebar = () => {
   useEffect(() => {
     // Only fetch logs if userId is not null (user is signed in)
     if (userId) {
-      dispatch(logActions.fetchLogs(userId));
+      dispatch(logActions.fetchLogs());
     }
   }, [dispatch, userId]);
 

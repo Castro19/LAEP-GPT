@@ -16,7 +16,7 @@ const DeleteLog = ({ logId }: DeleteLogProps) => {
   const onDelete = (logId: string) => {
     try {
       if (userId) {
-        dispatch(logActions.deleteLog({ logId, userId }));
+        dispatch(logActions.deleteLog({ logId }));
         navigate(`/${userId}`);
       }
     } catch (error) {

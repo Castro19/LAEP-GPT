@@ -4,6 +4,7 @@ export async function createGPT(gptData: GptType) {
   try {
     const response = await fetch("http://localhost:4000/gpts", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(gptData),
     });
@@ -18,9 +19,11 @@ export async function createGPT(gptData: GptType) {
 }
 
 // Read
-export async function viewGPTs(userId: string) {
+export async function viewGPTs() {
   try {
-    const response = await fetch(`http://localhost:4000/gpts/${userId}`);
+    const response = await fetch("http://localhost:4000/gpts", {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
@@ -35,6 +38,7 @@ export async function deleteGPT(id: string) {
   try {
     const response = await fetch("http://localhost:4000/gpts", {
       method: "DELETE",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ gptId: id }),
     });

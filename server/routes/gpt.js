@@ -8,10 +8,10 @@ const router = express.Router();
 
 // Create
 router.post("/", async (req, res) => {
-  const gptData = req.body;
-
   try {
-    const newGpt = await createGpt(gptData);
+    const userId = req.user.uid;
+    const gptData = req.body;
+    const newGpt = await createGpt(gptData, userId);
     res.status(201).json(newGpt);
   } catch (error) {
     res.status(500).send("Failed to create gpt: " + error.message);
@@ -20,24 +20,15 @@ router.post("/", async (req, res) => {
 });
 
 // Read
-router.get("/:userId", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.uid;
     const result = await fetchGPTs(userId);
     res
       .status(200)
       .json({ message: `GPT GET userID: ${userId}`, gptList: result });
   } catch (error) {
     console.error("Failed to fetch GPTs: ", error);
-  }
-});
-
-router.get("/gpts", async (req, res) => {
-  try {
-    const gptList = await fetchGPTs();
-    res.status(200).json({ gptList });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
 });
 

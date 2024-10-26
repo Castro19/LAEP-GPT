@@ -4,12 +4,8 @@ import {
   updateUser,
   getAllUsers,
 } from "../db/models/user/userServices.js";
-import { authenticate } from "../middlewares/authMiddleware.js"; // Import the middleware
 
 const router = express.Router();
-
-// Apply authentication middleware to all routes in this router
-router.use(authenticate);
 
 // Route to get the authenticated user's data
 router.get("/me", async (req, res) => {

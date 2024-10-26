@@ -80,7 +80,6 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
             msg: msg,
             modelType: currentModel.title,
             id: newLogId,
-            firebaseUserId: userId ? userId : null,
           })
         );
       } else {

@@ -11,22 +11,15 @@ import { openai } from "../index.js";
 
 const router = express.Router();
 
-// Test: Access here `http://localhost:4000/chatLogs`
-router.get("/", async (req, res) => {
-  res.send("ChatLog Backend Working");
-});
-
 // Creating a new Log: (Create)
 router.post("/", async (req, res) => {
   try {
-    const { id, firebaseUserId, title, content, timestamp } = req.body;
-    if (!firebaseUserId) {
-      return res.status(400).send("Firebase User ID is required");
-    }
+    const userId = req.user.uid;
+    const { id, title, content, timestamp } = req.body;
 
     const newLog = {
       _id: id,
-      userId: firebaseUserId,
+      userId,
       title,
       timestamp,
       content,
@@ -40,9 +33,9 @@ router.post("/", async (req, res) => {
 });
 
 // Get the entire LogList: (Read)
-router.get("/:userId", async (req, res) => {
-  const userId = req.params.userId;
+router.get("/", async (req, res) => {
   try {
+    const userId = req.user.uid;
     const logs = await getLogsByUser(userId);
     res.status(200).json(logs);
   } catch (error) {
@@ -53,16 +46,17 @@ router.get("/:userId", async (req, res) => {
 
 // Retreive a specific Log: (Read)
 // FIX: Add in check for authorization
-router.get("/:userId/chat/:logId", async (req, res) => {
-  res.status(200).send(`Log ${req.params.logId} for user ${req.params.userId}`);
+router.get("/chat/:logId", async (req, res) => {
+  const userId = req.user.uid;
+  res.status(200).send(`Log ${req.params.logId} for user ${userId}`);
 });
 
 // Updating a Log: (Update)
 router.put("/", async (req, res) => {
-  const { logId, firebaseUserId, content, timestamp } = req.body;
-
+  const { logId, content, timestamp } = req.body;
+  const userId = req.user.uid;
   try {
-    const result = await updateLog(logId, firebaseUserId, content, timestamp);
+    const result = await updateLog(logId, userId, content, timestamp);
 
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify(result));
@@ -73,8 +67,9 @@ router.put("/", async (req, res) => {
 });
 
 // Deleting a Log
-router.delete("/:userId/:logId", async (req, res) => {
-  const { logId, userId } = req.params;
+router.delete("/:logId", async (req, res) => {
+  const userId = req.user.uid;
+  const { logId } = req.params;
 
   try {
     const { threadId, vectorStoreId } = await fetchIds(logId);
