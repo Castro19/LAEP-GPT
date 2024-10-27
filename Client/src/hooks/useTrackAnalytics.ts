@@ -40,12 +40,14 @@ const useTrackAnalytics = () => {
   };
 
   const trackUpdateMessage = async ({
-    botMessageId,
+    userMessageId,
+    userMessage,
     createdAt,
     hadError,
     errorMessage,
   }: {
-    botMessageId: string;
+    userMessageId: string;
+    userMessage: string;
     createdAt: Date;
     hadError: boolean;
     errorMessage: string | null;
@@ -58,7 +60,8 @@ const useTrackAnalytics = () => {
         },
         credentials: "include",
         body: JSON.stringify({
-          botMessageId,
+          userMessageId,
+          userMessage,
           createdAt,
           hadError,
           errorMessage,

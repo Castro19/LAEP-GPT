@@ -72,6 +72,10 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         hadFile: selectedFile ? true : false,
         createdAt,
       });
+    } catch (error) {
+      console.error("Failed to track message: ", error);
+    }
+    try {
       await dispatch(
         messageActions.fetchBotResponse({
           currentModel,
@@ -107,7 +111,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         }
       }
       trackUpdateMessage({
-        botMessageId,
+        userMessageId,
         createdAt,
         hadError: false,
         errorMessage: null,
@@ -116,7 +120,8 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
     } catch (error: any) {
       console.error("Failed to send message", error);
       trackUpdateMessage({
-        botMessageId,
+        userMessageId,
+        userMessage: msg,
         createdAt,
         hadError: true,
         errorMessage: error.message

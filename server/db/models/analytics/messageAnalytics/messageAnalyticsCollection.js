@@ -2,18 +2,12 @@ import db from "../../../connection.js";
 const messageAnalyticsCollection = db.collection("messageAnalytics");
 
 // Create
-export const addMessageAnalytics = async (
-  botMessageId,
-  messageAnalyticsData
-) => {
+export const addMessageAnalytics = async (messageAnalyticsData) => {
   try {
-    console.log("BOT Message ID: ", botMessageId);
     console.log("Message Analytics Data: ", messageAnalyticsData);
 
-    const result = await messageAnalyticsCollection.insertOne({
-      _id: botMessageId,
-      ...messageAnalyticsData,
-    });
+    const result =
+      await messageAnalyticsCollection.insertOne(messageAnalyticsData);
     return result;
   } catch (error) {
     console.error("Full error:", error);
@@ -24,12 +18,12 @@ export const addMessageAnalytics = async (
 // Read (Not Needed Yet)
 
 // Update
-export const updateMessageAnalytics = async (botMessageId, updateData) => {
-  console.log("BOT Message ID: ", botMessageId);
+export const updateMessageAnalytics = async (userMessageId, updateData) => {
+  console.log("User Message ID: ", userMessageId);
   console.log("Message Update Analytics Data: ", updateData);
   try {
     const result = await messageAnalyticsCollection.updateMany(
-      { _id: botMessageId },
+      { _id: userMessageId },
       { $set: updateData }
     );
     return result;

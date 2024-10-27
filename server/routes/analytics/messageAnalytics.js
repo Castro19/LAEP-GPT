@@ -21,17 +21,14 @@ router.post("/", async (req, res) => {
     const userId = req.user.uid;
     const userData = req.body;
     const messageAnalyticsData = {
-      _id: userData.botMessageId,
+      _id: userData.userMessageId,
       userId,
       ...userData,
     };
     // still need to add responseTime, inputMessage, outputMessage, tokensUsed, and completed_at after message stream is completed
     // user can also update this data by adding userReaction
 
-    const result = await createMessageAnalytics(
-      userData.botMessageId,
-      messageAnalyticsData
-    );
+    const result = await createMessageAnalytics(messageAnalyticsData);
     console.log("Result of Post: ", result);
     res.status(200).send("Message created successfully");
   } catch (error) {
@@ -43,15 +40,21 @@ router.put("/", async (req, res) => {
   console.log("Received data:", req.body); // Add this to check incoming data
 
   try {
-    const { botMessageId, createdAt, hadError, errorMessage, userReaction } =
-      req.body;
-    if (!botMessageId) {
+    const {
+      userMessageId,
+      userMessage,
+      createdAt,
+      hadError,
+      errorMessage,
+      userReaction,
+    } = req.body;
+    if (!userMessageId) {
       return res.status(400).send("botMessageId is required");
     }
 
     // Updated Message Analytics after user reaction
     if (userReaction) {
-      await updateMessageAnalytics(botMessageId, { userReaction });
+      await updateMessageAnalytics(userMessageId, { userReaction });
       res.status(200).send("Message updated successfully");
       return;
     }
@@ -61,7 +64,8 @@ router.put("/", async (req, res) => {
     const endTime = new Date(finishedAt).getTime();
     const responseTime = (endTime - startTime) / 1000;
 
-    const result = await updateMessageAnalytics(botMessageId, {
+    const result = await updateMessageAnalytics(userMessageId, {
+      userMessage,
       responseTime,
       finishedAt,
       hadError,

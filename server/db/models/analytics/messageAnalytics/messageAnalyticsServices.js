@@ -1,10 +1,7 @@
 import * as messageAnalyticsModel from "./messageAnalyticsCollection.js";
 
 // create
-export const createMessageAnalytics = async (
-  botMessageId,
-  messageAnalyticsData
-) => {
+export const createMessageAnalytics = async (messageAnalyticsData) => {
   try {
     // Convert timestamps to Date objects if they aren't already
     const sanitizedData = {
@@ -12,10 +9,8 @@ export const createMessageAnalytics = async (
       createdAt: new Date(messageAnalyticsData.createdAt),
     };
 
-    const result = await messageAnalyticsModel.addMessageAnalytics(
-      botMessageId,
-      sanitizedData
-    );
+    const result =
+      await messageAnalyticsModel.addMessageAnalytics(sanitizedData);
 
     return result;
   } catch (error) {
@@ -25,10 +20,10 @@ export const createMessageAnalytics = async (
   }
 };
 
-export const updateMessageAnalytics = async (botMessageId, updateData) => {
+export const updateMessageAnalytics = async (userMessageId, updateData) => {
   try {
     const result = await messageAnalyticsModel.updateMessageAnalytics(
-      botMessageId,
+      userMessageId,
       updateData
     );
     return result;
