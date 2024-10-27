@@ -14,6 +14,7 @@ import {
 } from "./helpers/formatHelper";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../ui/button";
+import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -32,7 +33,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const { trackMessage } = useTrackAnalytics();
   const textareaRef = useRef(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -61,6 +62,8 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
+      const userMessageId = uuidv4();
+      const botMessageId = uuidv4();
       await dispatch(
         messageActions.fetchBotResponse({
           currentModel,
@@ -68,6 +71,8 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           msg,
           currentChatId: isNewChat ? newLogId : currentChatId,
           userId: userId ? userId : "",
+          userMessageId,
+          botMessageId,
         })
       ).unwrap();
       setSelectedFile(null);
@@ -93,6 +98,13 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           );
         }
       }
+      trackMessage({
+        userMessageId: userMessageId,
+        botMessageId: botMessageId,
+        logId: isNewChat ? newLogId : currentChatId,
+        assistantId: currentModel.id,
+        hadFile: selectedFile ? true : false,
+      });
     } catch (error) {
       console.error("Failed to send message", error);
     } finally {
