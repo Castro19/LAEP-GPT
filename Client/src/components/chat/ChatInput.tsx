@@ -14,6 +14,7 @@ import {
 } from "./helpers/formatHelper";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../ui/button";
+import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -32,7 +33,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
   const textareaRef = useRef(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -56,9 +57,23 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
 
     // Generate a new unique chatId
     const newLogId = uuidv4();
-
+    const userMessageId = uuidv4();
+    const botMessageId = uuidv4();
+    const createdAt = new Date(); // Changed from Date.now()
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
+    }
+    try {
+      trackCreateMessage({
+        userMessageId: userMessageId,
+        botMessageId: botMessageId,
+        logId: isNewChat ? newLogId : currentChatId,
+        assistantId: currentModel.id,
+        hadFile: selectedFile ? true : false,
+        createdAt,
+      });
+    } catch (error) {
+      console.error("Failed to track message: ", error);
     }
     try {
       await dispatch(
@@ -68,6 +83,8 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           msg,
           currentChatId: isNewChat ? newLogId : currentChatId,
           userId: userId ? userId : "",
+          userMessageId,
+          botMessageId,
         })
       ).unwrap();
       setSelectedFile(null);
@@ -93,8 +110,25 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           );
         }
       }
-    } catch (error) {
+      trackUpdateMessage({
+        userMessageId,
+        userMessage: null,
+        createdAt,
+        hadError: false,
+        errorMessage: null,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Failed to send message", error);
+      trackUpdateMessage({
+        userMessageId,
+        userMessage: msg,
+        createdAt,
+        hadError: true,
+        errorMessage: error.message
+          ? error.message
+          : "An unknown error occurred",
+      });
     } finally {
       setIsSending(false);
     }

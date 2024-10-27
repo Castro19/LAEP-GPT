@@ -1,18 +1,20 @@
-import { ModelType, SendMessageReturnType } from "@/types";
-
+import { ModelType } from "@/types";
 export default async function sendMessage(
   currentModel: ModelType,
   file: File | null, //include file as arguement
   msg: string,
   currentChatId: string | null,
-  userId: string
-): Promise<SendMessageReturnType> {
+  userId: string,
+  userMessageId: string,
+  botMessageId: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
   if (!msg.trim() || msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");
   }
 
   const newUserMessage = {
-    id: Date.now(),
+    id: userMessageId,
     sender: "user",
     text: msg, //form
     model: currentModel.title,
@@ -65,7 +67,6 @@ export default async function sendMessage(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const botMessageId = Date.now() + 1;
     let accumulatedText = "";
     const botMessage = {
       id: botMessageId,
@@ -79,7 +80,7 @@ export default async function sendMessage(
     // eslint-disable-next-line no-inner-declarations
     function startTimeout(
       // eslint-disable-next-line no-unused-vars
-      updateCallback: (arg0: number, arg1: string) => void
+      updateCallback: (arg0: string, arg1: string) => void
     ) {
       setTimeout(() => {
         if (!updateOccurred) {
@@ -96,7 +97,7 @@ export default async function sendMessage(
       botMessage,
       updateStream: async (
         // eslint-disable-next-line no-unused-vars
-        updateCallback: (arg0: number, arg1: string) => void
+        updateCallback: (arg0: string, arg1: string) => void
       ) => {
         const decoder = new TextDecoder("utf-8");
         // Check if response.body is not null

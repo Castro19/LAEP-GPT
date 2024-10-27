@@ -10,6 +10,8 @@ interface fetchBotResponseParams {
   msg: string; //replace with formData
   currentChatId: string | null;
   userId: string;
+  userMessageId: string;
+  botMessageId: string;
 }
 type SendMessageReturnType = {
   newUserMessage: MessageObjType;
@@ -33,6 +35,8 @@ export const fetchBotResponse = createAsyncThunk<
       msg,
       currentChatId,
       userId,
+      userMessageId,
+      botMessageId,
     }: fetchBotResponseParams,
     { dispatch, rejectWithValue }
   ) => {
@@ -46,7 +50,9 @@ export const fetchBotResponse = createAsyncThunk<
         currentFile,
         msg,
         currentChatId,
-        userId
+        userId,
+        userMessageId,
+        botMessageId
       );
 
       dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
