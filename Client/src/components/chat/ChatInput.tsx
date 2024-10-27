@@ -33,7 +33,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
   const [msg, setMsg] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const { trackMessage } = useTrackAnalytics();
+  const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
   const textareaRef = useRef(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -57,13 +57,21 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
 
     // Generate a new unique chatId
     const newLogId = uuidv4();
-
+    const userMessageId = uuidv4();
+    const botMessageId = uuidv4();
+    const createdAt = new Date(); // Changed from Date.now()
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
-      const userMessageId = uuidv4();
-      const botMessageId = uuidv4();
+      trackCreateMessage({
+        userMessageId: userMessageId,
+        botMessageId: botMessageId,
+        logId: isNewChat ? newLogId : currentChatId,
+        assistantId: currentModel.id,
+        hadFile: selectedFile ? true : false,
+        createdAt,
+      });
       await dispatch(
         messageActions.fetchBotResponse({
           currentModel,
@@ -98,15 +106,23 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           );
         }
       }
-      trackMessage({
-        userMessageId: userMessageId,
-        botMessageId: botMessageId,
-        logId: isNewChat ? newLogId : currentChatId,
-        assistantId: currentModel.id,
-        hadFile: selectedFile ? true : false,
+      trackUpdateMessage({
+        botMessageId,
+        createdAt,
+        hadError: false,
+        errorMessage: null,
       });
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Failed to send message", error);
+      trackUpdateMessage({
+        botMessageId,
+        createdAt,
+        hadError: true,
+        errorMessage: error.message
+          ? error.message
+          : "An unknown error occurred",
+      });
     } finally {
       setIsSending(false);
     }

@@ -7,7 +7,7 @@ export type ModelType = {
 };
 
 export type MessageObjType = {
-  id: number; // the unique id for the single message
+  id: string; // the unique id for the single message
   sender: string; // Either `bot` or `user`
   text: string; // The text associated with the message
   model?: string; // User only (The assistant title they chose)

@@ -5,6 +5,7 @@ import { MessageObjType } from "@/types";
 import { Button } from "../ui/button";
 import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import { useState } from "react";
+import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 
 const md = new MarkdownIt();
 
@@ -14,25 +15,34 @@ type ChatMessageProps = {
 const ChatMessage = ({ msg }: ChatMessageProps) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const { trackUserReaction } = useTrackAnalytics();
   // Boolean Variable to style messages differently between user and chatbot
   const isUserMessage = msg.sender === "user";
 
   const messageHtml = md.render(msg.text); // Convert Markdown to HTML
   const safeHtml = DOMPurify.sanitize(messageHtml);
 
-  const handleLike = (id: number) => {
+  const handleLike = (id: string) => {
     setLiked(true);
+    trackUserReaction({
+      botMessageId: id,
+      userReaction: "like",
+    });
     console.log("like", id);
   };
-  const handleDislike = (id: number) => {
+  const handleDislike = (id: string) => {
     setDisliked(true);
+    trackUserReaction({
+      botMessageId: id,
+      userReaction: "dislike",
+    });
     console.log("dislike", id);
   };
 
   const renderLikeButtons = () => {
     if (!disliked && !liked) {
       return (
-        <div className="mt-2 flex justify-end space-x-1">
+        <div className="mt-2 flex justify-end space-x-1 mb-7">
           <Button variant="ghost" size="sm" onClick={() => handleLike(msg.id)}>
             <FaRegThumbsUp className="w-3 h-3 mr-1" />
           </Button>
@@ -47,7 +57,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       );
     } else if (disliked && !liked) {
       return (
-        <div className="mt-2 flex justify-end space-x-1">
+        <div className="mt-2 flex justify-end space-x-1 mb-7">
           <Button variant="ghost" size="sm" disabled>
             <FaRegThumbsDown className="w-3 h-3 mr-1 text-red-500" />
           </Button>
@@ -55,7 +65,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       );
     } else if (liked && !disliked) {
       return (
-        <div className="mt-2 flex justify-end space-x-1">
+        <div className="mt-2 flex justify-end space-x-1 mb-7">
           <Button variant="ghost" size="sm" disabled>
             <FaRegThumbsUp className="w-3 h-3 mr-1 text-green-300" />
           </Button>
