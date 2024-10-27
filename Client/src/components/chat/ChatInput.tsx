@@ -112,6 +112,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
       }
       trackUpdateMessage({
         userMessageId,
+        userMessage: null,
         createdAt,
         hadError: false,
         errorMessage: null,

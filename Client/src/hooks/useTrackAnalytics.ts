@@ -47,7 +47,7 @@ const useTrackAnalytics = () => {
     errorMessage,
   }: {
     userMessageId: string;
-    userMessage: string;
+    userMessage: string | null;
     createdAt: Date;
     hadError: boolean;
     errorMessage: string | null;
