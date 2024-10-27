@@ -9,15 +9,12 @@ import {
   addMessageToThread,
   createThread,
 } from "../helpers/openAI/threadFunctions.js";
-import {
-  addThread,
-  fetchIds,
-  deleteThread,
-} from "../db/models/threads/threadServices.js";
+import { addThread, fetchIds } from "../db/models/threads/threadServices.js";
 import { getGPT } from "../db/models/gpt/gptServices.js";
-import { fileURLToPath } from "url";
-import path from "path";
-import fs from "fs";
+import {
+  setupVectorStoreWithFile,
+  setupVectorStoreAndUpdateAssistant,
+} from "../helpers/openAI/vectorStoreFunctions.js";
 
 import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
 
@@ -36,10 +33,6 @@ const messageRateLimiter = rateLimit({
   keyGenerator: (req) => req.body.userId, // requests are tracked per firebase userId
 });
 
-router.get("/", (req, res) => {
-  res.send("LLM Backend Working");
-});
-
 router.post(
   "/respond",
   messageRateLimiter,
@@ -47,8 +40,6 @@ router.post(
   async (req, res) => {
     res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
     res.setHeader("Transfer-Encoding", "chunked");
-
-    console.log("req.body: ", req.body);
 
     const { message, chatId } = req.body;
     const model = JSON.parse(req.body.currentModel);
@@ -66,133 +57,10 @@ router.post(
     const isMultiAgentModel = model.title === "Enhanced ESJ Assistant";
 
     if (isMultiAgentModel) {
-      // Multi-agent logic
       try {
-        // subGPTIds are the MongoDB ids of the sub-assistants
-        const subGPTIds = [
-          "66e7b2784a61f99d73371faf",
-          "66e7b3184a61f99d73371fb0",
-        ];
-        // leadingGPTId is the MongoDB id of the leading assistant
-        const leadingGPTId = "66ec7a68194da294fe19139e";
-        // array to store the actual OpenAI assistant ids of sub-assistants
-        const assistantIds = [];
-        const threadIds = [];
-        const vectorStoreIds = [];
-
-        for (let i = 0; i < subGPTIds.length; i++) {
-          let fetchedModel = await getGPT(subGPTIds[i]);
-          let assistant_id = fetchedModel.assistantId;
-          assistantIds.push(assistant_id);
-        }
-
-        for (let i = 0; i < assistantIds.length; i++) {
-          let threadObj = await createThread();
-          threadIds.push(threadObj.id);
-
-          if (file) {
-            let vectorStore = await openai.beta.vectorStores.create({
-              name: String(threadObj.id),
-            });
-            vectorStoreIds.push(vectorStore.id);
-
-            await openai.beta.vectorStores.files.createAndPoll(vectorStore.id, {
-              file_id: userFile.id,
-            });
-
-            await openai.beta.assistants.update(assistantIds[i], {
-              tool_resources: {
-                file_search: { vector_store_ids: [vectorStore.id] },
-              },
-            });
-          }
-
-          await addMessageToThread(
-            threadObj.id,
-            "user",
-            message,
-            file ? userFile.id : null
-          );
-        }
-
-        // get responses from both sub-assistants
-        const assistantResponses = [];
-
-        for (let i = 0; i < assistantIds.length; i++) {
-          const run = openai.beta.threads.runs.stream(threadIds[i], {
-            assistant_id: assistantIds[i],
-          });
-
-          let assistantResponse = "";
-
-          run.on("textDelta", (textDelta) => {
-            assistantResponse += textDelta.value;
-          });
-
-          await new Promise((resolve, reject) => {
-            run.on("end", resolve);
-            run.on("errors", reject);
-          });
-
-          assistantResponses.push(assistantResponse);
-        }
-
-        // combine responses from each sub-assistant
-        const combinedResponse = `**Ethical Assessment:**\n\n${assistantResponses[0]}\n\n**Social Justice Evaluation:**\n\n${assistantResponses[1]}`;
-
-        const fetchedModel = await getGPT(leadingGPTId);
-        const finalAssistantId = fetchedModel.assistantId;
-
-        // create a new thread for the final assistant
-        const finalThreadObj = await createThread();
-        const finalThreadId = finalThreadObj.id;
-
-        if (file) {
-          let vectorStore = await openai.beta.vectorStores.create({
-            name: String(finalThreadId),
-          });
-
-          await openai.beta.vectorStores.files.createAndPoll(vectorStore.id, {
-            file_id: userFile.id,
-          });
-
-          // update final assistant to access the vector store
-          await openai.beta.assistants.update(finalAssistantId, {
-            tool_resources: {
-              file_search: { vector_store_ids: [vectorStore.id] },
-            },
-          });
-        }
-
-        // add the combined response as a user message to the final thread
-        await addMessageToThread(finalThreadId, "user", combinedResponse);
-
-        // run the final assistant
-        const finalRun = openai.beta.threads.runs.stream(finalThreadId, {
-          assistant_id: finalAssistantId,
-        });
-
-        // stream the final assistant's response to the user
-        finalRun.on("textDelta", (textDelta) => {
-          res.write(textDelta.value);
-        });
-
-        finalRun.on("end", () => {
-          res.end();
-        });
-
-        finalRun.on("errors", (error) => {
-          console.error("Error streaming from final assistant:", error);
-          if (!res.headersSent) {
-            res
-              .status(500)
-              .send("Failed to process final assistant's response.");
-          } else {
-            res.end();
-          }
-        });
+        await handleMultiAgentModel({ userFile, message, res, file });
       } catch (error) {
-        console.error("Error in multi-agent logic:", error);
+        console.error("Error in multi-agent model:", error);
         if (!res.headersSent) {
           res.status(500).send("Failed to process multi-agent response.");
         } else {
@@ -200,108 +68,16 @@ router.post(
         }
       }
     } else {
-      const fetchedModel = await getGPT(model.id);
-
-      // Fetch the assistant ID with the model from gpt collection
-      let assistant_id = fetchedModel.assistantId;
-      let threadId = null;
-      let vectorStoreId = null;
-      const Ids = await fetchIds(chatId);
-      if (Ids) {
-        ({ threadId, vectorStoreId } = await fetchIds(chatId));
-      }
-
-      // New Chat: Create thread and insert threadID here
-      if (threadId === null) {
-        const threadObj = await createThread();
-        threadId = threadObj.id;
-
-        const vectorStore = await openai.beta.vectorStores.create({
-          name: String(threadId),
-        });
-
-        vectorStoreId = vectorStore.id;
-
-        await addThread(chatId, threadId, vectorStoreId);
-
-        // FIX: if matching assistant, add teacher file
-        if (assistant_id === "asst_n0Jkta8iZlD573iR79IaJ6fi") {
-          //get teacher file path
-          const __filename = fileURLToPath(import.meta.url);
-          const __dirname = path.dirname(__filename);
-
-          const filePath = path.join(__dirname, "teachersInfo.txt");
-
-          //add teacher file to the vector store for match making
-          const teacherFile = await openai.files.create({
-            file: fs.createReadStream(filePath),
-            purpose: "assistants",
-          });
-
-          await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
-            file_id: teacherFile.id,
-          });
-        }
-      }
-
-      //add file to vector store
-      const vectoreStorefile = userFile
-        ? await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
-            file_id: userFile.id,
-          })
-        : null;
-
-      console.log("Vector Store File: ", vectoreStorefile);
-
-      const vectorStoreFiles =
-        await openai.beta.vectorStores.files.list(vectorStoreId);
-
-      //update the assisstant to access resources if user submits file
-      if (vectorStoreFiles.data.length > 0) {
-        await openai.beta.assistants.update(assistant_id, {
-          tool_resources: {
-            file_search: { vector_store_ids: [vectorStoreId] },
-          },
-          tools: [{ type: "file_search" }],
-        });
-      }
-      // FIX: This function and condition
-      // Add User Message to thread:
-      if (userFile) {
-        await addMessageToThread(threadId, "user", message, userFile.id);
-      } else {
-        await addMessageToThread(threadId, "user", message, null);
-      }
-      // Run Thread
-      // Start the stream from OpenAI's API
-
-      const myAssistant = await openai.beta.assistants.retrieve(assistant_id);
-
-      //console log to check if tools and tools_resources are added to the assistant
-      console.log("ASSISTANT");
-      console.log(myAssistant);
-
-      const run = openai.beta.threads.runs.stream(threadId, {
-        assistant_id,
-      });
-
-      run.on("textDelta", (textDelta) => {
-        res.write(textDelta.value);
-      });
-
-      run.on("end", () => {
-        console.log("Stream completed");
-        res.end();
-      });
-
-      run.on("errors", (error) => {
-        console.error("Error streaming from OpenAI:", error);
+      try {
+        await handleSingleAgentModel({ model, chatId, userFile, message, res });
+      } catch (error) {
+        console.error("Error in single-agent model:", error);
         if (!res.headersSent) {
-          res.status(500).send("Failed to process stream.");
+          res.status(500).send("Failed to process request.");
         } else {
-          res.end(); // End the response properly if headers are already sent
+          res.end();
         }
-      });
+      }
     }
   }
 );
@@ -334,9 +110,152 @@ router.post("/title", async (req, res) => {
   }
 });
 
-export async function deleteThreadById(threadId) {
-  await deleteThread(threadId);
-  return await openai.beta.threads.del(threadId);
+async function handleMultiAgentModel({ userFile, message, res, file }) {
+  // Sub-assistants and leading assistant IDs
+  const subGPTIds = ["66e7b2784a61f99d73371faf", "66e7b3184a61f99d73371fb0"];
+  const leadingGPTId = "66ec7a68194da294fe19139e";
+  const assistantIds = [];
+  const threadIds = [];
+
+  // Fetch assistant IDs
+  for (const subGPTId of subGPTIds) {
+    const assistantId = (await getGPT(subGPTId)).assistantId;
+    assistantIds.push(assistantId);
+  }
+
+  // Create threads and add messages
+  for (const assistantId of assistantIds) {
+    const threadObj = await createThread();
+    const threadId = threadObj.id;
+    threadIds.push(threadId);
+
+    if (file) {
+      await setupVectorStoreWithFile(threadId, assistantId, userFile.id);
+    }
+
+    await addMessageToThread(
+      threadId,
+      "user",
+      message,
+      file ? userFile.id : null
+    );
+  }
+
+  // Collect responses from sub-assistants
+  const assistantResponses = [];
+
+  for (const [index, assistantId] of assistantIds.entries()) {
+    const assistantResponse = await runAssistantAndCollectResponse(
+      threadIds[index],
+      assistantId
+    );
+    assistantResponses.push(assistantResponse);
+  }
+
+  // Combine responses
+  const combinedResponse = `**Ethical Assessment:**\n\n${assistantResponses[0]}\n\n**Social Justice Evaluation:**\n\n${assistantResponses[1]}`;
+
+  const finalAssistantId = (await getGPT(leadingGPTId)).assistantId;
+  const finalThreadObj = await createThread();
+  const finalThreadId = finalThreadObj.id;
+
+  if (file) {
+    await setupVectorStoreWithFile(
+      finalThreadId,
+      finalAssistantId,
+      userFile.id
+    );
+  }
+
+  // Add combined response as user message
+  await addMessageToThread(finalThreadId, "user", combinedResponse, null);
+
+  // Stream final assistant's response
+  await runAssistantAndStreamResponse(finalThreadId, finalAssistantId, res);
+}
+
+async function handleSingleAgentModel({
+  model,
+  chatId,
+  userFile,
+  message,
+  res,
+}) {
+  const assistantId = (await getGPT(model.id)).assistantId;
+  let { threadId, vectorStoreId } = (await fetchIds(chatId)) || {};
+
+  if (!threadId) {
+    const threadObj = await createThread();
+    threadId = threadObj.id;
+
+    const vectorStore = await openai.beta.vectorStores.create({
+      name: String(threadId),
+    });
+    vectorStoreId = vectorStore.id;
+
+    await addThread(chatId, threadId, vectorStoreId);
+  }
+
+  // Setup vector store and update assistant
+  await setupVectorStoreAndUpdateAssistant(
+    vectorStoreId,
+    assistantId,
+    userFile ? userFile.id : null
+  );
+
+  // Add user message to thread
+  await addMessageToThread(
+    threadId,
+    "user",
+    message,
+    userFile ? userFile.id : null
+  );
+
+  // Stream assistant's response
+  await runAssistantAndStreamResponse(threadId, assistantId, res);
+}
+
+async function runAssistantAndStreamResponse(threadId, assistantId, res) {
+  const run = openai.beta.threads.runs.stream(threadId, {
+    assistant_id: assistantId,
+  });
+
+  run.on("textDelta", (textDelta) => {
+    res.write(textDelta.value);
+  });
+
+  run.on("end", () => {
+    console.log("Stream completed");
+    res.end();
+  });
+
+  run.on("errors", (error) => {
+    console.error("Error streaming from OpenAI:", error);
+    if (!res.headersSent) {
+      res.status(500).send("Failed to process stream.");
+    } else {
+      res.end();
+    }
+  });
+}
+
+async function runAssistantAndCollectResponse(threadId, assistantId) {
+  const run = openai.beta.threads.runs.stream(threadId, {
+    assistant_id: assistantId,
+  });
+
+  let assistantResponse = "";
+
+  run.on("textDelta", (textDelta) => {
+    assistantResponse += textDelta.value;
+  });
+
+  await new Promise((resolve, reject) => {
+    run.on("end", resolve);
+    run.on("errors", reject);
+  });
+
+  return assistantResponse;
 }
 
 export default router;

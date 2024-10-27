@@ -6,7 +6,7 @@ import {
   deleteLog,
 } from "../db/models/chatlog/chatLogServices.js";
 import { fetchIds } from "../db/models/threads/threadServices.js";
-import { deleteThreadById } from "./llm.js";
+import { deleteThread } from "../helpers/openAI/threadFunctions.js";
 import { openai } from "../index.js";
 
 const router = express.Router();
@@ -80,7 +80,7 @@ router.delete("/:logId", async (req, res) => {
     }
     await openai.beta.vectorStores.del(String(vectorStoreId));
     const response = await deleteLog(logId, userId);
-    const deleteResponse = await deleteThreadById(threadId);
+    const deleteResponse = await deleteThread(threadId);
     res.status(204).json({ response, deleteResponse }); // 204 No Content is typical for a delete operation.
   } catch (error) {
     console.error("Failed to Delete log: ", error);
