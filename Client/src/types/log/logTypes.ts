@@ -10,4 +10,5 @@ export type LogData = {
 
 export type LogSliceType = {
   logList: LogData[]; // The list of logs associated with the current User
+  deletingLogIds: string[]; // The list of logIds that are being deleted
 };

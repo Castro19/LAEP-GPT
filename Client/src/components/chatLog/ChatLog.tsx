@@ -11,7 +11,6 @@ type ChatLogProps = {
 };
 
 const ChatLog = ({ log, onSelectLog }: ChatLogProps) => {
-  // Assuming useMessage and useUI contexts are correctly set up and utilized here
   const navigate = useNavigate();
 
   // Redux:
