@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "@/redux";
+import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
 // UI
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
@@ -11,6 +11,7 @@ type ModeDropDownProps = {
 
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
   const { currentModel, gptList } = useAppSelector((state) => state.gpt);
   const isDropdownVisible = useAppSelector(
@@ -29,6 +30,27 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
     }
   }, [isDropdownVisible]);
 
+  // Handle clicks outside the dropdown
+  useEffect(() => {
+    if (!isDropdownVisible) return;
+
+    // Close the dropdown if the click is outside the modeDropDown component
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        dispatch(layoutActions.toggleDropdown(false));
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dispatch, isDropdownVisible]);
+
   // Transform gptList to prioritize 'name' over 'title'
   const transformedGptList = gptList.map((option) => {
     // Prioritize displaying 'name', fallback to 'title' if 'name' is not available
@@ -45,6 +67,8 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
 
   const onViewGPTs = () => {
     navigate(`/user/${userId}/gpts`);
+    dispatch(layoutActions.toggleDropdown(false));
+    console.log("Is Dropdown Visible: ", isDropdownVisible);
   };
 
   return (

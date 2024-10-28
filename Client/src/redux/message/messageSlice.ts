@@ -18,7 +18,7 @@ type SendMessageReturnType = {
   botMessage: MessageObjType;
   updateStream: (
     // eslint-disable-next-line no-unused-vars
-    updateCallback: (arg0: number, arg1: string) => void
+    updateCallback: (arg0: string, arg1: string) => void
   ) => Promise<string>;
 };
 
@@ -60,7 +60,7 @@ export const fetchBotResponse = createAsyncThunk<
       dispatch(addUserMessage(botMessage)); // Dispatching to add bot message to the state
 
       // Streaming updates for the bot messages
-      await updateStream((botMessageId: number, text: string) => {
+      await updateStream((botMessageId: string, text: string) => {
         dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
       });
 
@@ -95,7 +95,7 @@ const messageSlice = createSlice({
     // Reducer to update an existing bot message in the state (UPDATE)
     updateBotMessage: (
       state,
-      action: PayloadAction<{ id: number; text: string }>
+      action: PayloadAction<{ id: string; text: string }>
     ) => {
       const message = state.msgList.find((msg) => msg.id === action.payload.id);
       if (message) {

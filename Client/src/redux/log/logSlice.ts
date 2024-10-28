@@ -122,7 +122,6 @@ export const deleteLog = createAsyncThunk(
         logId,
       });
       dispatch(deleteLogListItem({ logId }));
-
       return deletedLog;
     } catch (error) {
       console.error("Failed to delete log: ", error);
@@ -133,6 +132,7 @@ export const deleteLog = createAsyncThunk(
 
 const initialState: LogSliceType = {
   logList: [],
+  deletingLogIds: [], // Add this array
 };
 
 const logSlice = createSlice({
@@ -175,6 +175,15 @@ const logSlice = createSlice({
       .addCase(fetchLogs.rejected, (_state, action) => {
         // Optionally handle error state
         console.error("Failed to load logs:", action.payload);
+      })
+      .addCase(deleteLog.pending, (state, action) => {
+        state.deletingLogIds.push(action.meta.arg.logId);
+      })
+      .addCase(deleteLog.fulfilled, (state, action) => {
+        const index = state.deletingLogIds.indexOf(action.meta.arg.logId);
+        if (index > -1) {
+          state.deletingLogIds.splice(index, 1);
+        }
       });
   },
 });
