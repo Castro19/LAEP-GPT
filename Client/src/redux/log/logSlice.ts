@@ -150,7 +150,7 @@ const logSlice = createSlice({
         timestamp: timestamp, // Use the timestamp passed in the action
       };
 
-      state.logList.push(newLog);
+      state.logList.unshift(newLog); // Push to the front of the array
     },
     // Reducer to update an existing log in the state (UPDATE)
     updateCurrentChat: (state, action: PayloadAction<LogData>) => {

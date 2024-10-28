@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAppSelector } from "@/redux";
 
 export const FileUpload = ({
   onChange,
@@ -15,6 +16,7 @@ export const FileUpload = ({
   onChange?: (file: File | null) => void;
   selectedFile?: File | null;
 }) => {
+  const { isSidebarVisible } = useAppSelector((state) => state.layout);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const iconStyles = selectedFile ? "text-emerald-500" : "text-white";
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +44,11 @@ export const FileUpload = ({
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs">
+            <span
+              className={`text-sm text-gray-700 dark:text-gray-300 truncate max-w-xs ${
+                isSidebarVisible ? "ml-10" : ""
+              }`}
+            >
               {selectedFile ? selectedFile.name : "Upload a PDF"}
             </span>
           </TooltipContent>
