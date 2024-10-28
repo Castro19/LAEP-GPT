@@ -34,3 +34,21 @@ export const updateMessageAnalytics = async (userMessageId, updateData) => {
     );
   }
 };
+
+export const updateMessageAnalyticsReaction = async (
+  botMessageId,
+  userReaction
+) => {
+  try {
+    const result = await messageAnalyticsCollection.updateOne(
+      { botMessageId },
+      { $set: { userReaction } }
+    );
+    return result;
+  } catch (error) {
+    console.error("Full error:", error);
+    throw new Error(
+      "Error updating message analytics reaction in database: " + error.message
+    );
+  }
+};

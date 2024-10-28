@@ -57,3 +57,24 @@ export const deleteLog = async (logId, userId) => {
     throw new Error("Service error: " + error.message);
   }
 };
+
+// Update Chat Message Reaction
+export const updateChatMessageReaction = async (
+  logId,
+  botMessageId,
+  userReaction
+) => {
+  try {
+    const result = await ChatLogModel.updateChatMessageReaction(
+      logId,
+      botMessageId,
+      userReaction
+    );
+    return {
+      message: "Chat message reaction updated successfully",
+      modifiedCount: result.modifiedCount,
+    };
+  } catch (error) {
+    throw new Error("Service error: " + error.message);
+  }
+};

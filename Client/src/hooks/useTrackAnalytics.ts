@@ -80,7 +80,7 @@ const useTrackAnalytics = () => {
     userReaction: "like" | "dislike" | null;
   }) => {
     try {
-      await fetch("http://localhost:4000/analytics", {
+      await fetch("http://localhost:4000/analytics/reaction", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

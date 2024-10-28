@@ -46,6 +46,19 @@ export const updateLogContent = async (
   }
 };
 
+export const updateChatMessageReaction = async (
+  logId,
+  botMessageId,
+  userReaction
+) => {
+  // Use the positional operator to find the message within the content array
+  const result = await chatLogCollection.updateOne(
+    { _id: logId, "content.id": botMessageId }, // Find the document with matching _id and content.id
+    { $set: { "content.$.userReaction": userReaction } } // Use the positional operator $ to target the matching element in content array
+  );
+
+  return result;
+};
 // Delete
 export const deleteLogItem = async (logId) => {
   try {

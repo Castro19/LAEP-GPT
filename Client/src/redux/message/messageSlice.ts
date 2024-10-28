@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import sendMessage from "./crudMessage";
+import sendMessage, { sendUserReaction } from "./crudMessage";
 // Types:
 import { ModelType, MessageObjType, MessageSliceType } from "@/types";
 
@@ -76,6 +76,40 @@ export const fetchBotResponse = createAsyncThunk<
   }
 );
 
+export const putUserReaction = createAsyncThunk(
+  "message/putUserReaction",
+  async (
+    {
+      logId,
+      botMessageId,
+      userReaction,
+    }: {
+      logId: string | null;
+      botMessageId: string;
+      userReaction: "like" | "dislike";
+    },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      if (logId) {
+        const result = await sendUserReaction(
+          logId,
+          botMessageId,
+          userReaction
+        );
+        dispatch(updateUserReaction({ id: botMessageId, userReaction }));
+        return result;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue({ message: error.message });
+      } else {
+        return rejectWithValue({ message: "An unknown error occurred" });
+      }
+    }
+  }
+);
+
 const initialState: MessageSliceType = {
   currentChatId: null,
   isNewChat: true,
@@ -100,6 +134,15 @@ const messageSlice = createSlice({
       const message = state.msgList.find((msg) => msg.id === action.payload.id);
       if (message) {
         message.text = action.payload.text;
+      }
+    },
+    updateUserReaction: (
+      state,
+      action: PayloadAction<{ id: string; userReaction: "like" | "dislike" }>
+    ) => {
+      const message = state.msgList.find((msg) => msg.id === action.payload.id);
+      if (message) {
+        message.userReaction = action.payload.userReaction;
       }
     },
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
@@ -144,6 +187,7 @@ export const {
   resetMsgList,
   addUserMessage,
   updateBotMessage,
+  updateUserReaction,
   clearError,
   setCurrentChatId,
   toggleNewChat,

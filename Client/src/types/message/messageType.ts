@@ -12,6 +12,7 @@ export type MessageObjType = {
   text: string; // The text associated with the message
   model?: string; // User only (The assistant title they chose)
   urlPhoto?: string; // Bot only (The url photo corresponding to the message)
+  userReaction: "like" | "dislike" | null;
 };
 
 // Important:

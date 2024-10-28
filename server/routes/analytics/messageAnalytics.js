@@ -4,6 +4,7 @@ import { authorizeRoles } from "../../middlewares/authMiddleware.js";
 import {
   createMessageAnalytics,
   updateMessageAnalytics,
+  updateMessageAnalyticsReaction,
 } from "../../db/models/analytics/messageAnalytics/messageAnalyticsServices.js";
 const router = express.Router();
 
@@ -40,23 +41,10 @@ router.put("/", async (req, res) => {
   console.log("Received data:", req.body); // Add this to check incoming data
 
   try {
-    const {
-      userMessageId,
-      userMessage,
-      createdAt,
-      hadError,
-      errorMessage,
-      userReaction,
-    } = req.body;
+    const { userMessageId, userMessage, createdAt, hadError, errorMessage } =
+      req.body;
     if (!userMessageId) {
-      return res.status(400).send("botMessageId is required");
-    }
-
-    // Updated Message Analytics after user reaction
-    if (userReaction) {
-      await updateMessageAnalytics(userMessageId, { userReaction });
-      res.status(200).send("Message updated successfully");
-      return;
+      return res.status(400).send("userMessageId is required");
     }
     // Convert dates to numbers and calculate response time
     const finishedAt = new Date();
@@ -79,4 +67,16 @@ router.put("/", async (req, res) => {
   }
 });
 
+router.put("/reaction", async (req, res) => {
+  try {
+    const { botMessageId, userReaction } = req.body;
+    if (!botMessageId) {
+      return res.status(400).send("botMessageId is required");
+    }
+    await updateMessageAnalyticsReaction(botMessageId, userReaction);
+    res.status(200).send("Message updated successfully");
+  } catch (error) {
+    res.status(500).send("Failed to update message: " + error.message);
+  }
+});
 export default router;

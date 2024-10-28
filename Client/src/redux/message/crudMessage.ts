@@ -73,6 +73,7 @@ export default async function sendMessage(
       sender: "bot",
       text: "Loading...",
       urlPhoto: currentModel.urlPhoto,
+      userReaction: null,
     };
 
     let updateOccurred = false;
@@ -131,3 +132,26 @@ export default async function sendMessage(
     throw error;
   }
 }
+
+export const sendUserReaction = async (
+  logId: string,
+  botMessageId: string,
+  userReaction: "like" | "dislike"
+) => {
+  try {
+    const response = await fetch(`http://localhost:4000/chatLogs/reaction`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      method: "PUT",
+      body: JSON.stringify({ logId, botMessageId, userReaction }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Failed to send user reaction:", error);
+    throw error;
+  }
+};
