@@ -4,8 +4,9 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { MessageObjType } from "@/types";
 import { Button } from "../ui/button";
 import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
-import { useState } from "react";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
+import { putUserReaction } from "@/redux/message/messageSlice";
+import { useAppDispatch, useAppSelector } from "@/redux";
 
 const md = new MarkdownIt();
 
@@ -13,8 +14,8 @@ type ChatMessageProps = {
   msg: MessageObjType;
 };
 const ChatMessage = ({ msg }: ChatMessageProps) => {
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
+  const dispatch = useAppDispatch();
+  const { currentChatId } = useAppSelector((state) => state.message);
   const { trackUserReaction } = useTrackAnalytics();
   // Boolean Variable to style messages differently between user and chatbot
   const isUserMessage = msg.sender === "user";
@@ -23,24 +24,42 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   const safeHtml = DOMPurify.sanitize(messageHtml);
 
   const handleLike = (id: string) => {
-    setLiked(true);
-    trackUserReaction({
-      botMessageId: id,
-      userReaction: "like",
-    });
+    if (currentChatId) {
+      dispatch(
+        putUserReaction({
+          logId: currentChatId,
+          botMessageId: id,
+          userReaction: "like",
+        })
+      );
+      trackUserReaction({
+        botMessageId: id,
+        userReaction: "like",
+      });
+    }
+    // Send the like to the backend
     console.log("like", id);
   };
   const handleDislike = (id: string) => {
-    setDisliked(true);
-    trackUserReaction({
-      botMessageId: id,
-      userReaction: "dislike",
-    });
+    if (currentChatId) {
+      dispatch(
+        putUserReaction({
+          logId: currentChatId,
+          botMessageId: id,
+          userReaction: "dislike",
+        })
+      );
+      trackUserReaction({
+        botMessageId: id,
+        userReaction: "dislike",
+      });
+    }
+    // Send the dislike to the backend
     console.log("dislike", id);
   };
 
   const renderLikeButtons = () => {
-    if (!disliked && !liked) {
+    if (msg.userReaction === null) {
       return (
         <div className="mt-2 flex justify-end space-x-1 mb-7">
           <Button variant="ghost" size="sm" onClick={() => handleLike(msg.id)}>
@@ -55,7 +74,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
           </Button>
         </div>
       );
-    } else if (disliked && !liked) {
+    } else if (msg.userReaction === "dislike") {
       return (
         <div className="mt-2 flex justify-end space-x-1 mb-7">
           <Button variant="ghost" size="sm" disabled>
@@ -63,7 +82,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
           </Button>
         </div>
       );
-    } else if (liked && !disliked) {
+    } else if (msg.userReaction === "like") {
       return (
         <div className="mt-2 flex justify-end space-x-1 mb-7">
           <Button variant="ghost" size="sm" disabled>

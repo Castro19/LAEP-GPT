@@ -4,6 +4,7 @@ import {
   getLogsByUser,
   updateLog,
   deleteLog,
+  updateChatMessageReaction,
 } from "../db/models/chatlog/chatLogServices.js";
 import { fetchIds } from "../db/models/threads/threadServices.js";
 import { deleteThread } from "../helpers/openAI/threadFunctions.js";
@@ -88,4 +89,24 @@ router.delete("/:logId", async (req, res) => {
   }
 });
 
+// Update Chat Message Reaction
+router.put("/reaction", async (req, res) => {
+  const { logId, botMessageId, userReaction } = req.body;
+
+  try {
+    if (userReaction && botMessageId) {
+      const result = await updateChatMessageReaction(
+        logId,
+        botMessageId,
+        userReaction
+      );
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    console.error("Failed to update chat message reaction: ", error);
+    res
+      .status(500)
+      .json("Failed to update chat message reaction: " + error.message);
+  }
+});
 export default router;

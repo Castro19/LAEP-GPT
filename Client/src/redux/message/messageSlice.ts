@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import sendMessage from "./crudMessage";
+import sendMessage, { sendUserReaction } from "./crudMessage";
 // Types:
 import { ModelType, MessageObjType, MessageSliceType } from "@/types";
 
@@ -18,7 +18,7 @@ type SendMessageReturnType = {
   botMessage: MessageObjType;
   updateStream: (
     // eslint-disable-next-line no-unused-vars
-    updateCallback: (arg0: number, arg1: string) => void
+    updateCallback: (arg0: string, arg1: string) => void
   ) => Promise<string>;
 };
 
@@ -60,7 +60,7 @@ export const fetchBotResponse = createAsyncThunk<
       dispatch(addUserMessage(botMessage)); // Dispatching to add bot message to the state
 
       // Streaming updates for the bot messages
-      await updateStream((botMessageId: number, text: string) => {
+      await updateStream((botMessageId: string, text: string) => {
         dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
       });
 
@@ -70,6 +70,40 @@ export const fetchBotResponse = createAsyncThunk<
         return rejectWithValue({ message: error.message });
       } else {
         // Handle non-error objects if needed
+        return rejectWithValue({ message: "An unknown error occurred" });
+      }
+    }
+  }
+);
+
+export const putUserReaction = createAsyncThunk(
+  "message/putUserReaction",
+  async (
+    {
+      logId,
+      botMessageId,
+      userReaction,
+    }: {
+      logId: string | null;
+      botMessageId: string;
+      userReaction: "like" | "dislike";
+    },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      if (logId) {
+        const result = await sendUserReaction(
+          logId,
+          botMessageId,
+          userReaction
+        );
+        dispatch(updateUserReaction({ id: botMessageId, userReaction }));
+        return result;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue({ message: error.message });
+      } else {
         return rejectWithValue({ message: "An unknown error occurred" });
       }
     }
@@ -95,11 +129,20 @@ const messageSlice = createSlice({
     // Reducer to update an existing bot message in the state (UPDATE)
     updateBotMessage: (
       state,
-      action: PayloadAction<{ id: number; text: string }>
+      action: PayloadAction<{ id: string; text: string }>
     ) => {
       const message = state.msgList.find((msg) => msg.id === action.payload.id);
       if (message) {
         message.text = action.payload.text;
+      }
+    },
+    updateUserReaction: (
+      state,
+      action: PayloadAction<{ id: string; userReaction: "like" | "dislike" }>
+    ) => {
+      const message = state.msgList.find((msg) => msg.id === action.payload.id);
+      if (message) {
+        message.userReaction = action.payload.userReaction;
       }
     },
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
@@ -144,6 +187,7 @@ export const {
   resetMsgList,
   addUserMessage,
   updateBotMessage,
+  updateUserReaction,
   clearError,
   setCurrentChatId,
   toggleNewChat,
