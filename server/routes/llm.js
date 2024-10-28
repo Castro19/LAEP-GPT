@@ -47,7 +47,7 @@ router.post(
     let userFile = null;
     const file = req.file;
 
-    if (file) {
+    if (file && model.title !== "Matching Assistant") {
       try {
         userFile = await handleFileUpload(file);
       } catch (error) {
@@ -223,7 +223,8 @@ async function handleSingleAgentModel({
     threadId,
     "user",
     messageToAdd,
-    userFile ? userFile.id : null
+    userFile ? userFile.id : null,
+    model.title
   );
 
   // Stream assistant's response
