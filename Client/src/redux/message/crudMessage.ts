@@ -50,6 +50,7 @@ export default async function sendMessage(
       {
         method: "POST",
         body: formData,
+        credentials: "include",
       }
     );
 

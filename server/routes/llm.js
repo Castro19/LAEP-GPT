@@ -9,13 +9,14 @@ import {
   addMessageToThread,
   createThread,
 } from "../helpers/openAI/threadFunctions.js";
+import { getUserByFirebaseId } from "../db/models/user/userServices.js";
 import { addThread, fetchIds } from "../db/models/threads/threadServices.js";
 import { getGPT } from "../db/models/gpt/gptServices.js";
 import {
   setupVectorStoreWithFile,
   setupVectorStoreAndUpdateAssistant,
 } from "../helpers/openAI/vectorStoreFunctions.js";
-
+import { formatAvailability } from "../helpers/formatters/availabilityFormatter.js";
 import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
 
 const router = express.Router();
@@ -41,7 +42,7 @@ router.post(
     res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
     res.setHeader("Transfer-Encoding", "chunked");
 
-    const { message, chatId } = req.body;
+    const { message, chatId, userId } = req.body;
     const model = JSON.parse(req.body.currentModel);
     let userFile = null;
     const file = req.file;
@@ -69,7 +70,14 @@ router.post(
       }
     } else {
       try {
-        await handleSingleAgentModel({ model, chatId, userFile, message, res });
+        await handleSingleAgentModel({
+          model,
+          chatId,
+          userFile,
+          message,
+          res,
+          userId,
+        });
       } catch (error) {
         console.error("Error in single-agent model:", error);
         if (!res.headersSent) {
@@ -180,10 +188,11 @@ async function handleSingleAgentModel({
   userFile,
   message,
   res,
+  userId,
 }) {
+  let messageToAdd = message;
   const assistantId = (await getGPT(model.id)).assistantId;
   let { threadId, vectorStoreId } = (await fetchIds(chatId)) || {};
-
   if (!threadId) {
     const threadObj = await createThread();
     threadId = threadObj.id;
@@ -203,11 +212,17 @@ async function handleSingleAgentModel({
     userFile ? userFile.id : null
   );
 
+  if (model.title === "Matching Assistant") {
+    const user = await getUserByFirebaseId(userId);
+    const availability = formatAvailability(user.availability);
+    const interests = user.interests.join(", ");
+    messageToAdd = `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
+  }
   // Add user message to thread
   await addMessageToThread(
     threadId,
     "user",
-    message,
+    messageToAdd,
     userFile ? userFile.id : null
   );
 

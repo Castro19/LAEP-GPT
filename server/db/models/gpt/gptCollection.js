@@ -38,7 +38,6 @@ export const removeGpt = async (gptId) => {
     const result = await gptCollection.deleteOne({
       _id: new ObjectId(gptId),
     });
-    console.log("Result of removing GPT: ", result);
   } catch (error) {
     throw new Error("Error Deleting GPT: " + error.message);
   }

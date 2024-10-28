@@ -4,8 +4,6 @@ const messageAnalyticsCollection = db.collection("messageAnalytics");
 // Create
 export const addMessageAnalytics = async (messageAnalyticsData) => {
   try {
-    console.log("Message Analytics Data: ", messageAnalyticsData);
-
     const result =
       await messageAnalyticsCollection.insertOne(messageAnalyticsData);
     return result;
@@ -19,8 +17,6 @@ export const addMessageAnalytics = async (messageAnalyticsData) => {
 
 // Update
 export const updateMessageAnalytics = async (userMessageId, updateData) => {
-  console.log("User Message ID: ", userMessageId);
-  console.log("Message Update Analytics Data: ", updateData);
   try {
     const result = await messageAnalyticsCollection.updateMany(
       { _id: userMessageId },
