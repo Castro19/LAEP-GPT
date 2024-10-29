@@ -58,8 +58,10 @@ app.use("/analytics", authenticate, messageAnalytics);
 // app.use("/fileOperations", fileOperations);
 
 // Corrected Error handling middleware
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.log("Error:", err);
+  console.error("Error Stack:", err.stack);
   res.status(500).send("Something went wrong...");
 });
 
