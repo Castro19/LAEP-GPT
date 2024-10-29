@@ -16,3 +16,10 @@ export type GptSliceType = {
   error: string | null; // Error when submitting form to create assistant
   lastCreatedGpt?: string; // The assistant that was created last (used to undo the creatinon)
 };
+
+export type CurrentModelType =
+  | "Normal"
+  | "Ethics Assistant"
+  | "Social Justice Assistant"
+  | "Enhanced ESJ Assistant"
+  | "Matching Assistant";

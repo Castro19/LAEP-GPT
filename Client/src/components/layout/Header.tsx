@@ -4,7 +4,7 @@ import Sidebar from "./sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
 import NewChat from "../chat/NewChat";
-
+import { GptType } from "@/types";
 // Redux:
 import {
   useAppSelector,
@@ -28,8 +28,10 @@ const ChatHeader = () => {
     undefined
   );
 
-  const handleModeSelection = (modelId: string | undefined) => {
-    if (modelId) {
+  const handleModeSelection = (model: GptType) => {
+    console.log("model", model);
+    if (model && model.id) {
+      const modelId = model.id;
       if (modelId === "66ec7a68194da294fe19139e") {
         // FIX: Remove hard coded value of multi-agent model is selected
         setSelectedModelId(modelId);

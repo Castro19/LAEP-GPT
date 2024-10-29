@@ -10,19 +10,39 @@ export async function createThread() {
   }
 }
 //add fileId. fileId can be null if user does not submit file
-export async function addMessageToThread(threadId, role, message, fileId) {
+export async function addMessageToThread(
+  threadId,
+  role,
+  message,
+  fileId,
+  modelTitle
+) {
+  let threadMessages;
   try {
-    // null check fileIf
-    const threadMessages = fileId
-      ? await openai.beta.threads.messages.create(threadId, {
-          role: role,
-          content: message,
-          attachments: [{ file_id: fileId, tools: [{ type: "file_search" }] }],
-        })
-      : await openai.beta.threads.messages.create(threadId, {
-          role: role,
-          content: message,
-        });
+    // null check fileId
+    if (fileId !== null) {
+      threadMessages = await openai.beta.threads.messages.create(threadId, {
+        role: role,
+        content: message,
+        attachments: [{ file_id: fileId, tools: [{ type: "file_search" }] }],
+      });
+    } else if (modelTitle === "Matching Assistant") {
+      threadMessages = await openai.beta.threads.messages.create(threadId, {
+        role: role,
+        content: message,
+        attachments: [
+          {
+            file_id: "file-V0WgxfnUxHsZpsds2KqgUfkQ",
+            tools: [{ type: "file_search" }],
+          },
+        ],
+      });
+    } else {
+      threadMessages = await openai.beta.threads.messages.create(threadId, {
+        role: role,
+        content: message,
+      });
+    }
     return threadMessages;
   } catch (error) {
     console.error(

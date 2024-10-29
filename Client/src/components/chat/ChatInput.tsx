@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoSend } from "react-icons/io5";
 import { Loader2 } from "lucide-react";
@@ -134,6 +134,12 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
     }
   };
 
+  useEffect(() => {
+    console.log("currentModel", currentModel);
+    if (currentModel.title === "Matching Assistant") {
+      setSelectedFile(null);
+    }
+  }, [currentModel]);
   return (
     <div className="w-full p-4 bg-white dark:bg-gray-800 sticky bottom-0">
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
@@ -143,10 +149,12 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
         </div>
       )}
       <form onSubmit={handleSubmit} className="flex items-end gap-2">
-        <FileUpload
-          onChange={(file) => setSelectedFile(file)}
-          selectedFile={selectedFile}
-        />
+        {currentModel.title !== "Matching Assistant" && (
+          <FileUpload
+            onChange={(file) => setSelectedFile(file)}
+            selectedFile={selectedFile}
+          />
+        )}
         <textarea
           ref={textareaRef}
           id="ChatInput"

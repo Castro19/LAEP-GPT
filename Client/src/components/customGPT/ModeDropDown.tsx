@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
 // UI
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { GptType } from "@/types";
 
 type ModeDropDownProps = {
   // eslint-disable-next-line no-unused-vars
-  onSelect: (modelId: string | undefined) => void;
+  onSelect: (model: GptType) => void;
 };
 
 const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
@@ -92,7 +93,7 @@ const ModeDropDown = ({ onSelect }: ModeDropDownProps) => {
               </Avatar>
             </div>
             <button
-              onClick={() => onSelect(option.id)}
+              onClick={() => onSelect(option)}
               className="flex justify-between items-center w-full ml-2 text-left text-sm text-gray-700"
             >
               {option.title} {/* Ensure the title or name is displayed */}
