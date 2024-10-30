@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
+import { useAppSelector } from "@/redux";
 // UI
 
-import { GptType, MyUserInfo } from "@/types";
+import { GptType } from "@/types";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   NavigationMenu,
@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/navigation-menu";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { FaLock } from "react-icons/fa";
+import { useToast } from "../ui/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 type ModeDropDownProps = {
   // eslint-disable-next-line no-unused-vars
@@ -22,25 +25,32 @@ type ModeDropDownProps = {
 
 export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const { toast } = useToast();
   const userId = useAppSelector((state) => state.auth.userId);
   const { currentModel, gptList } = useAppSelector((state) => state.gpt);
-  const isDropdownVisible = useAppSelector(
-    (state) => state.layout.isDropdownVisible
-  );
   const { userData } = useAppSelector((state) => state.user);
   const [matchingAssistantLocked, setMatchingAssistantLocked] = useState(true);
+  const [toastDescription, setToastDescription] = useState("");
 
   useEffect(() => {
-    const userMatchingAssistantLocked = (userData: MyUserInfo) => {
-      const { availability, interests } = userData;
+    const { availability, interests } = userData;
 
-      const hasNoAvailability = Object.values(availability).every(
-        (timeSlots) => timeSlots.length === 0
+    const userHasNoAvailability = Object.values(availability).every(
+      (timeSlots) => timeSlots.length === 0
+    );
+
+    const matchingAssistantLocked =
+      interests.length === 0 || userHasNoAvailability;
+
+    if (interests.length === 0 && !userHasNoAvailability) {
+      setToastDescription("Please update your profile's interests");
+    } else if (userHasNoAvailability && interests.length > 0) {
+      setToastDescription("Please update your profile's availability");
+    } else {
+      setToastDescription(
+        "Please update your profile's interests and availability"
       );
-      return interests.length === 0 || hasNoAvailability;
-    };
-    const matchingAssistantLocked = userMatchingAssistantLocked(userData);
+    }
     setMatchingAssistantLocked(matchingAssistantLocked);
   }, [userData]);
   // Transform gptList to prioritize 'name' over 'title'
@@ -48,9 +58,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
     // Prioritize displaying 'name', fallback to 'title' if 'name' is not available
     const title = option.title || "Unnamed Assistant";
     const description = option.desc || "No description available";
-    if (matchingAssistantLocked && option.title === "matchingAssistant") {
-      console.log("matchingAssistantLocked", matchingAssistantLocked);
-    }
+
     return {
       id: option.id,
       title,
@@ -60,10 +68,21 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
     };
   });
 
-  const onViewGPTs = () => {
-    navigate(`/user/${userId}/gpts`);
-    dispatch(layoutActions.toggleDropdown(false));
-    console.log("Is Dropdown Visible: ", isDropdownVisible);
+  const handleLockClick = (gpt: GptType) => {
+    toast({
+      title: `${gpt.title} is locked`,
+      description: toastDescription,
+      action: (
+        <ToastAction
+          altText="Update Profile"
+          onClick={() => {
+            navigate(`/profile/edit/${userId}`);
+          }}
+        >
+          Update Profile
+        </ToastAction>
+      ),
+    });
   };
 
   return (
@@ -86,6 +105,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
                   disabled={option.locked}
                   onClick={() => onSelect(option)}
                   className={option.locked ? "cursor-not-allowed" : ""}
+                  onLockClick={() => handleLockClick(option)}
                 />
               ))}
             </ul>
@@ -98,36 +118,45 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
 
 const ListItem = React.forwardRef<
   React.ElementRef<"button">,
-  React.ComponentPropsWithoutRef<"button"> & { gpt: GptType }
->(({ className, gpt, disabled, children, ...props }, ref) => {
-  const { id, title, urlPhoto } = gpt;
+  React.ComponentPropsWithoutRef<"button"> & {
+    gpt: GptType;
+    onLockClick?: () => void;
+  }
+>(({ className, gpt, disabled, onLockClick, ...props }, ref) => {
+  const { title, urlPhoto } = gpt;
+
   return (
-    <button
-      ref={ref}
-      disabled={disabled}
-      className={cn(
-        "block w-full select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-700 hover:text-white focus:bg-slate-700 focus:text-white",
-        className
-      )}
-      {...props}
-    >
-      <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 mb-4">
+      {disabled ? (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={onLockClick}
+          onKeyDown={(e) => e.key === "Enter" && onLockClick?.()}
+          className="cursor-pointer p-2 hover:text-blue-500"
+        >
+          <FaLock />
+        </div>
+      ) : (
         <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
           <AvatarImage
             src={urlPhoto || "/imgs/test.png"}
             alt="Assistant Photo"
           />
         </Avatar>
-        <div>
-          <div className="text-sm font-medium leading-none">{title}</div>
-          {children && (
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-              {children}
-            </p>
-          )}
-        </div>
-      </div>
-    </button>
+      )}
+      <button
+        ref={ref}
+        disabled={disabled}
+        className={cn(
+          "block w-full select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-700 hover:text-white focus:bg-slate-700 focus:text-white",
+          className
+        )}
+        {...props}
+      >
+        <div className="text-sm font-medium leading-none">{title}</div>
+      </button>
+    </div>
   );
 });
 ListItem.displayName = "ListItem";

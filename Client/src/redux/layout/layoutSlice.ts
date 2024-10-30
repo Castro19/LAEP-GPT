@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { LayoutSliceType } from "@/types";
 
 const initialState: LayoutSliceType = {
-  isSidebarVisible: false,
+  isSidebarVisible: true,
   isDropdownVisible: false,
 };
 
