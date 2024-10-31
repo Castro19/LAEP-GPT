@@ -2,7 +2,6 @@ import { useState } from "react";
 import ModeDropDown from "../customGPT/ModeDropDown";
 import Sidebar from "./sidebar/Sidebar";
 import { BiChat } from "react-icons/bi";
-import { IoIosArrowDown } from "react-icons/io";
 import NewChat from "../chat/NewChat";
 import { GptType } from "@/types";
 // Redux:
@@ -16,9 +15,6 @@ import {
 const ChatHeader = () => {
   // Redux:
   const dispatch = useAppDispatch();
-  const isDropdownVisible = useAppSelector(
-    (state) => state.layout.isDropdownVisible
-  );
   const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
@@ -56,20 +52,8 @@ const ChatHeader = () => {
           <BiChat />
         </button>
         <Sidebar />
-        <div>
-          <button
-            onClick={() =>
-              dispatch(layoutActions.toggleDropdown(!isDropdownVisible))
-            }
-            className="relative inline-flex items-center text-lg hover:text-gray-300"
-          >
-            Chatbot Selection
-            <span className="ml-4">
-              <IoIosArrowDown />
-            </span>
-          </button>
-          {isDropdownVisible && <ModeDropDown onSelect={handleModeSelection} />}
-        </div>
+
+        <ModeDropDown onSelect={handleModeSelection} />
         <NewChat />
       </div>
       {isPopupVisible && ( // popup to confirm if user wants to use the multi-agent model (even w/ long loading times)

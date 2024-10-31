@@ -18,7 +18,7 @@ export type GptSliceType = {
 };
 
 export type CurrentModelType =
-  | "Normal"
+  | "General Assistant"
   | "Ethics Assistant"
   | "Social Justice Assistant"
   | "Enhanced ESJ Assistant"

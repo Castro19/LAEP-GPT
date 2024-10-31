@@ -107,7 +107,6 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <ProfilePage />
-        <Toaster />
       </ProtectedRoute>
     ),
   },
@@ -122,7 +121,12 @@ function App() {
     dispatch(authActions.checkAuthentication());
   }, [dispatch]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster />
+    </>
+  );
 }
 
 const rootElement = document.getElementById("root");
