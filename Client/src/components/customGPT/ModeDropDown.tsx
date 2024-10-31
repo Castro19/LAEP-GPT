@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { FaLock } from "react-icons/fa";
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 
@@ -102,10 +101,10 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
                 <ListItem
                   key={option.id}
                   gpt={option}
-                  disabled={option.locked}
-                  onClick={() => onSelect(option)}
+                  onClick={() =>
+                    option.locked ? handleLockClick(option) : onSelect(option)
+                  }
                   className={option.locked ? "cursor-not-allowed" : ""}
-                  onLockClick={() => handleLockClick(option)}
                 />
               ))}
             </ul>
@@ -120,43 +119,29 @@ const ListItem = React.forwardRef<
   React.ElementRef<"button">,
   React.ComponentPropsWithoutRef<"button"> & {
     gpt: GptType;
-    onLockClick?: () => void;
   }
->(({ className, gpt, disabled, onLockClick, ...props }, ref) => {
+>(({ className, gpt, ...props }, ref) => {
   const { title, urlPhoto } = gpt;
 
   return (
-    <div className="flex items-center space-x-4 mb-4">
-      {disabled ? (
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={onLockClick}
-          onKeyDown={(e) => e.key === "Enter" && onLockClick?.()}
-          className="cursor-pointer p-2 hover:text-blue-500"
-        >
-          <FaLock />
-        </div>
-      ) : (
+    <button
+      ref={ref}
+      className={cn(
+        "block w-full select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-700 hover:text-white focus:bg-slate-700 focus:text-white",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex items-center space-x-4 mb-4">
         <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
           <AvatarImage
             src={urlPhoto || "/imgs/test.png"}
             alt="Assistant Photo"
           />
         </Avatar>
-      )}
-      <button
-        ref={ref}
-        disabled={disabled}
-        className={cn(
-          "block w-full select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-700 hover:text-white focus:bg-slate-700 focus:text-white",
-          className
-        )}
-        {...props}
-      >
         <div className="text-sm font-medium leading-none">{title}</div>
-      </button>
-    </div>
+      </div>
+    </button>
   );
 });
 ListItem.displayName = "ListItem";
