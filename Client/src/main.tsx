@@ -23,10 +23,15 @@ import InterestDropdown from "./components/register/InterestDropdown.tsx";
 import Terms from "./components/register/SignInFlow/Terms.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
+import SplashPage from "./pages/SplashPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <SplashPage />,
+  },
+  {
+    path: "/chat",
     element: (
       <ProtectedRoute>
         <ChatPage />

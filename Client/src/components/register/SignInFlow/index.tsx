@@ -65,7 +65,7 @@ const SignInFlow = () => {
   const handleCompleteProfile = () => {
     handleSave();
     dispatch(setIsNewUser(false));
-    navigate("/"); // Example navigation
+    navigate("/chat"); // Example navigation
   };
 
   return (

@@ -20,7 +20,7 @@ const NewUserRoute = ({ children }: NewUserRouteProps) => {
   }
 
   if (!isNewUser) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/chat" replace />;
   }
 
   return <>{children}</>;

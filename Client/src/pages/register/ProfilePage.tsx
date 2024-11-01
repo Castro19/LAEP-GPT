@@ -29,8 +29,8 @@ function ProfilePage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900">
-      <div className="flex w-full max-w-4xl bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen bg-slate-900">
+      <div className="flex w-full max-w-5xl bg-slate-900 rounded-lg shadow-lg overflow-hidden border-2 border-zinc-800">
         <div className="w-full flex flex-col justify-center align-center p-8">
           <h1 className="font-bold text-2xl text-neutral-800 dark:text-neutral-200 mb-6 self-center">
             User Profile
