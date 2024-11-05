@@ -1,13 +1,16 @@
 import { useEffect, useRef } from "react";
 import { ChatInput, ChatMessage } from "@/components/chat";
+import AssistantSuggestedMessages from "./AssistantSuggestedMessages";
 // Redux:
 import { useAppSelector } from "@/redux";
 
 const ChatContainer = () => {
   const msgList = useAppSelector((state) => state.message.msgList);
+  const isNewChat = useAppSelector((state) => state.message.isNewChat);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isUserAtBottomRef = useRef(true);
 
+  console.log("isNewChat: ", isNewChat);
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;
     if (messagesContainer) {
@@ -35,11 +38,15 @@ const ChatContainer = () => {
 
   return (
     <div className="flex flex-col h-screen justify-between bg-slate-900">
-      <div ref={messagesContainerRef} className="flex-1 overflow-auto p-4">
-        {msgList.map((message) => (
-          <ChatMessage key={message.id} msg={message} />
-        ))}
-      </div>
+      {isNewChat ? (
+        <AssistantSuggestedMessages />
+      ) : (
+        <div ref={messagesContainerRef} className="flex-1 overflow-auto p-4">
+          {msgList.map((message) => (
+            <ChatMessage key={message.id} msg={message} />
+          ))}
+        </div>
+      )}
       <ChatInput messagesContainerRef={messagesContainerRef} />
     </div>
   );
