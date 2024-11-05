@@ -5,8 +5,9 @@ import AssistantSuggestedMessages from "./AssistantSuggestedMessages";
 import { useAppSelector } from "@/redux";
 
 const ChatContainer = () => {
-  const msgList = useAppSelector((state) => state.message.msgList);
-  const isNewChat = useAppSelector((state) => state.message.isNewChat);
+  const { msgList, isNewChat, isLoading } = useAppSelector(
+    (state) => state.message
+  );
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isUserAtBottomRef = useRef(true);
 
@@ -38,7 +39,7 @@ const ChatContainer = () => {
 
   return (
     <div className="flex flex-col h-screen justify-between bg-slate-900">
-      {isNewChat ? (
+      {isNewChat && !isLoading ? (
         <AssistantSuggestedMessages />
       ) : (
         <div ref={messagesContainerRef} className="flex-1 overflow-auto p-4">
