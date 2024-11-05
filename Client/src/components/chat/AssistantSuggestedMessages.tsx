@@ -30,10 +30,10 @@ const AssistantSuggestedMessages = ({
       className: "text-blue-500 dark:text-blue-500",
     },
   ];
-  const handleClick = (message: string) => {
+  const handleClick = async (message: string) => {
     console.log("Clicked: ", message);
-    dispatch(messageActions.updateMsg(message));
-    sendButtonRef.current?.focus();
+    await dispatch(messageActions.updateMsg(message));
+    sendButtonRef.current?.click();
   };
   return (
     <>
