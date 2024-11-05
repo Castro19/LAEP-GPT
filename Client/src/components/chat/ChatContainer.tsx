@@ -15,28 +15,34 @@ const ChatContainer = () => {
 
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;
-    if (messagesContainer) {
-      const handleScroll = () => {
-        const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
-        // Check if the user is at the bottom (allowing a small offset)
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight;
-        isUserAtBottomRef.current = isAtBottom;
-      };
-      messagesContainer.addEventListener("scroll", handleScroll);
+    if (!messagesContainer) return;
 
-      // Clean up the event listener on unmount
-      return () => {
-        messagesContainer.removeEventListener("scroll", handleScroll);
-      };
-    }
-  }, []); // Empty dependency array ensures this runs once on mount
+    isUserAtBottomRef.current = checkIfUserAtBottom();
+
+    const handleScroll = () => {
+      isUserAtBottomRef.current = checkIfUserAtBottom();
+    };
+
+    messagesContainer.addEventListener("scroll", handleScroll);
+    return () => messagesContainer.removeEventListener("scroll", handleScroll);
+  }, [isNewChat]);
 
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;
-    if (messagesContainer && isUserAtBottomRef.current) {
+    if (!messagesContainer) return;
+
+    if (isUserAtBottomRef.current || msgList.length <= 1) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }, [msgList]);
+
+  const checkIfUserAtBottom = () => {
+    const messagesContainer = messagesContainerRef.current;
+    if (!messagesContainer) return true;
+
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
+    return Math.abs(scrollHeight - clientHeight - scrollTop) < 20;
+  };
 
   return (
     <div className="flex flex-col h-screen justify-between bg-slate-900">
