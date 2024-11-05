@@ -141,7 +141,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
     }
   }, [currentModel]);
   return (
-    <div className="w-full mt-4 p-4 bg-white dark:bg-gray-800 sticky bottom-0">
+    <div className="w-full mt-4 p-4 bg-slate-900 sticky bottom-0">
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
       {msg.length > 1500 && (
         <div className="text-yellow-500 text-sm">

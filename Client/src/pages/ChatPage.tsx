@@ -32,7 +32,7 @@ const ChatPage = () => {
   return (
     <ChatPageLayout>
       <div
-        className={`bg-slate-900 text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
+        className={`bg-slate-800 text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
           isSidebarVisible ? "ml-64" : ""
         }`}
       >

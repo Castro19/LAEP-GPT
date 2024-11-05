@@ -11,8 +11,11 @@ import {
   logActions,
   layoutActions,
 } from "@/redux";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   // Redux:
   const dispatch = useAppDispatch();
   const isSidebarVisible = useAppSelector(
@@ -29,9 +32,9 @@ const Sidebar = () => {
   }, [dispatch, userId]);
 
   // Added transition classes and conditional translate classes
-  const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-white dark:bg-gray-900 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
+  const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-slate-900 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-  } border-r border-gray-200 dark:border-gray-700`;
+  } border-r border-zinc-700`;
 
   // Handler for selecting a log to view
   const handleSelectLog = (logId: string) => {
@@ -56,7 +59,7 @@ const Sidebar = () => {
             absolute  right-4
             p-2
             rounded-full
-            bg-gray-200 dark:bg-gray-800
+            bg-zinc-800
             text-gray-600 dark:text-gray-300
             hover:bg-gray-300 dark:hover:bg-gray-600
             focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-300 text-xl
@@ -65,9 +68,15 @@ const Sidebar = () => {
         >
           <MdClose />
         </button>
-        <h2 className="font-semibold text-xl my-2 border-b-2 border-gray-200 dark:border-gray-300 pb-2">
-          Chat Logs
-        </h2>
+        <div className="border-b-2 border-zinc-800 pb-4">
+          <Button
+            className="text-2xl"
+            variant="link"
+            onClick={() => navigate("/")}
+          >
+            PolyLink
+          </Button>
+        </div>
       </div>
       <div
         className={`flex-grow overflow-y-auto overflow-x-hidden scroll-smooth ${styles.customScrollbar}`}

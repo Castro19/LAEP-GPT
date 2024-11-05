@@ -106,7 +106,7 @@ export const signOutUser = createAsyncThunk<
     });
     // Clear the user data in Redux
     dispatch(clearAuthState());
-    navigate("/login");
+    navigate("/");
   } catch (error) {
     console.error("Failed to sign out:", error);
   }
