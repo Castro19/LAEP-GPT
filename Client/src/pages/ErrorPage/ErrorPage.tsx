@@ -9,7 +9,7 @@ const ErrorPage = () => {
       <div className={styles.subtitle}>We couldnt find that page</div>
       <div className={styles.message}>
         <p>404: Go back to</p>
-        <Link to="/">Homepage</Link>
+        <Link to="/chat">Homepage</Link>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { IconUpload } from "@tabler/icons-react";
+import { MdOutlineFileUpload as IconUpload } from "react-icons/md";
 import {
   Tooltip,
   TooltipContent,

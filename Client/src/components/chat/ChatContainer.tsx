@@ -34,7 +34,7 @@ const ChatContainer = () => {
   }, [msgList]);
 
   return (
-    <div className="flex flex-col h-screen justify-between bg-white dark:bg-gray-800 ">
+    <div className="flex flex-col h-screen justify-between bg-slate-900">
       <div ref={messagesContainerRef} className="flex-1 overflow-auto p-4">
         {msgList.map((message) => (
           <ChatMessage key={message.id} msg={message} />
