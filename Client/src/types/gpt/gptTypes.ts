@@ -7,6 +7,7 @@ export type GptType = {
   desc: string; // the displayed description of the assistant
   urlPhoto?: string; // The avatar image of the assistant
   instructions?: string; // The instructions stored on db for assistant
+  suggestedQuestions?: string[]; // The suggested questions for the assistant
 };
 
 export type GptSliceType = {

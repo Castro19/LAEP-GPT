@@ -4,6 +4,7 @@ export type ModelType = {
   desc: string; // The description for the assistant
   urlPhoto?: string; // The optional photo url for the assistant
   instructions?: string; // The instructions stored in db for assistant
+  suggestedQuestions?: string[]; // The suggested questions for the assistant
 };
 
 export type MessageObjType = {
@@ -18,6 +19,7 @@ export type MessageObjType = {
 // Important:
 export interface MessageSliceType {
   currentChatId: string | null; // The log Id associated with the chat
+  msg: string; // The current message being typed
   isNewChat: boolean; // If its a new chat or not
   msgList: MessageObjType[]; // The entire list of messages associated with a chat log
   isLoading: boolean; // If the message is currently being streamed out

@@ -15,7 +15,6 @@ const GPTList = () => {
       if (userId) {
         try {
           const fetchedGptList = await viewGPTs();
-          console.log("FGL: ", fetchedGptList.gptList);
           dispatch(gptActions.initGptList(fetchedGptList.gptList));
         } catch (error) {
           console.error("Error fetching GPT list: ", error);
@@ -34,6 +33,7 @@ const GPTList = () => {
           urlPhoto={asst.urlPhoto}
           title={asst.title}
           desc={asst.desc}
+          suggestedQuestions={asst.suggestedQuestions}
         />
       ))}
     </div>

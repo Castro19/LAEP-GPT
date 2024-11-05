@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoSend } from "react-icons/io5";
 import { Loader2 } from "lucide-react";
@@ -18,34 +18,35 @@ import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  sendButtonRef: React.RefObject<HTMLButtonElement>;
 };
 
-const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
+const ChatInput = ({
+  messagesContainerRef,
+  textareaRef,
+  sendButtonRef,
+}: ChatInputProps) => {
   const dispatch = useAppDispatch();
 
   const currentModel = useAppSelector((state) => state.gpt.currentModel);
-  const { isNewChat, currentChatId, error } = useAppSelector(
+  const { msg, isNewChat, currentChatId, isLoading, error } = useAppSelector(
     (state) => state.message
   );
   const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
-  const [msg, setMsg] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
-  const textareaRef = useRef(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMsg(e.target.value);
+    dispatch(messageActions.updateMsg(e.target.value));
     adjustTextareaHeight(e.target);
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setIsSending(true);
-
-    setMsg("");
+    dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
 
     const fileInput = document.querySelector(
@@ -129,8 +130,6 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           ? error.message
           : "An unknown error occurred",
       });
-    } finally {
-      setIsSending(false);
     }
   };
 
@@ -169,9 +168,10 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
           type="submit"
           variant="outline"
-          disabled={isSending}
+          disabled={isLoading}
+          ref={sendButtonRef}
         >
-          {isSending ? (
+          {isLoading ? (
             <Loader2 className="h-5 w-5 animate-spin " />
           ) : (
             <IoSend className="text-2xl" />

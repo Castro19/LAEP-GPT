@@ -6,10 +6,18 @@ type CustomGPTProps = {
   urlPhoto: string | undefined;
   title: string;
   desc: string;
+  suggestedQuestions: string[] | undefined;
 };
-const CustomGPT = ({ asst, urlPhoto, title, desc }: CustomGPTProps) => {
+const CustomGPT = ({
+  asst,
+  urlPhoto,
+  title,
+  desc,
+  suggestedQuestions,
+}: CustomGPTProps) => {
   const onCardClick = () => {
     console.log("Assistant ID: ", asst);
+    console.log("Suggested Questions: ", suggestedQuestions);
   };
 
   return (
