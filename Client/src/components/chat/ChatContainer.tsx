@@ -19,7 +19,7 @@ const ChatContainer = () => {
       const handleScroll = () => {
         const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
         // Check if the user is at the bottom (allowing a small offset)
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight;
         isUserAtBottomRef.current = isAtBottom;
       };
       messagesContainer.addEventListener("scroll", handleScroll);
