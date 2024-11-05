@@ -4,6 +4,7 @@ export type ModelType = {
   desc: string; // The description for the assistant
   urlPhoto?: string; // The optional photo url for the assistant
   instructions?: string; // The instructions stored in db for assistant
+  suggestedQuestions?: string[]; // The suggested questions for the assistant
 };
 
 export type MessageObjType = {

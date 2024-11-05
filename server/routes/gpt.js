@@ -20,14 +20,11 @@ router.post("/", authorizeRoles(["admin", "teacher"]), async (req, res) => {
   }
 });
 
-// Read
+// Read: Get all GPTs
 router.get("/", async (req, res) => {
   try {
-    const userId = req.user.uid;
-    const result = await fetchGPTs(userId);
-    res
-      .status(200)
-      .json({ message: `GPT GET userID: ${userId}`, gptList: result });
+    const result = await fetchGPTs();
+    res.status(200).json({ gptList: result });
   } catch (error) {
     console.error("Failed to fetch GPTs: ", error);
   }

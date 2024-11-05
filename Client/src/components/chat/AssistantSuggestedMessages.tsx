@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
+import { useAppSelector } from "@/redux";
 
 const AssistantSuggestedMessages = () => {
-  const suggestions = [
-    "Can you please help me find a senior project advisor?",
-    "How was this assistant created?", // phrase this better
-    "How was this assistant created?",
-    "How was this assistant created?",
-  ]; // or your array of 2 or 4 messages
+  const { currentModel } = useAppSelector((state) => state.gpt);
+  console.log("currentModel: ", currentModel);
+  const suggestions = currentModel.suggestedQuestions;
+
   const words = [
     {
       text: "How",
@@ -31,8 +30,8 @@ const AssistantSuggestedMessages = () => {
       <div className="flex flex-col items-center justify-center h-full p-4 gap-y-8">
         <TypewriterEffectSmooth words={words} />
 
-        <div className="grid grid-cols-2 gap-3 max-w-[600px] mx-auto">
-          {suggestions.map((message, index) => (
+        <div className="grid grid-cols-2 gap-3 max-w-[600px] overflow-x-auto mx-auto">
+          {suggestions?.map((message, index) => (
             <Button
               key={index}
               className="p-4 text-md dark:bg-slate-800 hover:dark:bg-slate-700 dark:text-gray-200 rounded-2xl text-left h-full min-h-[120px] text-pretty"

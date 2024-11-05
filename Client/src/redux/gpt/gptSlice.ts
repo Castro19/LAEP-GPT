@@ -17,6 +17,7 @@ export const addGpt = createAsyncThunk<
     urlPhoto: string;
     desc: string;
     instructions: string;
+    suggestedQuestions: string[];
   },
   { rejectValue: CustomErrorType }
 >("gpt/addGpt", async (gptData, { rejectWithValue }) => {
@@ -29,6 +30,7 @@ export const addGpt = createAsyncThunk<
         desc: gptData.desc,
         urlPhoto: gptData.urlPhoto,
         instructions: gptData.instructions,
+        suggestedQuestions: gptData.suggestedQuestions,
       } as GptType;
     } else {
       throw new Error("Failed to create GPT");
@@ -73,6 +75,10 @@ const defaultModel: GptType = {
   desc: "A helpful assistant to help answer any questions you have!",
   urlPhoto: "https://live.staticflickr.com/65535/53736681383_5cc3b12e54_n.jpg",
   instructions: "",
+  suggestedQuestions: [
+    "What are your current features?",
+    "How can you help me through my academic journey at Calpoly?",
+  ],
 };
 
 const initialState: GptSliceType = {
@@ -97,6 +103,7 @@ const gptSlice = createSlice({
           ...newModel,
           urlPhoto: newModel.urlPhoto || "",
           instructions: newModel.instructions || "",
+          suggestedQuestions: newModel.suggestedQuestions || [],
         };
       } else {
         state.currentModel = defaultModel;

@@ -36,15 +36,17 @@ export const createGpt = async (gptData, userId) => {
 };
 
 // Read All
-export const fetchGPTs = async (userId) => {
+export const fetchGPTs = async () => {
   try {
-    const result = await gptModel.viewGPTs(userId);
+    // Potential Future: Certain assistants are only visible to certain users
+    const result = await gptModel.viewGPTs();
 
     const gptList = result.map((gpt) => ({
       id: gpt._id,
       title: gpt.title,
       desc: gpt.desc,
       urlPhoto: gpt.urlPhoto,
+      suggestedQuestions: gpt.suggestedQuestions,
     }));
     return gptList;
   } catch (error) {
