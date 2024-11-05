@@ -5,13 +5,14 @@ import AssistantSuggestedMessages from "./AssistantSuggestedMessages";
 import { useAppSelector } from "@/redux";
 
 const ChatContainer = () => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const sendButtonRef = useRef<HTMLButtonElement>(null);
   const { msgList, isNewChat, isLoading } = useAppSelector(
     (state) => state.message
   );
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isUserAtBottomRef = useRef(true);
 
-  console.log("isNewChat: ", isNewChat);
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;
     if (messagesContainer) {
@@ -40,7 +41,7 @@ const ChatContainer = () => {
   return (
     <div className="flex flex-col h-screen justify-between bg-slate-900">
       {isNewChat && !isLoading ? (
-        <AssistantSuggestedMessages />
+        <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />
       ) : (
         <div ref={messagesContainerRef} className="flex-1 overflow-auto p-4">
           {msgList.map((message) => (
@@ -48,7 +49,11 @@ const ChatContainer = () => {
           ))}
         </div>
       )}
-      <ChatInput messagesContainerRef={messagesContainerRef} />
+      <ChatInput
+        messagesContainerRef={messagesContainerRef}
+        textareaRef={textareaRef}
+        sendButtonRef={sendButtonRef}
+      />
     </div>
   );
 };

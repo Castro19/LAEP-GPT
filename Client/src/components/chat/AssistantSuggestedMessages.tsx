@@ -1,10 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
-import { useAppSelector } from "@/redux";
+import { messageActions, useAppDispatch, useAppSelector } from "@/redux";
 
-const AssistantSuggestedMessages = () => {
+const AssistantSuggestedMessages = ({
+  sendButtonRef,
+}: {
+  sendButtonRef: React.RefObject<HTMLButtonElement>;
+}) => {
   const { currentModel } = useAppSelector((state) => state.gpt);
-  console.log("currentModel: ", currentModel);
+
+  const dispatch = useAppDispatch();
   const suggestions = currentModel.suggestedQuestions;
 
   const words = [
@@ -25,6 +30,11 @@ const AssistantSuggestedMessages = () => {
       className: "text-blue-500 dark:text-blue-500",
     },
   ];
+  const handleClick = (message: string) => {
+    console.log("Clicked: ", message);
+    dispatch(messageActions.updateMsg(message));
+    sendButtonRef.current?.focus();
+  };
   return (
     <>
       <div className="flex flex-col items-center justify-center h-full p-4 gap-y-8">
@@ -35,6 +45,7 @@ const AssistantSuggestedMessages = () => {
             <Button
               key={index}
               className="p-4 text-md dark:bg-slate-800 hover:dark:bg-slate-700 dark:text-gray-200 rounded-2xl text-left h-full min-h-[120px] text-pretty"
+              onClick={() => handleClick(message)}
             >
               {message}
             </Button>

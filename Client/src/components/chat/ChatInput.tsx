@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoSend } from "react-icons/io5";
 import { Loader2 } from "lucide-react";
@@ -18,32 +18,35 @@ import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  sendButtonRef: React.RefObject<HTMLButtonElement>;
 };
 
-const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
+const ChatInput = ({
+  messagesContainerRef,
+  textareaRef,
+  sendButtonRef,
+}: ChatInputProps) => {
   const dispatch = useAppDispatch();
 
   const currentModel = useAppSelector((state) => state.gpt.currentModel);
-  const { isNewChat, currentChatId, isLoading, error } = useAppSelector(
+  const { msg, isNewChat, currentChatId, isLoading, error } = useAppSelector(
     (state) => state.message
   );
   const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
-  const [msg, setMsg] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
-  const textareaRef = useRef(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMsg(e.target.value);
+    dispatch(messageActions.updateMsg(e.target.value));
     adjustTextareaHeight(e.target);
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
-    setMsg("");
+    dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
 
     const fileInput = document.querySelector(
@@ -166,6 +169,7 @@ const ChatInput = ({ messagesContainerRef }: ChatInputProps) => {
           type="submit"
           variant="outline"
           disabled={isLoading}
+          ref={sendButtonRef}
         >
           {isLoading ? (
             <Loader2 className="h-5 w-5 animate-spin " />

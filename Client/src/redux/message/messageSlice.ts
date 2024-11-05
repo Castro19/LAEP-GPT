@@ -114,6 +114,7 @@ const initialState: MessageSliceType = {
   currentChatId: null,
   isNewChat: true,
   msgList: [],
+  msg: "",
   isLoading: false,
   error: null,
 };
@@ -122,6 +123,10 @@ const messageSlice = createSlice({
   name: "message",
   initialState,
   reducers: {
+    // Reducer to update the current message being typed
+    updateMsg: (state, action: PayloadAction<string>) => {
+      state.msg = action.payload;
+    },
     // Reducer to add user or bot message to the state (CREATE)
     addUserMessage: (state, action: PayloadAction<MessageObjType>) => {
       state.msgList.push(action.payload);
@@ -183,6 +188,7 @@ const messageSlice = createSlice({
 });
 
 export const {
+  updateMsg,
   setMsgList,
   resetMsgList,
   addUserMessage,
