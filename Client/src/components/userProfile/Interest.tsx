@@ -1,11 +1,4 @@
-import { useAppSelector } from "@/redux";
-
-const Interest = () => {
-  const { userData } = useAppSelector((state) => state.user);
-
-  // Sort the interests alphabetically
-  const interests = userData?.interests?.slice().sort() ?? [];
-
+const Interest = ({ interests }: { interests: string[] }) => {
   return (
     <div>
       {interests.length > 0 ? (

@@ -7,7 +7,13 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons
 import { useUserData } from "@/hooks/useUserData";
 import { setIsNewUser } from "@/redux/auth/authSlice";
 
-const signInFlowSteps = ["about-me", "interests", "availability", "terms"];
+const signInFlowSteps = [
+  "about-me",
+  "interests",
+  "courses",
+  "availability",
+  "terms",
+];
 
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +38,10 @@ const SignInFlow = () => {
       case "interests":
         setTitle("What are you interested in?");
         setDescription("Tell us what you're interested in");
+        break;
+      case "courses":
+        setTitle("What courses have you taken?");
+        setDescription("Tell us what courses you've taken");
         break;
       case "availability":
         setTitle("When are you available?");

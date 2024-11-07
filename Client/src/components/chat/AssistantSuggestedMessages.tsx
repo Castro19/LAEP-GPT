@@ -31,7 +31,6 @@ const AssistantSuggestedMessages = ({
     },
   ];
   const handleClick = async (message: string) => {
-    console.log("Clicked: ", message);
     await dispatch(messageActions.updateMsg(message));
     sendButtonRef.current?.click();
   };

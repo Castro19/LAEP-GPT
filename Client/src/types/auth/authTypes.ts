@@ -23,4 +23,5 @@ export interface MyUserInfo {
   interests: string[];
   major: string;
   year: string;
+  courses: string[];
 }
