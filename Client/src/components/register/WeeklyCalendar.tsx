@@ -97,7 +97,9 @@ const TimeSlot = ({
   day: string;
   hour: number;
   isAvailable: boolean;
+  // eslint-disable-next-line no-unused-vars
   handleMouseDown: (day: string, hour: number) => void;
+  // eslint-disable-next-line no-unused-vars
   handleMouseEnter: (day: string, hour: number) => void;
   inReadMode: boolean;
 }) => (

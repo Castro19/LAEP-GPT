@@ -1,6 +1,4 @@
 import { useEffect } from "react";
-
-// eslint-disable-next-line react-refresh/only-export-components
 export const useOutsideClick = (
   ref: React.RefObject<HTMLDivElement>,
   // eslint-disable-next-line @typescript-eslint/ban-types

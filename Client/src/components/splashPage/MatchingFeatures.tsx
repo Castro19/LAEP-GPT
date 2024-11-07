@@ -1,5 +1,4 @@
 import { StickyScroll } from "../ui/sticky-scroll-reveal";
-import { Image } from "lucide-react";
 
 const content = [
   {

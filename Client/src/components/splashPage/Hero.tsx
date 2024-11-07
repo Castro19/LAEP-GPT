@@ -1,7 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
 export function Hero() {
-  const navigate = useNavigate();
   const words = [
     {
       text: "Want",
