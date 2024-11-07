@@ -69,13 +69,13 @@ const SignInFlow = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900">
-      <div className="flex w-full max-w-4xl bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-800">
+      <div className="flex border border-white h-3/4 w-3/4 bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
         {/* Left Side: Title and Description Component */}
         <TitleCard title={title} description={description} />
 
         {/* Right Side: Login or Signup Form based on route */}
-        <div className="w-1/2 flex flex-col justify-between">
+        <div className="w-1/2 flex flex-col justify-between text-black dark:text-white">
           <div className="flex flex-col justify-center p-8">
             <Outlet />
           </div>

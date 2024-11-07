@@ -1,5 +1,4 @@
 import GPTHeader from "./GPTHeader";
-import { Toaster } from "@/components/ui/toaster";
 import { ReactNode } from "react";
 import { useAppSelector } from "@/redux";
 
@@ -19,7 +18,6 @@ const GPTLayout = ({ children }: GPTLayoutProps) => {
     >
       <GPTHeader />
       <div>{children}</div>
-      <Toaster />
     </div>
   );
 };

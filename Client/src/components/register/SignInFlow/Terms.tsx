@@ -1,8 +1,8 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useUserData } from "@/hooks/useUserData";
-import { labelStyle } from "@/pages/register/ProfilePage";
 import { useAppSelector } from "@/redux";
+import { labelStyle } from "./AboutMe";
 
 export default function Terms() {
   const { handleShareData } = useUserData();
@@ -13,10 +13,10 @@ export default function Terms() {
   return (
     <LabelInputContainer>
       <Label className={labelStyle}>Terms of Agreement</Label>
-      <p className="text-sm text-gray-900 dark:text-gray-100 mb-4">
+      <p className="text-md text-center text-gray-900 dark:text-gray-100 my-4">
         {description}
       </p>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-center space-x-2 my-4">
         <Checkbox
           id="terms"
           checked={userData?.canShareData}
@@ -24,7 +24,7 @@ export default function Terms() {
         />
         <label
           htmlFor="terms"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100"
+          className="flex items-center justify-center text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100"
         >
           I accept the terms and conditions
         </label>

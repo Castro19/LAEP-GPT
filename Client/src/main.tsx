@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { authActions, store, useAppDispatch } from "./redux/index.ts";
-import ProfilePage from "./pages/register/ProfilePage.tsx";
-
+import { ProfilePage } from "./pages/ProfilePage.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // Pages
 import Register from "./pages/register/Register.tsx";
@@ -19,11 +18,12 @@ import "./index.css";
 import SignInFlow from "./components/register/SignInFlow";
 import AboutMe from "./components/register/SignInFlow/AboutMe.tsx";
 import WeeklyCalendar from "./components/register/WeeklyCalendar.tsx";
-import InterestDropdown from "./components/register/InterestDropdown.tsx";
+import InterestDropdown from "./components/register/SignInFlow/InterestDropdown.tsx";
 import Terms from "./components/register/SignInFlow/Terms.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
+import ProfilePageLayout from "./components/layout/ProfilePage.tsx/ProfilePageLayout.tsx";
 
 const router = createBrowserRouter([
   {
@@ -111,7 +111,9 @@ const router = createBrowserRouter([
     path: "/profile/edit/:userId",
     element: (
       <ProtectedRoute>
-        <ProfilePage />
+        <ProfilePageLayout>
+          <ProfilePage />
+        </ProfilePageLayout>
       </ProtectedRoute>
     ),
   },
