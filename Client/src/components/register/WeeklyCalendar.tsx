@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
 
@@ -85,7 +85,36 @@ const formatTime = (hour: number) => {
   const standardHour = hour % 12 === 0 ? 12 : hour % 12;
   return `${standardHour} ${period}`;
 };
-const WeeklyCalendar = () => {
+
+const TimeSlot = ({
+  day,
+  hour,
+  isAvailable,
+  handleMouseDown,
+  handleMouseEnter,
+  inReadMode,
+}: {
+  day: string;
+  hour: number;
+  isAvailable: boolean;
+  // eslint-disable-next-line no-unused-vars
+  handleMouseDown: (day: string, hour: number) => void;
+  // eslint-disable-next-line no-unused-vars
+  handleMouseEnter: (day: string, hour: number) => void;
+  inReadMode: boolean;
+}) => (
+  <div
+    className={`w-12 h-8 m-0.5 text-xs flex items-center justify-center border select-none ${
+      isAvailable ? "bg-green-800" : "bg-gray-800"
+    } ${inReadMode ? "" : "cursor-pointer"}`}
+    onMouseDown={() => !inReadMode && handleMouseDown(day, hour)}
+    onMouseEnter={() => !inReadMode && handleMouseEnter(day, hour)}
+  >
+    {formatTime(hour)}
+  </div>
+);
+
+const WeeklyCalendar = ({ inReadMode = false }: { inReadMode?: boolean }) => {
   const [isDragging, setIsDragging] = useState(false);
   const { handleAvailabilityChange } = useUserData();
   const userData = useAppSelector((state) => state.user.userData);
@@ -152,30 +181,40 @@ const WeeklyCalendar = () => {
       onMouseLeave={handleMouseUp} // In case the mouse leaves the calendar while dragging
       onMouseUp={handleMouseUp} // Ensure dragging stops when mouse is released
     >
-      {daysOfWeek.map((day) => (
-        <div key={day} className="self-center mb-5">
-          <h3 className="text-base mb-2 dark:text-white">{day}</h3>
-          <div className="flex flex-wrap">
-            {timeSlots.map((hour) => {
-              const isAvailable = availability[day]?.some(
-                ([start, end]) => hour >= start && hour <= end
-              );
-              return (
-                <div
-                  key={hour}
-                  className={`w-12 h-8 m-0.5 text-xs flex flex-wrap items-center justify-center border cursor-pointer select-none ${
-                    isAvailable ? "bg-green-500" : "bg-gray-200"
-                  }`}
-                  onMouseDown={() => handleTimeSlotMouseDown(day, hour)}
-                  onMouseEnter={() => handleTimeSlotMouseEnter(day, hour)}
-                >
-                  {formatTime(hour)}
+      {daysOfWeek.map((day) => {
+        const displayDay = inReadMode && availability[day]?.length === 0;
+
+        return (
+          <Fragment key={day}>
+            {!displayDay && (
+              <div
+                key={day}
+                className="flex flex-col justify-center align-center flex-wrap p-4"
+              >
+                <h3 className="text-base mb-2 dark:text-white">{day}</h3>
+                <div className="flex justify-center align-center flex-wrap">
+                  {timeSlots.map((hour) => {
+                    const isAvailable = availability[day]?.some(
+                      ([start, end]) => hour >= start && hour <= end
+                    );
+                    return (
+                      <TimeSlot
+                        key={hour}
+                        day={day}
+                        hour={hour}
+                        isAvailable={isAvailable}
+                        handleMouseDown={handleTimeSlotMouseDown}
+                        handleMouseEnter={handleTimeSlotMouseEnter}
+                        inReadMode={inReadMode}
+                      />
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+              </div>
+            )}
+          </Fragment>
+        );
+      })}
     </div>
   );
 };

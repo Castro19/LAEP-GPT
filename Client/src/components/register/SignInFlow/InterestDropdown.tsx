@@ -7,8 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUserData } from "@/hooks/useUserData";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { RootState } from "@/redux/store";
 import { useAppSelector } from "@/redux";
 
@@ -35,8 +35,13 @@ const csInterests = [
 
 const name = "interests";
 
-const InterestDropdown = (): JSX.Element => {
+const InterestDropdown = ({
+  dropdownRef,
+}: {
+  dropdownRef?: React.RefObject<HTMLDivElement>;
+}): JSX.Element => {
   const [position, setPosition] = useState<"item-aligned" | "popper">("popper");
+
   const { handleAddInterest, handleRemoveInterest } = useUserData();
   const { userData } = useAppSelector((state: RootState) => state.user);
   useEffect(() => {
@@ -70,15 +75,13 @@ const InterestDropdown = (): JSX.Element => {
           onValueChange={(value) => handleAddInterest(value)}
           value={""} // Controlled component
         >
-          <SelectTrigger id={name}>
-            <SelectValue
-              placeholder="Select an Interest"
-              style={{ color: "black" }}
-            />
+          <SelectTrigger id={name} className="text-black dark:text-black">
+            <SelectValue placeholder="Select an Interest" />
           </SelectTrigger>
           <SelectContent
             position={position}
             data-testid={`home-dropdown-${name}-list`}
+            ref={dropdownRef}
           >
             {csInterests.map((value: string, index: number) => (
               <SelectItem

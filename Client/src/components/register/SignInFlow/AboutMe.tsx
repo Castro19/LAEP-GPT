@@ -3,7 +3,6 @@ import { Label } from "../../../components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserData } from "@/hooks/useUserData";
 import { userActions, useAppDispatch, useAppSelector } from "@/redux";
-import { labelStyle } from "../../../pages/register/ProfilePage";
 import { RootState } from "@/redux/store";
 
 const years = [
@@ -14,6 +13,8 @@ const years = [
   { value: "5", label: "Year 5" },
   { value: "6", label: "Year 6" },
 ];
+
+export const labelStyle = "underline text-lg self-center";
 
 const AboutMe = () => {
   const { handleChange } = useUserData();
@@ -29,7 +30,7 @@ const AboutMe = () => {
           value={userData?.bio || ""}
           placeholder="Tell us about yourself..."
           onChange={handleChange}
-          style={{ height: "100px" }}
+          style={{ height: "150px" }}
         />
       </LabelInputContainer>
       <LabelInputContainer>
