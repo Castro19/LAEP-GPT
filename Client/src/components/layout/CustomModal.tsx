@@ -19,7 +19,6 @@ export function AnimatedModalDemo({
   title: string;
   excludeRefs?: React.RefObject<HTMLElement>[];
 }) {
-  console.log(excludeRefs);
   return (
     <div className="flex items-center justify-center">
       <Modal>

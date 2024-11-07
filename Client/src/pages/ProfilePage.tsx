@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
 import { useRef } from "react";
+import useCalpolyData from "@/hooks/useCalpolyData";
 
 export const labelStyle = "text-lg self-center";
 
@@ -35,9 +36,10 @@ const yearMapping = (year: string) => {
 export function ProfilePage() {
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const interestDropdownRef = useRef<HTMLDivElement>(null);
+  const classDropdownRef = useRef<HTMLDivElement>(null);
   const { handleSave } = useUserData();
+  const { courses, interests } = useCalpolyData();
 
   const handleSaveToast = () => {
     handleSave();
@@ -90,16 +92,20 @@ export function ProfilePage() {
               <Label className="text-2xl font-bold underline justify-self-center p-2">
                 Interests
               </Label>
-              <Interest />
+              <Interest interests={userData.interests ?? []} />
             </div>
 
             <div className="mt-4">
               <AnimatedModalDemo
                 onSave={handleSaveToast}
                 title="Modify Interests"
-                excludeRefs={[dropdownRef]}
+                excludeRefs={[interestDropdownRef]}
               >
-                <InterestDropdown dropdownRef={dropdownRef} />
+                <InterestDropdown
+                  name="Interests"
+                  items={interests}
+                  dropdownRef={interestDropdownRef}
+                />
               </AnimatedModalDemo>
             </div>
           </div>
@@ -110,16 +116,25 @@ export function ProfilePage() {
           <div className="flex flex-col justify-between h-full py-6">
             <div className="flex flex-col justify-center items-center">
               <Label className="text-2xl font-bold underline justify-self-center p-2">
-                Classes
+                Courses
               </Label>
+              <Interest
+                interests={
+                  userData.courses.map((course) => course.split(": ")[0]) ?? []
+                }
+              />
             </div>
 
             <AnimatedModalDemo
               onSave={handleSaveToast}
               title="Modify Classes"
-              excludeRefs={[dropdownRef]}
+              excludeRefs={[classDropdownRef]}
             >
-              <InterestDropdown dropdownRef={dropdownRef} />
+              <InterestDropdown
+                name="Courses"
+                dropdownRef={classDropdownRef}
+                items={courses}
+              />
             </AnimatedModalDemo>
           </div>
         </Card>

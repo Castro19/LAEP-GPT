@@ -19,6 +19,7 @@ const initialState: UserState = {
     bio: "",
     year: "",
     interests: [],
+    courses: [],
     availability: {
       Monday: [],
       Tuesday: [],
@@ -77,6 +78,7 @@ const userSlice = createSlice({
         bio: action.payload.bio ?? initialState.userData.bio,
         year: action.payload.year ?? initialState.userData.year,
         interests: action.payload.interests ?? initialState.userData.interests,
+        courses: action.payload.courses ?? initialState.userData.courses,
         availability: {
           Monday:
             action.payload.availability?.Monday ??

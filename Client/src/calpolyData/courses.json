@@ -1,0 +1,834 @@
+[
+    {
+        "title": "Fundamentals of Computer Science",
+        "number": "101",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Appropriate Math Placement Level or MATH 117 with a grade of C- or better or MATH 118 with a grade of C- or better or consent of instructor",
+        "description": "Basic principles of algorithmic problem solving and programming using methods of top-down design, stepwise refinement and procedural abstraction.  Basic control structures, data types, and input/output.  Introduction to the software development process:  design, implementation, testing and documentation.  The syntax and semantics of a modern programming language.  Credit not available for students who have taken CSC/CPE 108.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 101.",
+        "tech_elective": false
+    },
+    {
+        "title": "Computing for All I",
+        "number": "121",
+        "units": "4 units",
+        "prerequisite": "Prerequisite MATH 115 or appropriate Math Placement Level",
+        "description": "Fundamentals of computational thinking in the study of non-computing disciplines.  Ethical and social considerations of computing.  Data gathering and representation.  Logic and computational reasoning.  Data and procedural abstraction.  Problem decomposition.  Code patterns for algorithmic problem-solving.  3 lectures, 1 activity.  Fulfills GE Area B4 (GE Area B1 for students on the 2019-20 or earlier catalogs); a grade of C- or better is required in one course in this GE Area.",
+        "tech_elective": false
+    },
+    {
+        "title": "Computing for All II",
+        "number": "122",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 121",
+        "description": "Fundamentals of computational thinking in the study of non-computing disciplines.  Ethical and social considerations of computing.  Reading code and identifying patterns.  Problem Decomposition.  Algorithms and automation.  Software Engineering.  Creative Computing.  3 lectures, 1 laboratory.  Fulfills GE Area B4 (GE Area B1 for students on the 2019-20 or earlier catalogs); a grade of C- or better is required in one course in this GE Area.",
+        "tech_elective": false
+    },
+    {
+        "title": "Introduction to Computing",
+        "number": "123",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Basic computer literacy",
+        "description": "Use of a supportive software development environment to design, develop, and test applications in a selected topic domain that demonstrates the potential of careers in computing.  An introduction to computing and to the selected topic domain.  The Class Schedule will list topic selected.  No programming experience required.  Not for students with credit in CPE/CSC 103 or CPE/CSC 203.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 123.",
+        "tech_elective": false
+    },
+    {
+        "title": "Special Problems for Undergraduates",
+        "number": "200",
+        "units": "1-2 units",
+        "prerequisite": "Prerequisite Consent of instructor",
+        "description": "Individual investigation, research, studies, or surveys of selected problems.  Total credit limited to 4 units, with a maximum of 2 units per quarter.",
+        "tech_elective": false
+    },
+    {
+        "title": "Data Structures",
+        "number": "202",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 101 with a grade of C- or better or consent of instructor",
+        "description": "Introduction to data structures and analysis of algorithms.  Abstract datatypes.  Specification and implementation of advanced data structures.  Theoretical and empirical analysis of recursive and iterative algorithms.  Software performance evaluation and testing techniques.  Not open to students with credit in CSC/CPE 108.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 202.",
+        "tech_elective": false
+    },
+    {
+        "title": "Project-Based Object-Oriented Programming and Design",
+        "number": "203",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 202 with a grade of C- or better or consent of instructor",
+        "description": "Object-oriented programming and design with applications to project construction.  Introduction to class design, interfaces, inheritance, generics, exceptions, streams, and testing.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 203.",
+        "tech_elective": false
+    },
+    {
+        "title": "Introduction to Computer Organization",
+        "number": "225",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 202",
+        "description": "Introduction to computer systems.  Simple instruction set architecture and the computer hardware needed to implement that architecture.  Machine and assembly language programming.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 225.",
+        "tech_elective": false
+    },
+    {
+        "title": "Programming for Engineering Students",
+        "number": "231",
+        "units": "2 units",
+        "prerequisite": "Prerequisite MATH 142 PHYS 121 or PHYS 131 or PHYS 141",
+        "description": "Programming techniques and procedures with applications to engineering problems.  Introduction to numerical methods and simulation.  Credit not allowed for CSC, Software Engineering or CPE majors.  Course may be offered in classroom-based or online format.  2 activities.",
+        "tech_elective": false
+    },
+    {
+        "title": "Computer Programming for Scientists and Engineers",
+        "number": "232",
+        "units": "3 units",
+        "prerequisite": "Prerequisite MATH 118 or equivalent",
+        "description": "Computer programming, with an emphasis on procedural programming, taught using a language hosted by applications commonly used in science and engineering.  Credit not allowed for CSC, CPE or Software Engineering majors.  2 lectures, 1 activity.",
+        "tech_elective": false
+    },
+    {
+        "title": "C and Unix",
+        "number": "234",
+        "units": "3 units",
+        "prerequisite": "Prerequisite MATH 142",
+        "description": "The C programming language and the UNIX programming environment.  Operators, standard I/O functions, strings, pointers and arrays, data types and storage classes.  Unix shell programming and basic I/O system calls.  Credit not allowed for CSC, Software Engineering or CPE majors.  3 lectures.",
+        "tech_elective": false
+    },
+    {
+        "title": "Discrete Structures",
+        "number": "248",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 202 and CSCCPE 203 with grades of C- or better or consent of instructor",
+        "description": "Structures of computer science:  logic, sets, relations, functions, graphs and trees.  Propositional and predicate logic.  Applications of predicate logic to preconditions, postconditions, and proof techniques.  Complexity of algorithms.  Not open to students with credit in CSC 141 or CSC 348.  4 lectures.  Replaces CSC 348.",
+        "tech_elective": false
+    },
+    {
+        "title": "Selected Topics",
+        "number": "290",
+        "units": "1-4 units",
+        "prerequisite": "Prerequisite Open to undergraduate students and consent of instructor",
+        "description": "Directed group study of selected topics.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  1 to 4 lectures.",
+        "tech_elective": false
+    },
+    {
+        "title": "Professional Responsibilities",
+        "number": "300",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Completion of GE Area A3 with a grade of C- or better CSCCPE 357 and junior standing",
+        "description": "The responsibilities of the computer science professional.  The ethics of science and the IEEE/ACM Software Engineering Code of Ethics.  Quality tradeoffs, software system safety, intellectual property, history of computing and the social implications of computers in the modern world.  Applications to ethical dilemmas in computing.  Technical presentation methods and practice.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Software Engineering without Programming",
+        "number": "304",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Junior standing one course in GE Area B4 with a grade of C- or better GE Area B1 for students on the 2019-20 or earlier catalogs",
+        "description": "Introduction to software engineering for students pursuing non-computing degree objectives.  Software development lifecycles.  Stakeholders and roles in the software lifecycle.  Product vision, user personas, and user stories.  Software requirements.  User interface prototyping.  Data description for applications.  Software architectures.  Software testing.  Not open to students in CPE, CSC, or SE.  4 lectures.",
+        "tech_elective": false
+    },
+    {
+        "title": "Individual Software Design and Development",
+        "number": "305",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 203",
+        "description": "Practical software development skills needed for construction of mid-sized production-quality software modules, using the CSC upper division programming language.  Topics include inheritance, exceptions, and memory and disk-based dynamic data structures.  Students must complete an individual programming project of mid-level complexity.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Introduction to Software Engineering",
+        "number": "307",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 248 or CSC 348 and CPECSC 357",
+        "description": "Requirements, specification, design, implementation, testing and verification of large software systems.  Study and use of the software process and software engineering methodologies; working in project teams.  Not open to students with credit in CSC 308.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Computational Thinking for Educators",
+        "number": "312",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Completion of GE Area C2 and completion of GE Area B4 with a grade of C- or better GE Area B1 for students on the 2019-20 or earlier catalog",
+        "description": "Fundamentals of computational thinking in the context of K-12 Education.  Ethical and social considerations of computing.  Data gathering and representation.  Logic and computational reasoning.  Data and procedural abstraction.  Problem decomposition.  Code patterns for algorithmic problem-solving.  Course may be offered in classroom-based, online, or hybrid format.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Teaching Computing",
+        "number": "313",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 202 or CSC 314",
+        "description": "An introduction to pedagogical methods and practical techniques for computer science education:  selecting appropriate content, designing assignments and activities, evaluating student learning, and evaluating teaching efficacy.  Hands-on guided curricular design activities and real-world practice.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Software Design and Data Structures for Educators",
+        "number": "314",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 312",
+        "description": "A programming-based introduction to software design techniques, data structures, and algorithms, appropriate for K-12 computer science teachers.  Satisfies a requirement for the computer science specific supplementary authorization for teaching K-12 computer science in California.  Course offered online only.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Practical Computer Security for Everyone",
+        "number": "320",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Junior standing completion of GE Area A with grades of C- or better and one course in GE Area B4 with a grade of C- or better GE Area B1 for students on the 2019-20 or earlier catalogs",
+        "description": "Exploration of practical computer security in everyday life for non-majors.  Covering the principles, technologies and tools used to secure the Internet and keep ourselves digitally secure, including:  privacy and anonymity, web and data security, cryptography, malware, authentication and access control.  Course may be offered in classroom-based or online format.  3 lectures, 1 laboratory.  Fulfills GE Area Upper-Division B (GE Areas B5, B6, or B7 for students on the 2019-20 catalog).",
+        "tech_elective": false
+    },
+    {
+        "title": "Introduction to Computer Security",
+        "number": "321",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 357",
+        "description": "Survey of topics in computer system and network security, including protection, access control, distributed access control, operating system security, applied cryptography, network security, firewalls, secure coding practices, and case studies from real-world systems.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 321.",
+        "tech_elective": true
+    },
+    {
+        "title": "Cryptography Engineering",
+        "number": "323",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 357",
+        "description": "An introduction to the theory and practice of building secure, cryptographic systems.  Core cryptographic primitives.  Implementation, evaluation and subversion of widely deployed cryptographic products and protocols.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Introduction to Privacy: Policy and Technology",
+        "number": "325",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Completion of GE Area A3 with a grade of C- or better CPECSC 203 CSC 300 or PHIL 323",
+        "description": "Introduction to policies and technologies related to digital privacy.  Legal decisions and policies, domestic and global cultural expectations, and privacy related technologies including applications to surveillance, big data, websites, mobile, and privacy by design.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Music Programming",
+        "number": "344",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 248 or CSC 348 and CPECSC 357",
+        "description": "Music-producing programs.  Software synthesizers:  oscillators, coupled oscillators, wavetable synthesis.  Sound processing units/filters:  LTI, FIR, IIR, nonlinear.  Physics of sound, mathematical foundations of sound synthesis and filtering, existing sound formats (both sampled and MIDI).  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Design and  Analysis of Algorithms",
+        "number": "349",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 102 and CPECSC 103 or CPECSC 202 and CPECSC 203 MATH 142 and CSC 248 CSC 348 or MATH 248",
+        "description": "Intermediate and advanced algorithms and their analysis.  Mathematical, geometrical, and graph algorithms.  NP-complete problems.  Additional topics will be chosen from pattern matching, file compression, cryptology, dynamic and linear programming, and exhaustive search.  Course may be offered in classroom-based or online format.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Computing for Interactive Arts Capstone I",
+        "number": "350",
+        "units": "2 units",
+        "prerequisite": "Prerequisite ART 384 CSCCPE 103 or CSCCPE 202 and junior standing",
+        "description": "Definition and specification of a team-based creative collaboration on a digital interactive art project (e.g.  animation, video game, interactive media display, etc).  Research and techniques, project planning and project team organization, prototype creation.  1 lecture, 1 laboratory.  Crosslisted as ART/CSC 350.",
+        "tech_elective": false
+    },
+    {
+        "title": "Systems Programming",
+        "number": "357",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 102 and CSCCPE 103 with a grade of C- or better or consent of instructor or CSCCPE 202 and CSCCPE 203 with a grade of C- or better or consent of instructor and CSC 225 or CPEEE 229 or CPEEE 233",
+        "description": "C programming language from a system programming perspective.  Standard C language including operators, I/O functions, and data types in the context of system functions.  Unix commands, shell scripting, file system, editors.  Course may be offered in classroom-based or online format.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 357.",
+        "tech_elective": false
+    },
+    {
+        "title": "Introduction to Networked, Distributed, and Parallel Computing",
+        "number": "364",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 203",
+        "description": "Multisystem/multiprocessor coordination and computing.  Networking:  OSI stack, routing, link layer, mobile, wireless, and applications.  Distributed and Parallel Computing:  parallelism, concurrency, coordination, shared memory, messaging, task and data decomposition, and design and implementation challenges.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Introduction to Database Systems",
+        "number": "365",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 248 or CSC 348 or CPECSC 102 and CPECSC 103 and MATH 248 or CPECSC 202 and CPECSC 203 and MATH 248",
+        "description": "Basic principles of database management systems (DBMS) and of DBMS application development.  DBMS objectives, systems architecture, database models with emphasis on Entity-Relationship and Relational models, data definition and manipulation languages, the Structured Query Language (SQL), database design, application development tools.  Course may be offered in classroom-based or online format.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Database Modeling, Design and Implementation",
+        "number": "366",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 365",
+        "description": "The database modeling problem.  Database modeling levels:  external, conceptual, logical and physical.  Database models:  entity-relationship, relational, object-oriented, semantic, and object-relational.  Normal forms.  Distributed database design.  Functional analysis of database applications and transaction specification, design, and implementation.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Introduction to Distributed Computing",
+        "number": "369",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 102 and CSCCPE 103 or CSCCPE 202 and CSCCPE 203 and one of the following STAT 301 STAT 312 STAT 321 or STAT 350",
+        "description": "Introduction to distributed computing paradigms and cloud computing.  Modern distributed computing infrastructures.  Problem-solving in a distributed computing environment.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Game Design",
+        "number": "371",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 102 and CSCCPE 103 or CSCCPE 202 and junior standing",
+        "description": "In-depth study of game design including rules, player interaction, and storytelling.  Exploration of effective use of sound, art, and game controls in creating meaningful play.  Development of fully functioning and engaging games, following standard domain-specific software development processes and using physical prototyping and playtesting.  Current, industry-tested game engines.  Course may be offered in classroom-based or online format.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Introduction to Mixed Reality",
+        "number": "377",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 202 Recommended ART 376",
+        "description": "Project-based study and application of Mixed Reality (MR) topics including integrated mixed reality development environments, Human Computer Interaction (HCI) peripherals, 3D environment scanning, physics interaction, diminished reality, motion capture, facial recognition, and visualization hardware.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Interactive Entertainment Engineering",
+        "number": "378",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 102 and CPECSC 103 or CPECSC 202 and junior standing",
+        "description": "Project-based, software oriented, introductory study of interactive entertainment.  Discussion and evaluation of classic and historically influential games.  Exploration of concepts in game design and development.  Topics may include interactive storytelling, game physics, game AI, character development, animation, and development of virtual worlds.  Projects require significant programming.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Special Problems",
+        "number": "400",
+        "units": "1-4 units",
+        "prerequisite": "Prerequisite Consent of instructor",
+        "description": "Individual investigation, research, studies or surveys of selected problems.  Total credit limited to 4 units.",
+        "tech_elective": true
+    },
+    {
+        "title": "Software Requirements Engineering",
+        "number": "402",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 309",
+        "description": "Software requirements elicitation, analysis and documentation.  Team process infrastructure and resource estimation to support appropriate levels of quality.  Software architectural design.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Software Construction",
+        "number": "405",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 305 and CSC 402",
+        "description": "Design and construction of sizeable software products.  Technical management of software development teams.  Software development process models, software design, documentation, quality assurance during development, software unit and integration testing; CASE tools, development environments, test tools, configuration management.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Senior Project - Software Deployment",
+        "number": "406",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 405",
+        "description": "Deployment of a sizeable software product by a student team.  Software maintenance and deployment economic issues.  Management of deployed software:  version control, defect tracking and technical support.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Current Topics in Software Engineering",
+        "number": "409",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 309",
+        "description": "Selected topics in software engineering.  Topics may include program generation, quality assurance, formal methods, software metrics, design methods, testing, or software development processes.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Software Evaluation",
+        "number": "410",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349 and one of the following STAT 301 STAT 312 STAT 321 or STAT 350",
+        "description": "Theory and practice of evaluation of software and software systems.  Design of experiments for measuring software performance, measuring software output quality, analytical modeling for capacity planning, workload characterization and benchmarking, selection of appropriate software evaluation metrics and criteria.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Binary Exploitation: Tools and Techniques",
+        "number": "421",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 321 CSC 300 or PHIL 323",
+        "description": "Introduction to the theory and practice of finding vulnerabilities in production systems with a focus on the evolution of vulnerabilities over time.  Topics include buffer overflows, return-oriented-programming attacks, return to libc attacks, heap attacks, and common tools.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Network Security",
+        "number": "422",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 364 or CPE 464",
+        "description": "Introduction to network security, including denial of service, botnets, access control, routing attacks, transport layer attacks, tunneling mechanisms, VPNs, IDS, firewalls, penetration testing, key distribution, email security, jamming, and wireless security.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 422.",
+        "tech_elective": true
+    },
+    {
+        "title": "Software Security",
+        "number": "424",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 309 CPECSC 321",
+        "description": "Principles behind secure software design including threat models, trust management, common vulnerabilities and mitigation techniques, robust software development, isolation of untrusted code, auditability, and testing.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Wireless Security",
+        "number": "425",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 321 Recommended CSC 300 or PHIL 323 CSC 364 or CPE 464",
+        "description": "Comprehensive overview of wireless networks and system security.  Security issues and solutions in emerging wireless access networks and systems as well as multi-hop wireless networks.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 425.",
+        "tech_elective": true
+    },
+    {
+        "title": "Current Topics in Computer Security",
+        "number": "429",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 321 and CPECSC 357",
+        "description": "Selected topics in emerging areas of computer security.  Potential topics include:  network and web security, critical infrastructure protection, embedded systems security, malware analysis, mobile security, and digital forensics, among others.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  Course may be offered in classroom-based, online, or hybrid format.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Programming Languages",
+        "number": "430",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349",
+        "description": "Programming language design through evaluator implementation.  Expressions, functions, environments, closures, mutation, objects, type systems, and syntactic abstraction.  Syntactic, semantic, and static analysis properties.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Compiler Construction",
+        "number": "431",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 430",
+        "description": "Intermediate code representations, memory management, functions and parameter passing, code transformations and optimizations, code generation, register allocation.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 431.",
+        "tech_elective": true
+    },
+    {
+        "title": "Mobile Application Development",
+        "number": "436",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 357",
+        "description": "Inception, development, testing, and deployment of mobile applications.  Introduction to tools, libraries, and frameworks for one or more mobile platforms and devices.  Emphasis on software engineering best practices for developing entrepreneurial or humanitarian mobile-centric applications.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Dynamic Web Development",
+        "number": "437",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 203",
+        "description": "Project-based study of web-based three-tiered applications, including current best practices and tools for design, implementation and testing of browser interface, serverside business logic, object-relational mapping, databases, and web services.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Theory of Computation I",
+        "number": "445",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 248 or CSC 348",
+        "description": "Theory of formal languages and automata.  Turing machines.  Chomsky hierarchy.  Theory of decidability and computability.  4 lectures.",
+        "tech_elective": false
+    },
+    {
+        "title": "Bioinformatics Algorithms",
+        "number": "448",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349",
+        "description": "Introduction to the use of computers to solve problems in molecular biology.  The algorithms, languages, and databases important in determining and analyzing nucleic and protein sequences and their structure.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computing for Interactive Arts Capstone II",
+        "number": "450",
+        "units": "2 units",
+        "prerequisite": "Prerequisite ARTCSC 350",
+        "description": "Team-based design, construction and deployment of a collaborative interactive computational art project typically found in the fields of animation, game design, and interactive media.  Management of inter-disciplinary teams, documentation, creative development, testing, and assessment.  2 activities.  Crosslisted as ART/CSC 450.",
+        "tech_elective": false
+    },
+    {
+        "title": "Introduction to Operating Systems",
+        "number": "453",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 357 and CSC 225 CPEEE 229 or CPEEE 233",
+        "description": "Introduction to sequential and multiprogramming operating systems; kernel calls, interrupt service mechanisms, scheduling, files and protection mechanisms, conventional machine attributes that apply to operating system implementation, virtual memory management, and I/O control systems.  Course may be offered in classroom-based or online format.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 453.",
+        "tech_elective": false
+    },
+    {
+        "title": "Implementation of Operating Systems",
+        "number": "454",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 453",
+        "description": "Design and implementation of multiprogramming kernels, systems programming methodology, interprocess communications, synchronization, device drivers and network access methods.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 454.",
+        "tech_elective": true
+    },
+    {
+        "title": "Current Topics in Computer Systems",
+        "number": "458",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 357",
+        "description": "Selected aspects of design, implementation and analysis of networks, advanced operating and distributed systems.  Topics may include process management, virtual memory, process communication, context switching, file system designs, persistent objects, process and data migration, load balancing, security and networks.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 458.",
+        "tech_elective": true
+    },
+    {
+        "title": "Knowledge Discovery from Data",
+        "number": "466",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349 and one of the following STAT 252 STAT 302 STAT 312 STAT 321 or STAT 350",
+        "description": "Overview of modern knowledge discovery from data (KDD) methods and technologies.  Topics in data mining (association rules mining, classification, clustering), information retrieval, web mining.  Emphasis on use of KDD techniques in modern software applications.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Database Management Systems Implementation",
+        "number": "468",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 365",
+        "description": "Data structures and algorithms used in the implementation of database systems.  Implementation of data and transaction managers:  access methods interfaces, concurrency control and recovery, query processors and optimizers.  Introduction to implementation of distributed database systems.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Distributed Systems",
+        "number": "469",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 357",
+        "description": "Foundations of distributed systems, distributed hash tables (peer-to-peer systems), failure detectors, synchronization, election, inter-process communication, consensus, replication, key-value stores, and measurements.  3 lectures, 1 laboratory.  Crosslisted as CSC/CPE 469.",
+        "tech_elective": true
+    },
+    {
+        "title": "Introduction to Computer Graphics",
+        "number": "471",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 357",
+        "description": "Graphics software development and use of application programming interfaces for 3D graphics.  The graphics pipeline, modeling, geometric and viewing transforms, lighting and shading, rendering, interaction techniques and graphics hardware.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 471.",
+        "tech_elective": true
+    },
+    {
+        "title": "Advanced Rendering Techniques",
+        "number": "473",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 471",
+        "description": "Illumination models, reflectance, absorption, emittance, Gouraud shading, Phong shading, raytracing polyhedra and other modeling primitives, coherence, acceleration methods, radiosity, form factors, advanced algorithms.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computer Animation",
+        "number": "474",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 471",
+        "description": "Basic and advanced algorithms for generating sequences of synthetic images.  Interpolation in time and space, procedural and keyframe animation, particle systems, dynamics and inverse kinematics, morphing and video.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Real-Time 3D Computer Graphics Software",
+        "number": "476",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 471",
+        "description": "Basic and advanced algorithms for real-time, interactive, 3D graphics software.  Modeling (polygon mesh, height field, scene graph), real-time rendering and shading (visibility processing, LOD, texture and light maps), collision detection (bounding volumes, complexity management), interactive controls, multi-player game technology, game engine architecture.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 476.",
+        "tech_elective": true
+    },
+    {
+        "title": "Scientific and Information Visualization",
+        "number": "477",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349",
+        "description": "Basic data processing (magnitude, grouping and segmentation), visualization design, cognition and perception, spatial data visualizations (2D and 3D, e.g.  GIS data, medical data) information data visualization, spatial encoding, color encoding, and interaction.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Current Topics in Computer Graphics",
+        "number": "478",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 471",
+        "description": "Selected aspects of the design, implementation and analysis of computer graphics.  Topics may include rendering, modeling, visualization, animation, virtual reality, computer vision, multimedia, and perception issues.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Knowledge Based Systems",
+        "number": "481",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 480",
+        "description": "In-depth treatment of knowledge representation, utilization and acquisition in a programming environment.  Emphasis on the use of domain-specific knowledge to obtain expert performance in programs.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Speech and Language Processing",
+        "number": "482",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 466 or CSC 480 or graduate standing Recommended CSC 349",
+        "description": "Introduction to natural language processing theory; speech processing; review of recent advancements.  Topics include:  tokenization, part-of-speech tagging, word-sense disambiguation, natural language understanding, natural language generation, data mining, voice processing, vocalization, semantic networks, intelligent assistants, computational linguistics, stylistics and machine learning.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "User-Centered Interface Design and Development",
+        "number": "484",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 308 junior standing",
+        "description": "Introduction to the importance of user-centered principles in the design of good interfaces and effective human-computer interaction.  Topics include:  study of human characteristics affected by interface design, effective requirements data collection and analysis, user-centered approaches to software engineering, and evaluation of interface and interaction quality.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Human-Computer Interaction Theory and Design",
+        "number": "486",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 308",
+        "description": "Application of the theories of human-computer interaction to the task of user-centered design.  Survey of techniques for studying and involving users in different aspects of the design process, and demonstration of where and when applicable.  Combining of theoretical understanding with practical experience to design solutions to problems facing interactive systems designers.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Deep Learning",
+        "number": "487",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349 and MATH 206 or MATH 244 Recommended CSC 466 or CSC 480",
+        "description": "Overview of current topics in Deep Learning.  Theory and practice of Deep Learning (DL) paradigms.  Convolutional Neural Networks (NN), Recurrent NN, Dropout, Momentum Gradient Descent, Batch Normalization, Adversarial and Siamese NN, and new developments.  Emphasis on using DL to solve a real-world application of significant scope.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Selected Advanced Topics",
+        "number": "490",
+        "units": "1-4 units",
+        "prerequisite": "Prerequisite Consent of instructor",
+        "description": "Directed group study of selected topics for advanced students.  Open to undergraduate and graduate students.  Class schedule will list topic selected.  Total credit limited to 8 units.  1 to 4 lectures.",
+        "tech_elective": true
+    },
+    {
+        "title": "Senior Project I",
+        "number": "491",
+        "units": "2 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 309 and consent of instructor",
+        "description": "Selection and completion of a project by individuals or team which is typical of problems which graduates must solve in their fields of employment.  Project may include students from other disciplines.  Formulation of outline, literature review, and project schedule.",
+        "tech_elective": false
+    },
+    {
+        "title": "Senior Project II",
+        "number": "492",
+        "units": "2 units",
+        "prerequisite": "Prerequisite CSC 491 and consent of instructor",
+        "description": "Selection and completion of a project by individuals or team which is typical of problems which graduates must solve in their fields of employment.  Project may include students from other disciplines.  Project results are presented in a formal report.",
+        "tech_elective": false
+    },
+    {
+        "title": "Selected Advanced Laboratory",
+        "number": "496",
+        "units": "1-4 units",
+        "prerequisite": "Prerequisite Consent of instructor",
+        "description": "Directed group laboratory study of selected topics for advanced students.  Open to undergraduate and graduate students.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  1 to 4 laboratories.",
+        "tech_elective": true
+    },
+    {
+        "title": "Research Senior Project I",
+        "number": "497",
+        "units": "2 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 309 and consent of instructor",
+        "description": "Individual research activity under faculty supervision.  Problem statement and literature review.  Intended for those planning to pursue graduate studies or research-oriented employment.",
+        "tech_elective": false
+    },
+    {
+        "title": "Research Senior Project II",
+        "number": "498",
+        "units": "2 units",
+        "prerequisite": "Prerequisite CSC 497 and consent of instructor",
+        "description": "Continued individual research activity under faculty supervision.  Prototype development, analysis, documentation.  Intended for those planning to pursue graduate studies or research-oriented employment.",
+        "tech_elective": false
+    },
+    {
+        "title": "Directed Study",
+        "number": "500",
+        "units": "1-4 units",
+        "prerequisite": "Prerequisite Fully classified graduate standing and consent of instructor",
+        "description": "Individual directed study of advanced topics.  Total credit limited to 4 units.  Credit/No Credit grading only.",
+        "tech_elective": false
+    },
+    {
+        "title": "Software Engineering I",
+        "number": "508",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 307 or CSC 308 and graduate standing or consent of instructor",
+        "description": "In-depth study of requirements engineering, software project management, formal specifications and object-oriented analysis.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Software Engineering II",
+        "number": "509",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 508 and graduate standing or consent of instructor",
+        "description": "In-depth study of software modeling and design.  Formal design methodologies.  Design patterns.  Detailed case studies of existing projects.  Tools and methods for designing large software systems.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computing Education Research and Practice",
+        "number": "513",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Graduate standing or senior standing",
+        "description": "An overview of the current landscape of computing education research and practice, covering key research findings about how people learn computing, issues of diversity and inclusion in computer science, and a discussion of how and why we should teach everyone computing.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computer Architecture",
+        "number": "515",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPE 315 or CPE 333 and graduate standing or consent of instructor",
+        "description": "Comparative study and design of multiprocessor, dataflow, RISC, high level language and other new computer architectures.  VLSI processor design techniques.  3 seminars, 1 laboratory.  Crosslisted as CPE/CSC 515.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computer Security",
+        "number": "521",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 321 and graduate standing",
+        "description": "Exploration of advanced topics in computer security with an emphasis on research topics.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Advanced Network Security",
+        "number": "522",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 321 and CPE 464 or graduate standing",
+        "description": "Exploration of network security and design.  Particular emphasis will be placed on the threat modeling and security mechanisms design.  Laboratory exploration of network security through possible theoretical and experimental experience in system design.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "System Security",
+        "number": "524",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 357 or graduate standing",
+        "description": "Exploration of system security and design.  Particular emphasis will be placed on vulnerabilities and defenses in components, component selection, component interaction, sourcing, and system design.  Laboratory exploration of system security through a hands-on experience in system design.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Languages and Translators",
+        "number": "530",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 430 and graduate standing or consent of instructor",
+        "description": "Advanced programming language and translator concepts.  Language concepts to be covered will be selected from current state-of-the-art languages and current issues in language design.  Compiler concepts will include retargetable code generation, use of translator-writing systems, and error recovery.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Theory of Computation II",
+        "number": "540",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 445 and graduate standing or consent of instructor",
+        "description": "Advanced topics in theoretical computer science from such areas as automata theory, cellular automata theory, computational complexity, and program verification.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Advanced Algorithm Design and Analysis",
+        "number": "549",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 349",
+        "description": "Advanced study of algorithmic topics including dynamic programming, network flows, and linear programming.  Complexity classes and reductions.  NP-complete problems, with the introduction of approximation algorithms.  4 lectures.",
+        "tech_elective": true
+    },
+    {
+        "title": "Operating Systems",
+        "number": "550",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSCCPE 453 and graduate standing or consent of instructor",
+        "description": "General concepts of computer architecture and operating systems.  Design features of advanced computers, general time-sharing systems and schemes for dynamic memory allocation, scheduling and protection.  Dynamic linkage between subroutines.  Intercommunication between input/output and processors.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Database Systems",
+        "number": "560",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 365 and graduate standing or consent of instructor",
+        "description": "Current topics in database systems:  distributed databases and transactions, nested and long-running transactions, distributed concurrency control, semantic and object-oriented data models, database systems for non-traditional applications:  engineering design databases, active, logic, temporal, multimedia, and real-time databases.  4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computer Networks: Research Topics",
+        "number": "564",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 364 or CPE 464 and graduate standing or consent of instructor",
+        "description": "Exploration of advanced topics in emerging computer networking technologies; focus on leading edge computer network research topics.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 564.",
+        "tech_elective": true
+    },
+    {
+        "title": "Topics in Advanced Data Mining",
+        "number": "566",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 466 or CSC 480 or CSC 582",
+        "description": "Advanced topics in the areas of data mining, knowledge discovery in data, machine learning, information retrieval and intelligent analysis of information.  The Class Schedule will list topic selected.  Total credit limited to 8 units.  4 lectures.",
+        "tech_elective": true
+    },
+    {
+        "title": "Distributed Computing",
+        "number": "569",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 248 or CSC 348 and CPECSC 357 or graduate standing and consent of instructor",
+        "description": "Principles and practices in distributed computing:  interprocess communications, group communications, client-server model, distributed objects, message queue system, distributed services, mobile agents, object space, Internet protocols.  Distributed algorithms:  consensus protocols, global state protocols.  Fault tolerance:  classification of faults, replication.  3 lectures, 1 laboratory.  Crosslisted as CPE/CSC 569.",
+        "tech_elective": true
+    },
+    {
+        "title": "Current Topics in Computer Science",
+        "number": "570",
+        "units": "2-4 units",
+        "prerequisite": "Prerequisite Graduate standing and evidence of satisfactory preparation in computer science",
+        "description": "Directed group study of selected topics for graduate students.  Topics will normally consist of continuations of those in CSC 520, CSC 530, CSC 540, CSC 550, CSC 560 and CSC 580, and other topics as needed.  The Class Schedule will list topic selected.  Topic credit limited to 12 units.  2 to 4 seminars.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computer Graphics",
+        "number": "572",
+        "units": "4 units",
+        "prerequisite": "Prerequisite Successful completion of CSCCPE 471 and graduate standing or consent of instructor",
+        "description": "Advanced topics in computer graphics with emphasis on leading edge computer graphics technologies and advanced topics in graphics fundamentals.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Advanced Compute Shaders in Computer Graphics",
+        "number": "574",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CPECSC 471 or graduate standing",
+        "description": "Advanced methods and techniques that utilize general-purpose computing on modern graphics processing units (GPUs) to achieve state-of-the-art effects with physics, animation and lighting.  Parallel processing paradigms on the GPU with compute shaders.  3 lectures, 1 laboratory.",
+        "tech_elective": false
+    },
+    {
+        "title": "Artificial Intelligence",
+        "number": "580",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 480 and graduate standing or consent of instructor",
+        "description": "Current research in the field of artificial intelligence with emphasis on cooperative agents, distributed agents, and decision making in complex, concurrent environments.  AI programming in a distributed environment.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computer Support for Knowledge Management",
+        "number": "581",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 480 or consent of instructor",
+        "description": "Methods and techniques that computer-based systems can provide to make the management of knowledge and information in digital form easier for the user.  Emphasis on support for knowledge-intensive activities performed by users.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Computational Linguistics",
+        "number": "582",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 482 or consent of instructor",
+        "description": "Research-based review of recent advancements in computational linguistics and natural language processing.  Topics selected from:  language morphology, natural language generation, feature extraction and unification, meaning representations, stylistics, discourse analysis and machine learning methods.  3 lectures, 1 laboratory.",
+        "tech_elective": true
+    },
+    {
+        "title": "Advanced Deep Learning",
+        "number": "587",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 487 or Data Science Minor and DATA 402 or graduate standing",
+        "description": "Current research in the field of deep learning.  Topics such as supervised, unsupervised, and semi-supervised learning; representation learning; probabilistic and generative models; reinforcement learning; application domains, including image, audio, and natural language processing; ethical concerns and fairness.  4 lectures.",
+        "tech_elective": true
+    },
+    {
+        "title": "Thesis Seminar",
+        "number": "590",
+        "units": "1 unit",
+        "prerequisite": "Prerequisite Graduate standing or consent of instructor",
+        "description": "Preparation for conducting research in the field of computer science, through discussions, selected readings, and student presentations.  1 seminar.",
+        "tech_elective": false
+    },
+    {
+        "title": "Cooperative Education Experience",
+        "number": "595",
+        "units": "12 units",
+        "prerequisite": "Prerequisite Graduate standing and consent of instructor",
+        "description": "Advanced study analysis and full-time work experience in student's career field; current innovations, practices, and problems in administration, supervision, and organization of business, industry, and government.  Must have demonstrated ability to do independent work and research in career field.  A fully-developed formal report and evaluation by work supervisor required.  Credit/No Credit grading only.",
+        "tech_elective": false
+    },
+    {
+        "title": "Research in Computer Science I",
+        "number": "596",
+        "units": "2 units",
+        "prerequisite": "Prerequisite Consent of instructor",
+        "description": "Individual research or activity under faculty supervision, beginning work in preparation for the master's thesis.",
+        "tech_elective": false
+    },
+    {
+        "title": "Research in Computer Science II",
+        "number": "597",
+        "units": "2 units",
+        "prerequisite": "Prerequisite CSC 596 and consent of instructor",
+        "description": "Individual research activity under faculty supervision, continuing work in preparation for the master's thesis.",
+        "tech_elective": false
+    },
+    {
+        "title": "Thesis",
+        "number": "599",
+        "units": "4 units",
+        "prerequisite": "Prerequisite CSC 590 CSC 498 or CSC 597 graduate standing and consent of instructor",
+        "description": "Individual research or activity under faculty supervision leading to an acceptable Master's thesis.",
+        "tech_elective": false
+    }
+]

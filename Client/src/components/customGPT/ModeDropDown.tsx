@@ -90,23 +90,25 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
         <NavigationMenuItem>
           <NavigationMenuTrigger>{currentModel.title}</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-white dark:bg-gray-900">
-              <li className="row-span-3 mb-3 mr-3 border-b pb-3 lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+            <ul className="grid p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] lg:auto-rows-min bg-white dark:bg-gray-900">
+              <li className="row-span-1 mb-3 mr-3 border-b pb-3 lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
                 <div className="text-lg font-medium">{currentModel.title}</div>
                 <p className="text-sm leading-tight text-muted-foreground">
                   {currentModel.desc}
                 </p>
               </li>
-              {transformedGptList.map((option) => (
-                <ListItem
-                  key={option.id}
-                  gpt={option}
-                  onClick={() =>
-                    option.locked ? handleLockClick(option) : onSelect(option)
-                  }
-                  className={option.locked ? "cursor-not-allowed" : ""}
-                />
-              ))}
+              <div className="grid gap-2">
+                {transformedGptList.map((option) => (
+                  <ListItem
+                    key={option.id}
+                    gpt={option}
+                    onClick={() =>
+                      option.locked ? handleLockClick(option) : onSelect(option)
+                    }
+                    className={option.locked ? "cursor-not-allowed" : ""}
+                  />
+                ))}
+              </div>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

@@ -11,6 +11,20 @@ export function useUserData() {
   );
   const userData = useAppSelector((state: RootState) => state.user.userData);
 
+  const handleAddCourse = (value: string) => {
+    if (!userData.courses.includes(value)) {
+      const updatedCourses = [...userData.courses, value];
+      dispatch(updateUserData({ courses: updatedCourses }));
+    }
+  };
+
+  const handleRemoveCourse = (value: string) => {
+    const updatedCourses = userData.courses.filter(
+      (course) => course !== value
+    );
+    dispatch(updateUserData({ courses: updatedCourses }));
+  };
+
   const handleAddInterest = (value: string) => {
     if (!userData.interests.includes(value)) {
       const updatedInterests = [...userData.interests, value];
@@ -49,6 +63,8 @@ export function useUserData() {
     registerError,
     handleAddInterest,
     handleRemoveInterest,
+    handleAddCourse,
+    handleRemoveCourse,
     handleChange,
     handleAvailabilityChange,
     handleShareData,

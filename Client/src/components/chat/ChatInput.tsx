@@ -134,7 +134,6 @@ const ChatInput = ({
   };
 
   useEffect(() => {
-    console.log("currentModel", currentModel);
     if (currentModel.title === "Matching Assistant") {
       setSelectedFile(null);
     }

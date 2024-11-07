@@ -217,6 +217,10 @@ async function handleSingleAgentModel({
     const availability = formatAvailability(user.availability);
     const interests = user.interests.join(", ");
     messageToAdd = `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
+  } else if (model.title === "CSCI Classes Assistant") {
+    const user = await getUserByFirebaseId(userId);
+    const year = user.year;
+    messageToAdd = `Give me classes for a ${year} student\n${message}`;
   }
   // Add user message to thread
   await addMessageToThread(

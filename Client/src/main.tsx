@@ -24,6 +24,8 @@ import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
 import ProfilePageLayout from "./components/layout/ProfilePage.tsx/ProfilePageLayout.tsx";
+import courses from "./calpolyData/courses.json";
+import interests from "./calpolyData/interests.json";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +59,18 @@ const router = createBrowserRouter([
       },
       {
         path: "interests",
-        element: <InterestDropdown />,
+        element: <InterestDropdown name="Interests" items={interests} />,
+      },
+      {
+        path: "courses",
+        element: (
+          <InterestDropdown
+            name="Courses"
+            items={courses.map(
+              (course) => `CSC${course.number}: ${course.title}`
+            )}
+          />
+        ),
       },
       {
         path: "availability",

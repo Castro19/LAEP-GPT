@@ -25,11 +25,9 @@ const ChatHeader = () => {
   );
 
   const handleModeSelection = (model: GptType) => {
-    console.log("model", model);
     if (model && model.id) {
       const modelId = model.id;
-      if (modelId === "66ec7a68194da294fe19139e") {
-        // FIX: Remove hard coded value of multi-agent model is selected
+      if (model.title === "Enhanced ESJ Assistant") {
         setSelectedModelId(modelId);
         dispatch(layoutActions.toggleDropdown(false));
         setIsPopupVisible(true);

@@ -6,44 +6,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useUserData } from "@/hooks/useUserData";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { RootState } from "@/redux/store";
+import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
-
-const underlineStyle = "underline";
-
-const csInterests = [
-  "Artificial Intelligence",
-  "Cybersecurity",
-  "Data Science",
-  "Software Engineering",
-  "Web Development",
-  "Mobile Development",
-  "Game Development",
-  "Machine Learning",
-  "Computer Vision",
-  "Natural Language Processing",
-  "Virtual Reality",
-  "Robotics",
-  "Blockchain",
-  "Quantum Computing",
-  "Augmented Reality",
-  "3D Printing",
-];
-
-const name = "interests";
+import { RootState } from "@/redux/store";
 
 const InterestDropdown = ({
+  name,
+  items,
   dropdownRef,
 }: {
+  name: string;
+  items: string[];
   dropdownRef?: React.RefObject<HTMLDivElement>;
 }): JSX.Element => {
   const [position, setPosition] = useState<"item-aligned" | "popper">("popper");
-
-  const { handleAddInterest, handleRemoveInterest } = useUserData();
-  const { userData } = useAppSelector((state: RootState) => state.user);
+  const userData = useAppSelector((state: RootState) => state.user.userData);
+  const {
+    handleAddCourse,
+    handleRemoveCourse,
+    handleAddInterest,
+    handleRemoveInterest,
+  } = useUserData();
+  // eslint-disable-next-line no-unused-vars
+  let handleAddItem: (value: string) => void;
+  // eslint-disable-next-line no-unused-vars
+  let handleRemoveItem: (value: string) => void;
+  let selectedItems: string[];
+  if (name === "Courses") {
+    handleAddItem = (value: string) => {
+      handleAddCourse(value);
+    };
+    handleRemoveItem = (value: string) => {
+      handleRemoveCourse(value);
+    };
+    selectedItems =
+      userData.courses.map((course) => course.split(": ")[0]) ?? [];
+  } else {
+    handleAddItem = (value: string) => {
+      handleAddInterest(value);
+    };
+    handleRemoveItem = (value: string) => {
+      handleRemoveInterest(value);
+    };
+    selectedItems = userData.interests;
+  }
   useEffect(() => {
     const adjustDropdownPosition = () => {
       const selectElem = document.getElementById(name);
@@ -65,30 +73,35 @@ const InterestDropdown = ({
     return () => {
       window.removeEventListener("resize", adjustDropdownPosition);
     };
-  }, []);
+  }, [name]);
 
   return (
     <>
       <LabelInputContainer>
-        <Label className={underlineStyle}>Interests</Label>
+        <Label className="underline">{name}</Label>
         <Select
-          onValueChange={(value) => handleAddInterest(value)}
+          onValueChange={(value) => handleAddItem(value)}
           value={""} // Controlled component
         >
           <SelectTrigger id={name} className="text-black dark:text-black">
-            <SelectValue placeholder="Select an Interest" />
+            <SelectValue
+              placeholder={
+                name === "Interests" ? "Select an Interest" : "Select a Course"
+              }
+            />
           </SelectTrigger>
           <SelectContent
             position={position}
             data-testid={`home-dropdown-${name}-list`}
             ref={dropdownRef}
           >
-            {csInterests.map((value: string, index: number) => (
+            {items.map((value: string, index: number) => (
               <SelectItem
                 key={index}
                 value={value}
-                onClick={() => handleAddInterest(value)}
+                onClick={() => handleAddItem(value)}
                 data-testid={`home-dropdown-${name}-item-${index}`}
+                className="whitespace-normal break-words"
               >
                 {value}
               </SelectItem>
@@ -97,13 +110,14 @@ const InterestDropdown = ({
         </Select>
       </LabelInputContainer>
       <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap" }}>
-        {userData?.interests?.map((interest: string, index: number) => (
+        {selectedItems.map((item: string, index: number) => (
           <Button
             key={index}
-            onClick={() => handleRemoveInterest(interest)}
+            onClick={() => handleRemoveItem(item)}
             style={{ margin: "5px" }}
+            className="whitespace-normal h-auto py-2"
           >
-            {interest} ✕
+            {item} ✕
           </Button>
         ))}
       </div>
