@@ -38,6 +38,7 @@ export default async function sendMessage(
     formData.append("message", msg);
     formData.append("currentModel", JSON.stringify(currentModel));
     formData.append("userId", userId);
+    formData.append("userMessageId", userMessageId);
     if (file) {
       formData.append("file", file);
     }
