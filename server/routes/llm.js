@@ -36,6 +36,9 @@ const messageRateLimiter = rateLimit({
   keyGenerator: (req) => req.body.userId, // requests are tracked per firebase userId
 });
 
+// Add this constant at the top with other constants
+const MAX_FILE_SIZE_MB = 1; // Adjust this value as needed
+
 router.post(
   "/respond",
   messageRateLimiter,
@@ -45,16 +48,31 @@ router.post(
     res.setHeader("Transfer-Encoding", "chunked");
 
     const { message, chatId, userId, userMessageId } = req.body;
-    console.log("RQB: ", req.body);
     const model = JSON.parse(req.body.currentModel);
     let userFile = null;
     const file = req.file;
 
-    if (file && model.title !== "Matching Assistant") {
-      try {
-        userFile = await handleFileUpload(file);
-      } catch (error) {
-        console.error("Error uploading file to Azure Blob Storage:", error);
+    // Add file size validation
+    if (file) {
+      // Check if file is PDF
+      if (!file.mimetype || !file.mimetype.includes("pdf")) {
+        return res.status(400).send("Only PDF files are allowed");
+      }
+
+      // Check file size (file.size is in bytes, convert MB to bytes for comparison)
+      const fileSizeInMB = file.size / (1024 * 1024);
+      if (fileSizeInMB > MAX_FILE_SIZE_MB) {
+        return res
+          .status(413)
+          .send(`File size must be less than ${MAX_FILE_SIZE_MB}MB`);
+      }
+
+      if (model.title !== "Matching Assistant") {
+        try {
+          userFile = await handleFileUpload(file);
+        } catch (error) {
+          console.error("Error uploading file to OpenAI File Storage:", error);
+        }
       }
     }
 

@@ -40,7 +40,6 @@ export async function handleFileUpload(file) {
     // Step 2: Upload the local file to OpenAI
     const openAIResponse = await uploadFileToOpenAI(localFilePath);
 
-    // (Optional) Step 3: Delete the local file after uploading
     fs.unlinkSync(localFilePath); // Clean up local file after upload
 
     return openAIResponse;

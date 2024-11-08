@@ -158,6 +158,9 @@ const messageSlice = createSlice({
     resetMsgList: (state) => {
       state.msgList = [];
     },
+    updateError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
     // Reducer to clear the error state
     clearError: (state) => {
       state.error = null;
@@ -194,6 +197,7 @@ export const {
   addUserMessage,
   updateBotMessage,
   updateUserReaction,
+  updateError,
   clearError,
   setCurrentChatId,
   toggleNewChat,

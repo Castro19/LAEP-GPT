@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { MdOutlineFileUpload as IconUpload } from "react-icons/md";
 import {
   Tooltip,
@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAppSelector } from "@/redux";
+import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 
 export const FileUpload = ({
   onChange,
@@ -16,13 +16,29 @@ export const FileUpload = ({
   onChange?: (file: File | null) => void;
   selectedFile?: File | null;
 }) => {
+  const dispatch = useAppDispatch();
   const { isSidebarVisible } = useAppSelector((state) => state.layout);
+  const { error } = useAppSelector((state) => state.message);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const iconStyles = selectedFile ? "text-emerald-500" : "text-white";
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    const file = files && files.length > 0 ? files[0] : null;
+
+    // Check file size (1MB = 1000000 bytes)
+    if (file && file.size > 1000000) {
+      dispatch(
+        messageActions.updateError(
+          "File size limit exceeded. Please upload a file smaller than 1MB."
+        )
+      );
+      return;
+    } else if (error) {
+      dispatch(messageActions.clearError());
+    }
+
     if (onChange) {
-      onChange(files && files.length > 0 ? files[0] : null);
+      onChange(file);
     }
   };
 
@@ -30,6 +46,17 @@ export const FileUpload = ({
     e.preventDefault(); // Prevent form submission
     fileInputRef.current?.click();
   };
+
+  useEffect(() => {
+    // 1MB Limit
+    if (selectedFile?.size && selectedFile.size > 10000000) {
+      dispatch(
+        messageActions.updateError(
+          "File size limit exceeded. Please upload a smaller file."
+        )
+      );
+    }
+  }, [selectedFile, dispatch]);
 
   return (
     <div className="flex items-center">
