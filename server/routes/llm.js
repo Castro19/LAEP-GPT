@@ -18,6 +18,8 @@ import {
 } from "../helpers/openAI/vectorStoreFunctions.js";
 import { formatAvailability } from "../helpers/formatters/availabilityFormatter.js";
 import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
+import { updateMessageAnalytics } from "../db/models/analytics/messageAnalytics/messageAnalyticsServices.js";
+import calculateCost from "../helpers/openAI/costFunction.js";
 
 const router = express.Router();
 
@@ -42,7 +44,8 @@ router.post(
     res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
     res.setHeader("Transfer-Encoding", "chunked");
 
-    const { message, chatId, userId } = req.body;
+    const { message, chatId, userId, userMessageId } = req.body;
+    console.log("RQB: ", req.body);
     const model = JSON.parse(req.body.currentModel);
     let userFile = null;
     const file = req.file;
@@ -77,6 +80,7 @@ router.post(
           message,
           res,
           userId,
+          userMessageId,
         });
       } catch (error) {
         console.error("Error in single-agent model:", error);
@@ -189,6 +193,7 @@ async function handleSingleAgentModel({
   message,
   res,
   userId,
+  userMessageId,
 }) {
   let messageToAdd = message;
   const assistantId = (await getGPT(model.id)).assistantId;
@@ -232,29 +237,88 @@ async function handleSingleAgentModel({
   );
 
   // Stream assistant's response
-  await runAssistantAndStreamResponse(threadId, assistantId, res);
+  await runAssistantAndStreamResponse(
+    threadId,
+    assistantId,
+    res,
+    userMessageId
+  );
 }
 
-async function runAssistantAndStreamResponse(threadId, assistantId, res) {
+async function runAssistantAndStreamResponse(
+  threadId,
+  assistantId,
+  res,
+  userMessageId
+) {
   const run = openai.beta.threads.runs.stream(threadId, {
     assistant_id: assistantId,
   });
 
+  let headersSent = false;
+
+  // Generic event handler to catch all events and their types
+  run.on("event", async (event) => {
+    // Check if this is the completion event
+    if (event.event === "thread.run.completed") {
+      const runData = event.data;
+      if (runData.usage) {
+        // Fire and forget - don't await the analytics update
+        const cost = calculateCost(runData.usage, runData.model);
+        const tokenAnalytics = {
+          modelType: runData.model,
+          promptTokens: runData.usage.prompt_tokens,
+          completionTokens: runData.usage.completion_tokens,
+          totalTokens: runData.usage.total_tokens,
+          promptCost: cost.promptCost,
+          completionCost: cost.completionCost,
+          totalCost: cost.totalCost,
+        };
+
+        // Run analytics update in background
+        updateMessageAnalytics(userMessageId, tokenAnalytics).catch((error) =>
+          console.error("Failed to update message analytics:", error)
+        );
+      }
+    }
+  });
+
+  run.on("start", () => {
+    console.log("Stream started");
+    if (!headersSent) {
+      res.setHeader("Content-Type", "text/plain");
+      res.setHeader("Transfer-Encoding", "chunked");
+      headersSent = true;
+    }
+  });
+
   run.on("textDelta", (textDelta) => {
-    res.write(textDelta.value);
+    try {
+      res.write(textDelta.value);
+    } catch (error) {
+      console.error("Error writing text delta:", error);
+    }
   });
 
   run.on("end", () => {
     console.log("Stream completed");
-    res.end();
+    try {
+      res.end();
+    } catch (error) {
+      console.error("Error ending response:", error);
+    }
   });
 
-  run.on("errors", (error) => {
-    console.error("Error streaming from OpenAI:", error);
-    if (!res.headersSent) {
-      res.status(500).send("Failed to process stream.");
-    } else {
-      res.end();
+  run.on("error", (error) => {
+    console.error("Stream error:", error);
+    try {
+      if (!headersSent) {
+        res.status(500).send("Failed to process stream.");
+      } else {
+        res.end();
+      }
+    } catch (error) {
+      console.error("Error handling stream error:", error);
     }
   });
 }
