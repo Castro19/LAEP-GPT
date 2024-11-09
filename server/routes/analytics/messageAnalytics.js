@@ -29,8 +29,7 @@ router.post("/", async (req, res) => {
     // still need to add responseTime, inputMessage, outputMessage, tokensUsed, and completed_at after message stream is completed
     // user can also update this data by adding userReaction
 
-    const result = await createMessageAnalytics(messageAnalyticsData);
-    console.log("Result of Post: ", result);
+    await createMessageAnalytics(messageAnalyticsData);
     res.status(200).send("Message created successfully");
   } catch (error) {
     res.status(500).send("Failed to create message: " + error.message);
@@ -38,8 +37,6 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/", async (req, res) => {
-  console.log("Received data:", req.body); // Add this to check incoming data
-
   try {
     const { userMessageId, userMessage, createdAt, hadError, errorMessage } =
       req.body;
@@ -52,15 +49,13 @@ router.put("/", async (req, res) => {
     const endTime = new Date(finishedAt).getTime();
     const responseTime = (endTime - startTime) / 1000;
 
-    const result = await updateMessageAnalytics(userMessageId, {
+    await updateMessageAnalytics(userMessageId, {
       userMessage,
       responseTime,
       finishedAt,
       hadError,
       errorMessage,
     });
-
-    console.log("Result of Update: ", result);
     res.status(200).send("Message updated successfully");
   } catch (error) {
     res.status(500).send("Failed to update message: " + error.message);

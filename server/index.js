@@ -59,10 +59,14 @@ app.use("/analytics", authenticate, messageAnalytics);
 
 // Corrected Error handling middleware
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.log("Error:", err);
-  console.error("Error Stack:", err.stack);
-  res.status(500).send("Something went wrong...");
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  if (!res.headersSent) {
+    res.status(500).send("Internal Server Error");
+  } else {
+    // If headers are already sent, we can't send any more data
+    res.end();
+  }
 });
 
 // Initialize OpenAI API client
