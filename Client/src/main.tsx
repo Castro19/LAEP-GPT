@@ -1,9 +1,17 @@
+import * as Sentry from "@sentry/react";
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { authActions, store, useAppDispatch } from "./redux/index.ts";
 import { ProfilePage } from "./pages/ProfilePage.tsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  createRoutesFromChildren,
+  matchRoutes,
+  RouterProvider,
+  useLocation,
+  useNavigationType,
+} from "react-router-dom";
 // Pages
 import Register from "./pages/register/Register.tsx";
 import ChatPage from "./pages/ChatPage.js";
@@ -27,10 +35,30 @@ import ProfilePageLayout from "./components/layout/ProfilePage.tsx/ProfilePageLa
 import courses from "./calpolyData/courses.json";
 import interests from "./calpolyData/interests.json";
 
-const router = createBrowserRouter([
+Sentry.init({
+  dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
+  integrations: [
+    Sentry.reactRouterV6BrowserTracingIntegration({
+      useEffect: React.useEffect,
+      useLocation,
+      useNavigationType,
+      createRoutesFromChildren,
+      matchRoutes,
+    }),
+  ],
+  tracesSampleRate: 1.0,
+  enabled: true,
+});
+const SentryErrorPage = Sentry.withSentryReactRouterV6Routing(ErrorPage);
+
+const sentryCreateBrowserRouter =
+  Sentry.wrapCreateBrowserRouter(createBrowserRouter);
+
+const router = sentryCreateBrowserRouter([
   {
     path: "/",
     element: <SplashPage />,
+    errorElement: <SentryErrorPage />,
   },
   {
     path: "/chat",
@@ -39,7 +67,6 @@ const router = createBrowserRouter([
         <ChatPage />
       </ProtectedRoute>
     ),
-    errorElement: <ErrorPage />,
   },
   {
     path: "/login",
@@ -129,6 +156,7 @@ const router = createBrowserRouter([
         </ProfilePageLayout>
       </ProtectedRoute>
     ),
+    errorElement: <SentryErrorPage />,
   },
 ]);
 
@@ -142,10 +170,10 @@ function App() {
   }, [dispatch]);
 
   return (
-    <>
+    <Sentry.ErrorBoundary fallback={<ErrorPage />}>
       <RouterProvider router={router} />
       <Toaster />
-    </>
+    </Sentry.ErrorBoundary>
   );
 }
 
