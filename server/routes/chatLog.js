@@ -73,19 +73,42 @@ router.delete("/:logId", async (req, res) => {
   const { logId } = req.params;
 
   try {
+    // Get IDs first
     const { threadId, vectorStoreId } = await fetchIds(logId);
-    const vectorStoreFiles =
-      await openai.beta.vectorStores.files.list(vectorStoreId);
-    for (const file of vectorStoreFiles.data) {
-      await openai.files.del(file.id);
+
+    // Try to delete vector store and its files
+    if (vectorStoreId) {
+      try {
+        const vectorStoreFiles =
+          await openai.beta.vectorStores.files.list(vectorStoreId);
+        for (const file of vectorStoreFiles.data) {
+          try {
+            await openai.files.del(file.id);
+          } catch (error) {
+            console.warn(`Failed to delete file ${file.id}:`, error.message);
+          }
+        }
+        await openai.beta.vectorStores.del(String(vectorStoreId));
+      } catch (error) {
+        console.warn("Failed to delete vector store:", error.message);
+      }
     }
-    await openai.beta.vectorStores.del(String(vectorStoreId));
+
+    // Try to delete thread
+    if (threadId) {
+      try {
+        await deleteThread(threadId);
+      } catch (error) {
+        console.warn("Failed to delete thread:", error.message);
+      }
+    }
+
+    // Always try to delete the log
     const response = await deleteLog(logId, userId);
-    const deleteResponse = await deleteThread(threadId);
-    res.status(204).json({ response, deleteResponse }); // 204 No Content is typical for a delete operation.
+    res.status(204).json({ message: "Log deleted successfully", response });
   } catch (error) {
     console.error("Failed to Delete log: ", error);
-    res.status(404).send("Failed to Delete log in database: " + error.message);
+    res.status(500).send("Failed to Delete log in database: " + error.message);
   }
 });
 
