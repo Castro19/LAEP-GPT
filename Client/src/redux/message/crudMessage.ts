@@ -13,13 +13,6 @@ export default async function sendMessage(
     throw new Error("Message is over 2000 characters, please shorten it.");
   }
 
-  const newUserMessage = {
-    id: userMessageId,
-    sender: "user",
-    text: msg, //form
-    model: currentModel.title,
-  };
-
   let timeoutDuration = 300000; // 30 seconds default timeout
 
   if (currentModel.title === "Enhanced ESJ Assistant") {
@@ -99,7 +92,6 @@ export default async function sendMessage(
     }
 
     return {
-      newUserMessage,
       botMessage,
       updateStream: async (
         // eslint-disable-next-line no-unused-vars

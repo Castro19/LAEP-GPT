@@ -14,7 +14,6 @@ interface fetchBotResponseParams {
   botMessageId: string;
 }
 type SendMessageReturnType = {
-  newUserMessage: MessageObjType;
   botMessage: MessageObjType;
   updateStream: (
     // eslint-disable-next-line no-unused-vars
@@ -41,23 +40,28 @@ export const fetchBotResponse = createAsyncThunk<
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const {
-        newUserMessage,
-        botMessage,
-        updateStream,
-      }: SendMessageReturnType = await sendMessage(
-        currentModel,
-        currentFile,
-        msg,
-        currentChatId,
-        userId,
-        userMessageId,
-        botMessageId
-      );
+      const newUserMessage = {
+        id: userMessageId,
+        sender: "user",
+        text: msg, //form
+        model: currentModel.title,
+        userReaction: null,
+      };
 
       dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
+      dispatch(toggleNewChat(false));
+      const { botMessage, updateStream }: SendMessageReturnType =
+        await sendMessage(
+          currentModel,
+          currentFile,
+          msg,
+          currentChatId,
+          userId,
+          userMessageId,
+          botMessageId
+        );
 
-      dispatch(addUserMessage(botMessage)); // Dispatching to add bot message to the state
+      dispatch(addBotMessage(botMessage)); // Dispatching to add bot message to the state
 
       // Streaming updates for the bot messages
       await updateStream((botMessageId: string, text: string) => {
@@ -146,6 +150,9 @@ const messageSlice = createSlice({
     addUserMessage: (state, action: PayloadAction<MessageObjType>) => {
       state.msgList.push(action.payload);
     },
+    addBotMessage: (state, action: PayloadAction<MessageObjType>) => {
+      state.msgList.push(action.payload);
+    },
     // Reducer to update an existing bot message in the state (UPDATE)
     updateBotMessage: (
       state,
@@ -213,6 +220,7 @@ export const {
   setMsgList,
   resetMsgList,
   addUserMessage,
+  addBotMessage,
   updateBotMessage,
   updateUserReaction,
   updateError,
