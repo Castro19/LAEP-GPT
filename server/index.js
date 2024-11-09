@@ -1,7 +1,9 @@
+import "./sentry/instrument.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
+import * as Sentry from "@sentry/node";
 import cors from "cors";
 import { connectToDb } from "./db/connection.js";
 import { readFileSync } from "fs";
@@ -25,6 +27,7 @@ import OpenAI from "openai";
 // Initialize express app
 const app = express();
 const port = process.env.PORT || 4000;
+
 const serviceAccount = JSON.parse(
   readFileSync("./helpers/firebase/laep-firebase.json", "utf8")
 );
@@ -57,14 +60,24 @@ app.use("/analytics", authenticate, messageAnalytics);
 // app.use("/generateTeacherFile", generateTeacherFileRoute);
 // app.use("/fileOperations", fileOperations);
 
+// eslint-disable-next-line no-unused-vars
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
+
+// The error handler must be registered before any other error middleware and after all controllers
+Sentry.setupExpressErrorHandler(app);
+
 // Corrected Error handling middleware
 // eslint-disable-next-line no-unused-vars
 app.use(function (err, req, res, next) {
   console.error(err.stack);
   if (!res.headersSent) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({
+      error: "Internal Server Error",
+      sentryErrorId: res.sentry, // Include the Sentry error ID in the response
+    });
   } else {
-    // If headers are already sent, we can't send any more data
     res.end();
   }
 });
