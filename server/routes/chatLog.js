@@ -74,7 +74,8 @@ router.delete("/:logId", async (req, res) => {
 
   try {
     // Get IDs first
-    const { threadId, vectorStoreId } = await fetchIds(logId);
+    const ids = (await fetchIds(logId)) || {};
+    const { threadId, vectorStoreId } = ids;
 
     // Try to delete vector store and its files
     if (vectorStoreId) {

@@ -14,7 +14,6 @@ interface fetchBotResponseParams {
   botMessageId: string;
 }
 type SendMessageReturnType = {
-  newUserMessage: MessageObjType;
   botMessage: MessageObjType;
   updateStream: (
     // eslint-disable-next-line no-unused-vars
@@ -41,24 +40,41 @@ export const fetchBotResponse = createAsyncThunk<
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const {
-        newUserMessage,
-        botMessage,
-        updateStream,
-      }: SendMessageReturnType = await sendMessage(
-        currentModel,
-        currentFile,
-        msg,
-        currentChatId,
-        userId,
-        userMessageId,
-        botMessageId
-      );
+      const newUserMessage = {
+        id: userMessageId,
+        sender: "user",
+        text: msg, //form
+        model: currentModel.title,
+        userReaction: null,
+      } as MessageObjType;
 
+      if (msg.length === 0) {
+        return rejectWithValue({ message: "Message is empty" });
+      }
       dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
+      dispatch(toggleNewChat(false));
 
-      dispatch(addUserMessage(botMessage)); // Dispatching to add bot message to the state
+      dispatch(
+        addBotMessage({
+          id: botMessageId,
+          text: "",
+          sender: "bot",
+          userReaction: null,
+          thinkingState: true,
+        })
+      ); // Dispatching to add bot message to the state
 
+      const { botMessage, updateStream }: SendMessageReturnType =
+        await sendMessage(
+          currentModel,
+          currentFile,
+          msg,
+          currentChatId,
+          userId,
+          userMessageId,
+          botMessageId
+        );
+      dispatch(updateThinkingState({ id: botMessageId, thinkingState: false }));
       // Streaming updates for the bot messages
       await updateStream((botMessageId: string, text: string) => {
         dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
@@ -146,6 +162,9 @@ const messageSlice = createSlice({
     addUserMessage: (state, action: PayloadAction<MessageObjType>) => {
       state.msgList.push(action.payload);
     },
+    addBotMessage: (state, action: PayloadAction<MessageObjType>) => {
+      state.msgList.push(action.payload);
+    },
     // Reducer to update an existing bot message in the state (UPDATE)
     updateBotMessage: (
       state,
@@ -163,6 +182,15 @@ const messageSlice = createSlice({
       const message = state.msgList.find((msg) => msg.id === action.payload.id);
       if (message) {
         message.userReaction = action.payload.userReaction;
+      }
+    },
+    updateThinkingState: (
+      state,
+      action: PayloadAction<{ id: string; thinkingState: boolean }>
+    ) => {
+      const message = state.msgList.find((msg) => msg.id === action.payload.id);
+      if (message) {
+        message.thinkingState = action.payload.thinkingState;
       }
     },
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
@@ -213,8 +241,10 @@ export const {
   setMsgList,
   resetMsgList,
   addUserMessage,
+  addBotMessage,
   updateBotMessage,
   updateUserReaction,
+  updateThinkingState,
   updateError,
   clearError,
   setCurrentChatId,

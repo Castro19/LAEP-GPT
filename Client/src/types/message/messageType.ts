@@ -9,11 +9,12 @@ export type ModelType = {
 
 export type MessageObjType = {
   id: string; // the unique id for the single message
-  sender: string; // Either `bot` or `user`
+  sender: "bot" | "user";
   text: string; // The text associated with the message
   model?: string; // User only (The assistant title they chose)
   urlPhoto?: string; // Bot only (The url photo corresponding to the message)
   userReaction: "like" | "dislike" | null;
+  thinkingState?: boolean;
 };
 
 // Important:
