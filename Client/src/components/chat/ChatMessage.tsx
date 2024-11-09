@@ -7,6 +7,7 @@ import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import { putUserReaction } from "@/redux/message/messageSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const md = new MarkdownIt();
 
@@ -100,29 +101,41 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
     >
       {!isUserMessage && (
         <div className="pr-2 pt-1">
-          <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
-            <AvatarImage
-              src={msg.urlPhoto || "/imgs/test.png"}
-              alt="Assistant Photo"
-            />
-          </Avatar>
+          {msg?.thinkingState ? (
+            <div className="flex items-center space-x-4 mb-12">
+              <Skeleton className="h-16 w-16 rounded-full dark:bg-slate-600/50" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px] dark:bg-slate-600/50" />
+                <Skeleton className="h-4 w-[200px] dark:bg-slate-600/50" />
+              </div>
+            </div>
+          ) : (
+            <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
+              <AvatarImage
+                src={msg.urlPhoto || "/imgs/test.png"}
+                alt="Assistant Photo"
+              />
+            </Avatar>
+          )}
         </div>
       )}
-      <div className="flex flex-col">
-        <div
-          className={`rounded-lg shadow-lg p-4 ${
-            isUserMessage
-              ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white"
-              : "bg-gradient-to-r from-gray-800 to-gray-700 text-white dark:from-gray-700 dark:to-gray-600"
-          }`}
-        >
+      {!msg?.thinkingState && (
+        <div className="flex flex-col">
           <div
-            className="prose prose-invert"
-            dangerouslySetInnerHTML={{ __html: safeHtml }}
-          />
+            className={`rounded-lg shadow-lg p-4 ${
+              isUserMessage
+                ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white"
+                : "bg-gradient-to-r from-gray-800 to-gray-700 text-white dark:from-gray-700 dark:to-gray-600"
+            }`}
+          >
+            <div
+              className="prose prose-invert"
+              dangerouslySetInnerHTML={{ __html: safeHtml }}
+            />
+          </div>
+          {!isUserMessage && renderLikeButtons()}
         </div>
-        {!isUserMessage && renderLikeButtons()}
-      </div>
+      )}
     </div>
   );
 };
