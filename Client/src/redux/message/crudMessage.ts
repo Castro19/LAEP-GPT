@@ -138,6 +138,25 @@ export default async function sendMessage(
   }
 }
 
+export const cancelRun = async (userMessageId: string) => {
+  try {
+    const response = await fetch("http://localhost:4000/llms/cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userMessageId }),
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to cancel bot response");
+    }
+  } catch (error) {
+    console.error("Error cancelling bot response:", error);
+    throw error;
+  }
+};
+
 export const sendUserReaction = async (
   logId: string,
   botMessageId: string,

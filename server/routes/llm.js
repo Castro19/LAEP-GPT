@@ -20,7 +20,7 @@ import { formatAvailability } from "../helpers/formatters/availabilityFormatter.
 import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
 import { updateMessageAnalytics } from "../db/models/analytics/messageAnalytics/messageAnalyticsServices.js";
 import calculateCost from "../helpers/openAI/costFunction.js";
-
+import asyncHandler from "../middlewares/asyncMiddleware.js";
 const router = express.Router();
 
 //init storage for user documents
@@ -38,14 +38,17 @@ const messageRateLimiter = rateLimit({
 
 // Add this constant at the top with other constants
 const MAX_FILE_SIZE_MB = 1; // Adjust this value as needed
+const runningStreams = {};
 
 router.post(
   "/respond",
   messageRateLimiter,
   upload.single("file"),
-  async (req, res) => {
-    res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
-    res.setHeader("Transfer-Encoding", "chunked");
+  asyncHandler(async (req, res) => {
+    if (!res.headersSent) {
+      res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
+      res.setHeader("Transfer-Encoding", "chunked");
+    }
 
     const { message, chatId, userId, userMessageId } = req.body;
     const model = JSON.parse(req.body.currentModel);
@@ -109,36 +112,67 @@ router.post(
         }
       }
     }
-  }
+  })
 );
 
-router.post("/title", async (req, res) => {
-  try {
-    const { message } = req.body;
+router.post(
+  "/cancel",
+  asyncHandler(async (req, res) => {
+    console.log("STOPPING");
+    const { userMessageId } = req.body;
+    console.log("runningStreams", runningStreams);
 
-    const contentStr =
-      "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
-    // model: "gpt-3.5-turbo-0125",
-    // model: "gpt-4-0613",
-    const chatCompletion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-0125",
-      messages: [
-        {
-          role: "system",
-          content: contentStr,
-        },
-        { role: "user", content: message },
-      ],
-    });
+    const runData = runningStreams[userMessageId];
+    if (runData) {
+      const { threadId, runId } = runData;
+      try {
+        await openai.beta.threads.runs.cancel(threadId, runId);
+        res.status(200).send("Run cancelled");
+        return;
+      } catch (error) {
+        console.error("Error cancelling run:", error);
+        res.status(500).send("Error cancelling run");
+        return;
+      }
+    } else {
+      res.status(404).send("Run not found");
+      return;
+    }
+  })
+);
 
-    // Send the ChatGPT response back to the client
-    const title = chatCompletion.choices[0].message.content;
-    res.json({ title: title });
-  } catch (error) {
-    console.error("Error calling OpenAI:", error);
-    res.status(500).json({ error: "Failed to generate response from OpenAI" });
-  }
-});
+router.post(
+  "/title",
+  asyncHandler(async (req, res) => {
+    try {
+      const { message } = req.body;
+
+      const contentStr =
+        "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
+      // model: "gpt-3.5-turbo-0125",
+      // model: "gpt-4-0613",
+      const chatCompletion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-0125",
+        messages: [
+          {
+            role: "system",
+            content: contentStr,
+          },
+          { role: "user", content: message },
+        ],
+      });
+
+      // Send the ChatGPT response back to the client
+      const title = chatCompletion.choices[0].message.content;
+      res.json({ title: title });
+    } catch (error) {
+      console.error("Error calling OpenAI:", error);
+      res
+        .status(500)
+        .json({ error: "Failed to generate response from OpenAI" });
+    }
+  })
+);
 
 async function handleMultiAgentModel({ userFile, message, res, file }) {
   // Sub-assistants and leading assistant IDs
@@ -245,22 +279,26 @@ async function handleSingleAgentModel({
     const year = user.year;
     messageToAdd = `Give me classes for a ${year} student\n${message}`;
   }
-  // Add user message to thread
-  await addMessageToThread(
-    threadId,
-    "user",
-    messageToAdd,
-    userFile ? userFile.id : null,
-    model.title
-  );
+  try {
+    // Add user message to thread
+    await addMessageToThread(
+      threadId,
+      "user",
+      messageToAdd,
+      userFile ? userFile.id : null,
+      model.title
+    );
 
-  // Stream assistant's response
-  await runAssistantAndStreamResponse(
-    threadId,
-    assistantId,
-    res,
-    userMessageId
-  );
+    // Stream assistant's response
+    await runAssistantAndStreamResponse(
+      threadId,
+      assistantId,
+      res,
+      userMessageId
+    );
+  } catch (error) {
+    console.error("Error in single-agent model:", error);
+  }
 }
 
 async function runAssistantAndStreamResponse(
@@ -269,76 +307,81 @@ async function runAssistantAndStreamResponse(
   res,
   userMessageId
 ) {
-  const run = openai.beta.threads.runs.stream(threadId, {
-    assistant_id: assistantId,
-  });
+  try {
+    const run = openai.beta.threads.runs.stream(threadId, {
+      assistant_id: assistantId,
+    });
 
-  let headersSent = false;
+    let headersSent = false;
+    let runId = null;
 
-  // Generic event handler to catch all events and their types
-  run.on("event", async (event) => {
-    // Check if this is the completion event
-    if (event.event === "thread.run.completed") {
+    run.on("event", async (event) => {
       const runData = event.data;
-      if (runData.usage) {
-        // Fire and forget - don't await the analytics update
-        const cost = calculateCost(runData.usage, runData.model);
-        const tokenAnalytics = {
-          modelType: runData.model,
-          promptTokens: runData.usage.prompt_tokens,
-          completionTokens: runData.usage.completion_tokens,
-          totalTokens: runData.usage.total_tokens,
-          promptCost: cost.promptCost,
-          completionCost: cost.completionCost,
-          totalCost: cost.totalCost,
-        };
-
-        // Run analytics update in background
-        updateMessageAnalytics(userMessageId, tokenAnalytics).catch((error) =>
-          console.error("Failed to update message analytics:", error)
-        );
+      if (runId === null) {
+        runId = runData.id;
+        runningStreams[userMessageId] = { threadId, runId };
       }
-    }
-  });
+      if (event.event === "thread.run.completed") {
+        delete runningStreams[userMessageId];
+        if (runData.usage) {
+          const cost = calculateCost(runData.usage, runData.model);
+          const tokenAnalytics = {
+            modelType: runData.model,
+            promptTokens: runData.usage.prompt_tokens,
+            completionTokens: runData.usage.completion_tokens,
+            totalTokens: runData.usage.total_tokens,
+            promptCost: cost.promptCost,
+            completionCost: cost.completionCost,
+            totalCost: cost.totalCost,
+          };
+          updateMessageAnalytics(userMessageId, tokenAnalytics).catch((error) =>
+            console.error("Failed to update message analytics:", error)
+          );
+        }
+      }
+    });
 
-  run.on("start", () => {
-    console.log("Stream started");
-    if (!headersSent) {
-      res.setHeader("Content-Type", "text/plain");
-      res.setHeader("Transfer-Encoding", "chunked");
-      headersSent = true;
-    }
-  });
+    run.on("start", () => {
+      console.log("Starting");
+    });
 
-  run.on("textDelta", (textDelta) => {
-    try {
-      res.write(textDelta.value);
-    } catch (error) {
-      console.error("Error writing text delta:", error);
-    }
-  });
+    run.on("textDelta", (textDelta) => {
+      try {
+        res.write(textDelta.value);
+      } catch (error) {
+        console.error("Error writing text delta:", error);
+      }
+    });
 
-  run.on("end", () => {
-    console.log("Stream completed");
-    try {
-      res.end();
-    } catch (error) {
-      console.error("Error ending response:", error);
-    }
-  });
-
-  run.on("error", (error) => {
-    console.error("Stream error:", error);
-    try {
-      if (!headersSent) {
-        res.status(500).send("Failed to process stream.");
-      } else {
+    run.on("end", () => {
+      try {
         res.end();
+      } catch (error) {
+        console.error("Error ending response:", error);
       }
-    } catch (error) {
-      console.error("Error handling stream error:", error);
+    });
+
+    run.on("error", (error) => {
+      console.error("Stream error:", error);
+      delete runningStreams[userMessageId];
+      try {
+        if (!headersSent) {
+          res.status(500).send("Failed to process stream.");
+        } else {
+          res.end();
+        }
+      } catch (err) {
+        console.error("Error handling stream error:", err);
+      }
+    });
+  } catch (error) {
+    console.error("Error in runAssistantAndStreamResponse:", error);
+    if (!res.headersSent) {
+      res.status(500).send("Failed to process assistant response.");
+    } else {
+      res.end();
     }
-  });
+  }
 }
 
 async function runAssistantAndCollectResponse(threadId, assistantId) {

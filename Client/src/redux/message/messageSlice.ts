@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import sendMessage, { sendUserReaction } from "./crudMessage";
+import sendMessage, { cancelRun, sendUserReaction } from "./crudMessage";
 // Types:
 import { ModelType, MessageObjType, MessageSliceType } from "@/types";
 
@@ -72,6 +72,21 @@ export const fetchBotResponse = createAsyncThunk<
         // Handle non-error objects if needed
         return rejectWithValue({ message: "An unknown error occurred" });
       }
+    }
+  }
+);
+// In your Redux actions file
+export const cancelBotResponse = createAsyncThunk(
+  "message/cancelBotResponse",
+  async (userMessageId: string, { rejectWithValue }) => {
+    try {
+      await cancelRun(userMessageId); // Cancelling the bot response
+    } catch (error) {
+      console.error("Error cancelling bot response:", error);
+      if (error instanceof Error) {
+        return rejectWithValue({ message: error.message });
+      }
+      return rejectWithValue({ message: "An unknown error occurred" });
     }
   }
 );
@@ -187,6 +202,9 @@ const messageSlice = createSlice({
           state.error = action.payload?.message || "Unknown error";
         }
       );
+    builder.addCase(cancelBotResponse.fulfilled, (state) => {
+      state.isLoading = false;
+    });
   },
 });
 

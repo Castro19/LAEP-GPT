@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoSend } from "react-icons/io5";
-import { Loader2 } from "lucide-react";
+import { IoSend, IoStopCircleOutline } from "react-icons/io5";
 
 import { FileUpload } from "../ui/file-upload";
 // React Redux
@@ -28,7 +27,9 @@ const ChatInput = ({
   sendButtonRef,
 }: ChatInputProps) => {
   const dispatch = useAppDispatch();
-
+  const [currentUserMessageId, setCurrentUserMessageId] = useState<
+    string | null
+  >(null);
   const currentModel = useAppSelector((state) => state.gpt.currentModel);
   const { msg, isNewChat, currentChatId, isLoading, error } = useAppSelector(
     (state) => state.message
@@ -45,6 +46,7 @@ const ChatInput = ({
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
+    console.log("HANLDE SUMBITTTTTTT");
     e.preventDefault();
     dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
@@ -59,6 +61,7 @@ const ChatInput = ({
     // Generate a new unique chatId
     const newLogId = uuidv4();
     const userMessageId = uuidv4();
+    setCurrentUserMessageId(userMessageId);
     const botMessageId = uuidv4();
     const createdAt = new Date(); // Changed from Date.now()
     if (error) {
@@ -133,6 +136,18 @@ const ChatInput = ({
     }
   };
 
+  const handleStop = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    console.log("HANLDE CLOSE");
+
+    if (currentUserMessageId) {
+      console.log("stop");
+      dispatch(messageActions.cancelBotResponse(currentUserMessageId));
+    } else {
+      console.log("No current user message id");
+    }
+  };
+
   useEffect(() => {
     if (currentModel.title === "Matching Assistant") {
       setSelectedFile(null);
@@ -146,7 +161,10 @@ const ChatInput = ({
           You have reached {msg.length} of 2000 characters.
         </div>
       )}
-      <form onSubmit={handleSubmit} className="flex items-end gap-2">
+      <form
+        onSubmit={isLoading ? () => {} : handleSubmit}
+        className="flex items-end gap-2"
+      >
         {currentModel.title !== "Matching Assistant" && (
           <FileUpload
             onChange={(file) => setSelectedFile(file)}
@@ -163,19 +181,27 @@ const ChatInput = ({
           maxLength={2000}
           onChange={handleInputChange}
         />
-        <Button
-          className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
-          type="submit"
-          variant="outline"
-          disabled={isLoading}
-          ref={sendButtonRef}
-        >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin " />
-          ) : (
+        {isLoading ? (
+          <Button
+            className="dark:bg-transparent hover:bg-gray-800 dark:hover:bg-slate-800 focus:ring-2 focus:ring-red-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base text-white"
+            type="submit"
+            variant="outline"
+            ref={sendButtonRef}
+            onClick={handleStop}
+          >
+            <IoStopCircleOutline className="text-red-500 text-3xl" />
+          </Button>
+        ) : (
+          <Button
+            className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
+            type="submit"
+            variant="outline"
+            disabled={isLoading}
+            ref={sendButtonRef}
+          >
             <IoSend className="text-2xl" />
-          )}
-        </Button>
+          </Button>
+        )}
       </form>
     </div>
   );
