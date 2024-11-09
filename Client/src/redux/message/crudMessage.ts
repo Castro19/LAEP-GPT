@@ -61,12 +61,15 @@ export default async function sendMessage(
     ]);
 
     if (!response.ok) {
-      if (response.status === 429) {
+      if (response.status === 429 || response.status === 413) {
         // 429 = rate limiting: too many GPT message requests
         const errorData = await response.text();
         throw new Error(errorData);
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // Remove this after testing
+      const errorData = await response.text();
+      console.error("Error: ", errorData);
+      throw new Error(`An unkown error occured. Please try again.`);
     }
 
     let accumulatedText = "";
