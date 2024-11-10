@@ -1,13 +1,11 @@
 import { useNavigate } from "react-router-dom";
-
 import { IoIosArrowBack } from "react-icons/io";
-// Redux:
 
 const ChatHeader = () => {
   const navigate = useNavigate();
-
   const handleBackToChat = () => {
-    navigate(`/chat`);
+    // Map back to the previous page
+    navigate(-1);
   };
 
   return (

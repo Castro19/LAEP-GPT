@@ -28,7 +28,7 @@ const DeleteLog = ({ logId }: DeleteLogProps) => {
         dispatch(logActions.deleteLog({ logId }))
           .unwrap()
           .then(() => {
-            navigate(`/user/${userId}`);
+            navigate(`/chat`);
             dispatch(messageActions.resetMsgList());
             dispatch(messageActions.toggleNewChat(true));
           })

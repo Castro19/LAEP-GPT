@@ -1,19 +1,14 @@
-import { ReactNode } from "react";
 import { useAppSelector } from "@/redux";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-type ProtectedRouteProps = {
-  children: ReactNode;
-};
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = () => {
   const { userLoggedIn, loading, isNewUser } = useAppSelector(
     (state) => state.auth
   );
   const location = useLocation();
 
   if (loading) {
-    return null; // or a loading indicator
+    return <div>Loading...</div>; // Display a loading indicator instead of returning null
   }
 
   if (!userLoggedIn) {
@@ -24,7 +19,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/sign-in-flow/about-me" replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />; // Render child routes
 };
 
 export default ProtectedRoute;
