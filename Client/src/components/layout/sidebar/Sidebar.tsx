@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./Sidebar.module.css";
 import { MdClose } from "react-icons/md"; // Importing the close icon
 import ChatLog from "../../chatLog/ChatLog";
@@ -24,7 +24,10 @@ const Sidebar = () => {
   const logList = useAppSelector((state) => state.log.logList);
   const userId = useAppSelector((state) => state.auth.userId);
 
+  const hasFetchedLogs = useRef(false);
   useEffect(() => {
+    if (hasFetchedLogs.current) return;
+    hasFetchedLogs.current = true;
     // Only fetch logs if userId is not null (user is signed in)
     if (userId) {
       dispatch(logActions.fetchLogs());

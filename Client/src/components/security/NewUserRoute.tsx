@@ -1,18 +1,13 @@
-import { ReactNode } from "react";
 import { useAppSelector } from "@/redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-type NewUserRouteProps = {
-  children: ReactNode;
-};
-
-const NewUserRoute = ({ children }: NewUserRouteProps) => {
+const NewUserRoute = () => {
   const { userLoggedIn, loading, isNewUser } = useAppSelector(
     (state) => state.auth
   );
 
   if (loading) {
-    return null; // or a loading indicator
+    return <div>Loading...</div>; // Display a loading indicator instead of returning null
   }
 
   if (!userLoggedIn) {
@@ -23,7 +18,7 @@ const NewUserRoute = ({ children }: NewUserRouteProps) => {
     return <Navigate to="/chat" replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />; // Render child routes
 };
 
 export default NewUserRoute;

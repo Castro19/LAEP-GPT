@@ -49,7 +49,14 @@ export default function GPTForm() {
       try {
         setLocalError(""); // Clear error on successful sign in
         await dispatch(
-          gptActions.addGpt({ userId, title, urlPhoto, desc, instructions })
+          gptActions.addGpt({
+            userId,
+            title,
+            urlPhoto,
+            desc,
+            instructions,
+            suggestedQuestions: [],
+          })
         );
 
         setTitle("");

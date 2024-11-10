@@ -16,11 +16,10 @@ const ChatLog = ({ log, onSelectLog }: ChatLogProps) => {
   // Redux:
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
-  const userId = useAppSelector((state) => state.auth.userId);
 
   const handleNewLog = async (logId: string) => {
     onSelectLog(logId);
-    navigate(`/user/${userId}/chat/${logId}}`);
+    navigate(`/chat/${logId}}`);
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }

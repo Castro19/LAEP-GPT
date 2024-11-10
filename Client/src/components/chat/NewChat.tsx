@@ -10,7 +10,6 @@ const NewChat = () => {
   // Redux:
   const dispatch = useAppDispatch();
   const currentMsgList = useAppSelector((state) => state.message.msgList);
-  const userId = useAppSelector((state) => state.auth.userId);
 
   const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
 
@@ -22,7 +21,7 @@ const NewChat = () => {
         dispatch(messageActions.clearError()); // Clear error when user starts typing
       }
     }
-    navigate(`/user/${userId}`);
+    navigate(`/chat`);
   };
 
   return (
