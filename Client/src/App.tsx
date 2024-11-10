@@ -47,7 +47,7 @@ Sentry.init({
   tracesSampleRate: 1.0,
   enabled: true,
 });
-// const SentryErrorPage = Sentry.withSentryReactRouterV6Routing(ErrorPage);
+const SentryErrorPage = Sentry.withSentryReactRouterV6Routing(ErrorPage);
 
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouter(createBrowserRouter);
@@ -55,10 +55,11 @@ const router = sentryCreateBrowserRouter([
   {
     path: "/",
     element: <SplashPage />,
-    errorElement: <ErrorPage />,
+    errorElement: <SentryErrorPage />,
   },
   {
     element: <ProtectedRoute />, // Wrap protected routes
+    errorElement: <SentryErrorPage />,
     children: [
       {
         path: "chat",
@@ -100,10 +101,12 @@ const router = sentryCreateBrowserRouter([
   {
     path: "/login",
     element: <Register />,
+    errorElement: <SentryErrorPage />,
   },
   {
     path: "/sign-in-flow",
     element: <NewUserRoute />,
+    errorElement: <SentryErrorPage />,
     children: [
       {
         path: "about-me",
