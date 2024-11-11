@@ -16,13 +16,25 @@ export const getLogsByUser = async (userId) => {
     const logs = await ChatLogModel.fetchLogsByUserId(userId);
     return logs.map((log) => ({
       id: log._id,
-      content: log.content,
       title: log.title,
       timestamp: log.timestamp,
       urlPhoto: log.urlPhoto,
     }));
   } catch (error) {
     throw new Error("Service error: " + error.message);
+  }
+};
+
+// Read (Fetch a specific log by logId)
+export const getLogById = async (logId, userId) => {
+  try {
+    const log = await ChatLogModel.fetchLogById(logId, userId);
+    return log;
+  } catch (error) {
+    throw {
+      status: error.status || 500,
+      message: error.message || "Error fetching log",
+    };
   }
 };
 

@@ -43,8 +43,6 @@ const Sidebar = () => {
   const handleSelectLog = (logId: string) => {
     const chosenLog = logList.find((item) => item.id === logId);
     if (chosenLog) {
-      // Set the content for the msgList
-      dispatch(messageActions.setMsgList(chosenLog.content));
       // Set the current chat id
       dispatch(messageActions.setCurrentChatId(logId));
       dispatch(messageActions.toggleNewChat(false));

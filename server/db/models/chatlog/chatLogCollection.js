@@ -15,10 +15,46 @@ export const addLog = async (logData) => {
 // Read
 export const fetchLogsByUserId = async (userId) => {
   try {
-    const logs = await chatLogCollection.find({ userId: userId }).toArray();
+    const logs = await chatLogCollection
+      .find({ userId }, { projection: { content: 0 } })
+      .toArray();
     return logs;
   } catch (error) {
     throw new Error("Error fetching logs: " + error.message);
+  }
+};
+
+export const fetchLogById = async (logId, userId) => {
+  try {
+    const log = await chatLogCollection.findOne(
+      { _id: logId },
+      { projection: { content: 1, userId: 1 } }
+    );
+
+    if (!log) {
+      const error = new Error("Log not found");
+      error.status = 404;
+      throw error;
+    }
+
+    if (log.userId !== userId) {
+      const error = new Error(
+        "User does not have permission to access this log"
+      );
+      error.status = 403;
+      throw error;
+    }
+
+    return log;
+  } catch (error) {
+    // If it's our custom error, pass it up
+    if (error.status) {
+      throw error;
+    }
+    // If it's a DB error, wrap it
+    const dbError = new Error(`Error fetching log: ${error.message}`);
+    dbError.status = 500;
+    throw dbError;
   }
 };
 
