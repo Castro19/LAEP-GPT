@@ -2,9 +2,16 @@
 
 ## Description
 
-This project is a part of California Polytechnic State University (Cal Poly) in San Luis Obispo under the supervision of Prof. Franz J. Kurfess. It is an open-source repository intended to aid students in their senior project.
+This project is a part of California Polytechnic State University (Cal Poly) in San Luis Obispo under the supervision of Prof. Franz J. Kurfess. It is an open-source repository intended to aid students.
 
-We are currently in the early stages of building an AI chatbot that will provide ethical considerations for senior projects, help match students with advisors for their projects, and utilize the power of AI to enhance the experience of a student's senior project.
+The motivation behind this project is to allow students to easily be matched with a senior project advisor based on their interests, availability, and other insights.
+
+This type of idea can be easily applied to other matching assistants such as
+
+1. **Student → Advisor:** Student will be matched with a CS faculty member based on their interests and availability
+2. **Student → Classes:** Students will be matched with a list of classes to take and what order based on their prerequisites.
+3. **Student → Clubs:** Students will be matched to clubs and events that are upcoming.
+4. **Student → Student:** Once we have multiple users on the app, we can start matching students with other students looking for a mentor, study partner, etc.
 
 ![](https://live.staticflickr.com/65535/54131410331_69502daa67_c.jpg)
 
@@ -23,6 +30,8 @@ We are currently in the early stages of building an AI chatbot that will provide
 - Node JS
 - npm
 - [Create Open AI account](https://platform.openai.com/signup/)
+- [MongoDB Atlas Account](https://www.mongodb.com/cloud/atlas)
+- [Firebase Account](https://firebase.google.com/)
 
 ## Installation
 
@@ -75,11 +84,11 @@ We are currently in the early stages of building an AI chatbot that will provide
   - Move this JSON file into the path `server/helpers/firebase`
   - Rename the file to be `laep-firebase.json`
 
-1. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**:
+5. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**:
 
    - Go into the `server/sample.env` file and set the variable `OPENAI_API_KEY` to the OpenAI key.
 
-2. **Configure MongoDB Compass:**
+6. **Configure MongoDB Compass:**
 
 - Setup MongoDB on MongoDB Atlas
 
