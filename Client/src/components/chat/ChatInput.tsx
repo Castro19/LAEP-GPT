@@ -46,7 +46,6 @@ const ChatInput = ({
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    console.log("HANLDE SUMBITTTTTTT");
     e.preventDefault();
     dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
@@ -141,13 +140,9 @@ const ChatInput = ({
 
   const handleStop = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log("HANLDE CLOSE");
 
     if (currentUserMessageId) {
-      console.log("stop");
       dispatch(messageActions.cancelBotResponse(currentUserMessageId));
-    } else {
-      console.log("No current user message id");
     }
   };
 
