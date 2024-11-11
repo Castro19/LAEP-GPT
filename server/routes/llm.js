@@ -7,7 +7,7 @@ import { openai } from "../index.js";
 import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
 import asyncHandler from "../middlewares/asyncMiddleware.js";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent.js";
-import handleMultiAgentModel from "../helpers/assistants/multiAgent.js";
+
 const router = express.Router();
 
 //init storage for user documents
@@ -69,38 +69,23 @@ router.post(
       }
     }
 
-    const isMultiAgentModel = model.title === "Enhanced ESJ Assistant";
-
-    if (isMultiAgentModel) {
-      try {
-        await handleMultiAgentModel({ userFile, message, res, file });
-      } catch (error) {
-        console.error("Error in multi-agent model:", error);
-        if (!res.headersSent) {
-          res.status(500).send("Failed to process multi-agent response.");
-        } else {
-          res.end();
-        }
-      }
-    } else {
-      try {
-        await handleSingleAgentModel({
-          model,
-          chatId,
-          userFile,
-          message,
-          res,
-          userId,
-          userMessageId,
-          runningStreams,
-        });
-      } catch (error) {
-        console.error("Error in single-agent model:", error);
-        if (!res.headersSent) {
-          res.status(500).send("Failed to process request.");
-        } else {
-          res.end();
-        }
+    try {
+      await handleSingleAgentModel({
+        model,
+        chatId,
+        userFile,
+        message,
+        res,
+        userId,
+        userMessageId,
+        runningStreams,
+      });
+    } catch (error) {
+      console.error("Error in single-agent model:", error);
+      if (!res.headersSent) {
+        res.status(500).send("Failed to process request.");
+      } else {
+        res.end();
       }
     }
   })

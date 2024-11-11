@@ -16,18 +16,18 @@ import { RootState } from "../store";
 
 export type AddLogParams = {
   msg: string;
-  modelType: string;
+  modelTitle: string;
   id: string;
 };
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { msg, modelType, id }: AddLogParams,
+    { msg, modelTitle, id }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
-      const logTitle = await createLogTitle(msg, modelType);
+      const logTitle = await createLogTitle(msg, modelTitle);
       const timestamp = new Date().toISOString(); // Timestamp for log
       const content = (getState() as RootState).message.msgList; // Accessing message list from the state
 
@@ -42,13 +42,13 @@ export const addLog = createAsyncThunk(
         );
       }
       // Save Log to Database
-      const savedLog = await createLogItem({
+      await createLogItem({
         id,
         title: logTitle,
         content: content, // Ensure the content is included in the DB save
         timestamp: timestamp, // Ensure the timestamp is included in the DB save
       });
-      return savedLog;
+      return { success: true, logId: id };
     } catch (error) {
       console.error("Failed to create log title: ", error);
       return rejectWithValue(logErrorMessages[LogErrorCodes.CREATE_FAILED]);

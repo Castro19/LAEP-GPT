@@ -93,16 +93,19 @@ const ChatInput = ({
       ).unwrap();
       setSelectedFile(null);
       if (isNewChat) {
-        dispatch(messageActions.setCurrentChatId(newLogId));
-        navigate(`/chat/${newLogId}`);
         dispatch(messageActions.toggleNewChat(false));
         dispatch(
           logActions.addLog({
-            msg: msg,
-            modelType: currentModel.title,
+            msg,
+            modelTitle: currentModel.title,
             id: newLogId,
           })
-        );
+        )
+          .unwrap()
+          .then(({ logId }) => {
+            dispatch(messageActions.setCurrentChatId(logId));
+            navigate(`/chat/${logId}`);
+          });
       } else {
         if (currentChatId) {
           dispatch(

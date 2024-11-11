@@ -1,12 +1,8 @@
-import { openai } from "../../index.js";
-import {
-  addMessageToThread,
-  createThread,
-} from "../../helpers/openAI/threadFunctions.js";
+import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
 import { getUserByFirebaseId } from "../../db/models/user/userServices.js";
-import { addThread, fetchIds } from "../../db/models/threads/threadServices.js";
 import { getGPT } from "../../db/models/gpt/gptServices.js";
 import { setupVectorStoreAndUpdateAssistant } from "../../helpers/openAI/vectorStoreFunctions.js";
+import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
 import { formatAvailability } from "../../helpers/formatters/availabilityFormatter.js";
 import { runAssistantAndStreamResponse } from "./streamResponse.js";
 
@@ -22,18 +18,10 @@ async function handleSingleAgentModel({
 }) {
   let messageToAdd = message;
   const assistantId = (await getGPT(model.id)).assistantId;
-  let { threadId, vectorStoreId } = (await fetchIds(chatId)) || {};
-  if (!threadId) {
-    const threadObj = await createThread();
-    threadId = threadObj.id;
 
-    const vectorStore = await openai.beta.vectorStores.create({
-      name: String(threadId),
-    });
-    vectorStoreId = vectorStore.id;
-
-    await addThread(chatId, threadId, vectorStoreId);
-  }
+  // Create thread and vector store if not already created
+  // Creates from OpenAI API & Stores in DB if not already created
+  const { threadId, vectorStoreId } = await initializeOrFetchIds(chatId);
 
   // Setup vector store and update assistant
   await setupVectorStoreAndUpdateAssistant(

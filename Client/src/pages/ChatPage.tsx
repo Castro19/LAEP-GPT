@@ -20,7 +20,6 @@ const ChatPage = () => {
   const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
-
   const gptList = useAppSelector((state) => state.gpt.gptList);
   const hasFetchedGptList = useRef(false);
 
@@ -39,11 +38,12 @@ const ChatPage = () => {
       }
     };
     fetchGptList();
-  }, [userId, dispatch]);
+  }, [userId, dispatch, gptList.length]);
 
   useEffect(() => {
     const fetchLog = async () => {
       if (chatId) {
+        dispatch(messageActions.toggleNewChat(false));
         try {
           const log = await fetchLogById(chatId);
           dispatch(messageActions.setMsgList(log.content));

@@ -25,14 +25,15 @@ const Sidebar = () => {
   const userId = useAppSelector((state) => state.auth.userId);
 
   const hasFetchedLogs = useRef(false);
+
   useEffect(() => {
-    if (hasFetchedLogs.current) return;
+    if (hasFetchedLogs.current || logList.length > 0) return;
     hasFetchedLogs.current = true;
     // Only fetch logs if userId is not null (user is signed in)
     if (userId) {
       dispatch(logActions.fetchLogs());
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId, logList.length]);
 
   // Added transition classes and conditional translate classes
   const sidebarClasses = `fixed top-0 left-0 h-screen w-64 bg-slate-900 z-40 overflow-y-auto shadow-lg p-4 transition-transform duration-300 ease-in-out ${
