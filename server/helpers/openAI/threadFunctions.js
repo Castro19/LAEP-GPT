@@ -52,22 +52,6 @@ export async function addMessageToThread(
   }
 }
 
-export async function fetchThread(threadId) {
-  return await openai.beta.threads.retrieve(threadId);
-}
-
 export async function deleteThread(threadId) {
   return await openai.beta.threads.del(threadId);
-}
-
-export async function runThread(openai, threadId) {
-  try {
-    const stream = await openai.beta.threads.runs.create(threadId, {
-      assistant_id: process.env.ASST_ID,
-      stream: true,
-    });
-    return stream;
-  } catch (error) {
-    console.error("Streaming output RUN Failed: ", error);
-  }
 }

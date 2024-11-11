@@ -6,16 +6,17 @@ This project is a part of California Polytechnic State University (Cal Poly) in 
 
 We are currently in the early stages of building an AI chatbot that will provide ethical considerations for senior projects, help match students with advisors for their projects, and utilize the power of AI to enhance the experience of a student's senior project.
 
-![](https://live.staticflickr.com/65535/53735181371_2b6f85997d_b.jpg)
+![](https://live.staticflickr.com/65535/54131410331_69502daa67_c.jpg)
 
 ## Table of Contents
 
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Next Steps](#nextSteps)
-- [Contributors](#contributors)
-- [License](#license)
+- [LAEP LLM](#laep-llm)
+  - [Description](#description)
+  - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [License](#license)
 
 ## Requirements
 
@@ -54,6 +55,8 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 - Once you create your project, a config file should be ready for you.
 
+- **Client Firebase Setup:**
+
   - In your newly created Firebase project, click on the left sidebar for the option of `Project Settings`.
   - Scroll down until you are at the `Your Apps section` where you will `Add app`
   - Select the web with </> symbols. Click
@@ -64,13 +67,21 @@ We are currently in the early stages of building an AI chatbot that will provide
 
 - Finally rename `sample.env` to be `.env`
 
-5. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**:
+- **Server Firebase Setup:**
+
+  - In project settings, click on the `Service Accounts` tab.
+  - Click `Generate new private key`
+  - A JSON file will be downloaded.
+  - Move this JSON file into the path `server/helpers/firebase`
+  - Rename the file to be `laep-firebase.json`
+
+1. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**:
 
    - Go into the `server/sample.env` file and set the variable `OPENAI_API_KEY` to the OpenAI key.
 
-6. **Configure MongoDB Compass:**
+2. **Configure MongoDB Compass:**
 
-- Make sure MongoDB is setup on your local machine
+- Setup MongoDB on MongoDB Atlas
 
 - Go into the `server/sample.env` file and set the variable `ATLAS_URI` to the URI for your MongoDB database.
 
