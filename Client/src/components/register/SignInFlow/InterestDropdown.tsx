@@ -33,7 +33,8 @@ const InterestDropdown = ({
   let handleAddItem: (value: string) => void;
   // eslint-disable-next-line no-unused-vars
   let handleRemoveItem: (value: string) => void;
-  let selectedItems: string[];
+  let dropdownItems: string[] = [];
+  let selectedItems: string[] = [];
   if (name === "Courses") {
     handleAddItem = (value: string) => {
       handleAddCourse(value);
@@ -42,7 +43,16 @@ const InterestDropdown = ({
       handleRemoveCourse(value);
     };
     selectedItems =
-      userData.courses.map((course) => course.split(": ")[0]) ?? [];
+      userData.courses
+        .map((course) => course.split(": ")[0])
+        .sort((a, b) => {
+          const numA = parseInt(a.replace(/[^\d]/g, ""));
+          const numB = parseInt(b.replace(/[^\d]/g, ""));
+          return numA - numB;
+        }) ?? [];
+    dropdownItems = items.filter(
+      (item) => !selectedItems.includes(item.split(": ")[0])
+    );
   } else {
     handleAddItem = (value: string) => {
       handleAddInterest(value);
@@ -51,6 +61,9 @@ const InterestDropdown = ({
       handleRemoveInterest(value);
     };
     selectedItems = userData.interests;
+    dropdownItems = items.filter((item) => !selectedItems.includes(item));
+    // Sort dropdown items by alphabetical order
+    dropdownItems.sort();
   }
   useEffect(() => {
     const adjustDropdownPosition = () => {
@@ -95,7 +108,7 @@ const InterestDropdown = ({
             data-testid={`home-dropdown-${name}-list`}
             ref={dropdownRef}
           >
-            {items.map((value: string, index: number) => (
+            {dropdownItems.map((value: string, index: number) => (
               <SelectItem
                 key={index}
                 value={value}

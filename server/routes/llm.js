@@ -23,8 +23,8 @@ const messageRateLimiter = rateLimit({
   keyGenerator: (req) => req.body.userId, // requests are tracked per firebase userId
 });
 
-// Add this constant at the top with other constants
-const MAX_FILE_SIZE_MB = 1; // Adjust this value as needed
+const MAX_FILE_SIZE_MB = 1;
+// Store running streams: Useful for cancelling a running stream
 const runningStreams = {};
 
 router.post(
@@ -36,24 +36,24 @@ router.post(
       res.setHeader("Content-Type", "text/plain"); // Set MIME type for plain text stream
       res.setHeader("Transfer-Encoding", "chunked");
     }
-
     const { message, chatId, userId, userMessageId } = req.body;
+    const model = JSON.parse(req.body.currentModel);
+    const file = req.file;
+
+    let userFile = null;
     // Current state of the stream
     runningStreams[userMessageId] = { canceled: false };
 
-    const model = JSON.parse(req.body.currentModel);
-    let userFile = null;
-    const file = req.file;
-
     // Add file size validation
     if (file) {
+      const fileSizeInMB = file.size / (1024 * 1024);
+
       // Check if file is PDF
       if (!file.mimetype || !file.mimetype.includes("pdf")) {
         return res.status(400).send("Only PDF files are allowed");
       }
 
       // Check file size (file.size is in bytes, convert MB to bytes for comparison)
-      const fileSizeInMB = file.size / (1024 * 1024);
       if (fileSizeInMB > MAX_FILE_SIZE_MB) {
         return res
           .status(413)

@@ -29,7 +29,14 @@ export default async function sendMessage(
     //create FormData to send data + file to backend
     const formData = new FormData();
     formData.append("message", msg);
-    formData.append("currentModel", JSON.stringify(currentModel));
+    // Only send model title & model Id to backend
+    formData.append(
+      "currentModel",
+      JSON.stringify({
+        title: currentModel.title,
+        id: currentModel.id,
+      })
+    );
     formData.append("userId", userId);
     formData.append("userMessageId", userMessageId);
     if (file) {
