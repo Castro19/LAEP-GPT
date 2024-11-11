@@ -72,12 +72,12 @@ export const deleteGpt = createAsyncThunk<
 const defaultModel: GptType = {
   id: "664ca3b0143d529c7bf09f23",
   title: "General Assistant",
-  desc: "A helpful assistant to help answer any questions you have!",
+  desc: "A helpful assistant to help answer any questions you have about Cal Poly!",
   urlPhoto: "https://live.staticflickr.com/65535/53736681383_5cc3b12e54_n.jpg",
   instructions: "",
   suggestedQuestions: [
-    "What are your current features?",
-    "How can you help me through my academic journey at Calpoly?",
+    "What's a good place for coffee near campus?",
+    "How do I join a club?",
   ],
 };
 

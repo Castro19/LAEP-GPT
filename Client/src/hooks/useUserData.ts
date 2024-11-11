@@ -20,7 +20,7 @@ export function useUserData() {
 
   const handleRemoveCourse = (value: string) => {
     const updatedCourses = userData.courses.filter(
-      (course) => course !== value
+      (course) => course.split(": ")[0] !== value
     );
     dispatch(updateUserData({ courses: updatedCourses }));
   };
