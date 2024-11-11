@@ -57,6 +57,21 @@ export async function fetchAllLogs() {
   }
 }
 
+export async function fetchLogById(logId: string) {
+  try {
+    const response = await fetch(`http://localhost:4000/chatLogs/${logId}`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    const log = await response.json();
+    return log;
+  } catch (error) {
+    console.error("Failed to fetch log by id: ", error);
+  }
+}
+
 type UpdateLogData = {
   logId: string;
   firebaseUserId: string | null;

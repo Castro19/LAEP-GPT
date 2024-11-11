@@ -2,6 +2,7 @@ import express from "express";
 import {
   createLog,
   getLogsByUser,
+  getLogById,
   updateLog,
   deleteLog,
   updateChatMessageReaction,
@@ -46,10 +47,17 @@ router.get("/", async (req, res) => {
 });
 
 // Retreive a specific Log: (Read)
-// FIX: Add in check for authorization
-router.get("/chat/:logId", async (req, res) => {
+router.get("/:logId", async (req, res) => {
   const userId = req.user.uid;
-  res.status(200).send(`Log ${req.params.logId} for user ${userId}`);
+  const logId = req.params.logId;
+
+  try {
+    const log = await getLogById(logId, userId);
+    res.status(200).json(log);
+  } catch (error) {
+    console.error("Failed to fetch log: ", error);
+    res.status(error.status || 500).send(error || "Failed to fetch log");
+  }
 });
 
 // Updating a Log: (Update)

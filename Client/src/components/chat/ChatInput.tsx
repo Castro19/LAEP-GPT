@@ -46,7 +46,6 @@ const ChatInput = ({
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    console.log("HANLDE SUMBITTTTTTT");
     e.preventDefault();
     dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
@@ -93,16 +92,19 @@ const ChatInput = ({
       ).unwrap();
       setSelectedFile(null);
       if (isNewChat) {
-        dispatch(messageActions.setCurrentChatId(newLogId));
-        navigate(`/chat/${newLogId}`);
         dispatch(messageActions.toggleNewChat(false));
         dispatch(
           logActions.addLog({
-            msg: msg,
-            modelType: currentModel.title,
+            msg,
+            modelTitle: currentModel.title,
             id: newLogId,
           })
-        );
+        )
+          .unwrap()
+          .then(({ logId }) => {
+            dispatch(messageActions.setCurrentChatId(logId));
+            navigate(`/chat/${logId}`);
+          });
       } else {
         if (currentChatId) {
           dispatch(
@@ -138,13 +140,9 @@ const ChatInput = ({
 
   const handleStop = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log("HANLDE CLOSE");
 
     if (currentUserMessageId) {
-      console.log("stop");
       dispatch(messageActions.cancelBotResponse(currentUserMessageId));
-    } else {
-      console.log("No current user message id");
     }
   };
 

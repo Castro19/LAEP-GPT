@@ -1,14 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { openai } from "../../index.js";
-export async function createThread() {
-  try {
-    const messageThread = await openai.beta.threads.create();
-    return messageThread;
-  } catch (error) {
-    console.error("Error creating messageThread: ", error);
-  }
-}
+import {
+  addThreadToDB,
+  fetchIds,
+} from "../../db/models/threads/threadServices.js";
+
 //add fileId. fileId can be null if user does not submit file
 export async function addMessageToThread(
   threadId,
@@ -54,4 +51,23 @@ export async function addMessageToThread(
 
 export async function deleteThread(threadId) {
   return await openai.beta.threads.del(threadId);
+}
+
+// Create thread and vector store from OpenAI API if not already created
+export async function initializeOrFetchIds(chatId) {
+  const existing = await fetchIds(chatId);
+  if (existing) {
+    return existing;
+  }
+  // Initialize new thread and vector store
+  const thread = await openai.beta.threads.create();
+  const vectorStore = await openai.beta.vectorStores.create({
+    name: String(thread.id),
+  });
+
+  await addThreadToDB(chatId, thread.id, vectorStore.id);
+  return {
+    threadId: thread.id,
+    vectorStoreId: vectorStore.id,
+  };
 }

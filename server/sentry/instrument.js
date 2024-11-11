@@ -7,6 +7,7 @@ Sentry.init({
   integrations: [nodeProfilingIntegration()],
   // Tracing
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
+  enabled: process.env.NODE_ENV === "production",
 });
 // Manually call startProfiling and stopProfiling
 // to profile the code in between

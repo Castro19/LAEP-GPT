@@ -45,7 +45,8 @@ Sentry.init({
     }),
   ],
   tracesSampleRate: 1.0,
-  enabled: true,
+  enabled: process.env.NODE_ENV === "production",
+  // enabled: true,
 });
 const SentryErrorPage = Sentry.withSentryReactRouterV6Routing(ErrorPage);
 
@@ -65,7 +66,6 @@ const router = sentryCreateBrowserRouter([
         path: "chat",
         element: <ChatPage />,
         children: [
-          // loader possiblby here to fetch the messages associated with the chatlog ID
           {
             path: ":chatId",
             element: <ChatPage />,

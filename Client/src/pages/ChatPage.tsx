@@ -2,20 +2,29 @@ import { useEffect, useRef } from "react";
 import ChatContainer from "@/components/chat/ChatContainer";
 import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
-import { useAppSelector, useAppDispatch, gptActions } from "@/redux";
+import {
+  useAppSelector,
+  useAppDispatch,
+  gptActions,
+  messageActions,
+} from "@/redux";
+import { useParams } from "react-router-dom";
+import { fetchLogById } from "@/redux/log/crudLog";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
+
+  const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
   const isSidebarVisible = useAppSelector(
     (state) => state.layout.isSidebarVisible
   );
-
+  const gptList = useAppSelector((state) => state.gpt.gptList);
   const hasFetchedGptList = useRef(false);
 
   useEffect(() => {
-    if (hasFetchedGptList.current) return;
+    if (hasFetchedGptList.current || gptList.length > 0) return;
     hasFetchedGptList.current = true;
 
     const fetchGptList = async () => {
@@ -29,7 +38,22 @@ const ChatPage = () => {
       }
     };
     fetchGptList();
-  }, [userId, dispatch]);
+  }, [userId, dispatch, gptList.length]);
+
+  useEffect(() => {
+    const fetchLog = async () => {
+      if (chatId) {
+        dispatch(messageActions.toggleNewChat(false));
+        try {
+          const log = await fetchLogById(chatId);
+          dispatch(messageActions.setMsgList(log.content));
+        } catch (error) {
+          console.error("Error fetching log: ", error);
+        }
+      }
+    };
+    fetchLog();
+  }, [chatId, dispatch]);
 
   return (
     <div

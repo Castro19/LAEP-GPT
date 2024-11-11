@@ -6,8 +6,8 @@ export const createThread = async (chatId, threadId, vectorStoreId) => {
   try {
     const newThread = {
       _id: chatId, // Use Firebase ID as MongoDB document ID
-      threadId: threadId,
-      vectorStoreId: vectorStoreId,
+      threadId,
+      vectorStoreId,
     };
 
     const result = await threadCollection.insertOne(newThread);
