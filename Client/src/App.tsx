@@ -32,6 +32,7 @@ import SplashPage from "./pages/SplashPage.tsx";
 import ProfilePageLayout from "./components/layout/ProfilePage.tsx/ProfilePageLayout.tsx";
 import courses from "./calpolyData/courses.json";
 import interests from "./calpolyData/interests.json";
+import FlowChatPage from "./pages/FlowChatPage.tsx";
 
 Sentry.init({
   dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
@@ -80,6 +81,11 @@ const router = sentryCreateBrowserRouter([
           </ProfilePageLayout>
         ),
       },
+      {
+        path: "flowchart",
+        element: <FlowChatPage />,
+      },
+
       // {
       //   path: "gpts",
       //   element: (
