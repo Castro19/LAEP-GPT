@@ -11,6 +11,7 @@ const signInFlowSteps = [
   "about-me",
   "interests",
   "courses",
+  "flow-chart",
   "availability",
   "terms",
 ];
@@ -42,6 +43,10 @@ const SignInFlow = () => {
       case "courses":
         setTitle("What courses have you taken?");
         setDescription("Tell us what courses you've taken");
+        break;
+      case "flow-chart":
+        setTitle("Setup your flowchart");
+        setDescription("");
         break;
       case "availability":
         setTitle("When are you available?");
