@@ -12,7 +12,10 @@ import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
 import { useRef } from "react";
 import useCalpolyData from "@/hooks/useCalpolyData";
-
+import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
+import { useNavigate } from "react-router-dom";
+import { MdEdit } from "react-icons/md";
+import { ToastAction } from "@/components/ui/toast";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -34,10 +37,15 @@ const yearMapping = (year: string) => {
   }
 };
 export function ProfilePage() {
+  const navigate = useNavigate();
+
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
+  const { selections } = useAppSelector((state) => state.flowchart);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const classDropdownRef = useRef<HTMLDivElement>(null);
+  const flowchartOptionsRef = useRef<HTMLDivElement>(null);
+
   const { handleSave } = useUserData();
   const { courses, interests } = useCalpolyData();
 
@@ -49,6 +57,26 @@ export function ProfilePage() {
     });
   };
 
+  const handleSaveDegreeInfo = () => {
+    if (selections.catalog && selections.major && selections.concentration) {
+      // Change User information in database
+      handleSave();
+      toast({
+        title: "Degree Information Updated",
+        description: "Your degree information has been updated successfully.",
+        action: (
+          <ToastAction
+            altText="Create Flowchart"
+            onClick={() => {
+              console.log("Create Flowchart");
+            }}
+          >
+            Create Flowchart
+          </ToastAction>
+        ),
+      });
+    }
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
       <div className="border border-slate-500 md:col-span-1 md:row-span-4 p-4">
@@ -80,6 +108,26 @@ export function ProfilePage() {
                 <AnimatedModalDemo onSave={handleSaveToast} title="Modify Bio">
                   <AboutMe />
                 </AnimatedModalDemo>
+                <AnimatedModalDemo
+                  onSave={handleSaveDegreeInfo}
+                  title="Change Degree"
+                  excludeRefs={[flowchartOptionsRef]}
+                >
+                  <FlowChartOptions dropdownRef={flowchartOptionsRef} />
+                </AnimatedModalDemo>
+                <div className="flex flex-col justify-center items-center">
+                  <button
+                    onClick={() => {
+                      navigate(`/flowchart/${userData.flowchartId}`);
+                    }}
+                    className="w-3/4 p-2 border rounded-lg bg-gray-100 dark:bg-indigo-800 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 dark:hover:bg-indigo-700"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      Edit Flowchart
+                      <MdEdit />
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </CardContent>

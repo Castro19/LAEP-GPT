@@ -38,3 +38,8 @@ export interface FlowchartData {
   importedId: string | null;
   lastUpdatedUTC: string;
 }
+
+// api response types
+export interface CreateFlowchartResponse {
+  flowchartId: string;
+}

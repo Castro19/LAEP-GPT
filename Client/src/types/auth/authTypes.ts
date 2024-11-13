@@ -21,7 +21,11 @@ export interface MyUserInfo {
   bio: string;
   canShareData: boolean;
   interests: string[];
+  startingYear: string;
+  catalog: string;
   major: string;
+  concentration: string;
   year: string;
   courses: string[];
+  flowchartId: string;
 }

@@ -4,9 +4,8 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import TitleCard from "../TitleCard";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons for arrows
-import { useUserData } from "@/hooks/useUserData";
 import { setIsNewUser } from "@/redux/auth/authSlice";
-import { fetchFlowchartDataHelper } from "@/redux/flowchart/crudFlowchart";
+import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 
 const signInFlowSteps = [
   "terms",
@@ -22,10 +21,10 @@ const SignInFlow = () => {
   const { flowchartData, selections } = useAppSelector(
     (state) => state.flowchart
   );
-  const { handleSave } = useUserData();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
+  const [isSkipButton, setIsSkipButton] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -65,6 +64,19 @@ const SignInFlow = () => {
     }
   }, [currentStep, userData]);
 
+  useEffect(() => {
+    if (flowchartData) {
+      console.log("flowchartData", flowchartData);
+      navigate("/flowchart");
+    } else if (
+      selections.catalog &&
+      selections.major &&
+      selections.concentration
+    ) {
+      setIsSkipButton(false);
+    }
+  }, [flowchartData, selections, navigate]);
+
   // Navigation Handlers
   const handleNext = () => {
     if (currentStepIndex < signInFlowSteps.length - 1) {
@@ -81,7 +93,6 @@ const SignInFlow = () => {
   };
 
   const handleCompleteProfile = () => {
-    handleSave();
     dispatch(setIsNewUser(false));
     if (selections.catalog && selections.major && selections.concentration) {
       fetchFlowchartDataHelper(
@@ -90,14 +101,10 @@ const SignInFlow = () => {
         selections.major,
         selections.concentration
       );
+    } else {
+      navigate("/chat");
     }
   };
-
-  useEffect(() => {
-    if (flowchartData) {
-      navigate("/flowchart");
-    }
-  }, [flowchartData, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-800">
@@ -138,9 +145,9 @@ const SignInFlow = () => {
             ) : (
               <button
                 onClick={handleCompleteProfile}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className={`px-4 py-2 ${isSkipButton ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"} text-white rounded `}
               >
-                Create Flowchart
+                {isSkipButton ? "Skip" : "Create Flowchart"}
               </button>
             )}
           </div>

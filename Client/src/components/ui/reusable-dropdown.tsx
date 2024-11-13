@@ -8,6 +8,7 @@ import { SelectValue } from "./select";
 interface ReusableDropdownProps {
   name: string;
   dropdownItems: string[];
+  // eslint-disable-next-line no-unused-vars
   handleChangeItem: (key: string, value: string) => void;
   selectedItem: string;
   position?: "item-aligned" | "popper";
@@ -17,6 +18,7 @@ interface ReusableDropdownProps {
 interface ReusableDropdownProps {
   name: string;
   dropdownItems: string[];
+  // eslint-disable-next-line no-unused-vars
   handleChangeItem: (name: string, value: string) => void;
   selectedItem: string;
   position?: "item-aligned" | "popper";

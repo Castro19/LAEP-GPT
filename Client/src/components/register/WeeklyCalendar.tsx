@@ -116,7 +116,7 @@ const TimeSlot = ({
 
 const WeeklyCalendar = ({ inReadMode = false }: { inReadMode?: boolean }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const { handleAvailabilityChange } = useUserData();
+  const { handleChange } = useUserData();
   const userData = useAppSelector((state) => state.user.userData);
   const [draggingToSelect, setDraggingToSelect] = useState<boolean | null>(
     null
@@ -172,7 +172,9 @@ const WeeklyCalendar = ({ inReadMode = false }: { inReadMode?: boolean }) => {
     };
 
     // Call handleAvailabilityChange with the new availability
-    handleAvailabilityChange(newAvailability);
+    handleChange({
+      target: { name: "availability", value: newAvailability },
+    } as unknown as React.ChangeEvent<HTMLInputElement>);
   };
 
   return (
