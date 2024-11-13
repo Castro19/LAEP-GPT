@@ -53,7 +53,7 @@ const InterestDropdown = ({
     dropdownItems = items.filter(
       (item) => !selectedItems.includes(item.split(": ")[0])
     );
-  } else {
+  } else if (name === "Interests") {
     handleAddItem = (value: string) => {
       handleAddInterest(value);
     };

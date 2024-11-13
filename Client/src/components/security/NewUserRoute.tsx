@@ -1,5 +1,6 @@
 import { useAppSelector } from "@/redux";
 import { Navigate, Outlet } from "react-router-dom";
+import SignInFlow from "../register/SignInFlow";
 
 const NewUserRoute = () => {
   const { userLoggedIn, loading, isNewUser } = useAppSelector(
@@ -14,11 +15,16 @@ const NewUserRoute = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isNewUser) {
-    return <Navigate to="/chat" replace />;
-  }
+  // if (!isNewUser) {
+  //   return <Navigate to="/chat" replace />;
+  // }
 
-  return <Outlet />; // Render child routes
+  return (
+    <>
+      <SignInFlow />
+      <Outlet />
+    </>
+  ); // Render child routes
 };
 
 export default NewUserRoute;

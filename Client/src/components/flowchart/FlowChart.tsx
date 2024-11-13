@@ -1,25 +1,52 @@
-// FlowChart.tsx
-import flowchartData from "./exampleData/22-26.52CSCBSU.json";
-import TermContainer from "./termContainer/TermContainer";
-import "./FlowChart.css";
 import { useEffect, useState } from "react";
-import { Term, Course } from "@/types";
+import { useAppSelector } from "@/redux";
+import TermContainer from "./termContainer/TermContainer";
+import { FlowchartData, Term, Course } from "@/types";
+import "./FlowChart.css";
 
 const FlowChart = () => {
-  const initialTermData: Term[] = flowchartData.termData
-    .filter((term) => term.tIndex !== -1)
-    .map((term) => ({
-      ...term,
-      courses: term.courses.map((course) => ({
-        ...course,
-        completed: false, // Initialize as false
-      })),
-    }));
-  console.log("1st quarter", initialTermData[1]);
-  const [termData, setTermData] = useState<Term[]>(initialTermData);
+  const { flowchartData } = useAppSelector((state) => state.flowchart) as {
+    flowchartData: FlowchartData | null;
+  };
+  const [termData, setTermData] = useState<Term[]>([]);
   const [incompleteCourses, setIncompleteCourses] = useState<Course[]>([]);
-  const startYear = parseInt(flowchartData.startYear, 10);
+  const [startYear, setStartYear] = useState<number>(0);
 
+  useEffect(() => {
+    // Ensure flowchartData is available before processing
+    if (flowchartData) {
+      const initialTermData: Term[] = flowchartData.termData
+        .filter((term) => term.tIndex !== -1)
+        .map((term) => ({
+          ...term,
+          courses: term.courses.map((course) => ({
+            ...course,
+            completed: false, // Initialize as false
+          })),
+        }));
+
+      setTermData(initialTermData);
+      setStartYear(parseInt(flowchartData.startYear, 10));
+    }
+  }, [flowchartData]);
+
+  useEffect(() => {
+    const getIncompleteCourses = (): Course[] => {
+      return termData.flatMap((term) =>
+        term.courses.filter((course) => !course.completed)
+      );
+    };
+    setIncompleteCourses(getIncompleteCourses());
+  }, [termData]);
+
+  useEffect(() => {
+    console.log(incompleteCourses);
+  }, [incompleteCourses]);
+
+  // Guard clause: Return loading state if flowchartData is not available
+  if (!flowchartData) {
+    return <div>Loading...</div>;
+  }
   // Function to compute the term name
   const getTermName = (termNumber: number) => {
     const termsPerYear = 3;
@@ -54,19 +81,6 @@ const FlowChart = () => {
       })
     );
   };
-
-  useEffect(() => {
-    const getIncompleteCourses = (): Course[] => {
-      return termData.flatMap((term) =>
-        term.courses.filter((course) => !course.completed)
-      );
-    };
-    setIncompleteCourses(getIncompleteCourses());
-  }, [termData]);
-
-  useEffect(() => {
-    console.log(incompleteCourses);
-  }, [incompleteCourses]);
 
   return (
     <div className="flowchart-container dark:bg-gray-900">

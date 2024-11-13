@@ -5,7 +5,7 @@ import { layoutReducer } from "./layout/layoutSlice";
 import { logReducer } from "./log/logSlice";
 import { authReducer } from "./auth/authSlice";
 import { userReducer } from "./user/userSlice";
-
+import { flowchartReducer } from "./flowchart/flowchartSlice";
 const store = configureStore({
   reducer: {
     message: messageReducer,
@@ -14,6 +14,7 @@ const store = configureStore({
     log: logReducer,
     auth: authReducer,
     user: userReducer,
+    flowchart: flowchartReducer,
   },
 });
 
