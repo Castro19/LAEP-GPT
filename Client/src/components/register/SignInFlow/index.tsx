@@ -6,19 +6,22 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons for arrows
 import { useUserData } from "@/hooks/useUserData";
 import { setIsNewUser } from "@/redux/auth/authSlice";
+import { fetchFlowchartDataHelper } from "@/redux/flowchart/crudFlowchart";
 
 const signInFlowSteps = [
+  "terms",
   "about-me",
   "interests",
-  "courses",
-  "flow-chart",
   "availability",
-  "terms",
+  "flowchart",
 ];
 
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector((state) => state.user);
+  const { flowchartData, selections } = useAppSelector(
+    (state) => state.flowchart
+  );
   const { handleSave } = useUserData();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -32,6 +35,10 @@ const SignInFlow = () => {
 
   useEffect(() => {
     switch (currentStep) {
+      case "terms":
+        setTitle("Terms of Agreement");
+        setDescription("Please read and accept the terms of agreement");
+        break;
       case "about-me":
         setTitle(`Welcome, ${userData?.name}!`);
         setDescription("Tell us a little about yourself");
@@ -44,17 +51,13 @@ const SignInFlow = () => {
         setTitle("What courses have you taken?");
         setDescription("Tell us what courses you've taken");
         break;
-      case "flow-chart":
-        setTitle("Setup your flowchart");
-        setDescription("");
-        break;
       case "availability":
         setTitle("When are you available?");
         setDescription("Tell us when you're available");
         break;
-      case "terms":
-        setTitle("Terms of Agreement");
-        setDescription("Please read and accept the terms of agreement");
+      case "flowchart":
+        setTitle("Setup your flowchart");
+        setDescription("Input the following information");
         break;
       default:
         setTitle("Welcome!");
@@ -80,8 +83,21 @@ const SignInFlow = () => {
   const handleCompleteProfile = () => {
     handleSave();
     dispatch(setIsNewUser(false));
-    navigate("/chat"); // Example navigation
+    if (selections.catalog && selections.major && selections.concentration) {
+      fetchFlowchartDataHelper(
+        dispatch,
+        selections.catalog,
+        selections.major,
+        selections.concentration
+      );
+    }
   };
+
+  useEffect(() => {
+    if (flowchartData) {
+      navigate("/flowchart");
+    }
+  }, [flowchartData, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-800">
@@ -124,7 +140,7 @@ const SignInFlow = () => {
                 onClick={handleCompleteProfile}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
-                Complete Profile
+                Create Flowchart
               </button>
             )}
           </div>
