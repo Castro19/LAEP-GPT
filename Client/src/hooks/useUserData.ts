@@ -1,43 +1,11 @@
-// useUserData.ts
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { updateUserProfile, updateUserData } from "../redux/user/userSlice";
-import { MyUserInfo, Availability } from "../types";
-import { RootState } from "@/redux/store";
+import { MyUserInfo } from "../types";
 
 export function useUserData() {
   const dispatch = useAppDispatch();
-  const { loading, registerError } = useAppSelector(
-    (state: RootState) => state.auth
-  );
-  const userData = useAppSelector((state: RootState) => state.user.userData);
-
-  const handleAddCourse = (value: string) => {
-    if (!userData.courses.includes(value)) {
-      const updatedCourses = [...userData.courses, value];
-      dispatch(updateUserData({ courses: updatedCourses }));
-    }
-  };
-
-  const handleRemoveCourse = (value: string) => {
-    const updatedCourses = userData.courses.filter(
-      (course) => course.split(": ")[0] !== value
-    );
-    dispatch(updateUserData({ courses: updatedCourses }));
-  };
-
-  const handleAddInterest = (value: string) => {
-    if (!userData.interests.includes(value)) {
-      const updatedInterests = [...userData.interests, value];
-      dispatch(updateUserData({ interests: updatedInterests }));
-    }
-  };
-
-  const handleRemoveInterest = (value: string) => {
-    const updatedInterests = userData.interests.filter(
-      (interest) => interest !== value
-    );
-    dispatch(updateUserData({ interests: updatedInterests }));
-  };
+  const { loading, registerError } = useAppSelector((state) => state.auth);
+  const userData = useAppSelector((state) => state.user.userData);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -46,28 +14,31 @@ export function useUserData() {
     dispatch(updateUserData({ [name]: value } as Partial<MyUserInfo>));
   };
 
-  const handleAvailabilityChange = (newAvailability: Availability) => {
-    dispatch(updateUserData({ availability: newAvailability }));
+  const handleAddItem = (field: keyof MyUserInfo, value: string) => {
+    const currentArray = userData[field] as string[];
+    if (!currentArray.includes(value)) {
+      dispatch(updateUserData({ [field]: [...currentArray, value] }));
+    }
   };
 
-  const handleShareData = (value: boolean) => {
-    dispatch(updateUserData({ canShareData: value }));
+  const handleRemoveItem = (field: keyof MyUserInfo, value: string) => {
+    const currentArray = userData[field] as string[];
+    dispatch(
+      updateUserData({ [field]: currentArray.filter((item) => item !== value) })
+    );
   };
 
   const handleSave = () => {
-    dispatch(updateUserProfile(userData));
+    dispatch(updateUserProfile());
   };
 
   return {
     loading,
     registerError,
-    handleAddInterest,
-    handleRemoveInterest,
-    handleAddCourse,
-    handleRemoveCourse,
+    handleAddItem,
+    handleRemoveItem,
     handleChange,
-    handleAvailabilityChange,
-    handleShareData,
     handleSave,
+    userData, // Expose userData if needed
   };
 }

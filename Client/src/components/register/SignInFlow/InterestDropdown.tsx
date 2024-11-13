@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
 import { RootState } from "@/redux/store";
+import { MyUserInfo } from "@/types";
 
 const InterestDropdown = ({
   name,
@@ -23,26 +24,12 @@ const InterestDropdown = ({
 }): JSX.Element => {
   const [position, setPosition] = useState<"item-aligned" | "popper">("popper");
   const userData = useAppSelector((state: RootState) => state.user.userData);
-  const {
-    handleAddCourse,
-    handleRemoveCourse,
-    handleAddInterest,
-    handleRemoveInterest,
-  } = useUserData();
-  // eslint-disable-next-line no-unused-vars
-  let handleAddItem: (value: string) => void;
-  // eslint-disable-next-line no-unused-vars
-  let handleRemoveItem: (value: string) => void;
+  const { handleAddItem, handleRemoveItem } = useUserData();
   let dropdownItems: string[] = [];
   let selectedItems: string[] = [];
   if (name === "Courses") {
-    handleAddItem = (value: string) => {
-      handleAddCourse(value);
-    };
-    handleRemoveItem = (value: string) => {
-      handleRemoveCourse(value);
-    };
-    selectedItems =
+    selectedItems = userData.courses;
+    dropdownItems =
       userData.courses
         .map((course) => course.split(": ")[0])
         .sort((a, b) => {
@@ -54,12 +41,6 @@ const InterestDropdown = ({
       (item) => !selectedItems.includes(item.split(": ")[0])
     );
   } else if (name === "Interests") {
-    handleAddItem = (value: string) => {
-      handleAddInterest(value);
-    };
-    handleRemoveItem = (value: string) => {
-      handleRemoveInterest(value);
-    };
     selectedItems = userData.interests;
     dropdownItems = items.filter((item) => !selectedItems.includes(item));
     // Sort dropdown items by alphabetical order
@@ -93,7 +74,9 @@ const InterestDropdown = ({
       <LabelInputContainer>
         <Label className="underline">{name}</Label>
         <Select
-          onValueChange={(value) => handleAddItem(value)}
+          onValueChange={(value) =>
+            handleAddItem(name as keyof MyUserInfo, value)
+          }
           value={""} // Controlled component
         >
           <SelectTrigger id={name} className="text-black dark:text-black">
@@ -112,7 +95,9 @@ const InterestDropdown = ({
               <SelectItem
                 key={index}
                 value={value}
-                onClick={() => handleAddItem(value)}
+                onClick={() =>
+                  handleAddItem(name.toLowerCase() as keyof MyUserInfo, value)
+                }
                 data-testid={`home-dropdown-${name}-item-${index}`}
                 className="whitespace-normal break-words"
               >
@@ -126,7 +111,9 @@ const InterestDropdown = ({
         {selectedItems.map((item: string, index: number) => (
           <Button
             key={index}
-            onClick={() => handleRemoveItem(item)}
+            onClick={() =>
+              handleRemoveItem(name.toLowerCase() as keyof MyUserInfo, item)
+            }
             style={{ margin: "5px" }}
             className="whitespace-normal h-auto py-2"
           >

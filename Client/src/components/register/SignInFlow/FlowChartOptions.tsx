@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import ReusableDropdown from "../../ui/reusable-dropdown";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { setSelection } from "@/redux/flowchart/flowchartSlice";
+import { useUserData } from "@/hooks/useUserData";
 
 // Move configuration to a separate constant
 const YEAR_OPTIONS = [
@@ -17,11 +18,15 @@ const YEAR_OPTIONS = [
   "2024",
 ];
 
-const FlowChartOptions = () => {
+const FlowChartOptions = ({
+  dropdownRef,
+}: {
+  dropdownRef?: React.RefObject<HTMLDivElement>;
+}) => {
   const dispatch = useAppDispatch();
   const { catalogOptions, majorOptions, concentrationOptions, selections } =
     useAppSelector((state) => state.flowchart);
-
+  const { handleChange } = useUserData();
   useEffect(() => {
     if (selections.catalog) {
       dispatch(flowchartActions.fetchMajorOptions(selections.catalog));
@@ -39,7 +44,25 @@ const FlowChartOptions = () => {
     }
   }, [selections.major, selections.catalog, dispatch]);
 
-  const handleChange = (key: string, value: string) => {
+  const handleChangeOption = (key: string, value: string) => {
+    if (key === "startingYear") {
+      handleChange({
+        target: { name: "startingYear", value },
+      } as React.ChangeEvent<HTMLInputElement>);
+    } else if (key === "catalog") {
+      handleChange({
+        target: { name: "catalog", value },
+      } as React.ChangeEvent<HTMLInputElement>);
+    } else if (key === "major") {
+      handleChange({
+        target: { name: "major", value },
+      } as React.ChangeEvent<HTMLInputElement>);
+    } else if (key === "concentration") {
+      handleChange({
+        target: { name: "concentration", value },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+
     dispatch(setSelection({ key, value }));
   };
 
@@ -48,30 +71,34 @@ const FlowChartOptions = () => {
       <ReusableDropdown
         name="Starting Year"
         dropdownItems={YEAR_OPTIONS}
-        handleChangeItem={(_, value) => handleChange("startingYear", value)}
+        handleChangeItem={(_, value) =>
+          handleChangeOption("startingYear", value)
+        }
         selectedItem={selections.startingYear || ""}
-        dropdownRef={null}
+        dropdownRef={dropdownRef ? dropdownRef : null}
       />
       <ReusableDropdown
         name="Catalog"
         dropdownItems={catalogOptions}
-        handleChangeItem={(_, value) => handleChange("catalog", value)}
+        handleChangeItem={(_, value) => handleChangeOption("catalog", value)}
         selectedItem={selections.catalog || ""}
-        dropdownRef={null}
+        dropdownRef={dropdownRef ? dropdownRef : null}
       />
       <ReusableDropdown
         name="Major"
         dropdownItems={majorOptions}
-        handleChangeItem={(_, value) => handleChange("major", value)}
+        handleChangeItem={(_, value) => handleChangeOption("major", value)}
         selectedItem={selections.major || ""}
-        dropdownRef={null}
+        dropdownRef={dropdownRef ? dropdownRef : null}
       />
       <ReusableDropdown
         name="Concentration"
         dropdownItems={concentrationOptions}
-        handleChangeItem={(_, value) => handleChange("concentration", value)}
+        handleChangeItem={(_, value) =>
+          handleChangeOption("concentration", value)
+        }
         selectedItem={selections.concentration || ""}
-        dropdownRef={null}
+        dropdownRef={dropdownRef ? dropdownRef : null}
       />
     </div>
   );

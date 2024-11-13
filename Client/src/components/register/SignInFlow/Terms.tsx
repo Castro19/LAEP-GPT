@@ -5,8 +5,14 @@ import { useAppSelector } from "@/redux";
 import { labelStyle } from "./AboutMe";
 
 export default function Terms() {
-  const { handleShareData } = useUserData();
+  const { handleChange } = useUserData();
   const userData = useAppSelector((state) => state.user.userData);
+
+  const onCheckedChange = (checked: boolean) => {
+    handleChange({
+      target: { name: "canShareData", value: checked },
+    } as unknown as React.ChangeEvent<HTMLInputElement>);
+  };
 
   const description =
     "By accepting these terms, you authorize us to share your data with other users to enhance your experience and facilitate connections within our platform.";
@@ -20,7 +26,7 @@ export default function Terms() {
         <Checkbox
           id="terms"
           checked={userData?.canShareData}
-          onCheckedChange={(checked) => handleShareData(checked as boolean)}
+          onCheckedChange={onCheckedChange}
         />
         <label
           htmlFor="terms"
