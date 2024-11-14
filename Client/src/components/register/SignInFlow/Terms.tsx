@@ -9,9 +9,7 @@ export default function Terms() {
   const userData = useAppSelector((state) => state.user.userData);
 
   const onCheckedChange = (checked: boolean) => {
-    handleChange({
-      target: { name: "canShareData", value: checked },
-    } as unknown as React.ChangeEvent<HTMLInputElement>);
+    handleChange("canShareData", checked);
   };
 
   const description =

@@ -17,7 +17,7 @@ const years = [
 export const labelStyle = "underline text-lg self-center";
 
 const AboutMe = () => {
-  const { handleChange } = useUserData();
+  const { handleTextChange } = useUserData();
   const { userData } = useAppSelector((state: RootState) => state.user);
   const dispatch = useAppDispatch();
 
@@ -29,7 +29,7 @@ const AboutMe = () => {
           name="bio"
           value={userData?.bio || ""}
           placeholder="Tell us about yourself..."
-          onChange={handleChange}
+          onChange={(e) => handleTextChange(e)}
           style={{ height: "150px" }}
         />
       </LabelInputContainer>

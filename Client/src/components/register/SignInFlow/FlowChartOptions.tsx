@@ -46,21 +46,13 @@ const FlowChartOptions = ({
 
   const handleChangeOption = (key: string, value: string) => {
     if (key === "startingYear") {
-      handleChange({
-        target: { name: "startingYear", value },
-      } as React.ChangeEvent<HTMLInputElement>);
+      handleChange("startingYear", value);
     } else if (key === "catalog") {
-      handleChange({
-        target: { name: "catalog", value },
-      } as React.ChangeEvent<HTMLInputElement>);
+      handleChange("catalog", value);
     } else if (key === "major") {
-      handleChange({
-        target: { name: "major", value },
-      } as React.ChangeEvent<HTMLInputElement>);
+      handleChange("major", value);
     } else if (key === "concentration") {
-      handleChange({
-        target: { name: "concentration", value },
-      } as React.ChangeEvent<HTMLInputElement>);
+      handleChange("concentration", value);
     }
 
     dispatch(setSelection({ key, value }));
