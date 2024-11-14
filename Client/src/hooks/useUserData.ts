@@ -7,10 +7,19 @@ export function useUserData() {
   const { loading, registerError } = useAppSelector((state) => state.auth);
   const userData = useAppSelector((state) => state.user.userData);
 
-  const handleChange = (
+  const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    dispatch(updateUserData({ [name]: value } as Partial<MyUserInfo>));
+  };
+  // If name is availability, then value is an Availability object
+  // How to enforece?
+  const handleChange = <K extends keyof MyUserInfo>(
+    name: K,
+    value: MyUserInfo[K]
+  ) => {
     dispatch(updateUserData({ [name]: value } as Partial<MyUserInfo>));
   };
 
@@ -38,6 +47,7 @@ export function useUserData() {
     handleAddItem,
     handleRemoveItem,
     handleChange,
+    handleTextChange,
     handleSave,
     userData, // Expose userData if needed
   };

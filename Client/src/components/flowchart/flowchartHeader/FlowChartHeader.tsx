@@ -1,22 +1,28 @@
-import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { BsLayoutSidebar } from "react-icons/bs";
+import FlowchartSidebar from "../flowchartSidebar/FlowchartSidebar";
+import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
 
 const FlowChartHeader = () => {
-  const navigate = useNavigate();
-  const handleBackToChat = () => {
-    // Map back to the previous page
-    navigate(-1);
-  };
+  const dispatch = useAppDispatch();
+  const isSidebarVisible = useAppSelector(
+    (state) => state.layout.isSidebarVisible
+  );
+
   return (
     <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2 border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-center">
         <button
-          onClick={handleBackToChat}
-          className="absolute left-4 text-lg hover:text-gray-300"
+          onClick={() =>
+            dispatch(layoutActions.toggleSidebar(!isSidebarVisible))
+          }
+          className="text-lg hover:text-gray-300"
         >
-          <IoIosArrowBack />
+          <BsLayoutSidebar />
         </button>
-        <h1 className="self-center text-lg font-bold">Flowchart</h1>
+        <FlowchartSidebar />
+        <div className="flex-grow text-center">
+          <h1 className="text-lg font-bold">Flowchart</h1>
+        </div>
       </div>
     </header>
   );

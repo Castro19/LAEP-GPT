@@ -1,7 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Octokit } from "@octokit/rest";
-import { FlowchartData, Term } from "@/types";
-import { fetchFlowchartFromDB, storeFlowchartInDB } from "./crudFlowchart";
+import { FetchAllFlowchartsResponse, FlowchartData, Term } from "@/types";
+import {
+  deleteFlowchartFromDB,
+  fetchAllFlowchartsFromDB,
+  fetchFlowchartFromDB,
+  storeFlowchartInDB,
+  updateFlowchartInDB,
+} from "./crudFlowchart";
 
 const octokit = new Octokit();
 const owner = "polyflowbuilder";
@@ -15,11 +21,14 @@ interface FlowchartState {
   concentrationOptions: string[];
   selections: Record<string, string>;
   flowchartData: FlowchartData | null;
+  flowchartList: FetchAllFlowchartsResponse[] | null;
   loading: {
     fetchMajorOptions: boolean;
     fetchConcentrationOptions: boolean;
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
+    fetchAllFlowcharts: boolean;
+    deleteFlowchart: boolean;
   };
   error: string | null;
 }
@@ -38,11 +47,14 @@ const initialState: FlowchartState = {
   concentrationOptions: [],
   selections: {},
   flowchartData: null,
+  flowchartList: null,
   loading: {
     fetchMajorOptions: false,
     fetchConcentrationOptions: false,
     fetchFlowchartData: false,
     setFlowchart: false,
+    fetchAllFlowcharts: false,
+    deleteFlowchart: false,
   },
   error: null,
 };
@@ -157,6 +169,69 @@ export const setFlowchart = createAsyncThunk(
   }
 );
 
+/**
+ * Fetches all flowcharts from the database.
+ * @returns The flowchart data { flowchartId, name }[]
+ */
+export const fetchAllFlowcharts = createAsyncThunk(
+  "flowchart/fetchAllFlowcharts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetchAllFlowchartsFromDB();
+      return response;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch all flowcharts.");
+    }
+  }
+);
+
+/**
+ * Updates the flowchart in the database.
+ * @param flowchartId The flowchart ID.
+ * @param flowchartData The flowchart data.
+ * @param name The flowchart name.
+ * @returns void
+ */
+export const updateFlowchart = createAsyncThunk(
+  "flowchart/updateFlowchartInDB",
+  async (
+    {
+      flowchartId,
+      flowchartData,
+      name,
+    }: { flowchartId: string; flowchartData: FlowchartData; name: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await updateFlowchartInDB(
+        flowchartId,
+        flowchartData,
+        name
+      );
+      console.log("Flowchart updated in DB: ", response);
+    } catch (error) {
+      return rejectWithValue("Failed to update flowchart in DB.");
+    }
+  }
+);
+
+/**
+ * Deletes the flowchart from the database.
+ * @param flowchartId The flowchart ID.
+ * @returns void
+ */
+export const deleteFlowchart = createAsyncThunk(
+  "flowchart/deleteFlowchart",
+  async (flowchartId: string, { rejectWithValue }) => {
+    try {
+      await deleteFlowchartFromDB(flowchartId);
+      return flowchartId;
+    } catch (error) {
+      return rejectWithValue("Failed to delete flowchart from DB.");
+    }
+  }
+);
+
 // Redux slice
 const flowchartSlice = createSlice({
   name: "flowchart",
@@ -242,6 +317,35 @@ const flowchartSlice = createSlice({
       })
       .addCase(setFlowchart.rejected, (state, action) => {
         state.loading.setFlowchart = false;
+        state.error = action.payload as string;
+      })
+      // fetchAllFlowcharts
+      .addCase(fetchAllFlowcharts.pending, (state) => {
+        state.loading.fetchAllFlowcharts = true;
+      })
+      .addCase(fetchAllFlowcharts.fulfilled, (state, action) => {
+        state.loading.fetchAllFlowcharts = false;
+        state.flowchartList =
+          action.payload as unknown as FetchAllFlowchartsResponse[];
+      })
+      .addCase(fetchAllFlowcharts.rejected, (state, action) => {
+        state.loading.fetchAllFlowcharts = false;
+        state.error = action.payload as string;
+      })
+      // deleteFlowchart
+      .addCase(deleteFlowchart.pending, (state) => {
+        state.loading.deleteFlowchart = true;
+      })
+      .addCase(deleteFlowchart.fulfilled, (state, action) => {
+        state.loading.deleteFlowchart = false;
+        if (state.flowchartList) {
+          state.flowchartList = state.flowchartList?.filter(
+            (flowchart) => flowchart.flowchartId !== action.payload
+          ) as FetchAllFlowchartsResponse[];
+        }
+      })
+      .addCase(deleteFlowchart.rejected, (state, action) => {
+        state.loading.deleteFlowchart = false;
         state.error = action.payload as string;
       });
   },

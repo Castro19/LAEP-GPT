@@ -1,4 +1,8 @@
-import { CreateFlowchartResponse, FlowchartData } from "@/types";
+import {
+  CreateFlowchartResponse,
+  FetchAllFlowchartsResponse,
+  FlowchartData,
+} from "@/types";
 
 /**
  * Creates a flowchart based on the flowchart data.
@@ -6,19 +10,19 @@ import { CreateFlowchartResponse, FlowchartData } from "@/types";
  * @returns The flowchart ID.
  */
 export async function storeFlowchartInDB(flowchartData: FlowchartData) {
-  console.log("Store flowchart in DB: ", flowchartData);
-  const response = await fetch("http://localhost:4000/flowchart", {
+  const response = await fetch(`http://localhost:4000/flowchart`, {
     method: "POST",
     body: JSON.stringify(flowchartData),
     credentials: "include",
   });
-  if (!response.ok) {
-    throw new Error("Failed to create flowchart");
-  }
-  const data: CreateFlowchartResponse = await response.json();
-  return data;
-}
 
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to create flowchart");
+  }
+
+  return response.json() as Promise<CreateFlowchartResponse>;
+}
 /**
  * Fetches the flowchart from the database.
  * @returns The flowchart data.
@@ -31,8 +35,77 @@ export async function fetchFlowchartFromDB(flowchartId: string) {
     }
   );
   if (!response.ok) {
-    throw new Error("Failed to fetch flowchart");
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to fetch flowchart");
   }
-  const data: FlowchartData = await response.json();
+
+  return response.json() as Promise<FlowchartData>;
+}
+
+/**
+ * Fetches all flowcharts from the database.
+ * @returns The list of flowchart IDs and names
+ */
+export async function fetchAllFlowchartsFromDB() {
+  const response = await fetch(`http://localhost:4000/flowchart`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch all flowcharts");
+  }
+  const data: FetchAllFlowchartsResponse = await response.json();
   return data;
+}
+
+/**
+ * Updates the flowchart in the database.
+ * @param flowchartId The flowchart ID.
+ * @param flowchartData The flowchart data.
+ * @param name The flowchart name.
+ * @returns The flowchart data.
+ */
+export async function updateFlowchartInDB(
+  flowchartId: string,
+  flowchartData: FlowchartData,
+  name: string
+) {
+  const response = await fetch(
+    `http://localhost:4000/flowchart/${flowchartId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        flowchartData: flowchartData,
+        name: name,
+      }),
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to update flowchart");
+  }
+
+  return response.json() as Promise<FlowchartData>;
+}
+
+/**
+ * Deletes the flowchart from the database.
+ * @param flowchartId The flowchart ID.
+ * @returns void
+ */
+export async function deleteFlowchartFromDB(flowchartId: string) {
+  const response = await fetch(
+    `http://localhost:4000/flowchart/${flowchartId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to delete flowchart");
+  }
 }

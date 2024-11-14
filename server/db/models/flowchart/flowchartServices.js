@@ -12,11 +12,59 @@ export const createFlowchart = async (flowchartData, userId) => {
   }
 };
 
-// Read
-
+// Read: Get the flowchart associated with the user and the flowchartId
 export const fetchFlowchart = async (flowchartId, userId) => {
   try {
     const result = await flowchartModel.fetchFlowchart(flowchartId, userId);
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+// Read All: Get all flowcharts associated with the user
+export const fetchAllFlowcharts = async (userId) => {
+  try {
+    const result = await flowchartModel.fetchAllFlowcharts(userId);
+    if (result.length === 0) {
+      throw new Error("No flowcharts found");
+    }
+    const flowchartList = result.map((flowchart) => {
+      return {
+        flowchartId: flowchart._id,
+        name: flowchart.name,
+      };
+    });
+    return flowchartList;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+// Update
+export const updateFlowchart = async (
+  flowchartId,
+  flowchartData,
+  name,
+  userId
+) => {
+  try {
+    const result = await flowchartModel.updateFlowchart(
+      flowchartId,
+      flowchartData,
+      name,
+      userId
+    );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+// Delete
+export const deleteFlowchart = async (flowchartId, userId) => {
+  try {
+    const result = await flowchartModel.deleteFlowchart(flowchartId, userId);
     return result;
   } catch (error) {
     throw new Error(error);

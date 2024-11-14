@@ -4,8 +4,13 @@ import TermContainer from "./termContainer/TermContainer";
 import { FlowchartData } from "@/types";
 import "./FlowChart.css";
 import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
+import defaultTermData from "./exampleData/flowPlaceholder";
 
-const FlowChart = ({ flowchartData }: { flowchartData?: FlowchartData }) => {
+const FlowChart = ({
+  flowchartData,
+}: {
+  flowchartData?: FlowchartData | null;
+}) => {
   const dispatch = useAppDispatch();
 
   // Compute termData from flowchartData
@@ -64,18 +69,30 @@ const FlowChart = ({ flowchartData }: { flowchartData?: FlowchartData }) => {
     <div className="flowchart-container dark:bg-gray-900">
       <div className="flowchart">
         {flowchartData?.termData
-          .filter((term) => term.tIndex !== -1)
-          .map((term) => {
-            const termName = getTermName(term.tIndex);
-            return (
-              <TermContainer
-                key={term.tIndex}
-                term={term}
-                termName={termName}
-                onCourseToggleComplete={onCourseToggleComplete}
-              />
-            );
-          })}
+          ? flowchartData.termData
+              .filter((term) => term.tIndex !== -1)
+              .map((term) => {
+                const termName = getTermName(term.tIndex);
+                return (
+                  <TermContainer
+                    key={term.tIndex}
+                    term={term}
+                    termName={termName}
+                    onCourseToggleComplete={onCourseToggleComplete}
+                  />
+                );
+              })
+          : defaultTermData.map((term) => {
+              const termName = getTermName(term.tIndex);
+              return (
+                <TermContainer
+                  key={term.tIndex}
+                  term={term}
+                  termName={termName}
+                  onCourseToggleComplete={onCourseToggleComplete}
+                />
+              );
+            })}
       </div>
       <div className="flowchart-footer">
         <h4>Total Units: 180</h4>

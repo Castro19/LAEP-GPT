@@ -43,3 +43,10 @@ export interface FlowchartData {
 export interface CreateFlowchartResponse {
   flowchartId: string;
 }
+
+export interface FetchAllFlowchartsResponse {
+  flowchartId: string;
+  name: string;
+  primaryOption?: boolean;
+}
+[];

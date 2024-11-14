@@ -172,9 +172,7 @@ const WeeklyCalendar = ({ inReadMode = false }: { inReadMode?: boolean }) => {
     };
 
     // Call handleAvailabilityChange with the new availability
-    handleChange({
-      target: { name: "availability", value: newAvailability },
-    } as unknown as React.ChangeEvent<HTMLInputElement>);
+    handleChange("availability", newAvailability);
   };
 
   return (
