@@ -4,9 +4,12 @@ import { useAppSelector, useAppDispatch } from "@/redux";
 import FlowchartLog from "../flowchartLog/FlowchartLog";
 import { useUserData } from "@/hooks/useUserData";
 import { setFlowchart } from "@/redux/flowchart/flowchartSlice";
+import { useNavigate } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
 
 const FlowchartSidebar = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   //   const userId = useAppSelector((state) => state.auth.userId);
 
   //   const hasFetchedLogs = useRef(false);
@@ -30,9 +33,21 @@ const FlowchartSidebar = () => {
     dispatch(setFlowchart(flowchartId));
   };
 
+  const handleBackToChat = () => {
+    // Map back to the previous page
+    navigate(-1);
+  };
+
   return (
     <aside className={`${sidebarClasses} flex flex-col h-full`}>
       <div className="relative text-gray-700 dark:text-white flex-shrink-0">
+        {/* Go Back Button */}
+        <button
+          onClick={handleBackToChat}
+          className="absolute left-2 top-2 text-lg hover:text-gray-300"
+        >
+          <IoIosArrowBack />
+        </button>
         <div className="flex justify-center items-center text-2xl border-b-2 border-zinc-800 pb-4">
           Flowcharts
         </div>
