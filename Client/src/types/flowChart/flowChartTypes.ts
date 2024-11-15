@@ -2,6 +2,9 @@
 export interface Course {
   id: string | null;
   color: string;
+  displayName?: string;
+  desc?: string;
+  units?: string;
   customId?: string;
   customUnits?: string;
   customDesc?: string;

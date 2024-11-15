@@ -43,6 +43,9 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
     setPrimaryOption(primaryOption);
   };
 
+  const primaryFlowchartStyles =
+    "border-2 border-blue-500 dark:border-green-800";
+
   return (
     <div className="flex align-center justify-between mb-1 pb-1 border-b border-gray-500 dark:border-gray-700">
       <FlowchartLogOptions
@@ -52,9 +55,10 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
         onNameChange={setName}
         onPrimaryChange={handlePrimaryChange}
       />
+      {/* Add special styles for the primary flowchart */}
       <button
         onClick={() => handleSelectFlowchart(flowchart.flowchartId)}
-        className="
+        className={`
           block
           w-full
           px-4 py-2
@@ -66,7 +70,8 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
           text-left
           transition-colors
           shadow-sm
-        "
+          ${primaryOption ? primaryFlowchartStyles : ""}
+        `}
       >
         <h3 className="font-semibold text-gray-900 dark:text-white truncate">
           {name || "Untitled Flowchart"}

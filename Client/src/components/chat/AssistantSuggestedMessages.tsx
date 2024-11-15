@@ -43,7 +43,7 @@ const AssistantSuggestedMessages = ({
           {suggestions?.map((message, index) => (
             <Button
               key={index}
-              className="p-4 text-md dark:bg-slate-800 hover:dark:bg-slate-700 dark:text-gray-200 rounded-2xl text-left h-full min-h-[120px] text-pretty"
+              className="p-4 text-md dark:bg-slate-800 hover:dark:bg-slate-700 dark:text-gray-200 rounded-2xl text-left h-full min-h-[120px] whitespace-normal break-words"
               onClick={() => handleClick(message)}
             >
               {message}
