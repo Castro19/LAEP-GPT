@@ -1,14 +1,9 @@
 import { useNavigate } from "react-router-dom";
 // Redux
-import {
-  useAppSelector,
-  useAppDispatch,
-  messageActions,
-  flowchartActions,
-} from "@/redux";
+import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import { FetchAllFlowchartsResponse } from "@/types";
-import { Button } from "@/components/ui/button";
-import { useUserData } from "@/hooks/useUserData";
+import FlowchartLogOptions from "./FlowchartLogOptions";
+import { useState, useEffect } from "react";
 
 type FlowchartLogProps = {
   flowchart: FetchAllFlowchartsResponse;
@@ -18,10 +13,23 @@ type FlowchartLogProps = {
 
 const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
   const navigate = useNavigate();
-  const { handleSave, handleChange } = useUserData();
   // Redux:
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.message.error);
+  const flowchartList = useAppSelector(
+    (state) => state.flowchart.flowchartList
+  );
+  const [name, setName] = useState(flowchart.name);
+  const [primaryOption, setPrimaryOption] = useState(flowchart.primaryOption);
+
+  useEffect(() => {
+    const updatedFlowchart = flowchartList?.find(
+      (f) => f.flowchartId === flowchart.flowchartId
+    );
+    if (updatedFlowchart) {
+      setPrimaryOption(updatedFlowchart.primaryOption);
+    }
+  }, [flowchartList, flowchart.flowchartId]);
 
   const handleSelectFlowchart = async (flowchartId: string) => {
     onSelectFlowchart(flowchartId);
@@ -31,17 +39,19 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
     }
   };
 
-  const handleDeleteFlowchart = async (flowchartId: string) => {
-    await dispatch(flowchartActions.deleteFlowchart(flowchartId));
-    dispatch(flowchartActions.resetFlowchartData());
-    handleChange("flowchartId", "");
-    handleSave();
-    navigate("/flowchart");
-    console.log("Delete flowchartId: ", flowchartId);
+  const handlePrimaryChange = (primaryOption: boolean) => {
+    setPrimaryOption(primaryOption);
   };
 
   return (
     <div className="flex align-center justify-between mb-1 pb-1 border-b border-gray-500 dark:border-gray-700">
+      <FlowchartLogOptions
+        flowchart={flowchart}
+        name={name}
+        primaryOption={primaryOption || false}
+        onNameChange={setName}
+        onPrimaryChange={handlePrimaryChange}
+      />
       <button
         onClick={() => handleSelectFlowchart(flowchart.flowchartId)}
         className="
@@ -59,12 +69,9 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
         "
       >
         <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-          {flowchart.name || "Untitled Flowchart"}
+          {name || "Untitled Flowchart"}
         </h3>
       </button>
-      <Button onClick={() => handleDeleteFlowchart(flowchart.flowchartId)}>
-        Delete
-      </Button>
     </div>
   );
 };

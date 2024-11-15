@@ -9,10 +9,21 @@ import {
  * @param flowchartData The flowchart data.
  * @returns The flowchart ID.
  */
-export async function storeFlowchartInDB(flowchartData: FlowchartData) {
+export async function storeFlowchartInDB(
+  flowchartData: FlowchartData,
+  name: string,
+  primaryOption: boolean
+) {
   const response = await fetch(`http://localhost:4000/flowchart`, {
     method: "POST",
-    body: JSON.stringify(flowchartData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      flowchartData,
+      name,
+      primaryOption,
+    }),
     credentials: "include",
   });
 
@@ -67,7 +78,8 @@ export async function fetchAllFlowchartsFromDB() {
 export async function updateFlowchartInDB(
   flowchartId: string,
   flowchartData: FlowchartData,
-  name: string
+  name: string,
+  primaryOption: boolean
 ) {
   const response = await fetch(
     `http://localhost:4000/flowchart/${flowchartId}`,
@@ -79,6 +91,7 @@ export async function updateFlowchartInDB(
       body: JSON.stringify({
         flowchartData: flowchartData,
         name: name,
+        primaryOption: primaryOption,
       }),
       credentials: "include",
     }

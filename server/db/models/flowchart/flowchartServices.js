@@ -3,9 +3,19 @@ import * as flowchartModel from "./flowchartCollection.js";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one
-export const createFlowchart = async (flowchartData, userId) => {
+export const createFlowchart = async (
+  flowchartData,
+  name,
+  primaryOption,
+  userId
+) => {
   try {
-    const result = await flowchartModel.createFlowchart(flowchartData, userId);
+    const result = await flowchartModel.createFlowchart(
+      flowchartData,
+      name,
+      primaryOption,
+      userId
+    );
     return result;
   } catch (error) {
     throw new Error("Service error Creating Flowchart: " + error.message);
@@ -33,6 +43,7 @@ export const fetchAllFlowcharts = async (userId) => {
       return {
         flowchartId: flowchart._id,
         name: flowchart.name,
+        primaryOption: flowchart.primaryOption,
       };
     });
     return flowchartList;
@@ -46,6 +57,7 @@ export const updateFlowchart = async (
   flowchartId,
   flowchartData,
   name,
+  primaryOption,
   userId
 ) => {
   try {
@@ -53,6 +65,7 @@ export const updateFlowchart = async (
       flowchartId,
       flowchartData,
       name,
+      primaryOption,
       userId
     );
     return result;
@@ -65,6 +78,19 @@ export const updateFlowchart = async (
 export const deleteFlowchart = async (flowchartId, userId) => {
   try {
     const result = await flowchartModel.deleteFlowchart(flowchartId, userId);
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+// Other Handlers
+export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
+  try {
+    const result = await flowchartModel.updateAllOtherFlowcharts(
+      flowchartId,
+      userId
+    );
     return result;
   } catch (error) {
     throw new Error(error);

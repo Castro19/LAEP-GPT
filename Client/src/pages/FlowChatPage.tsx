@@ -8,9 +8,11 @@ import {
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
 import { useParams } from "react-router-dom";
+import FlowchartSidebar from "@/components/flowchart/flowchartSidebar/FlowchartSidebar";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
+
   const { flowchartId } = useParams();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
   const isSidebarVisible = useAppSelector(
@@ -18,7 +20,6 @@ const FlowChatPage = () => {
   );
 
   useEffect(() => {
-    console.log("flowchart data: ", flowchartData);
     // Only fetch if we have a flowchartId and no data yet
     if (flowchartId && !flowchartData) {
       dispatch(setFlowchart(flowchartId));
@@ -38,14 +39,14 @@ const FlowChatPage = () => {
   //   return <div>Loading...</div>;
   // }
 
-  // If we don't have data and no flowchartId, something went wrong
   return (
     <>
       <div
-        className={`bg-slate-800 text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
+        className={`bg-slate-800 text-white min-h-screen flex flex-col transition-all duration-300 overflow-y-auto ${
           isSidebarVisible ? "ml-64" : ""
         }`}
       >
+        <FlowchartSidebar />
         <FlowChartHeader />
         <div className="flex-1">
           <FlowChart flowchartData={flowchartData} />

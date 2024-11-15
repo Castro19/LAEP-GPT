@@ -1,5 +1,4 @@
 import { BsLayoutSidebar } from "react-icons/bs";
-import FlowchartSidebar from "../flowchartSidebar/FlowchartSidebar";
 import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
 
 const FlowChartHeader = () => {
@@ -19,7 +18,6 @@ const FlowChartHeader = () => {
         >
           <BsLayoutSidebar />
         </button>
-        <FlowchartSidebar />
         <div className="flex-grow text-center">
           <h1 className="text-lg font-bold">Flowchart</h1>
         </div>

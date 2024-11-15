@@ -64,7 +64,6 @@ const FlowChart = ({
     dispatch(toggleCourseCompletion({ termIndex, courseIndex }));
   };
 
-  console.log("Flowchart data in FlowChart: ", typeof flowchartData);
   return (
     <div className="flowchart-container dark:bg-gray-900">
       <div className="flowchart">

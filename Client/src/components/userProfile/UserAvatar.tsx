@@ -6,9 +6,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 export function UserAvatar() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { userLoggedIn, userId, loading } = useAppSelector(
-    (state) => state.auth
-  );
+  const { userLoggedIn, loading } = useAppSelector((state) => state.auth);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -19,7 +17,7 @@ export function UserAvatar() {
       );
       return;
     }
-    navigate(`/profile/edit/${userId}`);
+    navigate(`/profile/edit`);
   };
 
   if (loading) {

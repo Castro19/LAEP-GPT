@@ -93,7 +93,6 @@ const SignInFlow = () => {
   };
 
   const handleCompleteProfile = () => {
-    dispatch(setIsNewUser(false));
     if (selections.catalog && selections.major && selections.concentration) {
       fetchFlowchartDataHelper(
         dispatch,
@@ -103,6 +102,7 @@ const SignInFlow = () => {
       );
     } else {
       navigate("/chat");
+      dispatch(setIsNewUser(false));
     }
   };
 

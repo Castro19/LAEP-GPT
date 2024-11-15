@@ -76,7 +76,7 @@ const router = sentryCreateBrowserRouter([
         ],
       },
       {
-        path: "profile/edit/:userId",
+        path: "profile/edit",
         element: (
           <ProfilePageLayout>
             <ProfilePage />

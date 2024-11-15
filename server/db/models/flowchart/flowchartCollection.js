@@ -3,13 +3,26 @@ import { ObjectId } from "mongodb";
 const flowchartCollection = db.collection("flowcharts");
 
 // Create
-// Make it so that we have a 1:1 relationship between the user and the flowchart
-// If the user already has a flowchart, we update it, otherwise we create a new one
-export const createFlowchart = async (flowchartData, userId) => {
+// Make a 1:many relationship between the user and the flowchart
+export const createFlowchart = async (
+  flowchartData,
+  name,
+  primaryOption,
+  userId
+) => {
   try {
+    // Validate that userId exists and is valid
+    if (!userId || typeof userId !== "string") {
+      throw new Error("Valid userId is required");
+    }
+
     const result = await flowchartCollection.insertOne({
-      flowchartData: JSON.parse(flowchartData),
+      flowchartData,
+      name,
+      primaryOption,
       userId,
+      createdAt: new Date(), // Adding timestamp for better tracking
+      updatedAt: new Date(),
     });
     return result;
   } catch (error) {
@@ -45,7 +58,7 @@ export const fetchAllFlowcharts = async (userId) => {
   try {
     // Only return the flowchartId: _id and the name
     const result = await flowchartCollection
-      .find({ userId }, { projection: { _id: 1, name: 1 } })
+      .find({ userId }, { projection: { _id: 1, name: 1, primaryOption: 1 } })
       .toArray();
     return result;
   } catch (error) {
@@ -60,6 +73,7 @@ export const updateFlowchart = async (
   flowchartId,
   flowchartData,
   name,
+  primaryOption,
   userId
 ) => {
   try {
@@ -79,6 +93,8 @@ export const updateFlowchart = async (
         $set: {
           flowchartData: flowchartData,
           name: name,
+          primaryOption: primaryOption,
+          updatedAt: new Date(),
         },
       }
     );
@@ -121,5 +137,19 @@ export const deleteFlowchart = async (flowchartId, userId) => {
     return result;
   } catch (error) {
     throw new Error("Error deleting flowchart from database: " + error.message);
+  }
+};
+
+// Other Handlers
+export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
+  try {
+    // Update all flowcharts except the one with the flowchartId
+    const result = await flowchartCollection.updateMany(
+      { userId, _id: { $ne: new ObjectId(flowchartId) } },
+      { $set: { primaryOption: false } }
+    );
+    return result;
+  } catch (error) {
+    throw new Error(error);
   }
 };

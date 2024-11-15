@@ -55,7 +55,6 @@ export const updateUserProfile = createAsyncThunk<
     if (user) {
       const state = getState() as RootState;
       const updatedInfo = state.user.userData;
-      console.log("_: ", updatedInfo);
 
       await putUserProfile(updatedInfo);
       dispatch(setUserData(updatedInfo));

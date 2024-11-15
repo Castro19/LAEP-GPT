@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Octokit } from "@octokit/rest";
-import { FetchAllFlowchartsResponse, FlowchartData, Term } from "@/types";
+import {
+  FetchAllFlowchartsResponse,
+  FlowchartData,
+  PostFlowchartInDB,
+  Term,
+} from "@/types";
 import {
   deleteFlowchartFromDB,
   fetchAllFlowchartsFromDB,
@@ -28,6 +33,7 @@ interface FlowchartState {
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
     fetchAllFlowcharts: boolean;
+    updateFlowchart: boolean;
     deleteFlowchart: boolean;
   };
   error: string | null;
@@ -54,6 +60,7 @@ const initialState: FlowchartState = {
     fetchFlowchartData: false,
     setFlowchart: false,
     fetchAllFlowcharts: false,
+    updateFlowchart: false,
     deleteFlowchart: false,
   },
   error: null,
@@ -139,9 +146,16 @@ export const fetchFlowchartData = createAsyncThunk(
  */
 export const postFlowchartInDB = createAsyncThunk(
   "flowchart/postFlowchartInDB",
-  async (flowchartData: FlowchartData, { rejectWithValue }) => {
+  async (
+    { flowchartData, name, primaryOption }: PostFlowchartInDB,
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await storeFlowchartInDB(flowchartData);
+      const response = await storeFlowchartInDB(
+        flowchartData,
+        name,
+        primaryOption ?? true
+      );
       return response;
     } catch (error) {
       if (error instanceof Error) {
@@ -184,7 +198,6 @@ export const fetchAllFlowcharts = createAsyncThunk(
     }
   }
 );
-
 /**
  * Updates the flowchart in the database.
  * @param flowchartId The flowchart ID.
@@ -199,14 +212,21 @@ export const updateFlowchart = createAsyncThunk(
       flowchartId,
       flowchartData,
       name,
-    }: { flowchartId: string; flowchartData: FlowchartData; name: string },
+      primaryOption,
+    }: {
+      flowchartId: string;
+      flowchartData: FlowchartData;
+      name: string;
+      primaryOption: boolean;
+    },
     { rejectWithValue }
   ) => {
     try {
       const response = await updateFlowchartInDB(
         flowchartId,
         flowchartData,
-        name
+        name,
+        primaryOption
       );
       console.log("Flowchart updated in DB: ", response);
     } catch (error) {
@@ -248,6 +268,12 @@ const flowchartSlice = createSlice({
     },
     resetFlowchartData: (state) => {
       state.flowchartData = null;
+    },
+    setFlowchartList: (
+      state,
+      action: PayloadAction<FetchAllFlowchartsResponse[]>
+    ) => {
+      state.flowchartList = action.payload;
     },
     toggleCourseCompletion: (
       state,
@@ -293,6 +319,23 @@ const flowchartSlice = createSlice({
         state.loading.fetchConcentrationOptions = false;
         state.error = action.payload as string;
       })
+      // createFlowchart
+      .addCase(postFlowchartInDB.pending, (state) => {
+        state.loading.setFlowchart = true;
+        state.error = null;
+      })
+      .addCase(postFlowchartInDB.fulfilled, (state, action) => {
+        state.loading.setFlowchart = false;
+        if (!state.flowchartList) {
+          state.flowchartList = [action.payload];
+        } else {
+          state.flowchartList.push(action.payload);
+        }
+      })
+      .addCase(postFlowchartInDB.rejected, (state, action) => {
+        state.loading.setFlowchart = false;
+        state.error = action.payload as string;
+      })
       // fetchFlowchartData
       .addCase(fetchFlowchartData.pending, (state) => {
         state.loading.fetchFlowchartData = true;
@@ -332,6 +375,28 @@ const flowchartSlice = createSlice({
         state.loading.fetchAllFlowcharts = false;
         state.error = action.payload as string;
       })
+      // updateFlowchart
+      .addCase(updateFlowchart.pending, (state) => {
+        state.loading.updateFlowchart = true;
+      })
+      .addCase(updateFlowchart.fulfilled, (state, action) => {
+        if (state.flowchartList) {
+          state.flowchartList = state.flowchartList.map((flowchart) => ({
+            ...flowchart,
+            primaryOption:
+              flowchart.flowchartId === action.meta.arg.flowchartId
+                ? action.meta.arg.primaryOption
+                : action.meta.arg.primaryOption
+                  ? false
+                  : flowchart.primaryOption,
+          }));
+        }
+        state.loading.updateFlowchart = false;
+      })
+      .addCase(updateFlowchart.rejected, (state, action) => {
+        state.loading.updateFlowchart = false;
+        state.error = action.payload as string;
+      })
       // deleteFlowchart
       .addCase(deleteFlowchart.pending, (state) => {
         state.loading.deleteFlowchart = true;
@@ -356,6 +421,7 @@ export const {
   setFlowchartData,
   resetFlowchartData,
   toggleCourseCompletion,
+  setFlowchartList,
 } = flowchartSlice.actions;
 
 export const flowchartReducer = flowchartSlice.reducer;
