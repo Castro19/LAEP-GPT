@@ -35,7 +35,7 @@ const FlowchartSidebar = () => {
 
   const handleBackToChat = () => {
     // Map back to the previous page
-    navigate(-1);
+    navigate("/profile/edit");
   };
 
   return (

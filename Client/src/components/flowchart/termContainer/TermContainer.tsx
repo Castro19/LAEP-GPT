@@ -2,7 +2,6 @@
 import React from "react";
 import CourseItem from "../courseItem/CourseItem";
 import { Term } from "@/types";
-import "./TermContainer.css";
 
 interface TermContainerProps {
   term: Term;
@@ -17,15 +16,15 @@ const TermContainer: React.FC<TermContainerProps> = ({
   onCourseToggleComplete,
 }) => {
   return (
-    <div className="termContainer dark:bg-slate-800 text-white">
+    <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] bg-gray-200 dark:bg-slate-800  shadow-md text-black dark:text-white h-full">
       {/* Header */}
-      <div className="termContainerHeader">
-        <h3>{termName}</h3>
-        <hr />
+      <div className="p-2">
+        <h3 className="m-0">{termName}</h3>
+        <hr className="my-2" />
       </div>
 
       {/* Body */}
-      <div className="termContainerBody">
+      <div className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col">
         {term.courses.map((course, index) => (
           <CourseItem
             key={index}
@@ -36,9 +35,9 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="termContainerFooter">
-        <hr />
-        <h4>
+      <div className="p-2">
+        <hr className="my-2" />
+        <h4 className="m-0">
           Units: {term.tUnits}
           {term.courses.length ? ` (${term.courses.length} courses)` : ""}
         </h4>

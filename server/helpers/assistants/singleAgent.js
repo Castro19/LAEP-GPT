@@ -1,5 +1,6 @@
 import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
 import { getUserByFirebaseId } from "../../db/models/user/userServices.js";
+import { fetchFlowchart } from "../../db/models/flowchart/flowchartServices.js";
 import { getGPT } from "../../db/models/gpt/gptServices.js";
 import { setupVectorStoreAndUpdateAssistant } from "../../helpers/openAI/vectorStoreFunctions.js";
 import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
@@ -29,17 +30,22 @@ async function handleSingleAgentModel({
     assistantId,
     userFile ? userFile.id : null
   );
+  const user = await getUserByFirebaseId(userId);
 
   if (model.title === "Matching Assistant") {
-    const user = await getUserByFirebaseId(userId);
     const availability = formatAvailability(user.availability);
     const interests = user.interests.join(", ");
     messageToAdd = `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
   } else if (model.title === "CSCI Classes Assistant") {
-    const user = await getUserByFirebaseId(userId);
     const year = user.year;
     messageToAdd = `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${user.interests}\n${message}`;
+  } else if (model.title === "Flowchart Assistant") {
+    const flowchart = await fetchFlowchart(user.flowchartId, userId);
+    const interests = user.interests.join(", ");
+    const year = user.year;
+    messageToAdd = `Flowchart: ${flowchart.flowchartData}\nYear: ${year}\nInterests: ${interests}\n${message}`;
   }
+  console.log("messageToAdd: ", messageToAdd);
   try {
     // Add user message to thread
     await addMessageToThread(
