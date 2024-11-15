@@ -1,5 +1,4 @@
 // types.ts
-// types.ts
 export interface Course {
   id: string | null;
   color: string;
@@ -22,6 +21,11 @@ export interface CatalogOption {
   major: string;
   concentration: string;
 }
+export interface PostFlowchartInDB {
+  flowchartData: FlowchartData;
+  name: string;
+  primaryOption?: boolean;
+}
 
 export interface FlowchartData {
   id: string;
@@ -42,6 +46,8 @@ export interface FlowchartData {
 // api response types
 export interface CreateFlowchartResponse {
   flowchartId: string;
+  name: string;
+  primaryOption?: boolean;
 }
 
 export interface FetchAllFlowchartsResponse {

@@ -25,7 +25,6 @@ type ModeDropDownProps = {
 export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const userId = useAppSelector((state) => state.auth.userId);
   const { currentModel, gptList } = useAppSelector((state) => state.gpt);
   const { userData } = useAppSelector((state) => state.user);
   const [matchingAssistantLocked, setMatchingAssistantLocked] = useState(true);
@@ -75,7 +74,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
         <ToastAction
           altText="Update Profile"
           onClick={() => {
-            navigate(`/profile/edit/${userId}`);
+            navigate(`/profile/edit`);
           }}
         >
           Update Profile

@@ -5,18 +5,23 @@ import {
   fetchAllFlowcharts,
   updateFlowchart,
   deleteFlowchart,
+  updateAllOtherFlowcharts,
 } from "../db/models/flowchart/flowchartServices.js";
 
 const router = express.Router();
 
 // Create
 router.post("/", async (req, res) => {
+  const userId = req.user.uid;
+  const { flowchartData, name, primaryOption } = req.body;
+  console.log("Store flowchart in DB: ", flowchartData);
   try {
-    const userId = req.user.uid;
-    const flowchartData = req.body;
-    console.log("Store flowchart in DB: ", flowchartData);
-    const result = await createFlowchart(flowchartData, userId);
-    console.log("Flowchart created: ", result);
+    const result = await createFlowchart(
+      flowchartData,
+      name,
+      primaryOption,
+      userId
+    );
     res.status(201).json({ flowchartId: result.insertedId });
   } catch (error) {
     console.error("Failed to create flowchart: ", error);
@@ -60,16 +65,22 @@ router.put("/:flowchartId", async (req, res) => {
   try {
     const userId = req.user.uid;
     const flowchartId = req.params.flowchartId;
-    const { flowchartData, name } = req.body;
+    const { flowchartData, name, primaryOption } = req.body;
     console.log("flowchartId: ", flowchartId);
-    console.log("flowchartData: ", flowchartData);
+    console.log("userId: ", userId);
     console.log("name: ", name);
+    console.log("primaryOption: ", primaryOption);
     const result = await updateFlowchart(
       flowchartId,
       flowchartData,
       name,
+      primaryOption,
       userId
     );
+    // Handle the case where user updates the primary option. Now we have to set all the other flowcharts' primaryOption to false
+    if (primaryOption) {
+      await updateAllOtherFlowcharts(flowchartId, userId);
+    }
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to update flowchart: ", error);

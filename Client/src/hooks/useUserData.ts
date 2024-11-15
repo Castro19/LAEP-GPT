@@ -14,8 +14,7 @@ export function useUserData() {
 
     dispatch(updateUserData({ [name]: value } as Partial<MyUserInfo>));
   };
-  // If name is availability, then value is an Availability object
-  // How to enforece?
+
   const handleChange = <K extends keyof MyUserInfo>(
     name: K,
     value: MyUserInfo[K]

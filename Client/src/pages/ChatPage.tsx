@@ -10,6 +10,7 @@ import {
 } from "@/redux";
 import { useParams } from "react-router-dom";
 import { fetchLogById } from "@/redux/log/crudLog";
+import { BsLayoutSidebar } from "react-icons/bs";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
@@ -61,6 +62,7 @@ const ChatPage = () => {
         isSidebarVisible ? "ml-64" : ""
       }`}
     >
+      <BsLayoutSidebar />
       <ChatHeader />
       <div className="flex-1">
         <ChatContainer />
