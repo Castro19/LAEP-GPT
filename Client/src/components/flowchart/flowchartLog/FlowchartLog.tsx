@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 // Redux
 import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import { FetchAllFlowchartsResponse } from "@/types";
 import FlowchartLogOptions from "./FlowchartLogOptions";
 import { useState, useEffect } from "react";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 
 type FlowchartLogProps = {
   flowchart: FetchAllFlowchartsResponse;
@@ -13,6 +14,7 @@ type FlowchartLogProps = {
 
 const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
   const navigate = useNavigate();
+  const { flowchartId } = useParams();
   // Redux:
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.message.error);
@@ -43,11 +45,20 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
     setPrimaryOption(primaryOption);
   };
 
-  const primaryFlowchartStyles =
-    "border-2 border-blue-500 dark:border-green-800";
-
   return (
-    <div className="flex align-center justify-between mb-1 pb-1 border-b border-gray-500 dark:border-gray-700">
+    <div className="flex items-center justify-between w-full p-2 cursor-pointer ">
+      {/* SidebarMenuButton for the flowchart name */}
+      <SidebarMenuButton
+        asChild
+        onClick={() => handleSelectFlowchart(flowchart.flowchartId)}
+        className={`flex-grow text-left ${
+          flowchartId === flowchart.flowchartId ? "bg-gray-700" : ""
+        }`}
+      >
+        <span className="font-semibold truncate">{name}</span>
+      </SidebarMenuButton>
+
+      {/* Flowchart options */}
       <FlowchartLogOptions
         flowchart={flowchart}
         name={name}
@@ -55,28 +66,6 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
         onNameChange={setName}
         onPrimaryChange={handlePrimaryChange}
       />
-      {/* Add special styles for the primary flowchart */}
-      <button
-        onClick={() => handleSelectFlowchart(flowchart.flowchartId)}
-        className={`
-          block
-          w-full
-          px-4 py-2
-          my-1 mx-0
-          cursor-pointer
-          rounded-lg
-          bg-gray-100 dark:bg-gray-800
-          hover:bg-blue-100 dark:hover:bg-gray-700
-          text-left
-          transition-colors
-          shadow-sm
-          ${primaryOption ? primaryFlowchartStyles : ""}
-        `}
-      >
-        <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-          {name || "Untitled Flowchart"}
-        </h3>
-      </button>
     </div>
   );
 };
