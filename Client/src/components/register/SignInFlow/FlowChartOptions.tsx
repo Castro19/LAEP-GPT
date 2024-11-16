@@ -20,41 +20,56 @@ const YEAR_OPTIONS = [
 
 const FlowChartOptions = ({
   dropdownRef,
+  skipHandleChange = false,
 }: {
   dropdownRef?: React.RefObject<HTMLDivElement>;
+  skipHandleChange?: boolean;
 }) => {
   const dispatch = useAppDispatch();
   const { catalogOptions, majorOptions, concentrationOptions, selections } =
     useAppSelector((state) => state.flowchart);
-  const { handleChange } = useUserData();
+  const { handleChange, userData } = useUserData();
   useEffect(() => {
-    if (selections.catalog) {
-      dispatch(flowchartActions.fetchMajorOptions(selections.catalog));
+    if (selections.catalog || userData.catalog) {
+      dispatch(
+        flowchartActions.fetchMajorOptions(
+          selections.catalog || userData.catalog
+        )
+      );
     }
-  }, [selections.catalog, dispatch]);
+  }, [selections.catalog, userData.catalog, dispatch]);
 
   useEffect(() => {
-    if (selections.major) {
+    if (selections.major || userData.major) {
       dispatch(
         flowchartActions.fetchConcentrationOptions({
-          catalog: selections.catalog,
-          major: selections.major,
+          catalog: selections.catalog || userData.catalog,
+          major: selections.major || userData.major,
         })
       );
     }
-  }, [selections.major, selections.catalog, dispatch]);
+  }, [
+    selections.major,
+    selections.catalog,
+    userData.major,
+    userData.catalog,
+    dispatch,
+  ]);
 
   const handleChangeOption = (key: string, value: string) => {
-    if (key === "startingYear") {
-      handleChange("startingYear", value);
-    } else if (key === "catalog") {
-      handleChange("catalog", value);
-    } else if (key === "major") {
-      handleChange("major", value);
-    } else if (key === "concentration") {
-      handleChange("concentration", value);
+    if (!skipHandleChange) {
+      if (key === "startingYear") {
+        handleChange("startingYear", value);
+      } else if (key === "catalog") {
+        handleChange("catalog", value);
+      } else if (key === "major") {
+        handleChange("major", value);
+      } else if (key === "concentration") {
+        handleChange("concentration", value);
+      }
     }
-
+    console.log("key", key);
+    console.log("value", value);
     dispatch(setSelection({ key, value }));
   };
 

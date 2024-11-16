@@ -5,7 +5,11 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useNavigate } from "react-router-dom";
 
-const CreateFlowchartModal = () => {
+const CreateFlowchartModal = ({
+  skipHandleChange = false,
+}: {
+  skipHandleChange?: boolean;
+}) => {
   const flowchartDropdownRef = useRef<HTMLDivElement>(null);
   const { selections } = useAppSelector((state) => state.flowchart);
   const dispatch = useAppDispatch();
@@ -28,7 +32,10 @@ const CreateFlowchartModal = () => {
       onSave={handleCreateFlowchart}
       excludeRefs={[flowchartDropdownRef]}
     >
-      <FlowChartOptions dropdownRef={flowchartDropdownRef} />
+      <FlowChartOptions
+        dropdownRef={flowchartDropdownRef}
+        skipHandleChange={skipHandleChange}
+      />
     </AnimatedModalDemo>
   );
 };
