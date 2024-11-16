@@ -215,7 +215,7 @@ export const updateFlowchart = createAsyncThunk(
       primaryOption,
     }: {
       flowchartId: string;
-      flowchartData: FlowchartData;
+      flowchartData: FlowchartData | null;
       name: string;
       primaryOption: boolean;
     },
