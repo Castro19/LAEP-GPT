@@ -87,7 +87,7 @@ const FlowChart = ({
           return (
             <div
               className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 border-l-2 border-slate-200 text-center"
-              key={term.tIndex}
+              key={term.tIndex + termName}
             >
               <TermContainer
                 term={term}
