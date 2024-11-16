@@ -75,6 +75,12 @@ export function ProfilePage() {
           </ToastAction>
         ),
       });
+    } else {
+      toast({
+        title: "Please select a catalog, major, and concentration",
+        description: "Please select a catalog, major, and concentration",
+        variant: "destructive",
+      });
     }
   };
   return (
@@ -112,6 +118,7 @@ export function ProfilePage() {
                   onSave={handleSaveDegreeInfo}
                   title="Change Degree"
                   excludeRefs={[flowchartOptionsRef]}
+                  disableOutsideClick={true}
                 >
                   <FlowChartOptions dropdownRef={flowchartOptionsRef} />
                 </AnimatedModalDemo>
@@ -148,6 +155,7 @@ export function ProfilePage() {
                 onSave={handleSaveToast}
                 title="Modify Interests"
                 excludeRefs={[interestDropdownRef]}
+                disableOutsideClick={true}
               >
                 <InterestDropdown
                   name="Interests"
@@ -177,6 +185,7 @@ export function ProfilePage() {
               onSave={handleSaveToast}
               title="Modify Classes"
               excludeRefs={[classDropdownRef]}
+              disableOutsideClick={true}
             >
               <InterestDropdown
                 name="Courses"

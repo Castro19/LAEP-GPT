@@ -46,6 +46,11 @@ const FlowChartFooter = () => {
       if (isNewUser) {
         dispatch(setIsNewUser(false));
         navigate("/chat");
+      } else {
+        toast({
+          title: "Flowchart Saved",
+          description: "Your flowchart has been saved successfully.",
+        });
       }
     }
   };
