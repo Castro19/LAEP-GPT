@@ -34,8 +34,8 @@ const FlowChartFooter = () => {
       if (flowchart && flowchart.flowchartId) {
         if (flowchart.primaryOption) {
           handleChange("flowchartId", flowchart.flowchartId);
+          handleSave();
         }
-        handleSave();
         navigate(`/flowchart/${flowchart.flowchartId}`);
       } else {
         console.error("Failed to get flowchartId from the response.");
@@ -88,7 +88,7 @@ const FlowChartFooter = () => {
         )}
       </div>
       <div className="w-full">
-        <CreateFlowchartModal />
+        <CreateFlowchartModal skipHandleChange={true} />
       </div>
     </footer>
   );
