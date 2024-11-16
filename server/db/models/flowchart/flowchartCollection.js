@@ -87,17 +87,32 @@ export const updateFlowchart = async (
       throw new Error("Flowchart not found");
     }
 
-    const result = await flowchartCollection.updateOne(
-      { _id: new ObjectId(flowchartId), userId },
-      {
-        $set: {
-          flowchartData: flowchartData,
-          name: name,
-          primaryOption: primaryOption,
-          updatedAt: new Date(),
-        },
-      }
-    );
+    let result;
+    // Only update flowchartData if it is not null
+    if (flowchartData) {
+      result = await flowchartCollection.updateOne(
+        { _id: new ObjectId(flowchartId), userId },
+        {
+          $set: {
+            flowchartData: flowchartData,
+            name: name,
+            primaryOption: primaryOption,
+            updatedAt: new Date(),
+          },
+        }
+      );
+    } else {
+      result = await flowchartCollection.updateOne(
+        { _id: new ObjectId(flowchartId), userId },
+        {
+          $set: {
+            name: name,
+            primaryOption: primaryOption,
+            updatedAt: new Date(),
+          },
+        }
+      );
+    }
 
     if (!result.matchedCount) {
       throw new Error("Flowchart not found");

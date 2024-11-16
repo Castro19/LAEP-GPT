@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
-import { setFlowchart } from "@/redux/flowchart/flowchartSlice";
+import { toast } from "@/components/ui/use-toast";
 
 const FlowchartLogOptions = ({
   flowchart,
@@ -45,32 +45,54 @@ const FlowchartLogOptions = ({
 
   const handleUpdateData = async () => {
     try {
-      const flowchartData = await dispatch(
-        setFlowchart(flowchart.flowchartId)
-      ).unwrap();
       await dispatch(
         flowchartActions.updateFlowchart({
           flowchartId: flowchart.flowchartId,
           name: name,
-          flowchartData: flowchartData,
+          flowchartData: null,
           primaryOption: primaryOption ?? false,
         })
       ).unwrap();
       navigate(`/flowchart/${flowchart.flowchartId}`);
+      if (primaryOption) {
+        handleChange("flowchartId", flowchart.flowchartId);
+        handleSave();
+      }
+      toast({
+        title: "Flowchart Updated",
+        description: "Your flowchart has been updated successfully.",
+      });
     } catch (error) {
       console.error("Failed to update flowchart:", error);
     }
   };
 
   const handleDeleteFlowchart = async (flowchartId: string) => {
+    // Step 1: Delete the flowchart from the database
     await dispatch(flowchartActions.deleteFlowchart(flowchartId));
+    // Step 2: Reset the flowchart data
     dispatch(flowchartActions.resetFlowchartData());
-    // Set the flowchartId to the next flowchart in the list
+    // Step 3: Determine the next flowchart to set
     const nextFlowchartId = flowchartList?.[0]?.flowchartId;
-    dispatch(flowchartActions.setFlowchart(nextFlowchartId ?? ""));
-    handleChange("flowchartId", "");
-    handleSave();
-    navigate("/flowchart");
+    if (nextFlowchartId) {
+      // If there is a next flowchart, set it as the active one
+      dispatch(flowchartActions.setFlowchart(nextFlowchartId));
+      // Step 5: Navigate to the next flowchart
+      navigate(`/flowchart/${nextFlowchartId}`);
+    } else {
+      // Step 5: Navigate to the next flowchart
+      navigate("/flowchart");
+    }
+    if (primaryOption) {
+      // Step 6: Update primary option if necessary
+      handleChange("flowchartId", "");
+      handleSave();
+    }
+    // Step 7: Handle save operation
+    toast({
+      title: "Flowchart Deleted",
+      description: "Your flowchart has been deleted successfully.",
+    });
   };
 
   return (

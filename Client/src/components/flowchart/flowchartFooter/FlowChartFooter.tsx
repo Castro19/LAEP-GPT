@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
 import { setIsNewUser } from "@/redux/auth/authSlice";
 import CreateFlowchartModal from "../flowchartSidebar/CreateFlowchartModal";
+import { toast } from "@/components/ui/use-toast";
 
 const FlowChartFooter = () => {
   const navigate = useNavigate();
@@ -31,7 +32,9 @@ const FlowChartFooter = () => {
       ).unwrap(); // Unwraps the result to get the payload or throw error
 
       if (flowchart && flowchart.flowchartId) {
-        handleChange("flowchartId", flowchart.flowchartId);
+        if (flowchart.primaryOption) {
+          handleChange("flowchartId", flowchart.flowchartId);
+        }
         handleSave();
         navigate(`/flowchart/${flowchart.flowchartId}`);
       } else {
@@ -62,6 +65,10 @@ const FlowChartFooter = () => {
         })
       ).unwrap();
       navigate(`/flowchart/${flowchartId}`);
+      toast({
+        title: "Flowchart Updated",
+        description: "Your flowchart has been updated successfully.",
+      });
     } catch (error) {
       console.error("Failed to update flowchart:", error);
     }

@@ -77,7 +77,7 @@ export async function fetchAllFlowchartsFromDB() {
  */
 export async function updateFlowchartInDB(
   flowchartId: string,
-  flowchartData: FlowchartData,
+  flowchartData: FlowchartData | null,
   name: string,
   primaryOption: boolean
 ) {
