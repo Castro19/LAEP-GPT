@@ -7,7 +7,6 @@ import {
 } from "@/redux/flowchart/flowchartSlice";
 import { useParams } from "react-router-dom";
 // import FlowchartSidebar from "@/components/flowchart/flowchartSidebar/FlowchartSidebar";
-import CreateFlowchartModal from "@/components/flowchart/flowchartSidebar/CreateFlowchartModal";
 
 import FlowChartLayout from "@/components/layout/flowchart/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -32,7 +31,6 @@ const FlowChatPage = () => {
     <SidebarProvider>
       <FlowChartLayout>
         <FlowChart flowchartData={flowchartData} />
-        <CreateFlowchartModal />
       </FlowChartLayout>
     </SidebarProvider>
   );

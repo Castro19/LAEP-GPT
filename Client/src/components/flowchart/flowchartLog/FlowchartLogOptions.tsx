@@ -97,35 +97,36 @@ const FlowchartLogOptions = ({
 
   return (
     <Popover>
-      <PopoverTrigger>
-        <Button className="dark:bg-transparent" variant="ghost" size="icon">
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon">
           <SlOptionsVertical />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className=" flex items-center justify-center fixed top-0 left-0">
-        <div className="grid gap-4 bg-background p-4 rounded-lg w-[300px]">
-          <div className="grid gap-2 w-auto">
-            {/* Name */}
+      <PopoverContent className="w-72">
+        <div className="grid gap-4 p-4">
+          {/* Name */}
+          <div className="grid gap-2">
             <Label htmlFor="name">Modify Name</Label>
             <Input
               id="name"
               defaultValue={flowchart.name}
               onChange={handleNameChange}
             />
-            {/* Delete */}
-            <Label htmlFor="delete"></Label>
-            {/* Set as Primary */}
+          </div>
+          {/* Set as Primary */}
+          <div className="flex items-center justify-between">
             <Label htmlFor="primary">Set as Primary</Label>
             <Switch
               id="primary"
               checked={primaryOption}
-              onCheckedChange={(checked) => onPrimaryChange(checked)}
+              onCheckedChange={onPrimaryChange}
             />
-            {/* Save */}
+          </div>
+          {/* Actions */}
+          <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={handleUpdateData}>
               Save
             </Button>
-            {/* Delete */}
             <Button
               variant="destructive"
               onClick={() => handleDeleteFlowchart(flowchart.flowchartId)}
