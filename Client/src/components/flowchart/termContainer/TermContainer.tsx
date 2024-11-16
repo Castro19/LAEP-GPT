@@ -91,8 +91,10 @@ const TermContainer: React.FC<TermContainerProps> = ({
       <div className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col">
         {term.courses.map((course, index) => (
           <CourseItem
-            key={index}
+            key={term.tIndex + index}
+            termIndex={term.tIndex}
             course={course}
+            coursePosition={index}
             onToggleComplete={() => onCourseToggleComplete(term.tIndex, index)}
           />
         ))}
