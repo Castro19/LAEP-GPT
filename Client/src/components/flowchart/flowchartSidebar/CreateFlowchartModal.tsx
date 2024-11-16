@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 const CreateFlowchartModal = ({
   skipHandleChange = false,
@@ -23,8 +24,14 @@ const CreateFlowchartModal = ({
         selections.major,
         selections.concentration
       );
+      navigate("/flowchart");
+    } else {
+      toast({
+        title: "Please select a catalog, major, and concentration",
+        description: "Please select a catalog, major, and concentration",
+        variant: "destructive",
+      });
     }
-    navigate("/flowchart");
   };
   return (
     <AnimatedModalDemo

@@ -28,33 +28,23 @@ const FlowChartOptions = ({
   const dispatch = useAppDispatch();
   const { catalogOptions, majorOptions, concentrationOptions, selections } =
     useAppSelector((state) => state.flowchart);
-  const { handleChange, userData } = useUserData();
+  const { handleChange } = useUserData();
   useEffect(() => {
-    if (selections.catalog || userData.catalog) {
-      dispatch(
-        flowchartActions.fetchMajorOptions(
-          selections.catalog || userData.catalog
-        )
-      );
+    if (selections.catalog) {
+      dispatch(flowchartActions.fetchMajorOptions(selections.catalog));
     }
-  }, [selections.catalog, userData.catalog, dispatch]);
+  }, [selections.catalog, dispatch]);
 
   useEffect(() => {
-    if (selections.major || userData.major) {
+    if (selections.major) {
       dispatch(
         flowchartActions.fetchConcentrationOptions({
-          catalog: selections.catalog || userData.catalog,
-          major: selections.major || userData.major,
+          catalog: selections.catalog || "",
+          major: selections.major || "",
         })
       );
     }
-  }, [
-    selections.major,
-    selections.catalog,
-    userData.major,
-    userData.catalog,
-    dispatch,
-  ]);
+  }, [selections.major, selections.catalog, dispatch]);
 
   const handleChangeOption = (key: string, value: string) => {
     if (!skipHandleChange) {
@@ -68,8 +58,6 @@ const FlowChartOptions = ({
         handleChange("concentration", value);
       }
     }
-    console.log("key", key);
-    console.log("value", value);
     dispatch(setSelection({ key, value }));
   };
 

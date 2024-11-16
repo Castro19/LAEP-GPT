@@ -64,16 +64,23 @@ export const ModalBody = ({
   children,
   className,
   excludeRefs = [],
+  disableOutsideClick = false,
 }: {
   children: ReactNode;
   className?: string;
   excludeRefs?: React.RefObject<HTMLElement>[];
+  disableOutsideClick?: boolean;
 }) => {
   const { open } = useModal();
 
   const modalRef = useRef(null);
   const { setOpen } = useModal();
-  useOutsideClick(modalRef, () => setOpen(false), [modalRef, ...excludeRefs]);
+
+  useOutsideClick(modalRef, () => {
+    if (!disableOutsideClick) {
+      setOpen(false);
+    }
+  }, [modalRef, ...excludeRefs]);
 
   return (
     <AnimatePresence>
