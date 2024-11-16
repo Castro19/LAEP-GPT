@@ -1,7 +1,12 @@
 // TermContainer.tsx
 import React from "react";
 import CourseItem from "../courseItem/CourseItem";
-import { Term } from "@/types";
+import { FlowchartData, Term } from "@/types";
+import { Button } from "@/components/ui/button";
+import _ from "lodash";
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
+import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 
 interface TermContainerProps {
   term: Term;
@@ -10,16 +15,75 @@ interface TermContainerProps {
   onCourseToggleComplete: (termIndex: number, courseIndex: number) => void;
 }
 
+const updateFlowchartTermData = (
+  flowchartData: FlowchartData,
+  newTermData: Term[]
+) => {
+  // Create a deep copy of flowchartData
+  const updatedFlowchartData = _.cloneDeep(flowchartData);
+
+  // Update the termData property
+  updatedFlowchartData.termData = newTermData;
+
+  // Now you can use updatedFlowchartData as needed
+  console.log("Updated Flowchart Data:", updatedFlowchartData);
+};
+
 const TermContainer: React.FC<TermContainerProps> = ({
   term,
   termName,
   onCourseToggleComplete,
 }) => {
+  const dispatch = useAppDispatch();
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const handleTermClick = (action: "add" | "remove") => {
+    if (!flowchartData) return;
+    const updatedCourses = term.courses.map((course) => ({
+      ...course,
+      completed: action === "add",
+    }));
+    const updatedTerms = [...flowchartData.termData];
+
+    // Function to get the correct index in updatedTerms
+    const getCorrectIndex = (tIndex: number) => {
+      const correctTIndex = updatedTerms.findIndex(
+        (term) => term.tIndex === tIndex
+      );
+      return correctTIndex;
+    };
+
+    const correctIndex = getCorrectIndex(term.tIndex);
+
+    // Check if the term already exists before updating
+    if (updatedTerms[correctIndex]) {
+      updatedTerms[correctIndex] = { ...term, courses: updatedCourses };
+    } else {
+      console.warn("Term index does not exist, possible duplicate creation.");
+    }
+
+    updateFlowchartTermData(flowchartData, updatedTerms);
+    const updatedFlowchartData = { ...flowchartData, termData: updatedTerms };
+    dispatch(setFlowchartData(updatedFlowchartData));
+  };
   return (
-    <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] bg-gray-200 dark:bg-slate-800  shadow-md text-black dark:text-white h-full">
+    <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] bg-gray-200 dark:bg-slate-800 shadow-md text-black dark:text-white h-full">
       {/* Header */}
-      <div className="p-2">
-        <h3 className="m-0">{termName}</h3>
+      <div className="flex justify-between items-center gap-2">
+        <Button
+          variant="ghost"
+          className=""
+          onClick={() => handleTermClick("remove")}
+        >
+          <CiCircleRemove className="w-6 h-6" />
+        </Button>
+        <h3 className="m-0 text-center flex-grow">{termName}</h3>
+        <Button
+          variant="ghost"
+          className=""
+          onClick={() => handleTermClick("add")}
+        >
+          <CiCircleCheck className="w-6 h-6" />
+        </Button>
         <hr className="my-2" />
       </div>
 

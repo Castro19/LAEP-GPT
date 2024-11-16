@@ -34,6 +34,7 @@
     "dompurify": "^3.1.4",
     "firebase": "^10.11.1",
     "framer-motion": "^11.11.10",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.376.0",
     "markdown-it": "^14.1.0",
     "prettier": "^3.2.5",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.12",
     "@types/dompurify": "^3.0.5",
+    "@types/lodash": "^4.17.13",
     "@types/markdown-it": "^14.1.1",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
