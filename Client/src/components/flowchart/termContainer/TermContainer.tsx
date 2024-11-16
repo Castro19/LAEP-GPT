@@ -7,6 +7,7 @@ import _ from "lodash";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
+import { Draggable, Droppable } from "@hello-pangea/dnd"; // Import here
 
 interface TermContainerProps {
   term: Term;
@@ -88,17 +89,41 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </div>
 
       {/* Body */}
-      <div className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col">
-        {term.courses.map((course, index) => (
-          <CourseItem
-            key={term.tIndex + index}
-            termIndex={term.tIndex}
-            course={course}
-            coursePosition={index}
-            onToggleComplete={() => onCourseToggleComplete(term.tIndex, index)}
-          />
-        ))}
-      </div>
+      <Droppable droppableId={`term-${term.tIndex}`} type="COURSE">
+        {(provided) => (
+          <div
+            className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {term.courses.map((course, index) => (
+              <Draggable
+                key={course.id || `course-${term.tIndex}-${index}`}
+                draggableId={course.id || `course-${term.tIndex}-${index}`}
+                index={index}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <CourseItem
+                      termIndex={term.tIndex}
+                      course={course}
+                      coursePosition={index}
+                      onToggleComplete={() =>
+                        onCourseToggleComplete(term.tIndex, index)
+                      }
+                    />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
 
       {/* Footer */}
       <div className="p-2">

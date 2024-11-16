@@ -1,10 +1,14 @@
 import { useMemo, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import TermContainer from "./termContainer/TermContainer";
-import { FlowchartData } from "@/types";
-import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
+import { FlowchartData, Term } from "@/types";
+import {
+  setFlowchartData,
+  toggleCourseCompletion,
+} from "@/redux/flowchart/flowchartSlice";
 import defaultTermData from "./exampleData/flowPlaceholder";
 import { Button } from "../ui/button";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 
 const FlowChart = ({
   flowchartData,
@@ -64,6 +68,64 @@ const FlowChart = ({
     }
   };
 
+  // Function to recalculate units
+  const recalculateUnits = (term: Term) => {
+    term.tUnits = term.courses
+      .reduce((acc, course) => {
+        const unitValue = course.customUnits || course.units;
+        if (unitValue) {
+          const parsedUnits = parseFloat(unitValue);
+          return acc + (isNaN(parsedUnits) ? 0 : parsedUnits);
+        }
+        return acc;
+      }, 0)
+      .toString();
+  };
+
+  // Drag and Drop Handlers
+  // **Add the onDragEnd handler**
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+
+    // If dropped outside the list
+    if (!destination) return;
+
+    // If the item was dropped back to the same place
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    const sourceTermIndex = parseInt(source.droppableId.split("-")[1], 10);
+    const destTermIndex = parseInt(destination.droppableId.split("-")[1], 10);
+
+    const newTermData = flowchartData
+      ? JSON.parse(JSON.stringify(flowchartData.termData))
+      : [];
+
+    const sourceTerm = newTermData.find(
+      (term: Term) => term.tIndex === sourceTermIndex
+    );
+    const destTerm = newTermData.find(
+      (term: Term) => term.tIndex === destTermIndex
+    );
+
+    if (sourceTerm && destTerm) {
+      const [movedCourse] = sourceTerm.courses.splice(source.index, 1);
+      destTerm.courses.splice(destination.index, 0, movedCourse);
+
+      // Recalculate units
+      recalculateUnits(sourceTerm);
+      recalculateUnits(destTerm);
+
+      // Update flowchart data
+      const updatedFlowchartData = { ...flowchartData, termData: newTermData };
+      dispatch(setFlowchartData(updatedFlowchartData as FlowchartData));
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex justify-center gap-2 my-2">
@@ -78,26 +140,29 @@ const FlowChart = ({
           </Button>
         ))}
       </div>
-      <div
-        className="flex overflow-x-auto p-1 scroll-smooth w-full dark:bg-gray-900"
-        ref={flowchartRef}
-      >
-        {termsData.map((term) => {
-          const termName = getTermName(term.tIndex);
-          return (
-            <div
-              className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 border-l-2 border-slate-200 text-center"
-              key={term.tIndex + termName}
-            >
-              <TermContainer
-                term={term}
-                termName={termName}
-                onCourseToggleComplete={onCourseToggleComplete}
-              />
-            </div>
-          );
-        })}
-      </div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div
+          className="flex overflow-x-auto p-1 scroll-smooth w-full dark:bg-gray-900"
+          ref={flowchartRef}
+        >
+          {termsData.map((term) => {
+            const termName = getTermName(term.tIndex);
+            return (
+              <div
+                className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 border-l-2 border-slate-200 text-center"
+                key={term.tIndex + termName}
+              >
+                <TermContainer
+                  term={term}
+                  termName={termName}
+                  onCourseToggleComplete={onCourseToggleComplete}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </DragDropContext>
+
       <div className="flowchart-footer">
         <h4>Total Units: 180</h4>
       </div>
