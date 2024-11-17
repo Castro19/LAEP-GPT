@@ -44,7 +44,8 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
       );
       const course: Course = {
         id: courseFetched?.courseId || "",
-        color: "#ffffff",
+        // Pick a nice beige color
+        color: "#F5F5DC",
         displayName: courseFetched?.displayName || "",
         units: courseFetched?.units || "",
         desc: courseFetched?.desc || "",
