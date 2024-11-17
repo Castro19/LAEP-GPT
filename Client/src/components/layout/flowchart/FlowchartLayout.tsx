@@ -6,21 +6,21 @@ import FlowChartHeader from "@/components/flowchart/flowchartHeader/FlowChartHea
 import FlowChartFooter from "@/components/flowchart/flowchartFooter/FlowChartFooter";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { Course, Term } from "@/types";
+import { Course, CourseSearch, Term } from "@/types";
 import { FlowchartData } from "@/types";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
-import classes from "../../flowchart/exampleData/classesExample.json";
 import _ from "lodash";
+import { toast } from "@/components/ui/use-toast";
 
 const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
-
-  const handleDragEnd = (result: DropResult) => {
+  const { catalog } = useAppSelector((state) => state.user.userData);
+  const handleDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
-
+    console.log("RESULT", result);
     if (!destination) return;
 
     // If dropped in the same place
@@ -38,12 +38,21 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
       // Handle dragging from sidebar to term container
       const termIndex = parseInt(destination.droppableId.split("-")[1], 10);
       const courseId = draggableId.replace("sidebar-", "");
-      const course = getCourseFromSidebar(courseId);
-
+      const courseFetched: CourseSearch | null = await getCourseFromSidebar(
+        catalog,
+        courseId
+      );
+      const course: Course = {
+        id: courseFetched?.courseId || "",
+        color: "#ffffff",
+        displayName: courseFetched?.displayName || "",
+        units: courseFetched?.units || "",
+        desc: courseFetched?.desc || "",
+      };
+      console.log("course", course);
       if (course && flowchartData) {
+        console.log("course", course);
         addCourseToTerm(flowchartData, termIndex, destination.index, course);
-        // Optionally remove the course from the sidebar
-        // removeCourseFromSidebar(courseId);
       }
     } else if (
       source.droppableId.startsWith("term-") &&
@@ -94,12 +103,15 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const getCourseFromSidebar = (courseId: string): Course | null => {
-    for (const courses of Object.values(classes)) {
-      const course = courses.find((c) => c.id === courseId);
-      if (course) return course;
-    }
-    return null;
+  const getCourseFromSidebar = async (
+    catalogYear: string,
+    courseId: string
+  ): Promise<CourseSearch | null> => {
+    const response = await fetch(
+      `http://localhost:4000/courses/course?catalogYear=${catalogYear}&courseId=${courseId}`
+    );
+    const data = await response.json();
+    return data;
   };
 
   const addCourseToTerm = (
@@ -108,6 +120,16 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
     index: number,
     course: Course
   ) => {
+    // Check if the course already exists in any term
+    if (course.id && courseExistsInFlowchart(course.id, flowchartData)) {
+      toast({
+        title: "Course already exists",
+        description: "Course already exists in the flowchart",
+        variant: "destructive",
+      });
+      return; // Prevent adding the duplicate course
+    }
+
     const newTermData = _.cloneDeep(flowchartData.termData);
     const term = newTermData.find((t) => t.tIndex === termIndex);
 
@@ -129,6 +151,15 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
         return acc;
       }, 0)
       .toString();
+  };
+
+  const courseExistsInFlowchart = (
+    courseId: string,
+    flowchartData: FlowchartData
+  ): boolean => {
+    return flowchartData.termData.some((term) =>
+      term.courses.some((course) => course.id === courseId)
+    );
   };
 
   return (

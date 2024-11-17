@@ -51,11 +51,11 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
       <SidebarMenuButton
         asChild
         onClick={() => handleSelectFlowchart(flowchart.flowchartId)}
-        className={`flex-grow text-left ${
-          flowchartId === flowchart.flowchartId ? "bg-gray-700" : ""
+        className={`flex-grow h-full text-left border border-gray-600 bg-slate-800 rounded-md transition duration-200 ease-in-out transform hover:bg-slate-700 hover:scale-105 ${
+          flowchartId === flowchart.flowchartId ? "bg-slate-600" : ""
         }`}
       >
-        <span className="font-semibold truncate">{name}</span>
+        <span className="font-semibold truncate text-white">{name}</span>
       </SidebarMenuButton>
 
       {/* Flowchart options */}

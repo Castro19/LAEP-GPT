@@ -38,6 +38,7 @@ const CreateFlowchartModal = ({
       title="Create New Flowchart"
       onSave={handleCreateFlowchart}
       excludeRefs={[flowchartDropdownRef]}
+      disableOutsideClick={true}
     >
       <FlowChartOptions
         dropdownRef={flowchartDropdownRef}
