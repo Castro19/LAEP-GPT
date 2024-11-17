@@ -1,0 +1,96 @@
+{
+  "required": [
+    {
+      "id": "AGB101",
+      "color": "#FEFD9A",
+      "displayName": "Introduction to Agribusiness",
+      "desc": "Orientation to the agribusiness sector of agriculture.  An overview of the breadth, size, scope and management aspects of the agricultural business complex.  Agribusiness students are required to complete this within the first year of the major.  4 lectures.\n",
+      "units": "4",
+      "completed": true
+    },
+    {
+      "id": "BUS207",
+      "color": "#FCD09E",
+      "displayName": "Legal Responsibilities of Business",
+      "desc": "Examination of the American legal system and important legal principles for business operations, such as those involved with contracts, torts, agency, business organizations, and employment. Emphasis on how legal principles help define socially responsible conduct. Case studies. 4 lectures.\n",
+      "units": "4",
+      "completed": true
+    },
+    {
+      "id": "MATH221",
+      "color": "#FCD09E",
+      "displayName": "Calculus for Business and Economics",
+      "desc": "Polynomial calculus for optimization and marginal analysis, and elementary integration.  Not open to students with credit in MATH 142.  4 lectures.  Fulfills GE Area B4 (GE Area B1 for students on the 2019-20 or earlier catalogs); a grade of C- or better is required in one course in this GE area.\n",
+      "units": "4"
+    },
+    {
+      "id": "ENGL134",
+      "color": "#DCFDD2",
+      "displayName": "Writing and Rhetoric",
+      "desc": "Rhetorical principles of and strategies for producing effective academic writing.  Writing as a recursive process that leads to greater organizational coherency, stylistic complexity, and rhetorical awareness.  4 lectures.  Fulfills GE Area A2 with a grade of C- or better (GE Area A1 for students on the 2019-20 or earlier catalogs).\n",
+      "units": "4"
+    }
+  ],
+  "elective": [
+    {
+      "id": "MATH7",
+      "color": "#DCFDD2",
+      "displayName": "Math 7",
+      "units": "4"
+    },
+    {
+      "id": "MATH8",
+      "color": "#DCFDD2",
+      "displayName": "Math 8",
+      "units": "4"
+    },
+    {
+      "id": "MATH9",
+      "color": "#DCFDD2",
+      "displayName": "Math 9",
+      "units": "4"
+    }
+  ],
+  "GE": [
+    {
+      "id": "GE1",
+      "color": "#DCFDD2",
+      "displayName": "GE 1",
+      "units": "4"
+    },
+    {
+      "id": "GE2",
+      "color": "#DCFDD2",
+      "displayName": "GE 2",
+      "units": "4"
+    }
+  ],
+  "GWR": [
+    {
+      "id": "GWR",
+      "color": "#DCFDD2",
+      "displayName": "GWR",
+      "units": "4"
+    },
+    {
+      "id": "GWR2",
+      "color": "#DCFDD2",
+      "displayName": "GWR 2",
+      "units": "4"
+    }
+  ],
+  "USCP": [
+    {
+      "id": "USCP",
+      "color": "#DCFDD2",
+      "displayName": "USCP",
+      "units": "4"
+    },
+    {
+      "id": "USCP2",
+      "color": "#DCFDD2",
+      "displayName": "USCP 2",
+      "units": "4"
+    }
+  ]
+}
