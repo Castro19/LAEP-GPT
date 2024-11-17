@@ -14,15 +14,17 @@ export function AnimatedModalDemo({
   title,
   excludeRefs,
   disableOutsideClick = false,
+  className,
 }: {
   children: ReactNode;
   onSave: () => void;
   title: string;
   excludeRefs?: React.RefObject<HTMLElement>[];
   disableOutsideClick?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="flex items-center justify-center">
+    <div className={`flex items-center justify-center ${className}`}>
       <Modal>
         <ModalTriggerButton text={title} />
         <ModalBody

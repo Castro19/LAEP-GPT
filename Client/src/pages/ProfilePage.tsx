@@ -127,7 +127,7 @@ export function ProfilePage() {
                     onClick={() => {
                       navigate(`/flowchart/${userData.flowchartId}`);
                     }}
-                    className="w-3/4 p-2 border rounded-lg bg-gray-100 dark:bg-indigo-800 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 dark:hover:bg-indigo-700"
+                    className="w-full p-2 border rounded-lg bg-gray-100 dark:bg-indigo-800 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 dark:hover:bg-indigo-700"
                   >
                     <div className="flex items-center justify-center gap-2">
                       Edit Flowchart
@@ -149,13 +149,13 @@ export function ProfilePage() {
               </Label>
               <Interest interests={userData.interests ?? []} />
             </div>
-
-            <div className="mt-4">
+            <div className="flex justify-center items-center">
               <AnimatedModalDemo
                 onSave={handleSaveToast}
                 title="Modify Interests"
                 excludeRefs={[interestDropdownRef]}
                 disableOutsideClick={true}
+                className="w-3/4"
               >
                 <InterestDropdown
                   name="Interests"
@@ -180,19 +180,21 @@ export function ProfilePage() {
                 }
               />
             </div>
-
-            <AnimatedModalDemo
-              onSave={handleSaveToast}
-              title="Modify Classes"
-              excludeRefs={[classDropdownRef]}
-              disableOutsideClick={true}
-            >
-              <InterestDropdown
-                name="Courses"
-                dropdownRef={classDropdownRef}
-                items={courses}
-              />
-            </AnimatedModalDemo>
+            <div className="flex justify-center items-center">
+              <AnimatedModalDemo
+                onSave={handleSaveToast}
+                title="Modify Classes"
+                excludeRefs={[classDropdownRef]}
+                disableOutsideClick={true}
+                className="w-3/4"
+              >
+                <InterestDropdown
+                  name="Courses"
+                  dropdownRef={classDropdownRef}
+                  items={courses}
+                />
+              </AnimatedModalDemo>
+            </div>
           </div>
         </Card>
       </div>
@@ -202,10 +204,11 @@ export function ProfilePage() {
             <div className="flex justify-center items-center">
               <WeeklyCalendar inReadMode={true} />
             </div>
-            <div className="mt-4">
+            <div className="flex justify-center items-center">
               <AnimatedModalDemo
                 onSave={handleSaveToast}
                 title="Modify Availability"
+                className="w-3/4"
               >
                 <WeeklyCalendar />
               </AnimatedModalDemo>

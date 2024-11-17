@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Octokit } from "@octokit/rest";
 import {
+  CourseSearch,
   FetchAllFlowchartsResponse,
   FlowchartData,
   PostFlowchartInDB,
@@ -24,8 +25,14 @@ interface FlowchartState {
   catalogOptions: string[];
   majorOptions: string[];
   concentrationOptions: string[];
-  selections: Record<string, string>;
+  selections: {
+    startingYear: string | null;
+    catalog: string | null;
+    major: string | null;
+    concentration: string | null;
+  };
   flowchartData: FlowchartData | null;
+  courseCatalog: CourseSearch[] | null;
   flowchartList: FetchAllFlowchartsResponse[] | null;
   loading: {
     fetchMajorOptions: boolean;
@@ -51,7 +58,13 @@ const initialState: FlowchartState = {
   ],
   majorOptions: [],
   concentrationOptions: [],
-  selections: {},
+  courseCatalog: null,
+  selections: {
+    startingYear: null,
+    catalog: null,
+    major: null,
+    concentration: null,
+  },
   flowchartData: null,
   flowchartList: null,
   loading: {
@@ -139,6 +152,20 @@ export const fetchFlowchartData = createAsyncThunk(
   }
 );
 
+export const fetchCourseCatalog = createAsyncThunk(
+  "flowchart/fetchCourseCatalog",
+  async (fileUrl: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) {
+        throw new Error("Failed to fetch course catalog.");
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue("Failed to fetch course catalog.");
+    }
+  }
+);
 /**
  * Creates a flowchart based on the flowchart data.
  * @param flowchartData The flowchart data.
@@ -259,7 +286,10 @@ const flowchartSlice = createSlice({
   reducers: {
     setSelection: (
       state,
-      action: PayloadAction<{ key: string; value: string }>
+      action: PayloadAction<{
+        key: keyof FlowchartState["selections"];
+        value: string;
+      }>
     ) => {
       state.selections[action.payload.key] = action.payload.value;
     },

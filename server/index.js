@@ -16,6 +16,7 @@ import users from "./routes/user.js";
 import llms from "./routes/llm.js";
 import chatLogs from "./routes/chatLog.js";
 import gpts from "./routes/gpt.js";
+import courses from "./routes/courses.js";
 import flowchart from "./routes/flowchart.js";
 import messageAnalytics from "./routes/analytics/messageAnalytics.js";
 // import assistants from "./routes/assistants.js";
@@ -52,6 +53,7 @@ admin.initializeApp({
 // Routes
 app.use("/auth", authRouter);
 app.use("/llms", llms);
+app.use("/courses", courses);
 app.use("/users", authenticate, users);
 app.use("/chatLogs", authenticate, chatLogs);
 app.use("/gpts", authenticate, gpts);

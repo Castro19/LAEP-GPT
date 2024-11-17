@@ -12,6 +12,34 @@ export interface Course {
   completed?: boolean; // New property
 }
 
+export interface SidebarInfo {
+  [key: string]: CourseSubject[];
+}
+export interface CourseSidebar {
+  courseId: string;
+  displayName: string;
+  units: string;
+  desc: string;
+}
+export interface CourseSubject {
+  subject: string;
+  courses: CourseSidebar[];
+}
+export interface CourseSearch {
+  courseId: string;
+  catalog: string;
+  displayName: string;
+  units: string;
+  desc: string;
+  addl: string;
+  gwrCourse: boolean;
+  uscpCourse: boolean;
+}
+
+export interface CourseCatalog {
+  [key: string]: CourseSearch[];
+}
+
 export interface Term {
   tIndex: number;
   tUnits: string;

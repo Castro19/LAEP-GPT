@@ -1,7 +1,7 @@
 import { fetchFlowchartData } from "./flowchartSlice";
 import { AppDispatch } from "../store";
 import { resetFlowchartData } from "./flowchartSlice";
-import { Course, Term } from "@/types";
+import { Course, CourseCatalog, CourseSearch, Term } from "@/types";
 
 /**
  * Helper function to fetch the flowchart data JSON based on user selections.
@@ -47,8 +47,6 @@ export async function fetchFlowchartDataHelper(
     // Get all the courses from the flowchart data
 
     const termData = jsonData.termData;
-    console.log("termData: ", termData);
-    console.log("courseData: ", courseData);
 
     termData.forEach((term: Term) => {
       term.courses.forEach((course: Course) => {
@@ -73,4 +71,59 @@ export async function fetchFlowchartDataHelper(
     console.error("Error fetching flowchart data:", error);
     dispatch(fetchFlowchartData.rejected(error.toString(), "", ""));
   }
+}
+
+export async function fetchCourseCatalogHelper(catalog: string) {
+  let courses: CourseSearch[] | null = null;
+  let geCourses: CourseCatalog | null = null;
+  let gwrCourses: CourseCatalog | null = null;
+  try {
+    const fileUrl = `https://raw.githubusercontent.com/polyflowbuilder/polyflowbuilder/refs/heads/main/api/data/courses/${catalog}/${catalog}.json`;
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch course catalog from ${fileUrl}`);
+    }
+    courses = await response.json();
+  } catch (error) {
+    console.error("Error fetching course catalog:", error);
+  }
+  try {
+    const fileUrl = `https://raw.githubusercontent.com/polyflowbuilder/polyflowbuilder/refs/heads/main/api/data/courses/${catalog}/${catalog}-GE.json`;
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch course catalog from ${fileUrl}`);
+    }
+    const geCoursesData = await response.json();
+    // Categorize the courses by subject: CSC101, CSC102, CSC103, etc.
+    geCourses = categorizeCoursesBySubject(geCoursesData);
+  } catch (error) {
+    console.error("Error fetching GE course catalog:", error);
+  }
+  try {
+    const fileUrl = `https://raw.githubusercontent.com/polyflowbuilder/polyflowbuilder/refs/heads/main/api/data/courses/${catalog}/${catalog}-GWR.json`;
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch course catalog from ${fileUrl}`);
+    }
+    const gwrCoursesData = await response.json();
+    // Categorize the courses by subject: CSC101, CSC102, CSC103, etc.
+    gwrCourses = categorizeCoursesBySubject(gwrCoursesData);
+  } catch (error) {
+    console.error("Error fetching GWR course catalog:", error);
+  }
+  return { courses, geCourses, gwrCourses };
+}
+
+function categorizeCoursesBySubject(courses: CourseSearch[]) {
+  const categorizedCourses: CourseCatalog = {};
+  for (const course of courses) {
+    // Extract the subject from the course ID (e.g., "CSC101" -> "CSC")
+    const subject = course.courseId.replace(/\d+/g, ""); // Remove numbers from the ID
+
+    if (!categorizedCourses[subject]) {
+      categorizedCourses[subject] = [];
+    }
+    categorizedCourses[subject].push(course);
+  }
+  return categorizedCourses;
 }

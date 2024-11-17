@@ -58,7 +58,12 @@ const FlowChartOptions = ({
         handleChange("concentration", value);
       }
     }
-    dispatch(setSelection({ key, value }));
+    dispatch(
+      setSelection({
+        key: key as "startingYear" | "catalog" | "major" | "concentration",
+        value,
+      })
+    );
   };
 
   return (

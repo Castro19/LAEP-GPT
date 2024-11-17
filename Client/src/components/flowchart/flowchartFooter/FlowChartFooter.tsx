@@ -3,7 +3,6 @@ import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
 import { setIsNewUser } from "@/redux/auth/authSlice";
-import CreateFlowchartModal from "../flowchartSidebar/CreateFlowchartModal";
 import { toast } from "@/components/ui/use-toast";
 
 const FlowChartFooter = () => {
@@ -91,9 +90,6 @@ const FlowChartFooter = () => {
             Update
           </Button>
         )}
-      </div>
-      <div className="w-full">
-        <CreateFlowchartModal skipHandleChange={true} />
       </div>
     </footer>
   );

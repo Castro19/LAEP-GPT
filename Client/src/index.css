@@ -31,14 +31,15 @@
   }
 
   .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Set sidebar background to slate-800 and adjust other colors for contrast */
+    --sidebar-background: 210 20% 10%; /* Approximate HSL for slate-800 */
+    --sidebar-foreground: 0 0% 95%; /* Light text color for contrast */
+    --sidebar-primary: 0 0% 100%; /* White for primary elements */
+    --sidebar-primary-foreground: 210 20% 30%; /* Light gray for primary foreground */
+    --sidebar-accent: 240 3.7% 20%; /* Changed to a lighter shade */
+    --sidebar-accent-foreground: 0 0% 100%; /* White for accent foreground */
+    --sidebar-border: 210 20% 30%; /* Darker gray for borders */
+    --sidebar-ring: 210 20% 40%; /* Medium gray for rings */
   }
 }
 
