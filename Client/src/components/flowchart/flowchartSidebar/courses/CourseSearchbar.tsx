@@ -92,7 +92,8 @@ const CourseSearchbar = () => {
             {courses.map((item, index) => {
               const course = {
                 id: item.courseId,
-                color: "#ffffff",
+                // Pick a nice beige color
+                color: "#F5F5DC",
                 units: item.units,
                 displayName: item.displayName,
                 desc: item.desc,
