@@ -18,7 +18,7 @@ const frameworks = [
   // Add more frameworks as needed
 ];
 
-export function SidebarCourses() {
+const CourseSearchbar = () => {
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
 
@@ -75,6 +75,6 @@ export function SidebarCourses() {
       </CommandList>
     </Command>
   );
-}
+};
 
-export default SidebarCourses;
+export default CourseSearchbar;

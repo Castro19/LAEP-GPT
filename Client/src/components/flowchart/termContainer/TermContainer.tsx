@@ -89,7 +89,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </div>
 
       {/* Body */}
-      <Droppable droppableId={`term-${term.tIndex}`} type="COURSE">
+      <Droppable droppableId={`term-${term.tIndex}`}>
         {(provided) => (
           <div
             className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col"
@@ -98,8 +98,8 @@ const TermContainer: React.FC<TermContainerProps> = ({
           >
             {term.courses.map((course, index) => (
               <Draggable
-                key={course.id || `course-${term.tIndex}-${index}`}
-                draggableId={course.id || `course-${term.tIndex}-${index}`}
+                key={`term-${term.tIndex}-${course.id || index}`}
+                draggableId={`term-${term.tIndex}-${course.id || index}`}
                 index={index}
               >
                 {(provided) => (

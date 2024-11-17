@@ -19,60 +19,13 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-import SidebarCourses from "./courses/SidebarCourses";
+import CourseSearchbar from "./courses/CourseSearchbar";
+import classesExample from "../exampleData/classesExample.json";
+import { Course } from "@/types";
+import SidebarCourse from "./courses/SidebarCourse";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
 
-// Menu items.
-const items = [
-  {
-    title: "Flowcharts",
-    // icon: Home,
-  },
-  {
-    title: "Classes",
-    // icon: Inbox,
-  },
-];
-
-const classes = {
-  Required: [
-    { title: "MATH1", primary: true },
-    { title: "MATH2", primary: true },
-    { title: "MATH3", primary: true },
-    { title: "MATH4", primary: true },
-    { title: "MATH5", primary: true },
-    { title: "MATH6", primary: true },
-  ],
-  Elective: [
-    { title: "MATH7", primary: false },
-    { title: "MATH8", primary: false },
-    { title: "MATH9", primary: false },
-    { title: "MATH10", primary: false },
-  ],
-  GE: [
-    { title: "GE1", primary: false },
-    { title: "GE2", primary: false },
-    { title: "GE3", primary: false },
-    { title: "GE4", primary: false },
-    { title: "GE5", primary: false },
-    { title: "GE6", primary: false },
-  ],
-  GWR: [
-    { title: "GWR1", primary: false },
-    { title: "GWR2", primary: false },
-    { title: "GWR3", primary: false },
-    { title: "GWR4", primary: false },
-    { title: "GWR5", primary: false },
-    { title: "GWR6", primary: false },
-  ],
-  USCP: [
-    { title: "USCP1", primary: false },
-    { title: "USCP2", primary: false },
-    { title: "USCP3", primary: false },
-    { title: "USCP4", primary: false },
-    { title: "USCP5", primary: false },
-    { title: "USCP6", primary: false },
-  ],
-};
+const classes = classesExample as Record<string, Course[]>;
 
 export function AppSidebar() {
   const dispatch = useAppDispatch();
@@ -135,20 +88,51 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <SidebarMenu>
-                      {value.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <span>{item.title}</span>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
+                    <Droppable
+                      droppableId={`sidebar-${key}`}
+                      isDropDisabled={true}
+                    >
+                      {(provided) => (
+                        <SidebarMenu
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                        >
+                          {value.map((item: Course, index) => (
+                            <Draggable
+                              key={
+                                item.id
+                                  ? `sidebar-${item.id}`
+                                  : `sidebar-course-${index}`
+                              }
+                              draggableId={
+                                item.id
+                                  ? `sidebar-${item.id}`
+                                  : `sidebar-course-${index}`
+                              }
+                              index={index}
+                            >
+                              {(provided) => (
+                                <SidebarMenuItem
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <SidebarCourse course={item} />
+                                </SidebarMenuItem>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </SidebarMenu>
+                      )}
+                    </Droppable>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
             </SidebarMenu>
           </SidebarGroup>
         ))}
-        <SidebarCourses />
+        <CourseSearchbar />
       </SidebarContent>
     </Sidebar>
   );
