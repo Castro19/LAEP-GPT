@@ -87,3 +87,9 @@ export interface FetchAllFlowchartsResponse {
   primaryOption?: boolean;
 }
 [];
+
+export interface ConcentrationInfo {
+  majorName: string;
+  concName: string;
+  code: string;
+}

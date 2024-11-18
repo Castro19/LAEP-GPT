@@ -3,6 +3,7 @@ import ReusableDropdown from "../../ui/reusable-dropdown";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { setSelection } from "@/redux/flowchart/flowchartSlice";
 import { useUserData } from "@/hooks/useUserData";
+import { ConcentrationInfo } from "@/types";
 
 // Move configuration to a separate constant
 const YEAR_OPTIONS = [
@@ -73,14 +74,34 @@ const FlowChartOptions = ({
         handleChange("catalog", value);
       } else if (key === "major") {
         handleChange("major", value);
-      } else if (key === "concentration") {
-        handleChange("concentration", value);
       }
     }
     dispatch(
       setSelection({
         key: key as "startingYear" | "catalog" | "major" | "concentration",
         value,
+      })
+    );
+  };
+
+  const handleChangeConcentration = (value: string) => {
+    const concentration = concentrationOptions.find(
+      (item) => item.concName === value
+    );
+    console.log("CONCENTRATION", concentration?.code);
+    if (type !== "flowchart") {
+      handleChange("concentration", concentration?.code || "");
+    }
+    dispatch(
+      setSelection({
+        key: "concentration",
+        value:
+          concentration ||
+          ({
+            code: "",
+            concName: "",
+            majorName: "",
+          } as ConcentrationInfo),
       })
     );
   };
@@ -116,11 +137,9 @@ const FlowChartOptions = ({
       {type !== "profile" && (
         <ReusableDropdown
           name="Concentration"
-          dropdownItems={concentrationOptions}
-          handleChangeItem={(_, value) =>
-            handleChangeOption("concentration", value)
-          }
-          selectedItem={selections.concentration || ""}
+          dropdownItems={concentrationOptions.map((item) => item.concName)}
+          handleChangeItem={(_, value) => handleChangeConcentration(value)}
+          selectedItem={selections.concentration?.concName || ""}
         />
       )}
     </div>

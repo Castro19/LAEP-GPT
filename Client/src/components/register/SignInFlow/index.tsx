@@ -94,7 +94,7 @@ const SignInFlow = () => {
         dispatch,
         selections.catalog,
         selections.major,
-        selections.concentration
+        selections.concentration.code
       );
       navigate("/flowchart");
     } else {
