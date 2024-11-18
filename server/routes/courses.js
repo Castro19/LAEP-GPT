@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createCourses,
+  // createCourses,
   getCourses,
   getSubjectNames,
   getCoursesBySubject,
@@ -12,14 +12,14 @@ import { getUserByFirebaseId } from "../db/models/user/userServices.js";
 const router = express.Router();
 
 // Post All courses
-router.post("/", async (req, res) => {
-  try {
-    const result = await createCourses();
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(500).send("Failed to create courses: " + error.message);
-  }
-});
+// router.post("/", async (req, res) => {
+//   try {
+//     const result = await createCourses();
+//     res.status(201).json(result);
+//   } catch (error) {
+//     res.status(500).send("Failed to create courses: " + error.message);
+//   }
+// });
 
 // Query courses by catalog year and search term
 router.get("/", async (req, res) => {

@@ -1,9 +1,9 @@
 // Store the course catalog data in MongoDB
 import * as courseCollection from "./courseCollection.js";
 
-export const createCourses = async () => {
-  return await courseCollection.addCourses();
-};
+// export const createCourses = async () => {
+//   return await courseCollection.addCourses();
+// };
 // services/courseServices.js
 
 export const getCourses = async (queryParams) => {
