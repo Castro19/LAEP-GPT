@@ -45,6 +45,25 @@ router.post("/login", async (req, res) => {
         name,
         userType,
         email,
+        bio: "",
+        year: "",
+        interests: [],
+        courses: [],
+        availability: {
+          Monday: [],
+          Tuesday: [],
+          Wednesday: [],
+          Thursday: [],
+          Friday: [],
+          Saturday: [],
+          Sunday: [],
+        },
+        canShareData: false,
+        startingYear: "",
+        catalog: "",
+        major: "",
+        concentration: "",
+        flowchartId: "",
       };
       console.log("Adding user to database");
       const userResponse = await addUser(user);

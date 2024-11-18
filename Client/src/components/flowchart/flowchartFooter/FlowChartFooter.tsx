@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
-import { setIsNewUser } from "@/redux/auth/authSlice";
 import { toast } from "@/components/ui/use-toast";
 
 const FlowChartFooter = () => {
@@ -13,7 +12,6 @@ const FlowChartFooter = () => {
   );
   const { flowchartId } = useParams();
   const { handleSave, handleChange } = useUserData();
-  const { isNewUser } = useAppSelector((state) => state.auth);
 
   const handleSaveData = async () => {
     if (!flowchartData) {
@@ -42,15 +40,14 @@ const FlowChartFooter = () => {
     } catch (error) {
       console.error("Failed to save flowchart:", error);
     } finally {
-      if (isNewUser) {
-        dispatch(setIsNewUser(false));
+      if ((flowchartList ?? []).length < 1) {
         navigate("/chat");
-      } else {
-        toast({
-          title: "Flowchart Saved",
-          description: "Your flowchart has been saved successfully.",
-        });
       }
+
+      toast({
+        title: "Flowchart Saved",
+        description: "Your flowchart has been saved successfully.",
+      });
     }
   };
 

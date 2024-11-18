@@ -11,6 +11,17 @@ export const createUser = async (userData) => {
       name: userData.name,
       userType: userData.userType,
       email: userData.email,
+      bio: userData.bio,
+      year: userData.year,
+      interests: userData.interests,
+      courses: userData.courses,
+      availability: userData.availability,
+      canShareData: userData.canShareData,
+      startingYear: userData.startingYear,
+      catalog: userData.catalog,
+      major: userData.major,
+      concentration: userData.concentration,
+      flowchartId: userData.flowchartId,
     };
     const result = await userCollection.insertOne(newUser);
     return result;
