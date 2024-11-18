@@ -19,9 +19,8 @@ const signInFlowSteps = [
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
   const { handleSave, userData } = useUserData();
-  const { flowchartData, selections } = useAppSelector(
-    (state) => state.flowchart
-  );
+  const { selections } = useAppSelector((state) => state.flowSelection);
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

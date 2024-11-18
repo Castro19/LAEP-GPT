@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
+import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
 import FlowchartLog from "../flowchartLog/FlowchartLog";
 import { setFlowchart } from "@/redux/flowchart/flowchartSlice";
 import { useUserData } from "@/hooks/useUserData";
@@ -35,7 +35,7 @@ export function AppSidebar() {
   const flowchartList = useAppSelector(
     (state) => state.flowchart.flowchartList
   );
-  const { selections } = useAppSelector((state) => state.flowchart);
+  const { selections } = useAppSelector((state) => state.flowSelection);
   const { handleChange, userData } = useUserData();
 
   // Handler for selecting a log to view
@@ -59,7 +59,7 @@ export function AppSidebar() {
   useEffect(() => {
     if (userData.catalog && userData.major) {
       dispatch(
-        flowchartActions.fetchConcentrationOptions({
+        flowSelectionActions.fetchConcentrationOptions({
           catalog: userData.catalog,
           major: userData.major,
         })

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import ReusableDropdown from "../../ui/reusable-dropdown";
-import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
-import { setSelection } from "@/redux/flowchart/flowchartSlice";
+import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
+import { setSelection } from "@/redux/flowSelection/flowSelectionSlice";
 import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@/types";
 
@@ -15,14 +15,15 @@ const FlowChartOptions = ({
 }) => {
   const dispatch = useAppDispatch();
   const { catalogOptions, majorOptions, concentrationOptions, selections } =
-    useAppSelector((state) => state.flowchart);
+    useAppSelector((state) => state.flowSelection);
+
   const { handleChange, userData } = useUserData();
 
   useEffect(() => {
     if ((type === "profile" || type === "signup") && selections.catalog) {
-      dispatch(flowchartActions.fetchMajorOptions(selections.catalog));
+      dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
     } else if (type === "flowchart" && userData.catalog) {
-      dispatch(flowchartActions.fetchMajorOptions(userData.catalog));
+      dispatch(flowSelectionActions.fetchMajorOptions(userData.catalog));
     }
   }, [selections.catalog, dispatch, userData.catalog, type]);
 
@@ -33,14 +34,14 @@ const FlowChartOptions = ({
       selections.catalog
     ) {
       dispatch(
-        flowchartActions.fetchConcentrationOptions({
+        flowSelectionActions.fetchConcentrationOptions({
           catalog: selections.catalog || "",
           major: selections.major || "",
         })
       );
     } else if (type === "flowchart" && userData?.catalog) {
       dispatch(
-        flowchartActions.fetchConcentrationOptions({
+        flowSelectionActions.fetchConcentrationOptions({
           catalog: userData.catalog || "",
           major: userData.major || "",
         })
