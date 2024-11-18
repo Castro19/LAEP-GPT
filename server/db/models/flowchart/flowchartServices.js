@@ -12,7 +12,7 @@ export const createFlowchart = async (flowchartData, name, userId) => {
       (await searchFlowInfo(undefined, undefined, name))[0] ||
       "Untitled Flowchart";
     flowchartName = flowchartInfo.concName;
-    flowchartList = await fetchAllFlowcharts(userId);
+    flowchartList = (await fetchAllFlowcharts(userId)) || [];
     // If there are no flowcharts, or all flowcharts are not primary, then the new flowchart is primary
     primaryOption =
       flowchartList.length === 0 ||
@@ -63,7 +63,8 @@ export const fetchAllFlowcharts = async (userId) => {
     });
     return flowchartList;
   } catch (error) {
-    throw new Error(error);
+    console.error("Error fetching all flowcharts:", error);
+    return [];
   }
 };
 

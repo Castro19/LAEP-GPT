@@ -73,14 +73,16 @@ const FlowchartLogOptions = ({
     // Step 2: Reset the flowchart data
     dispatch(flowchartActions.resetFlowchartData());
     // Step 3: Determine the next flowchart to set
-    const nextFlowchartId = flowchartList?.[0]?.flowchartId;
+    const nextFlowchartId = flowchartList?.find(
+      (fc) => fc.flowchartId !== flowchartId
+    )?.flowchartId;
     if (nextFlowchartId) {
       // If there is a next flowchart, set it as the active one
       dispatch(flowchartActions.setFlowchart(nextFlowchartId));
       // Step 5: Navigate to the next flowchart
       navigate(`/flowchart/${nextFlowchartId}`);
     } else {
-      // Step 5: Navigate to the next flowchart
+      // Step 5: Navigate to the flowchart list
       navigate("/flowchart");
     }
     if (primaryOption) {
