@@ -13,16 +13,10 @@ const router = express.Router();
 // Create
 router.post("/", async (req, res) => {
   const userId = req.user.uid;
-  const { flowchartData, name, primaryOption } = req.body;
-  console.log("Store flowchart in DB: ", flowchartData);
+  const { flowchartData, name } = req.body;
   try {
-    const result = await createFlowchart(
-      flowchartData,
-      name,
-      primaryOption,
-      userId
-    );
-    res.status(201).json({ flowchartId: result.insertedId });
+    const result = await createFlowchart(flowchartData, name, userId);
+    res.status(201).json(result);
   } catch (error) {
     console.error("Failed to create flowchart: ", error);
     res.status(500).send("Failed to create flowchart: " + error.message);
