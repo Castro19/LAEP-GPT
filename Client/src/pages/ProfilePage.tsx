@@ -41,7 +41,7 @@ export function ProfilePage() {
 
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
-  const { selections } = useAppSelector((state) => state.flowchart);
+  const { selections } = useAppSelector((state) => state.flowSelection);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const classDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
