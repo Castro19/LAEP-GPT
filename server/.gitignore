@@ -30,4 +30,4 @@ yarn-error.log*
 
 
 # Course Catalog data
-/db/models/courses/
+/db/models/courses/courses/
