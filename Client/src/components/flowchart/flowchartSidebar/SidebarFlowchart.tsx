@@ -50,7 +50,7 @@ export function AppSidebar() {
         dispatch,
         userData.catalog,
         userData.major,
-        selections.concentration
+        selections.concentration.code
       );
       navigate("/flowchart");
     }

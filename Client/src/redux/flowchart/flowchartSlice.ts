@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Octokit } from "@octokit/rest";
 import {
+  ConcentrationInfo,
   CourseSearch,
   FetchAllFlowchartsResponse,
   FlowchartData,
@@ -14,22 +14,16 @@ import {
   storeFlowchartInDB,
   updateFlowchartInDB,
 } from "./crudFlowchart";
-
-const octokit = new Octokit();
-const owner = "polyflowbuilder";
-const repo = "polyflowbuilder";
-const basePath = "api/data/flows/json/dflows";
-
 // Define types
 interface FlowchartState {
   catalogOptions: string[];
   majorOptions: string[];
-  concentrationOptions: string[];
+  concentrationOptions: ConcentrationInfo[];
   selections: {
     startingYear: string | null;
     catalog: string | null;
     major: string | null;
-    concentration: string | null;
+    concentration: ConcentrationInfo | null;
   };
   flowchartData: FlowchartData | null;
   courseCatalog: CourseSearch[] | null;
@@ -88,15 +82,15 @@ export const fetchMajorOptions = createAsyncThunk(
   "flowchart/fetchMajorOptions",
   async (catalog: string, { rejectWithValue }) => {
     try {
-      const response = await octokit.repos.getContent({
-        owner,
-        repo,
-        path: `${basePath}/${catalog}`,
-      });
-      if (Array.isArray(response.data)) {
-        return response.data
-          .filter((item) => item.type === "dir")
-          .map((item) => item.name);
+      const response = await fetch(
+        `http://localhost:4000/flowInfo?catalog=${catalog}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        return data as string[];
       }
       return [];
     } catch (error) {
@@ -118,15 +112,15 @@ export const fetchConcentrationOptions = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await octokit.repos.getContent({
-        owner,
-        repo,
-        path: `${basePath}/${catalog}/${major}`,
-      });
-      if (Array.isArray(response.data)) {
-        return response.data
-          .filter((item) => item.type === "file" && item.name.endsWith(".json"))
-          .map((item) => item.name.replace(".json", ""));
+      const response = await fetch(
+        `http://localhost:4000/flowInfo?catalog=${catalog}&majorName=${major}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        return data as ConcentrationInfo[];
       }
       return [];
     } catch (error) {
@@ -152,20 +146,6 @@ export const fetchFlowchartData = createAsyncThunk(
   }
 );
 
-export const fetchCourseCatalog = createAsyncThunk(
-  "flowchart/fetchCourseCatalog",
-  async (fileUrl: string, { rejectWithValue }) => {
-    try {
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        throw new Error("Failed to fetch course catalog.");
-      }
-      return await response.json();
-    } catch (error) {
-      return rejectWithValue("Failed to fetch course catalog.");
-    }
-  }
-);
 /**
  * Creates a flowchart based on the flowchart data.
  * @param flowchartData The flowchart data.
@@ -288,10 +268,15 @@ const flowchartSlice = createSlice({
       state,
       action: PayloadAction<{
         key: keyof FlowchartState["selections"];
-        value: string;
+        value: string | ConcentrationInfo;
       }>
     ) => {
-      state.selections[action.payload.key] = action.payload.value;
+      if (action.payload.key === "concentration") {
+        state.selections.concentration = action.payload
+          .value as unknown as ConcentrationInfo;
+      } else {
+        state.selections[action.payload.key] = action.payload.value as string;
+      }
     },
     setFlowchartData: (state, action: PayloadAction<FlowchartData>) => {
       state.flowchartData = action.payload;
