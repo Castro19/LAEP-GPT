@@ -58,7 +58,7 @@ export function ProfilePage() {
   };
 
   const handleSaveDegreeInfo = () => {
-    if (selections.catalog && selections.major && selections.concentration) {
+    if (selections.startingYear && selections.catalog && selections.major) {
       // Change User information in database
       handleSave();
       toast({
@@ -77,8 +77,8 @@ export function ProfilePage() {
       });
     } else {
       toast({
-        title: "Please select a catalog, major, and concentration",
-        description: "Please select a catalog, major, and concentration",
+        title: "Please select all fields",
+        description: "Select a starting year, catalog, and major",
         variant: "destructive",
       });
     }
@@ -116,11 +116,11 @@ export function ProfilePage() {
                 </AnimatedModalDemo>
                 <AnimatedModalDemo
                   onSave={handleSaveDegreeInfo}
-                  title="Change Degree"
+                  title="Change Major"
                   excludeRefs={[flowchartOptionsRef]}
                   disableOutsideClick={true}
                 >
-                  <FlowChartOptions dropdownRef={flowchartOptionsRef} />
+                  <FlowChartOptions type="profile" />
                 </AnimatedModalDemo>
                 <div className="flex flex-col justify-center items-center">
                   <button

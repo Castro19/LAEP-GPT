@@ -19,35 +19,54 @@ const YEAR_OPTIONS = [
 ];
 
 const FlowChartOptions = ({
-  dropdownRef,
-  skipHandleChange = false,
+  type = "profile",
 }: {
-  dropdownRef?: React.RefObject<HTMLDivElement>;
-  skipHandleChange?: boolean;
+  type: "profile" | "flowchart" | "signup";
 }) => {
   const dispatch = useAppDispatch();
   const { catalogOptions, majorOptions, concentrationOptions, selections } =
     useAppSelector((state) => state.flowchart);
-  const { handleChange } = useUserData();
-  useEffect(() => {
-    if (selections.catalog) {
-      dispatch(flowchartActions.fetchMajorOptions(selections.catalog));
-    }
-  }, [selections.catalog, dispatch]);
+  const { handleChange, userData } = useUserData();
 
   useEffect(() => {
-    if (selections.major) {
+    if ((type === "profile" || type === "signup") && selections.catalog) {
+      dispatch(flowchartActions.fetchMajorOptions(selections.catalog));
+    } else if (type === "flowchart" && userData.catalog) {
+      dispatch(flowchartActions.fetchMajorOptions(userData.catalog));
+    }
+  }, [selections.catalog, dispatch, userData.catalog, type]);
+
+  useEffect(() => {
+    if (
+      (type === "profile" || type === "signup") &&
+      selections.major &&
+      selections.catalog
+    ) {
       dispatch(
         flowchartActions.fetchConcentrationOptions({
           catalog: selections.catalog || "",
           major: selections.major || "",
         })
       );
+    } else if (type === "flowchart" && userData?.catalog) {
+      dispatch(
+        flowchartActions.fetchConcentrationOptions({
+          catalog: userData.catalog || "",
+          major: userData.major || "",
+        })
+      );
     }
-  }, [selections.major, selections.catalog, dispatch]);
+  }, [
+    selections.major,
+    selections.catalog,
+    dispatch,
+    userData.catalog,
+    type,
+    userData.major,
+  ]);
 
   const handleChangeOption = (key: string, value: string) => {
-    if (!skipHandleChange) {
+    if (type !== "flowchart") {
       if (key === "startingYear") {
         handleChange("startingYear", value);
       } else if (key === "catalog") {
@@ -68,38 +87,42 @@ const FlowChartOptions = ({
 
   return (
     <div className="space-y-4">
-      <ReusableDropdown
-        name="Starting Year"
-        dropdownItems={YEAR_OPTIONS}
-        handleChangeItem={(_, value) =>
-          handleChangeOption("startingYear", value)
-        }
-        selectedItem={selections.startingYear || ""}
-        dropdownRef={dropdownRef ? dropdownRef : null}
-      />
-      <ReusableDropdown
-        name="Catalog"
-        dropdownItems={catalogOptions}
-        handleChangeItem={(_, value) => handleChangeOption("catalog", value)}
-        selectedItem={selections.catalog || ""}
-        dropdownRef={dropdownRef ? dropdownRef : null}
-      />
-      <ReusableDropdown
-        name="Major"
-        dropdownItems={majorOptions}
-        handleChangeItem={(_, value) => handleChangeOption("major", value)}
-        selectedItem={selections.major || ""}
-        dropdownRef={dropdownRef ? dropdownRef : null}
-      />
-      <ReusableDropdown
-        name="Concentration"
-        dropdownItems={concentrationOptions}
-        handleChangeItem={(_, value) =>
-          handleChangeOption("concentration", value)
-        }
-        selectedItem={selections.concentration || ""}
-        dropdownRef={dropdownRef ? dropdownRef : null}
-      />
+      {type !== "flowchart" && (
+        <>
+          <ReusableDropdown
+            name="Starting Year"
+            dropdownItems={YEAR_OPTIONS}
+            handleChangeItem={(_, value) =>
+              handleChangeOption("startingYear", value)
+            }
+            selectedItem={selections.startingYear || ""}
+          />
+          <ReusableDropdown
+            name="Catalog"
+            dropdownItems={catalogOptions}
+            handleChangeItem={(_, value) =>
+              handleChangeOption("catalog", value)
+            }
+            selectedItem={selections.catalog || ""}
+          />
+          <ReusableDropdown
+            name="Major"
+            dropdownItems={majorOptions}
+            handleChangeItem={(_, value) => handleChangeOption("major", value)}
+            selectedItem={selections.major || ""}
+          />
+        </>
+      )}
+      {type !== "profile" && (
+        <ReusableDropdown
+          name="Concentration"
+          dropdownItems={concentrationOptions}
+          handleChangeItem={(_, value) =>
+            handleChangeOption("concentration", value)
+          }
+          selectedItem={selections.concentration || ""}
+        />
+      )}
     </div>
   );
 };
