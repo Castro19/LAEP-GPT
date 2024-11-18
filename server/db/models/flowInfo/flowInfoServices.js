@@ -48,6 +48,7 @@ export const searchFlowInfo = async (catalog, majorName, code) => {
 
     return result;
   } catch (error) {
-    throw new Error(error);
+    console.error("Error searching flowinfo:", error);
+    return null;
   }
 };
