@@ -28,7 +28,11 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   const { currentModel, gptList } = useAppSelector((state) => state.gpt);
   const { userData } = useAppSelector((state) => state.user);
   const [matchingAssistantLocked, setMatchingAssistantLocked] = useState(true);
-  const [toastDescription, setToastDescription] = useState("");
+  const [flowchartAssistantLocked, setFlowchartAssistantLocked] =
+    useState(true);
+  const [toastMatchingDescription, setToastMatchingDescription] = useState("");
+  const [toastFlowchartDescription, setToastFlowchartDescription] =
+    useState("");
 
   useEffect(() => {
     const { availability, interests } = userData;
@@ -36,19 +40,24 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
     const userHasNoAvailability = Object.values(availability).every(
       (timeSlots) => timeSlots.length === 0
     );
+    const userHasNoPrimaryFlowchart = !userData.flowchartId;
 
     const matchingAssistantLocked =
       interests.length === 0 || userHasNoAvailability;
 
     if (interests.length === 0 && !userHasNoAvailability) {
-      setToastDescription("Please update your profile's interests");
+      setToastMatchingDescription("Please update your profile's interests");
     } else if (userHasNoAvailability && interests.length > 0) {
-      setToastDescription("Please update your profile's availability");
+      setToastMatchingDescription("Please update your profile's availability");
     } else {
-      setToastDescription(
+      setToastMatchingDescription(
         "Please update your profile's interests and availability"
       );
     }
+    if (userHasNoPrimaryFlowchart) {
+      setToastFlowchartDescription("Please create a primary flowchart");
+    }
+    setFlowchartAssistantLocked(userHasNoPrimaryFlowchart);
     setMatchingAssistantLocked(matchingAssistantLocked);
   }, [userData]);
   // Transform gptList to prioritize 'name' over 'title'
@@ -62,22 +71,31 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
       title,
       desc: description,
       urlPhoto: option.urlPhoto || "", // Default to an empty string if no photo is provided
-      locked: title === "Matching Assistant" && matchingAssistantLocked,
+      locked:
+        (title === "Matching Assistant" && matchingAssistantLocked) ||
+        (title === "Flowchart Assistant" && flowchartAssistantLocked),
     };
   });
 
   const handleLockClick = (gpt: GptType) => {
+    const handleToastAction = () => {
+      if (gpt.title === "Matching Assistant") {
+        navigate(`/profile/edit`);
+      } else if (gpt.title === "Flowchart Assistant") {
+        navigate(`/flowchart`);
+      }
+    };
     toast({
       title: `${gpt.title} is locked`,
-      description: toastDescription,
+      description:
+        gpt.title === "Matching Assistant"
+          ? toastMatchingDescription
+          : toastFlowchartDescription,
       action: (
-        <ToastAction
-          altText="Update Profile"
-          onClick={() => {
-            navigate(`/profile/edit`);
-          }}
-        >
-          Update Profile
+        <ToastAction altText="Update Profile" onClick={handleToastAction}>
+          {gpt.title === "Matching Assistant"
+            ? "Update Profile"
+            : "Create Flowchart"}
         </ToastAction>
       ),
     });
