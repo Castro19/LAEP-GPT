@@ -6,18 +6,7 @@ import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@/types";
 
 // Move configuration to a separate constant
-const YEAR_OPTIONS = [
-  "2015",
-  "2016",
-  "2017",
-  "2018",
-  "2019",
-  "2020",
-  "2021",
-  "2022",
-  "2023",
-  "2024",
-];
+const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
 
 const FlowChartOptions = ({
   type = "profile",

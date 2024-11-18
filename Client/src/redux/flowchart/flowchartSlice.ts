@@ -42,14 +42,7 @@ interface FlowchartState {
 
 // Initial state
 const initialState: FlowchartState = {
-  catalogOptions: [
-    "2015-2017",
-    "2017-2019",
-    "2019-2020",
-    "2020-2021",
-    "2021-2022",
-    "2022-2026",
-  ],
+  catalogOptions: ["2019-2020", "2020-2021", "2021-2022", "2022-2026"],
   majorOptions: [],
   concentrationOptions: [],
   courseCatalog: null,
