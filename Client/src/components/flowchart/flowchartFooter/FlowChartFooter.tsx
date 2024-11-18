@@ -18,8 +18,9 @@ const FlowChartFooter = () => {
       navigate("/chat");
       return;
     }
+    let flowchart;
     try {
-      const flowchart = await dispatch(
+      flowchart = await dispatch(
         flowchartActions.postFlowchartInDB({
           flowchartData,
           name: flowchartData.name,
@@ -41,6 +42,8 @@ const FlowChartFooter = () => {
       console.error("Failed to save flowchart:", error);
     } finally {
       if ((flowchartList ?? []).length < 1) {
+        handleChange("flowchartId", flowchart?.flowchartId ?? "");
+        handleSave();
         navigate("/chat");
       }
 
