@@ -1,24 +1,39 @@
 import * as flowchartModel from "./flowchartCollection.js";
-
+import { searchFlowInfo } from "../flowInfo/flowInfoServices.js";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one
-export const createFlowchart = async (
-  flowchartData,
-  name,
-  primaryOption,
-  userId
-) => {
+export const createFlowchart = async (flowchartData, name, userId) => {
+  let flowchartName = "Untitled Flowchart";
+  let primaryOption = false;
+  let flowchartList = [];
   try {
-    const result = await flowchartModel.createFlowchart(
-      flowchartData,
-      name,
-      primaryOption,
-      userId
-    );
-    return result;
+    const flowchartInfo =
+      (await searchFlowInfo(undefined, undefined, name))[0] ||
+      "Untitled Flowchart";
+    flowchartName = flowchartInfo.concName;
+    flowchartList = await fetchAllFlowcharts(userId);
+    // If there are no flowcharts, or all flowcharts are not primary, then the new flowchart is primary
+    primaryOption =
+      flowchartList.length === 0 ||
+      flowchartList.every((flowchart) => !flowchart.primaryOption);
+    try {
+      const result = await flowchartModel.createFlowchart(
+        flowchartData,
+        flowchartName,
+        primaryOption,
+        userId
+      );
+      return {
+        flowchartId: result.insertedId,
+        name: flowchartName,
+        primaryOption,
+      };
+    } catch (error) {
+      throw new Error("Service error Creating Flowchart: " + error.message);
+    }
   } catch (error) {
-    throw new Error("Service error Creating Flowchart: " + error.message);
+    throw new Error(error);
   }
 };
 

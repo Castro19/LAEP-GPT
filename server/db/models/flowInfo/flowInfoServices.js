@@ -17,6 +17,8 @@ export const searchFlowInfo = async (catalog, majorName, code) => {
 
   if (code) {
     query.code = code;
+    projection.majorName = 1;
+    projection.concName = 1;
   } else {
     if (catalog) {
       query.catalog = catalog;

@@ -31,8 +31,8 @@ export async function storeFlowchartInDB(
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message || "Failed to create flowchart");
   }
-
-  return response.json() as Promise<CreateFlowchartResponse>;
+  const data = await response.json();
+  return data as Promise<CreateFlowchartResponse>;
 }
 /**
  * Fetches the flowchart from the database.
