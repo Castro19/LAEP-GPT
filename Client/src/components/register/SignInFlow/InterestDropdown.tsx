@@ -75,7 +75,7 @@ const InterestDropdown = ({
         <Label className="underline">{name}</Label>
         <Select
           onValueChange={(value) =>
-            handleAddItem(name as keyof MyUserInfo, value)
+            handleAddItem(name.toLowerCase() as keyof MyUserInfo, value)
           }
           value={""} // Controlled component
         >

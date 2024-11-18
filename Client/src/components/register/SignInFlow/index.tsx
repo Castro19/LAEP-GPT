@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons for arrows
 import { setIsNewUser } from "@/redux/auth/authSlice";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
+import { useUserData } from "@/hooks/useUserData";
 
 const signInFlowSteps = [
   "terms",
@@ -17,7 +18,7 @@ const signInFlowSteps = [
 
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
-  const { userData } = useAppSelector((state) => state.user);
+  const { handleSave, userData } = useUserData();
   const { flowchartData, selections } = useAppSelector(
     (state) => state.flowchart
   );
@@ -65,14 +66,7 @@ const SignInFlow = () => {
   }, [currentStep, userData]);
 
   useEffect(() => {
-    if (flowchartData) {
-      console.log("flowchartData", flowchartData);
-      navigate("/flowchart");
-    } else if (
-      selections.catalog &&
-      selections.major &&
-      selections.concentration
-    ) {
+    if (selections.catalog && selections.major && selections.concentration) {
       setIsSkipButton(false);
     }
   }, [flowchartData, selections, navigate]);
@@ -93,6 +87,8 @@ const SignInFlow = () => {
   };
 
   const handleCompleteProfile = () => {
+    dispatch(setIsNewUser(false));
+    handleSave();
     if (selections.catalog && selections.major && selections.concentration) {
       fetchFlowchartDataHelper(
         dispatch,
@@ -100,9 +96,9 @@ const SignInFlow = () => {
         selections.major,
         selections.concentration
       );
+      navigate("/flowchart");
     } else {
       navigate("/chat");
-      dispatch(setIsNewUser(false));
     }
   };
 
