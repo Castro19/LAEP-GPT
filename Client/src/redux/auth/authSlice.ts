@@ -68,7 +68,7 @@ export const signInWithMicrosoft = createAsyncThunk<
     // Check if the user's email ends with '@calpoly.edu'
     if (user.email && user.email.endsWith("@calpoly.edu")) {
       const userResponse = await loginUser(token);
-      if (userResponse.isNewUser) {
+      if (userResponse.isNewUser && userResponse.isNewUser !== null) {
         dispatch(setIsNewUser(userResponse.isNewUser));
       }
       dispatch(checkAuthentication());
