@@ -109,7 +109,10 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
     courseId: string
   ): Promise<CourseSearch | null> => {
     const response = await fetch(
-      `http://localhost:4000/courses/course?catalogYear=${catalogYear}&courseId=${courseId}`
+      `http://localhost:4000/courses/course?catalogYear=${catalogYear}&courseId=${courseId}`,
+      {
+        credentials: "include",
+      }
     );
     const data = await response.json();
     return data;

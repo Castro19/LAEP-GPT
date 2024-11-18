@@ -11,7 +11,10 @@ export const fetchCoursesAPI = async (
     params.append("catalogYear", catalogYear);
     if (inputValue) params.append("searchTerm", inputValue);
     const response = await fetch(
-      `http://localhost:4000/courses?${params.toString()}`
+      `http://localhost:4000/courses?${params.toString()}`,
+      {
+        credentials: "include",
+      }
     );
 
     if (!response.ok) {
@@ -45,7 +48,10 @@ export const fetchSubjectNamesAPI = async (
     if (query.searchTerm) params.append("searchTerm", query.searchTerm);
 
     const response = await fetch(
-      `http://localhost:4000/courses/subjectNames?${params.toString()}`
+      `http://localhost:4000/courses/subjectNames?${params.toString()}`,
+      {
+        credentials: "include",
+      }
     );
 
     if (!response.ok) {
@@ -86,7 +92,10 @@ export const fetchCoursesBySubjectAPI = async (
     if (query.uscp !== undefined) params.append("USCP", query.uscp);
 
     const response = await fetch(
-      `http://localhost:4000/courses/subject?${params.toString()}`
+      `http://localhost:4000/courses/subject?${params.toString()}`,
+      {
+        credentials: "include",
+      }
     );
 
     if (!response.ok) {

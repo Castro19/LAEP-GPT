@@ -6,6 +6,9 @@ import {
   getCoursesBySubject,
   getCourse,
 } from "../db/models/courses/courseServices.js";
+import { fetchFlowchart } from "../db/models/flowchart/flowchartServices.js";
+import flowchartHelper from "../helpers/flowchart/flowchart.js";
+import { getUserByFirebaseId } from "../db/models/user/userServices.js";
 const router = express.Router();
 
 // Post All courses
@@ -61,5 +64,18 @@ router.get("/course", async (req, res) => {
     console.error("Failed to get course:", error);
     res.status(500).send("Failed to get course: " + error.message);
   }
+});
+
+router.get("/test", async (req, res) => {
+  const userId = req.user.uid;
+  const user = await getUserByFirebaseId(userId);
+
+  const flowchart = await fetchFlowchart(user.flowchartId, userId);
+  const result = await flowchartHelper(
+    flowchart.flowchartData.termData,
+    user.catalog
+  );
+
+  res.status(200).json(result);
 });
 export default router;

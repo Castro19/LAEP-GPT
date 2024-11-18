@@ -53,7 +53,7 @@ admin.initializeApp({
 // Routes
 app.use("/auth", authRouter);
 app.use("/llms", llms);
-app.use("/courses", courses);
+app.use("/courses", authenticate, courses);
 app.use("/users", authenticate, users);
 app.use("/chatLogs", authenticate, chatLogs);
 app.use("/gpts", authenticate, gpts);

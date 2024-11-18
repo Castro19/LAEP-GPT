@@ -6,7 +6,7 @@ import { setupVectorStoreAndUpdateAssistant } from "../../helpers/openAI/vectorS
 import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
 import { formatAvailability } from "../../helpers/formatters/availabilityFormatter.js";
 import { runAssistantAndStreamResponse } from "./streamResponse.js";
-
+import flowchartHelper from "../flowchart/flowchart.js";
 async function handleSingleAgentModel({
   model,
   chatId,
@@ -41,9 +41,18 @@ async function handleSingleAgentModel({
     messageToAdd = `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${user.interests}\n${message}`;
   } else if (model.title === "Flowchart Assistant") {
     const flowchart = await fetchFlowchart(user.flowchartId, userId);
+    const catalogYear = user.catalog;
+
+    const {
+      formattedRequiredCourses,
+      techElectivesLeft,
+      generalWritingMet,
+      uscpMet,
+    } = await flowchartHelper(flowchart.flowchartData.termData, catalogYear);
+
     const interests = user.interests.join(", ");
     const year = user.year;
-    messageToAdd = `Flowchart: ${flowchart.flowchartData}\nYear: ${year}\nInterests: ${interests}\n${message}`;
+    messageToAdd = `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
   }
   console.log("messageToAdd: ", messageToAdd);
   try {
