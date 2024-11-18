@@ -81,12 +81,11 @@ export interface CreateFlowchartResponse {
   primaryOption?: boolean;
 }
 
-export interface FetchAllFlowchartsResponse {
+export interface FetchFlowchartResponse {
   flowchartId: string;
   name: string;
   primaryOption?: boolean;
 }
-[];
 
 export interface ConcentrationInfo {
   majorName: string;

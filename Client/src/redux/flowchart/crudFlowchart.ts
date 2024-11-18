@@ -1,6 +1,6 @@
 import {
   CreateFlowchartResponse,
-  FetchAllFlowchartsResponse,
+  FetchFlowchartResponse,
   FlowchartData,
 } from "@/types";
 
@@ -50,7 +50,10 @@ export async function fetchFlowchartFromDB(flowchartId: string) {
     throw new Error(error.message || "Failed to fetch flowchart");
   }
 
-  return response.json() as Promise<FlowchartData>;
+  return response.json() as Promise<{
+    flowchartData: FlowchartData;
+    flowchartMeta: FetchFlowchartResponse;
+  }>;
 }
 
 /**
@@ -64,7 +67,7 @@ export async function fetchAllFlowchartsFromDB() {
   if (!response.ok) {
     throw new Error("Failed to fetch all flowcharts");
   }
-  const data: FetchAllFlowchartsResponse = await response.json();
+  const data: FetchFlowchartResponse[] = await response.json();
   return data;
 }
 

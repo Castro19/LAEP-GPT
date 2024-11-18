@@ -2,7 +2,7 @@ import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useNavigate } from "react-router-dom";
-import { FetchAllFlowchartsResponse } from "@/types";
+import { FetchFlowchartResponse } from "@/types";
 import { SlOptionsVertical } from "react-icons/sl";
 import {
   Popover,
@@ -21,7 +21,7 @@ const FlowchartLogOptions = ({
   primaryOption,
   onPrimaryChange,
 }: {
-  flowchart: FetchAllFlowchartsResponse;
+  flowchart: FetchFlowchartResponse;
   name: string;
   // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;
