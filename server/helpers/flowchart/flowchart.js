@@ -5,25 +5,68 @@ and return the following:
  - Whether the General Writing requirement is met
 */
 
-const flowchartHelper = (termData) => {
+import db from "../../db/connection.js"; // Adjust the import path as needed
+
+const courseCollection = db.collection("courses");
+
+const flowchartHelper = async (termData, catalogYear) => {
   const requiredCourses = [];
   let techElectivesLeft = 0;
-  const generalWritingMet = false;
-  const uscpMet = false;
+  let generalWritingMet = false;
+  let uscpMet = false;
 
+  // Collect required courses and count technical electives left
   for (let term of termData) {
     for (let course of term.courses) {
       if (course.completed) {
         continue;
       }
-      if (course.id) {
+      if (course.id && requiredCourses.length < 5) {
         requiredCourses.push(course);
-      } else if (course.customId.includes("Technical Elective")) {
+      } else if (
+        course.customId &&
+        course.customId.includes("Technical Elective")
+      ) {
         techElectivesLeft++;
       }
     }
   }
-  return { requiredCourses, techElectivesLeft, generalWritingMet, uscpMet };
+
+  // Extract course IDs
+  const courseIds = requiredCourses.map((course) => course.id);
+
+  // Fetch course data from MongoDB
+  const coursesFromDB = await courseCollection
+    .find({
+      courseId: { $in: courseIds },
+      catalogYear: catalogYear,
+    })
+    .toArray();
+
+  // Check if GWR requirement is met
+  generalWritingMet = coursesFromDB.some((course) => course.gwrCourse === true);
+
+  // Check if USCP requirement is met
+  uscpMet = coursesFromDB.some((course) => course.uscpCourse === true);
+
+  // Format required courses into a string
+  const formattedRequiredCourses = requiredCourses
+    .map((course) => {
+      return `${course.id}: ${course.displayName} (${course.units})\n${course.desc}`;
+    })
+    .join("\n\n");
+
+  console.log("requiredCourses: ", requiredCourses);
+  console.log("techElectivesLeft: ", techElectivesLeft);
+  console.log("generalWritingMet: ", generalWritingMet);
+  console.log("uscpMet: ", uscpMet);
+  console.log("Formatted Required Courses: ", formattedRequiredCourses);
+  return {
+    techElectivesLeft,
+    generalWritingMet,
+    uscpMet,
+    formattedRequiredCourses,
+  };
 };
 
 export default flowchartHelper;
