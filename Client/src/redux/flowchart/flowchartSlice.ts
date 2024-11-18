@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
-  FetchAllFlowchartsResponse,
+  FetchFlowchartResponse,
   FlowchartData,
   PostFlowchartInDB,
   Term,
@@ -15,7 +15,7 @@ import {
 // Define types
 interface FlowchartState {
   flowchartData: FlowchartData | null;
-  flowchartList: FetchAllFlowchartsResponse[] | null;
+  flowchartList: FetchFlowchartResponse[] | null;
   loading: {
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
@@ -183,7 +183,7 @@ const flowchartSlice = createSlice({
     },
     setFlowchartList: (
       state,
-      action: PayloadAction<FetchAllFlowchartsResponse[]>
+      action: PayloadAction<FetchFlowchartResponse[]>
     ) => {
       state.flowchartList = action.payload;
     },
@@ -256,8 +256,7 @@ const flowchartSlice = createSlice({
       })
       .addCase(fetchAllFlowcharts.fulfilled, (state, action) => {
         state.loading.fetchAllFlowcharts = false;
-        state.flowchartList =
-          action.payload as unknown as FetchAllFlowchartsResponse[];
+        state.flowchartList = action.payload as FetchFlowchartResponse[];
       })
       .addCase(fetchAllFlowcharts.rejected, (state, action) => {
         state.loading.fetchAllFlowcharts = false;
@@ -294,7 +293,7 @@ const flowchartSlice = createSlice({
         if (state.flowchartList) {
           state.flowchartList = state.flowchartList?.filter(
             (flowchart) => flowchart.flowchartId !== action.payload
-          ) as FetchAllFlowchartsResponse[];
+          ) as FetchFlowchartResponse[];
         }
       })
       .addCase(deleteFlowchart.rejected, (state, action) => {

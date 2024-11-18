@@ -1,6 +1,6 @@
 import {
   CreateFlowchartResponse,
-  FetchAllFlowchartsResponse,
+  FetchFlowchartResponse,
   FlowchartData,
 } from "@/types";
 
@@ -64,7 +64,7 @@ export async function fetchAllFlowchartsFromDB() {
   if (!response.ok) {
     throw new Error("Failed to fetch all flowcharts");
   }
-  const data: FetchAllFlowchartsResponse = await response.json();
+  const data: FetchFlowchartResponse[] = await response.json();
   return data;
 }
 
