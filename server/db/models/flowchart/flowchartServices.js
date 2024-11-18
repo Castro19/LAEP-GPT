@@ -41,7 +41,15 @@ export const createFlowchart = async (flowchartData, name, userId) => {
 export const fetchFlowchart = async (flowchartId, userId) => {
   try {
     const result = await flowchartModel.fetchFlowchart(flowchartId, userId);
-    return result;
+    const flowchartMeta = {
+      flowchartId: result._id,
+      name: result.name,
+      primaryOption: result.primaryOption,
+    };
+    return {
+      flowchartData: result.flowchartData,
+      flowchartMeta: flowchartMeta,
+    };
   } catch (error) {
     throw new Error(error);
   }

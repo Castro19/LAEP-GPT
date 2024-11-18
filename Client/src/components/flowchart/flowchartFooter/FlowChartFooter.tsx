@@ -7,7 +7,7 @@ import { toast } from "@/components/ui/use-toast";
 const FlowChartFooter = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { flowchartData, flowchartList } = useAppSelector(
+  const { flowchartData, flowchartList, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
   const { flowchartId } = useParams();
@@ -59,16 +59,13 @@ const FlowChartFooter = () => {
       navigate("/chat");
       return;
     }
-    console.log("Updating flowchart");
-    console.log(flowchartData);
-    console.log(flowchartId);
-    console.log(flowchartData.name);
+
     try {
       await dispatch(
         flowchartActions.updateFlowchart({
           flowchartId: flowchartId ?? "",
           flowchartData,
-          name: flowchartData.name,
+          name: currentFlowchart?.name ?? "",
           primaryOption: false,
         })
       ).unwrap();

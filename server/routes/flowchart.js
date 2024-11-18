@@ -41,8 +41,7 @@ router.get("/:flowchartId", async (req, res) => {
     const userId = req.user.uid;
     const flowchartId = req.params.flowchartId;
     const result = await fetchFlowchart(flowchartId, userId);
-    console.log("Flowchart fetched: ", result.flowchartData);
-    res.status(200).json(result.flowchartData);
+    res.status(200).json(result);
   } catch (error) {
     console.error("Failed to fetch flowchart: ", error);
     if (error.message === "Flowchart not found") {
@@ -60,10 +59,7 @@ router.put("/:flowchartId", async (req, res) => {
     const userId = req.user.uid;
     const flowchartId = req.params.flowchartId;
     const { flowchartData, name, primaryOption } = req.body;
-    console.log("flowchartId: ", flowchartId);
-    console.log("userId: ", userId);
-    console.log("name: ", name);
-    console.log("primaryOption: ", primaryOption);
+
     const result = await updateFlowchart(
       flowchartId,
       flowchartData,

@@ -50,7 +50,10 @@ export async function fetchFlowchartFromDB(flowchartId: string) {
     throw new Error(error.message || "Failed to fetch flowchart");
   }
 
-  return response.json() as Promise<FlowchartData>;
+  return response.json() as Promise<{
+    flowchartData: FlowchartData;
+    flowchartMeta: FetchFlowchartResponse;
+  }>;
 }
 
 /**

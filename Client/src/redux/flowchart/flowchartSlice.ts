@@ -16,6 +16,7 @@ import {
 interface FlowchartState {
   flowchartData: FlowchartData | null;
   flowchartList: FetchFlowchartResponse[] | null;
+  currentFlowchart: FetchFlowchartResponse | null;
   loading: {
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
@@ -30,6 +31,7 @@ interface FlowchartState {
 const initialState: FlowchartState = {
   flowchartData: null,
   flowchartList: null,
+  currentFlowchart: null,
   loading: {
     fetchFlowchartData: false,
     setFlowchart: false,
@@ -93,8 +95,7 @@ export const setFlowchart = createAsyncThunk(
   "flowchart/fetchFlowchartFromDB",
   async (flowchartId: string, { rejectWithValue }) => {
     try {
-      const response = await fetchFlowchartFromDB(flowchartId);
-      return response;
+      return await fetchFlowchartFromDB(flowchartId);
     } catch (error) {
       return rejectWithValue("Failed to fetch flowchart from DB.");
     }
@@ -178,6 +179,12 @@ const flowchartSlice = createSlice({
     setFlowchartData: (state, action: PayloadAction<FlowchartData>) => {
       state.flowchartData = action.payload;
     },
+    setCurrentFlowchart: (
+      state,
+      action: PayloadAction<FetchFlowchartResponse | null>
+    ) => {
+      state.currentFlowchart = action.payload;
+    },
     resetFlowchartData: (state) => {
       state.flowchartData = null;
     },
@@ -243,7 +250,8 @@ const flowchartSlice = createSlice({
         state.error = null;
       })
       .addCase(setFlowchart.fulfilled, (state, action) => {
-        state.flowchartData = action.payload;
+        state.flowchartData = action.payload.flowchartData;
+        state.currentFlowchart = action.payload.flowchartMeta;
         state.loading.setFlowchart = false;
       })
       .addCase(setFlowchart.rejected, (state, action) => {
@@ -305,6 +313,7 @@ const flowchartSlice = createSlice({
 
 export const {
   setFlowchartData,
+  setCurrentFlowchart,
   resetFlowchartData,
   toggleCourseCompletion,
   setFlowchartList,
