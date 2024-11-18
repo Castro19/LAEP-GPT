@@ -9,6 +9,7 @@ const flowchartHelper = (termData) => {
   const requiredCourses = [];
   let techElectivesLeft = 0;
   const generalWritingMet = false;
+  const uscpMet = false;
 
   for (let term of termData) {
     for (let course of term.courses) {
@@ -22,7 +23,7 @@ const flowchartHelper = (termData) => {
       }
     }
   }
-  return { requiredCourses, techElectivesLeft, generalWritingMet };
+  return { requiredCourses, techElectivesLeft, generalWritingMet, uscpMet };
 };
 
 export default flowchartHelper;

@@ -8,7 +8,6 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "@/components/ui/command";
-import { useAppSelector } from "@/redux";
 import { useUserData } from "@/hooks/useUserData";
 import { Course, CourseSidebar } from "@/types";
 import { fetchCoursesAPI } from "../../helpers/fetchCourses";
@@ -28,10 +27,9 @@ function debounce(func: (...args: any[]) => void, wait: number) {
 }
 
 const CourseSearchbar = () => {
-  const { selections } = useAppSelector((state) => state.flowchart);
   const { userData } = useUserData();
 
-  const catalogYear = selections.catalog || userData.catalog || "2022-2026";
+  const catalogYear = userData.catalog || "2022-2026";
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [courses, setCourses] = useState<CourseSidebar[]>([]);

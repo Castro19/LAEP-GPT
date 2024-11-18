@@ -59,6 +59,10 @@ const FlowChartFooter = () => {
       navigate("/chat");
       return;
     }
+    console.log("Updating flowchart");
+    console.log(flowchartData);
+    console.log(flowchartId);
+    console.log(flowchartData.name);
     try {
       await dispatch(
         flowchartActions.updateFlowchart({

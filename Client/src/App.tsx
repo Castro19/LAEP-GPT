@@ -143,7 +143,7 @@ const router = sentryCreateBrowserRouter([
       },
       {
         path: "flowchart",
-        element: <FlowChartOptions />,
+        element: <FlowChartOptions type="signup" />,
       },
       {
         path: "availability",

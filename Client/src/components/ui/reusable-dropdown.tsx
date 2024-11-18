@@ -9,20 +9,9 @@ interface ReusableDropdownProps {
   name: string;
   dropdownItems: string[];
   // eslint-disable-next-line no-unused-vars
-  handleChangeItem: (key: string, value: string) => void;
-  selectedItem: string;
-  position?: "item-aligned" | "popper";
-  dropdownRef: React.RefObject<HTMLDivElement> | null;
-}
-
-interface ReusableDropdownProps {
-  name: string;
-  dropdownItems: string[];
-  // eslint-disable-next-line no-unused-vars
   handleChangeItem: (name: string, value: string) => void;
   selectedItem: string;
   position?: "item-aligned" | "popper";
-  dropdownRef: React.RefObject<HTMLDivElement> | null;
   placeholder?: string; // New optional prop
   className?: string; // New optional prop
 }
@@ -33,7 +22,6 @@ const ReusableDropdown = ({
   handleChangeItem,
   selectedItem,
   position = "popper",
-  dropdownRef,
   placeholder = "Select an option", // Default value
   className = "", // Default value
 }: ReusableDropdownProps) => {
@@ -53,7 +41,6 @@ const ReusableDropdown = ({
         <SelectContent
           position={position}
           data-testid={`dropdown-${name.toLowerCase()}-list`}
-          ref={dropdownRef}
         >
           {dropdownItems.map((value: string, index: number) => (
             <SelectItem
