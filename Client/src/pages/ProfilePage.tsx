@@ -46,7 +46,9 @@ export function ProfilePage() {
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const { flowchartData, currentFlowchart } = useAppSelector(
+    (state) => state.flowchart
+  );
 
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
@@ -86,6 +88,25 @@ export function ProfilePage() {
         description: "Select a starting year, catalog, and major",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleUpdateFlowchart = async () => {
+    try {
+      await dispatch(
+        flowchartActions.updateFlowchart({
+          flowchartId: userData.flowchartId ?? "",
+          flowchartData,
+          name: currentFlowchart?.name ?? "",
+          primaryOption: true,
+        })
+      ).unwrap();
+      toast({
+        title: "Flowchart Saved",
+        description: "Your flowchart has been saved successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to update flowchart:", error);
     }
   };
 
@@ -183,7 +204,11 @@ export function ProfilePage() {
           </TabsList>
           <TabsContent value="flowchart">
             <Card className="h-full">
-              <FlowChart flowchartData={flowchartData} readonly={true} />
+              <FlowChart flowchartData={flowchartData} />
+              <SpecialButton
+                onClick={handleUpdateFlowchart}
+                text="Save Flowchart"
+              />
             </Card>
           </TabsContent>
           <TabsContent value="availability">

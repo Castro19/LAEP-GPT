@@ -284,6 +284,10 @@ const flowchartSlice = createSlice({
                 : action.meta.arg.primaryOption
                   ? false
                   : flowchart.primaryOption,
+            name:
+              flowchart.flowchartId === action.meta.arg.flowchartId
+                ? action.meta.arg.name
+                : flowchart.name,
           }));
         }
         state.loading.updateFlowchart = false;
