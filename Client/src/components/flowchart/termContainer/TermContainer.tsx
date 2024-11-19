@@ -69,7 +69,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
     dispatch(setFlowchartData(updatedFlowchartData));
   };
   return (
-    <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] bg-gray-200 dark:bg-slate-800 shadow-md text-black dark:text-white h-full">
+    <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] dark:bg-gray-900 shadow-md h-full">
       {/* Header */}
       <div className="flex justify-between items-center gap-2">
         {!readonly ? (

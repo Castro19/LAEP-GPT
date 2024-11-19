@@ -6,6 +6,22 @@ import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
 import defaultTermData from "./exampleData/flowPlaceholder";
 import { Button } from "../ui/button";
 
+const TERM_MAP = {
+  "-1": "Skip",
+  1: "Fall",
+  2: "Winter",
+  3: "Spring",
+  5: "Fall",
+  6: "Winter",
+  7: "Spring",
+  9: "Fall",
+  10: "Winter",
+  11: "Spring",
+  13: "Fall",
+  14: "Winter",
+  15: "Spring",
+};
+
 const FlowChart = ({
   flowchartData,
   readonly = false,
@@ -22,20 +38,15 @@ const FlowChart = ({
   }, [userData]);
 
   const termsPerYear = 3; // Fall, Winter, Spring
-  const termNames = ["Fall", "Winter", "Spring"];
-
   // Function to compute the term name
+  // Skip, Fall, Winter, Spring, Fall, Winter, Spring, Fall, Winter, Spring, ...
   const getTermName = (termNumber: number) => {
-    // Adjust termNumber to be 0-based for the calculation
-    const adjustedTerm = termNumber - 1;
-    const termIndexInYear = adjustedTerm % termsPerYear;
-    const yearOffset = Math.floor(adjustedTerm / termsPerYear);
-
-    const termName = termNames[termIndexInYear];
+    const termName = TERM_MAP[termNumber as keyof typeof TERM_MAP];
+    const yearOffset = Math.floor((termNumber - 1) / termsPerYear);
     let year = startYear + yearOffset;
 
     // Adjust the year for Winter and Spring terms
-    if (termName !== "Fall") {
+    if (termName === "Winter" || termName === "Spring") {
       year += 1;
     }
 
@@ -49,7 +60,7 @@ const FlowChart = ({
   // Calculate total terms and years
   const termsData = flowchartData?.termData
     ? flowchartData.termData.filter((term) => term.tIndex !== -1)
-    : defaultTermData;
+    : defaultTermData.filter((term) => term.tIndex !== -1);
   const totalTerms = termsData.length;
   const totalYears = Math.ceil(totalTerms / termsPerYear);
 
@@ -66,8 +77,8 @@ const FlowChart = ({
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-center gap-2 my-2">
+    <div className="flex flex-col ">
+      <div className="flex justify-center gap-2 dark:bg-gray-900 border-b-1 border-slate-600">
         {[...Array(totalYears)].map((_, index) => (
           <Button
             key={index}
@@ -80,14 +91,14 @@ const FlowChart = ({
         ))}
       </div>
       <div
-        className="flex overflow-x-auto p-1 scroll-smooth w-full dark:bg-gray-900"
+        className="flex overflow-x-auto p-1 scroll-smooth w-full dark:bg-gray-900 "
         ref={flowchartRef}
       >
         {termsData.map((term) => {
           const termName = getTermName(term.tIndex);
           return (
             <div
-              className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 border-l-2 border-slate-200 text-center"
+              className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 text-center border-2 border-slate-500"
               key={term.tIndex + termName}
             >
               <TermContainer
