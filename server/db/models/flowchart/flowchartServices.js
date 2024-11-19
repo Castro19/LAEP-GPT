@@ -57,18 +57,42 @@ export const fetchFlowchart = async (flowchartId, userId) => {
 
 // Read All: Get all flowcharts associated with the user
 export const fetchAllFlowcharts = async (userId) => {
+  let flowchartList = [];
   try {
     const result = await flowchartModel.fetchAllFlowcharts(userId);
     if (result.length === 0) {
       throw new Error("No flowcharts found");
     }
-    const flowchartList = result.map((flowchart) => {
-      return {
-        flowchartId: flowchart._id,
-        name: flowchart.name,
-        primaryOption: flowchart.primaryOption,
+    const primaryFlowchart = result.find(
+      (flowchart) => flowchart.primaryOption
+    );
+    if (primaryFlowchart) {
+      const primaryFlowchartFormatted = {
+        flowchartId: primaryFlowchart._id,
+        name: primaryFlowchart.name,
+        primaryOption: primaryFlowchart.primaryOption,
       };
-    });
+      flowchartList = [primaryFlowchartFormatted].concat(
+        result
+          .filter((flowchart) => !flowchart.primaryOption)
+          .map((flowchart) => {
+            return {
+              flowchartId: flowchart._id,
+              name: flowchart.name,
+              primaryOption: flowchart.primaryOption,
+            };
+          })
+      );
+    } else {
+      flowchartList = result.map((flowchart) => {
+        return {
+          flowchartId: flowchart._id,
+          name: flowchart.name,
+          primaryOption: flowchart.primaryOption,
+        };
+      });
+    }
+    // Make sure that the primary flowchart is always at the top
     return flowchartList;
   } catch (error) {
     console.error("Error fetching all flowcharts:", error);

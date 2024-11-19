@@ -276,19 +276,23 @@ const flowchartSlice = createSlice({
       })
       .addCase(updateFlowchart.fulfilled, (state, action) => {
         if (state.flowchartList) {
-          state.flowchartList = state.flowchartList.map((flowchart) => ({
-            ...flowchart,
-            primaryOption:
-              flowchart.flowchartId === action.meta.arg.flowchartId
-                ? action.meta.arg.primaryOption
-                : action.meta.arg.primaryOption
-                  ? false
-                  : flowchart.primaryOption,
-            name:
-              flowchart.flowchartId === action.meta.arg.flowchartId
-                ? action.meta.arg.name
-                : flowchart.name,
-          }));
+          state.flowchartList = state.flowchartList
+            .map((flowchart) => ({
+              ...flowchart,
+              name:
+                flowchart.flowchartId === action.meta.arg.flowchartId
+                  ? action.meta.arg.name
+                  : flowchart.name,
+              primaryOption:
+                action.meta.arg.primaryOption &&
+                flowchart.flowchartId === action.meta.arg.flowchartId,
+            }))
+            .sort((a, b) => {
+              if (a.primaryOption !== b.primaryOption) {
+                return a.primaryOption ? -1 : 1;
+              }
+              return a.name.localeCompare(b.name);
+            });
         }
         state.loading.updateFlowchart = false;
       })
