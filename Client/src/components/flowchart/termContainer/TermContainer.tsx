@@ -72,21 +72,27 @@ const TermContainer: React.FC<TermContainerProps> = ({
     <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] bg-gray-200 dark:bg-slate-800 shadow-md text-black dark:text-white h-full">
       {/* Header */}
       <div className="flex justify-between items-center gap-2">
-        <Button
-          variant="ghost"
-          className=""
-          onClick={() => handleTermClick("remove")}
-        >
-          <CiCircleRemove className="w-6 h-6" />
-        </Button>
-        <h3 className="m-0 text-center flex-grow">{termName}</h3>
-        <Button
-          variant="ghost"
-          className=""
-          onClick={() => handleTermClick("add")}
-        >
-          <CiCircleCheck className="w-6 h-6" />
-        </Button>
+        {!readonly ? (
+          <>
+            <Button
+              variant="ghost"
+              className=""
+              onClick={() => handleTermClick("remove")}
+            >
+              <CiCircleRemove className="w-6 h-6" />
+            </Button>
+            <h3 className="m-0 text-center flex-grow">{termName}</h3>
+            <Button
+              variant="ghost"
+              className=""
+              onClick={() => handleTermClick("add")}
+            >
+              <CiCircleCheck className="w-6 h-6" />
+            </Button>
+          </>
+        ) : (
+          <h3 className="m-2 text-center flex-grow">{termName}</h3>
+        )}
         <hr className="my-2" />
       </div>
 

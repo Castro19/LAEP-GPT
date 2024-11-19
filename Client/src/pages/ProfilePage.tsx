@@ -18,7 +18,6 @@ import useCalpolyData from "@/hooks/useCalpolyData";
 import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
 import { useNavigate } from "react-router-dom";
 import { ToastAction } from "@/components/ui/toast";
-import FlowChartFooter from "@/components/flowchart/flowchartFooter/FlowChartFooter";
 import SpecialButton from "@/components/ui/specialButton";
 export const labelStyle = "text-lg self-center";
 
@@ -127,7 +126,7 @@ export function ProfilePage() {
                 <FlowChartOptions type="profile" />
               </AnimatedModalDemo>
               <SpecialButton
-                text="View All Flowcharts"
+                text="Modify Flowcharts"
                 onClick={() => {
                   navigate(`/flowchart/${userData.flowchartId}`);
                 }}
@@ -193,7 +192,6 @@ export function ProfilePage() {
           </TabsList>
           <TabsContent value="flowchart">
             <FlowChart flowchartData={flowchartData} readonly={true} />
-            <FlowChartFooter />
           </TabsContent>
           <TabsContent value="availability">
             <Card className="h-full">
@@ -219,7 +217,7 @@ const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
 );
 
 const SilverLine = () => (
-  <div className="my-16">
+  <div className="my-4">
     {/* Silver Border */}
     <div className="border border-slate-700"></div>
   </div>
