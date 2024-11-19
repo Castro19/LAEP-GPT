@@ -27,6 +27,7 @@ const AboutMe = () => {
         <Label className={labelStyle}>Bio</Label>
         <Textarea
           name="bio"
+          maxLength={300}
           value={userData?.bio || ""}
           placeholder="Tell us about yourself..."
           onChange={(e) => handleTextChange(e)}

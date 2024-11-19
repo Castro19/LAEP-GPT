@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WeeklyCalendar from "../components/register/WeeklyCalendar";
 import { useUserData } from "@/hooks/useUserData";
-import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import InterestDropdown from "@/components/register/SignInFlow/InterestDropdown";
 // import Terms from "@/components/register/SignInFlow/Terms";
 import { toast } from "@/components/ui/use-toast";
@@ -18,6 +17,8 @@ import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions"
 import { useNavigate } from "react-router-dom";
 import { ToastAction } from "@/components/ui/toast";
 import SpecialButton from "@/components/ui/specialButton";
+import ProfileBio from "@/components/userProfile/ProfileBio";
+import AboutMe from "@/components/register/SignInFlow/AboutMe";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -134,55 +135,46 @@ export function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-      <div className="border border-slate-500 md:col-span-1 p-4">
-        <Card className="h-full">
-          <div className="flex flex-col justify-between h-full py-6">
-            <div className="flex flex-col justify-center gap-4">
-              <LabelInputContainer>
-                <p className="text-lg text-center font-inter text-white leading-relaxed tracking-tight px-8">
-                  {userData?.bio || "N/A"}
-                </p>
-              </LabelInputContainer>
-              <div className="flex justify-center items-center">
-                <AnimatedModalDemo
-                  className="w-3/4"
-                  onSave={handleSaveToast}
-                  title="Modify Bio"
-                >
-                  <AboutMe />
-                </AnimatedModalDemo>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
-      <div className="border border-slate-500 md:col-span-1 p-4">
-        <Card className="h-full">
-          <div className="flex flex-col justify-between h-full py-6">
-            <div className="flex flex-col justify-center items-center">
-              <Label className="text-2xl font-bold underline justify-self-center p-2">
-                Interests
-              </Label>
-              <Interest interests={userData.interests ?? []} />
-            </div>
-            <div className="flex justify-center items-center">
-              <AnimatedModalDemo
-                onSave={handleSaveToast}
-                title="Modify Interests"
-                excludeRefs={[interestDropdownRef]}
-                disableOutsideClick={true}
-                className="w-3/4"
-              >
-                <InterestDropdown
-                  name="Interests"
-                  items={interests}
-                  dropdownRef={interestDropdownRef}
-                />
-              </AnimatedModalDemo>
-            </div>
-          </div>
-        </Card>
-      </div>
+      <GridItemContainer>
+        <div className="flex flex-col justify-center items-center">
+          <Label className="text-2xl font-bold underline justify-self-center p-2">
+            Bio
+          </Label>
+          <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
+        </div>
+        <div className="flex justify-center items-center mt-8">
+          <AnimatedModalDemo
+            className="w-3/4"
+            onSave={handleSave}
+            title="Modify Bio"
+          >
+            <AboutMe />
+          </AnimatedModalDemo>
+        </div>
+      </GridItemContainer>
+      <GridItemContainer>
+        <div className="flex flex-col justify-center items-center">
+          <Label className="text-2xl font-bold underline justify-self-center p-2">
+            Interests
+          </Label>
+          <Interest interests={userData.interests ?? []} />
+        </div>
+        <div className="flex justify-center items-center mt-8">
+          <AnimatedModalDemo
+            onSave={handleSaveToast}
+            title="Modify Interests"
+            excludeRefs={[interestDropdownRef]}
+            disableOutsideClick={true}
+            className="w-3/4"
+          >
+            <InterestDropdown
+              name="Interests"
+              items={interests}
+              dropdownRef={interestDropdownRef}
+            />
+          </AnimatedModalDemo>
+        </div>
+      </GridItemContainer>
       <div className="border border-slate-500 md:col-span-3 md:row-span-2 p-4">
         <Tabs defaultValue="flowchart">
           <TabsList className="grid w-full grid-cols-2">
@@ -211,13 +203,19 @@ export function ProfilePage() {
   );
 }
 
-const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col justify-center">{children}</div>
-);
-
 const SilverLine = () => (
   <div className="my-4">
     {/* Silver Border */}
     <div className="border border-slate-700"></div>
+  </div>
+);
+
+const GridItemContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="border border-slate-500 md:col-span-1 p-4">
+    <Card className="h-full">
+      <div className="flex flex-col justify-between h-full py-6">
+        {children}
+      </div>
+    </Card>
   </div>
 );
