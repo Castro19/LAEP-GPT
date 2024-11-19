@@ -66,7 +66,7 @@ const FlowChartFooter = () => {
           flowchartId: flowchartId ?? "",
           flowchartData,
           name: currentFlowchart?.name ?? "",
-          primaryOption: false,
+          primaryOption: currentFlowchart?.primaryOption ?? false,
         })
       ).unwrap();
       navigate(`/flowchart/${flowchartId}`);

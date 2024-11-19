@@ -76,7 +76,7 @@ export async function fetchAllFlowchartsFromDB() {
  * @param flowchartId The flowchart ID.
  * @param flowchartData The flowchart data.
  * @param name The flowchart name.
- * @returns The flowchart data.
+ * @returns void
  */
 export async function updateFlowchartInDB(
   flowchartId: string,
@@ -104,14 +104,12 @@ export async function updateFlowchartInDB(
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message || "Failed to update flowchart");
   }
-
-  return response.json() as Promise<FlowchartData>;
 }
 
 /**
  * Deletes the flowchart from the database.
  * @param flowchartId The flowchart ID.
- * @returns void
+ * @returns The response {success: true, deletedFlowchartId: string, deletedPrimaryOption: boolean, newPrimaryFlowchartId: string | null}
  */
 export async function deleteFlowchartFromDB(flowchartId: string) {
   const response = await fetch(
@@ -124,4 +122,10 @@ export async function deleteFlowchartFromDB(flowchartId: string) {
   if (!response.ok) {
     throw new Error("Failed to delete flowchart");
   }
+  return response.json() as Promise<{
+    success: boolean;
+    deletedFlowchartId: string;
+    deletedPrimaryOption: boolean;
+    newPrimaryFlowchartId: string | null;
+  }>;
 }
