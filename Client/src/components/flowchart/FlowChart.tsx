@@ -8,8 +8,10 @@ import { Button } from "../ui/button";
 
 const FlowChart = ({
   flowchartData,
+  readonly = false,
 }: {
   flowchartData?: FlowchartData | null;
+  readonly?: boolean;
 }) => {
   const dispatch = useAppDispatch();
   const userData = useAppSelector((state) => state.user.userData);
@@ -92,6 +94,7 @@ const FlowChart = ({
                 term={term}
                 termName={termName}
                 onCourseToggleComplete={onCourseToggleComplete}
+                readonly={readonly}
               />
             </div>
           );

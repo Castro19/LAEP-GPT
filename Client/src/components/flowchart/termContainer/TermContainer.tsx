@@ -14,6 +14,7 @@ interface TermContainerProps {
   termName: string;
   // eslint-disable-next-line no-unused-vars
   onCourseToggleComplete: (termIndex: number, courseIndex: number) => void;
+  readonly?: boolean;
 }
 
 const updateFlowchartTermData = (
@@ -34,6 +35,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
   term,
   termName,
   onCourseToggleComplete,
+  readonly = false,
 }) => {
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
@@ -89,41 +91,55 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </div>
 
       {/* Body */}
-      <Droppable droppableId={`term-${term.tIndex}`}>
-        {(provided) => (
-          <div
-            className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col"
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {term.courses.map((course, index) => (
-              <Draggable
-                key={`term-${term.tIndex}-${course.id || index}`}
-                draggableId={`term-${term.tIndex}-${course.id || index}`}
-                index={index}
-              >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <CourseItem
-                      termIndex={term.tIndex}
-                      course={course}
-                      coursePosition={index}
-                      onToggleComplete={() =>
-                        onCourseToggleComplete(term.tIndex, index)
-                      }
-                    />
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      {!readonly ? (
+        <Droppable droppableId={`term-${term.tIndex}`}>
+          {(provided) => (
+            <div
+              className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {term.courses.map((course, index) => (
+                <Draggable
+                  key={`term-${term.tIndex}-${course.id || index}`}
+                  draggableId={`term-${term.tIndex}-${course.id || index}`}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <CourseItem
+                        termIndex={term.tIndex}
+                        course={course}
+                        coursePosition={index}
+                        onToggleComplete={() =>
+                          onCourseToggleComplete(term.tIndex, index)
+                        }
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      ) : (
+        <div className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col">
+          {term.courses.map((course, index) => (
+            <CourseItem
+              key={`${course.id}-${index}`}
+              termIndex={term.tIndex}
+              coursePosition={index}
+              course={course}
+              onToggleComplete={() => {}}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Footer */}
       <div className="p-2">
