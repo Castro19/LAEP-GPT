@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-undef */
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Label } from "../components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
