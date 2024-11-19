@@ -1,6 +1,7 @@
-import { useAppSelector } from "@/redux";
+import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Label } from "../components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WeeklyCalendar from "../components/register/WeeklyCalendar";
 import { useUserData } from "@/hooks/useUserData";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
@@ -10,12 +11,13 @@ import { toast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
-import { useRef } from "react";
+import FlowChart from "@/components/flowchart/FlowChart";
+import { useEffect, useRef } from "react";
 import useCalpolyData from "@/hooks/useCalpolyData";
 import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
 import { useNavigate } from "react-router-dom";
-import { MdEdit } from "react-icons/md";
 import { ToastAction } from "@/components/ui/toast";
+import SpecialButton from "@/components/ui/specialButton";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -39,15 +41,17 @@ const yearMapping = (year: string) => {
 export function ProfilePage() {
   const navigate = useNavigate();
 
+  const dispatch = useAppDispatch();
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
   const { selections } = useAppSelector((state) => state.flowSelection);
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
+
   const interestDropdownRef = useRef<HTMLDivElement>(null);
-  const classDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
 
   const { handleSave } = useUserData();
-  const { courses, interests } = useCalpolyData();
+  const { interests } = useCalpolyData();
 
   const handleSaveToast = () => {
     handleSave();
@@ -83,9 +87,16 @@ export function ProfilePage() {
       });
     }
   };
+
+  useEffect(() => {
+    if (userData.flowchartId) {
+      dispatch(flowchartActions.setFlowchart(userData.flowchartId));
+    }
+  }, [dispatch, userData.flowchartId]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
-      <div className="border border-slate-500 md:col-span-1 md:row-span-4 p-4">
+      <div className="border border-slate-500 md:col-span-1 p-4">
         <Card className="h-full">
           <CardContent>
             <div className="flex flex-col justify-around items-center my-2">
@@ -104,43 +115,48 @@ export function ProfilePage() {
               </p>
             </div>
             <SilverLine />
-            <div className="row-span-1">
-              <div className="flex flex-col justify-center gap-4">
-                <LabelInputContainer>
-                  <p className="text-lg text-center font-inter text-white leading-relaxed tracking-tight px-8">
-                    {userData?.bio || "N/A"}
-                  </p>
-                </LabelInputContainer>
-                <AnimatedModalDemo onSave={handleSaveToast} title="Modify Bio">
-                  <AboutMe />
-                </AnimatedModalDemo>
-                <AnimatedModalDemo
-                  onSave={handleSaveDegreeInfo}
-                  title="Change Major"
-                  excludeRefs={[flowchartOptionsRef]}
-                  disableOutsideClick={true}
-                >
-                  <FlowChartOptions type="profile" />
-                </AnimatedModalDemo>
-                <div className="flex flex-col justify-center items-center">
-                  <button
-                    onClick={() => {
-                      navigate(`/flowchart/${userData.flowchartId}`);
-                    }}
-                    className="w-full p-2 border rounded-lg bg-gray-100 dark:bg-indigo-800 dark:text-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 dark:hover:bg-indigo-700"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      Edit Flowchart
-                      <MdEdit />
-                    </div>
-                  </button>
-                </div>
-              </div>
+            <div className="flex flex-col justify-center gap-4">
+              <AnimatedModalDemo
+                onSave={handleSaveDegreeInfo}
+                title="Change Major"
+                excludeRefs={[flowchartOptionsRef]}
+                disableOutsideClick={true}
+              >
+                <FlowChartOptions type="profile" />
+              </AnimatedModalDemo>
+              <SpecialButton
+                text="Modify Flowcharts"
+                onClick={() => {
+                  navigate(`/flowchart/${userData.flowchartId}`);
+                }}
+              />
             </div>
           </CardContent>
         </Card>
       </div>
-      <div className="border border-slate-500 md:col-span-1 md:row-span-1 p-4">
+      <div className="border border-slate-500 md:col-span-1 p-4">
+        <Card className="h-full">
+          <div className="flex flex-col justify-between h-full py-6">
+            <div className="flex flex-col justify-center gap-4">
+              <LabelInputContainer>
+                <p className="text-lg text-center font-inter text-white leading-relaxed tracking-tight px-8">
+                  {userData?.bio || "N/A"}
+                </p>
+              </LabelInputContainer>
+              <div className="flex justify-center items-center">
+                <AnimatedModalDemo
+                  className="w-3/4"
+                  onSave={handleSaveToast}
+                  title="Modify Bio"
+                >
+                  <AboutMe />
+                </AnimatedModalDemo>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+      <div className="border border-slate-500 md:col-span-1 p-4">
         <Card className="h-full">
           <div className="flex flex-col justify-between h-full py-6">
             <div className="flex flex-col justify-center items-center">
@@ -167,54 +183,29 @@ export function ProfilePage() {
           </div>
         </Card>
       </div>
-      <div className="border border-slate-500 md:col-span-1 md:row-span-1 p-4">
-        <Card className="h-full">
-          <div className="flex flex-col justify-between h-full py-6">
-            <div className="flex flex-col justify-center items-center">
-              <Label className="text-2xl font-bold underline justify-self-center p-2">
-                Courses
-              </Label>
-              <Interest
-                interests={
-                  userData.courses.map((course) => course.split(": ")[0]) ?? []
-                }
-              />
-            </div>
-            <div className="flex justify-center items-center">
-              <AnimatedModalDemo
-                onSave={handleSaveToast}
-                title="Modify Classes"
-                excludeRefs={[classDropdownRef]}
-                disableOutsideClick={true}
-                className="w-3/4"
-              >
-                <InterestDropdown
-                  name="Courses"
-                  dropdownRef={classDropdownRef}
-                  items={courses}
-                />
-              </AnimatedModalDemo>
-            </div>
-          </div>
-        </Card>
-      </div>
-      <div className="border border-slate-500 md:col-span-2 md:row-span-2 p-4">
-        <Card className="h-full">
-          <div className="flex flex-col justify-start h-full py-6">
-            <div className="flex justify-center items-center">
-              <WeeklyCalendar inReadMode={true} />
-            </div>
-            <div className="flex justify-center items-center">
-              <AnimatedModalDemo
-                onSave={handleSaveToast}
-                title="Modify Availability"
-                className="w-3/4"
-              >
-                <WeeklyCalendar />
-              </AnimatedModalDemo>
-            </div>
-          </div>
-        </Card>
+      <div className="border border-slate-500 md:col-span-3 md:row-span-2 p-4">
+        <Tabs defaultValue="flowchart">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
+            <TabsTrigger value="availability">Availability</TabsTrigger>
+          </TabsList>
+          <TabsContent value="flowchart">
+            <FlowChart flowchartData={flowchartData} readonly={true} />
+          </TabsContent>
+          <TabsContent value="availability">
+            <Card className="h-full">
+              <div className="flex flex-col justify-start h-full py-6">
+                <div className="flex flex-col justify-center items-center">
+                  <WeeklyCalendar />
+                  <SpecialButton
+                    onClick={handleSaveToast}
+                    text="Save Availability"
+                  />
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
@@ -225,7 +216,7 @@ const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
 );
 
 const SilverLine = () => (
-  <div className="my-16">
+  <div className="my-4">
     {/* Silver Border */}
     <div className="border border-slate-700"></div>
   </div>
