@@ -141,13 +141,13 @@ export const updateFlowchart = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await updateFlowchartInDB(
+      await updateFlowchartInDB(
         flowchartId,
         flowchartData,
         name,
         primaryOption
       );
-      console.log("Flowchart updated in DB: ", response);
+      return { flowchartId, name, primaryOption };
     } catch (error) {
       return rejectWithValue("Failed to update flowchart in DB.");
     }
@@ -163,8 +163,8 @@ export const deleteFlowchart = createAsyncThunk(
   "flowchart/deleteFlowchart",
   async (flowchartId: string, { rejectWithValue }) => {
     try {
-      await deleteFlowchartFromDB(flowchartId);
-      return flowchartId;
+      const response = await deleteFlowchartFromDB(flowchartId);
+      return response;
     } catch (error) {
       return rejectWithValue("Failed to delete flowchart from DB.");
     }
@@ -275,17 +275,23 @@ const flowchartSlice = createSlice({
         state.loading.updateFlowchart = true;
       })
       .addCase(updateFlowchart.fulfilled, (state, action) => {
+        const { flowchartId, name, primaryOption } = action.payload;
+
+        if (primaryOption) {
+          state.currentFlowchart = { flowchartId, name, primaryOption };
+        }
         if (state.flowchartList) {
           state.flowchartList = state.flowchartList
             .map((flowchart) => ({
               ...flowchart,
               name:
-                flowchart.flowchartId === action.meta.arg.flowchartId
-                  ? action.meta.arg.name
-                  : flowchart.name,
+                flowchart.flowchartId === flowchartId ? name : flowchart.name,
               primaryOption:
-                action.meta.arg.primaryOption &&
-                flowchart.flowchartId === action.meta.arg.flowchartId,
+                flowchart.flowchartId === flowchartId
+                  ? primaryOption
+                  : primaryOption
+                    ? false
+                    : flowchart.primaryOption,
             }))
             .sort((a, b) => {
               if (a.primaryOption !== b.primaryOption) {
@@ -306,10 +312,34 @@ const flowchartSlice = createSlice({
       })
       .addCase(deleteFlowchart.fulfilled, (state, action) => {
         state.loading.deleteFlowchart = false;
+        const {
+          deletedFlowchartId,
+          deletedPrimaryOption,
+          newPrimaryFlowchartId,
+        } = action.payload;
+        console.log("action.payload: ", action.payload);
         if (state.flowchartList) {
-          state.flowchartList = state.flowchartList?.filter(
-            (flowchart) => flowchart.flowchartId !== action.payload
-          ) as FetchFlowchartResponse[];
+          const removedFlowchartList = state.flowchartList.filter(
+            (flowchart) => flowchart.flowchartId !== deletedFlowchartId
+          );
+          if (deletedPrimaryOption && newPrimaryFlowchartId) {
+            const newPrimaryFlowchart = removedFlowchartList?.find(
+              (flowchart) => flowchart.flowchartId === newPrimaryFlowchartId
+            ) as FetchFlowchartResponse;
+            if (newPrimaryFlowchart) {
+              newPrimaryFlowchart.primaryOption = true;
+              state.currentFlowchart = newPrimaryFlowchart;
+              state.flowchartList = [
+                newPrimaryFlowchart,
+                ...removedFlowchartList.filter(
+                  (flowchart) => flowchart.flowchartId !== newPrimaryFlowchartId
+                ),
+              ] as FetchFlowchartResponse[];
+            }
+          } else {
+            state.flowchartList =
+              removedFlowchartList as FetchFlowchartResponse[];
+          }
         }
       })
       .addCase(deleteFlowchart.rejected, (state, action) => {

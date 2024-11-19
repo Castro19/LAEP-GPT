@@ -42,7 +42,7 @@ export const fetchFlowchart = async (flowchartId, userId) => {
   try {
     const result = await flowchartModel.fetchFlowchart(flowchartId, userId);
     const flowchartMeta = {
-      flowchartId: result._id,
+      flowchartId: result._id.toString(),
       name: result.name,
       primaryOption: result.primaryOption,
     };
@@ -68,7 +68,7 @@ export const fetchAllFlowcharts = async (userId) => {
     );
     if (primaryFlowchart) {
       const primaryFlowchartFormatted = {
-        flowchartId: primaryFlowchart._id,
+        flowchartId: primaryFlowchart._id.toString(),
         name: primaryFlowchart.name,
         primaryOption: primaryFlowchart.primaryOption,
       };
@@ -77,7 +77,7 @@ export const fetchAllFlowcharts = async (userId) => {
           .filter((flowchart) => !flowchart.primaryOption)
           .map((flowchart) => {
             return {
-              flowchartId: flowchart._id,
+              flowchartId: flowchart._id.toString(),
               name: flowchart.name,
               primaryOption: flowchart.primaryOption,
             };
@@ -86,7 +86,7 @@ export const fetchAllFlowcharts = async (userId) => {
     } else {
       flowchartList = result.map((flowchart) => {
         return {
-          flowchartId: flowchart._id,
+          flowchartId: flowchart._id.toString(),
           name: flowchart.name,
           primaryOption: flowchart.primaryOption,
         };
@@ -124,9 +124,42 @@ export const updateFlowchart = async (
 
 // Delete
 export const deleteFlowchart = async (flowchartId, userId) => {
+  const flowchartList = await fetchAllFlowcharts(userId);
+  const primaryOption = await isPrimaryFlowchart(flowchartList, flowchartId);
+  await flowchartModel.deleteFlowchart(flowchartId, userId);
+  let newPrimaryFlowchartId = null;
+
   try {
-    const result = await flowchartModel.deleteFlowchart(flowchartId, userId);
-    return result;
+    if (primaryOption && flowchartList.length > 1) {
+      const nextFlowchart = flowchartList.find(
+        (flowchart) => flowchart.flowchartId.toString() !== flowchartId
+      );
+      if (nextFlowchart) {
+        const newPrimaryFlowchart = await fetchFlowchart(
+          nextFlowchart.flowchartId,
+          userId
+        );
+        newPrimaryFlowchartId = newPrimaryFlowchart.flowchartMeta.flowchartId;
+        const newUpdatedPrimaryFlowchart = {
+          flowchartId: newPrimaryFlowchartId,
+          flowchartData: newPrimaryFlowchart.flowchartData,
+          name: newPrimaryFlowchart.flowchartMeta.name,
+          primaryOption: true,
+          userId: userId,
+        };
+        await updateFlowchart(
+          newUpdatedPrimaryFlowchart.flowchartId,
+          newUpdatedPrimaryFlowchart.flowchartData,
+          newUpdatedPrimaryFlowchart.name,
+          newUpdatedPrimaryFlowchart.primaryOption,
+          newUpdatedPrimaryFlowchart.userId
+        );
+      }
+    }
+    return {
+      deletedPrimaryOption: primaryOption,
+      newPrimaryFlowchartId,
+    };
   } catch (error) {
     throw new Error(error);
   }
@@ -143,4 +176,11 @@ export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
   } catch (error) {
     throw new Error(error);
   }
+};
+
+export const isPrimaryFlowchart = async (flowchartList, flowchartId) => {
+  const primaryFlowchart = flowchartList.find(
+    (flowchart) => flowchart.flowchartId.toString() === flowchartId
+  );
+  return primaryFlowchart?.primaryOption;
 };
