@@ -177,12 +177,14 @@ export function ProfilePage() {
       </GridItemContainer>
       <div className="border border-slate-500 md:col-span-3 md:row-span-2 p-4">
         <Tabs defaultValue="flowchart">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
             <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
             <TabsTrigger value="availability">Availability</TabsTrigger>
           </TabsList>
           <TabsContent value="flowchart">
-            <FlowChart flowchartData={flowchartData} readonly={true} />
+            <Card className="h-full">
+              <FlowChart flowchartData={flowchartData} readonly={true} />
+            </Card>
           </TabsContent>
           <TabsContent value="availability">
             <Card className="h-full">
