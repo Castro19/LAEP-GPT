@@ -161,9 +161,23 @@ export const updateFlowchart = createAsyncThunk(
  */
 export const deleteFlowchart = createAsyncThunk(
   "flowchart/deleteFlowchart",
-  async (flowchartId: string, { rejectWithValue }) => {
+  async (
+    {
+      flowchartId,
+      handleChange,
+    }: {
+      flowchartId: string;
+      // eslint-disable-next-line no-unused-vars
+      handleChange: (name: string, value: string) => void;
+    },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await deleteFlowchartFromDB(flowchartId);
+      // If there's a new primary flowchart, update the user's flowchartId
+      if (response.newPrimaryFlowchartId !== null) {
+        handleChange("flowchartId", response.newPrimaryFlowchartId);
+      }
       return response;
     } catch (error) {
       return rejectWithValue("Failed to delete flowchart from DB.");
@@ -226,6 +240,7 @@ const flowchartSlice = createSlice({
         } else {
           state.flowchartList.push(action.payload);
         }
+        state.currentFlowchart = action.payload;
       })
       .addCase(postFlowchartInDB.rejected, (state, action) => {
         state.loading.setFlowchart = false;

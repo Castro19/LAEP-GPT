@@ -111,6 +111,7 @@ export function ProfilePage() {
   };
 
   useEffect(() => {
+    console.log("userdata flowchart", userData.flowchartId);
     if (userData.flowchartId) {
       dispatch(flowchartActions.setFlowchart(userData.flowchartId));
     }

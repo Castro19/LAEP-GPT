@@ -1,31 +1,36 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import FlowChart from "@/components/flowchart/FlowChart";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
-import { useParams } from "react-router-dom";
 // import FlowchartSidebar from "@/components/flowchart/flowchartSidebar/FlowchartSidebar";
 
 import FlowChartLayout from "@/components/layout/flowchart/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { useParams } from "react-router-dom";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
   const { flowchartId } = useParams();
-  const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const { flowchartData, loading } = useAppSelector((state) => state.flowchart);
+  const initialLoadRef = useRef(false);
 
   useEffect(() => {
-    // Only fetch if we have a flowchartId and no data yet
-    if (flowchartId && !flowchartData) {
-      dispatch(setFlowchart(flowchartId));
-    }
-  }, [flowchartId, flowchartData, dispatch]);
+    if (initialLoadRef.current) return;
+    initialLoadRef.current = true;
 
-  useEffect(() => {
-    dispatch(fetchAllFlowcharts());
-  }, [dispatch]);
+    const initializeFlowcharts = async () => {
+      await dispatch(fetchAllFlowcharts());
+
+      if (flowchartId && !flowchartData && !loading.deleteFlowchart) {
+        dispatch(setFlowchart(flowchartId));
+      }
+    };
+
+    initializeFlowcharts();
+  }, [flowchartId, flowchartData, dispatch, loading.deleteFlowchart]);
 
   return (
     <SidebarProvider>

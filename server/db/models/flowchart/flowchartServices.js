@@ -1,5 +1,6 @@
 import * as flowchartModel from "./flowchartCollection.js";
 import { searchFlowInfo } from "../flowInfo/flowInfoServices.js";
+import { updateUser } from "../user/userServices.js";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one
@@ -156,6 +157,10 @@ export const deleteFlowchart = async (flowchartId, userId) => {
         );
       }
     }
+    await updateUser(userId, {
+      flowchartId: newPrimaryFlowchartId || "",
+    });
+
     return {
       deletedPrimaryOption: primaryOption,
       newPrimaryFlowchartId,
