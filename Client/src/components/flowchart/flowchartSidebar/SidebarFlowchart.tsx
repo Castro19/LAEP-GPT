@@ -29,7 +29,7 @@ import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions"
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { toast } from "@/components/ui/use-toast";
 
-export function AppSidebar() {
+export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const flowchartList = useAppSelector(

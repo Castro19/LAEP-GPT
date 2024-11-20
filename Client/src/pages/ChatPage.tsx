@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import ChatContainer from "@/components/chat/ChatContainer";
-import ChatHeader from "@/components/layout/Header";
 import { viewGPTs } from "../redux/gpt/crudGPT";
 import {
   useAppSelector,
@@ -10,7 +9,8 @@ import {
 } from "@/redux";
 import { useParams } from "react-router-dom";
 import { fetchLogById } from "@/redux/log/crudLog";
-import { BsLayoutSidebar } from "react-icons/bs";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
@@ -18,9 +18,7 @@ const ChatPage = () => {
   const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
-  const isSidebarVisible = useAppSelector(
-    (state) => state.layout.isSidebarVisible
-  );
+
   const gptList = useAppSelector((state) => state.gpt.gptList);
   const hasFetchedGptList = useRef(false);
 
@@ -57,17 +55,11 @@ const ChatPage = () => {
   }, [chatId, dispatch]);
 
   return (
-    <div
-      className={`bg-slate-800 text-white min-h-screen flex flex-col transition-all duration-300 no-scroll ${
-        isSidebarVisible ? "ml-64" : ""
-      }`}
-    >
-      <BsLayoutSidebar />
-      <ChatHeader />
-      <div className="flex-1">
+    <SidebarProvider>
+      <ChatPageLayout>
         <ChatContainer />
-      </div>
-    </div>
+      </ChatPageLayout>
+    </SidebarProvider>
   );
 };
 
