@@ -5,7 +5,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -48,7 +47,7 @@ export function ChatPageSidebar() {
 
   const navigate = useNavigate();
   return (
-    <Sidebar variant="sidebar" className="flex flex-col h-full">
+    <Sidebar className="flex flex-col h-full">
       <SidebarHeader className="mt-4 border-b border-sidebar-border flex-none">
         <Button
           className="text-2xl"
@@ -62,24 +61,19 @@ export function ChatPageSidebar() {
         <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
         <SidebarGroup>
           <SidebarMenu>
-            <SidebarMenuItem>
-              {logList.length > 0 ? (
-                logList.map((log) => (
-                  <ChatLogSidebar
-                    key={log.id}
-                    log={log}
-                    onSelectLog={handleSelectLog}
-                  />
-                ))
-              ) : (
-                <div>No chat logs available</div>
-              )}
-            </SidebarMenuItem>
+            {logList.length > 0 ? (
+              logList.map((log) => (
+                <ChatLogSidebar
+                  key={log.id}
+                  log={log}
+                  onSelectLog={handleSelectLog}
+                />
+              ))
+            ) : (
+              <div>No chat logs available</div>
+            )}
           </SidebarMenu>
         </SidebarGroup>
-        {/* Border */}
-        {/* Border */}
-        <div className="border-b border-sidebar-border"></div>
       </SidebarContent>
     </Sidebar>
   );
