@@ -10,13 +10,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ChatLogSidebar from "@/components/chatLog/ChatLogSidebar";
 import {
+  messageActions,
   layoutActions,
   logActions,
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
-import { messageActions } from "@/redux";
 import { useEffect, useRef } from "react";
+import ChatSidebarFooter from "@/components/chatLog/ChatSidebarFooter";
 
 export function ChatPageSidebar() {
   const dispatch = useAppDispatch();
@@ -75,6 +76,7 @@ export function ChatPageSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <ChatSidebarFooter />
     </Sidebar>
   );
 }
