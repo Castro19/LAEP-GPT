@@ -1,4 +1,5 @@
 import { LogData, MessageObjType } from "@/types";
+import { UpdateLogTitleData } from "./logSlice";
 
 export default async function createLogTitle(msg: string, modelTitle: string) {
   try {
@@ -113,5 +114,32 @@ export async function deleteLogItem({ logId }: { logId: string }) {
     return responseData;
   } catch (error) {
     console.error("Error: ", error);
+  }
+}
+
+// Reurn {message, logId, title}
+export async function updateLogTitleInDB({
+  logId,
+  title,
+}: UpdateLogTitleData): Promise<{
+  message: string;
+  logId: string;
+  title: string;
+}> {
+  try {
+    const response = await fetch("http://localhost:4000/chatLogs/title", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ logId, title }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    const data = await response.json();
+    return data as { message: string; logId: string; title: string };
+  } catch (error) {
+    console.error("Failed to update log title: ", error);
+    throw error;
   }
 }

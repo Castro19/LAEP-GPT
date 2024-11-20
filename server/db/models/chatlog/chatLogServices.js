@@ -70,6 +70,8 @@ export const deleteLog = async (logId, userId) => {
   }
 };
 
+// Other Functions
+
 // Update Chat Message Reaction
 export const updateChatMessageReaction = async (
   logId,
@@ -86,6 +88,16 @@ export const updateChatMessageReaction = async (
       message: "Chat message reaction updated successfully",
       modifiedCount: result.modifiedCount,
     };
+  } catch (error) {
+    throw new Error("Service error: " + error.message);
+  }
+};
+
+// Update Log Title
+export const updateLogTitle = async (logId, userId, title) => {
+  try {
+    const result = await ChatLogModel.updateLogTitle(logId, userId, title);
+    return result;
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }

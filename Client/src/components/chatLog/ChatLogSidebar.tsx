@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import { LogData } from "@/types";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import ChatLogOptions from "./ChatLogOptions";
+import { useState } from "react";
 
 type ChatLogSidebarProps = {
   log: LogData;
@@ -13,7 +14,7 @@ type ChatLogSidebarProps = {
 
 const ChatLogSidebar = ({ log, onSelectLog }: ChatLogSidebarProps) => {
   const navigate = useNavigate();
-
+  const [name, setName] = useState(log.title);
   // Redux:
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
@@ -46,11 +47,7 @@ const ChatLogSidebar = ({ log, onSelectLog }: ChatLogSidebarProps) => {
 
         {/* Options button - only visible on hover */}
         <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <ChatLogOptions
-            log={log}
-            name={log.title || ""}
-            onNameChange={() => {}}
-          />
+          <ChatLogOptions log={log} name={name || ""} onNameChange={setName} />
         </div>
       </div>
     </SidebarMenuItem>

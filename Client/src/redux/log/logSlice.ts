@@ -4,6 +4,7 @@ import createLogTitle, {
   fetchAllLogs,
   updateLogItem,
   deleteLogItem,
+  updateLogTitleInDB,
 } from "./crudLog";
 import {
   LogData,
@@ -114,6 +115,23 @@ export const updateLog = createAsyncThunk(
   }
 );
 
+export type UpdateLogTitleData = {
+  logId: string;
+  title: string;
+};
+export const updateLogTitle = createAsyncThunk(
+  "log/updateLogTitle",
+  async ({ logId, title }: UpdateLogTitleData, { rejectWithValue }) => {
+    try {
+      const updatedLog = await updateLogTitleInDB({ logId, title });
+      return updatedLog;
+    } catch (error) {
+      console.error("Failed to update log title: ", error);
+      return rejectWithValue(logErrorMessages[LogErrorCodes.UPDATE_FAILED]);
+    }
+  }
+);
+
 export const deleteLog = createAsyncThunk(
   "log/deleteLog",
   async ({ logId }: { logId: string }, { dispatch, rejectWithValue }) => {
@@ -183,6 +201,16 @@ const logSlice = createSlice({
         const index = state.deletingLogIds.indexOf(action.meta.arg.logId);
         if (index > -1) {
           state.deletingLogIds.splice(index, 1);
+        }
+      })
+      .addCase(updateLogTitle.fulfilled, (state, action) => {
+        console.log("updateLogTitle fulfilled: ", action.payload);
+        const { message, logId, title } = action.payload;
+        if (message === "Log title updated successfully") {
+          const logIndex = state.logList.findIndex((log) => log.id === logId);
+          if (logIndex !== -1) {
+            state.logList[logIndex].title = title;
+          }
         }
       });
   },

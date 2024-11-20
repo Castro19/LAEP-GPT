@@ -6,6 +6,7 @@ import {
   updateLog,
   deleteLog,
   updateChatMessageReaction,
+  updateLogTitle,
 } from "../db/models/chatlog/chatLogServices.js";
 import { fetchIds } from "../db/models/threads/threadServices.js";
 import { deleteThread } from "../helpers/openAI/threadFunctions.js";
@@ -75,6 +76,23 @@ router.put("/", async (req, res) => {
   }
 });
 
+// Update a Log Title
+router.put("/title", async (req, res) => {
+  const { logId, title } = req.body;
+  const userId = req.user.uid;
+  try {
+    await updateLogTitle(logId, userId, title);
+    res.status(200).json({
+      message: "Log title updated successfully",
+      logId,
+      title,
+    });
+  } catch (error) {
+    console.error("Failed to update log title: ", error);
+    res.status(500).json("Failed to update log title: " + error.message);
+  }
+});
+
 // Deleting a Log
 router.delete("/:logId", async (req, res) => {
   const userId = req.user.uid;
@@ -112,6 +130,7 @@ router.delete("/:logId", async (req, res) => {
       }
     }
 
+    console.log("Deleting log:", logId);
     // Always try to delete the log
     const response = await deleteLog(logId, userId);
     res.status(204).json({ message: "Log deleted successfully", response });
