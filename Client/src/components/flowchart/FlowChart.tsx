@@ -5,6 +5,7 @@ import { FlowchartData } from "@/types";
 import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
 import defaultTermData from "./exampleData/flowPlaceholder";
 import { Button } from "../ui/button";
+import FlowchartUnitCounts from "./flowchartFooter/FlowchartUnitCounts";
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -24,10 +25,8 @@ const TERM_MAP = {
 
 const FlowChart = ({
   flowchartData,
-  readonly = false,
 }: {
   flowchartData?: FlowchartData | null;
-  readonly?: boolean;
 }) => {
   const dispatch = useAppDispatch();
   const userData = useAppSelector((state) => state.user.userData);
@@ -105,15 +104,12 @@ const FlowChart = ({
                 term={term}
                 termName={termName}
                 onCourseToggleComplete={onCourseToggleComplete}
-                readonly={readonly}
               />
             </div>
           );
         })}
       </div>
-      <div className="flowchart-footer">
-        <h4>Total Units: 180</h4>
-      </div>
+      <FlowchartUnitCounts />
     </div>
   );
 };
