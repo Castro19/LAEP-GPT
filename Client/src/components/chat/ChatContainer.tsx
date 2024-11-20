@@ -3,6 +3,7 @@ import { ChatInput, ChatMessage } from "@/components/chat";
 import AssistantSuggestedMessages from "./AssistantSuggestedMessages";
 // Redux:
 import { useAppSelector } from "@/redux";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ChatContainer = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -49,12 +50,16 @@ const ChatContainer = () => {
       {isNewChat && !isLoading ? (
         <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />
       ) : (
-        <div ref={messagesContainerRef} className="flex-1 overflow-auto p-4">
-          {msgList.map((message) => (
-            <ChatMessage key={message.id} msg={message} />
-          ))}
-        </div>
+        <ScrollArea ref={messagesContainerRef}>
+          <div className="flex-1 overflow-auto p-4">
+            {msgList.map((message) => (
+              <ChatMessage key={message.id} msg={message} />
+            ))}
+          </div>
+        </ScrollArea>
       )}
+      {/* Border */}
+
       <ChatInput
         messagesContainerRef={messagesContainerRef}
         textareaRef={textareaRef}
