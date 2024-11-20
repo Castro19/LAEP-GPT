@@ -128,7 +128,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </Droppable>
 
       {/* Footer */}
-      <div className="p-2">
+      <div className="p-4">
         <hr className="my-2" />
         <h4 className="m-0">
           Units: {term.tUnits}
