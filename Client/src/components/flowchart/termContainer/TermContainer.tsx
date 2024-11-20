@@ -14,7 +14,6 @@ interface TermContainerProps {
   termName: string;
   // eslint-disable-next-line no-unused-vars
   onCourseToggleComplete: (termIndex: number, courseIndex: number) => void;
-  readonly?: boolean;
 }
 
 const updateFlowchartTermData = (
@@ -35,7 +34,6 @@ const TermContainer: React.FC<TermContainerProps> = ({
   term,
   termName,
   onCourseToggleComplete,
-  readonly = false,
 }) => {
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);

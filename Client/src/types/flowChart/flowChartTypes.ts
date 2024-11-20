@@ -1,7 +1,17 @@
 // types.ts
+// 1-1 match #FEFD9A --> Major, #FCD09E --> Support, #DCFDD2 --> GE, #F5F5DC --> Other
+type colors = "#FEFD9A" | "#FCD09E" | "#DCFDD2" | "#F5F5DC";
+export interface UnitCounts {
+  total: number;
+  major: number; // #FEFD9A
+  support: number; // #FCD09E
+  ge: number; // #DCFDD2
+  other: number; // #F5F5DC
+}
+
 export interface Course {
   id: string | null;
-  color: string;
+  color: colors;
   displayName?: string;
   desc?: string;
   units?: string;
