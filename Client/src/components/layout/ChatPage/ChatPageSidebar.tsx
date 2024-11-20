@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import ChatLogSidebar from "@/components/chatLog/ChatLogSidebar";
+import ChatLog from "@/components/chatLog/ChatLog";
 import {
   messageActions,
   layoutActions,
@@ -64,11 +64,7 @@ export function ChatPageSidebar() {
           <SidebarMenu>
             {logList.length > 0 ? (
               logList.map((log) => (
-                <ChatLogSidebar
-                  key={log.id}
-                  log={log}
-                  onSelectLog={handleSelectLog}
-                />
+                <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
               ))
             ) : (
               <div>No chat logs available</div>
