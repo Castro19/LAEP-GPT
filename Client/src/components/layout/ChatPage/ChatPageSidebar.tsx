@@ -5,13 +5,47 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import ChatLogSidebar from "@/components/chatLog/ChatLogSidebar";
+import {
+  layoutActions,
+  logActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
+import { messageActions } from "@/redux";
+import { useEffect, useRef } from "react";
 
 export function ChatPageSidebar() {
+  const dispatch = useAppDispatch();
+  const logList = useAppSelector((state) => state.log.logList);
+  const userId = useAppSelector((state) => state.auth.userId);
+  const hasFetchedLogs = useRef(false);
+
+  // Handler for selecting a log to view
+  const handleSelectLog = (logId: string) => {
+    const chosenLog = logList.find((item) => item.id === logId);
+    if (chosenLog) {
+      // Set the current chat id
+      dispatch(messageActions.setCurrentChatId(logId));
+      dispatch(messageActions.toggleNewChat(false));
+
+      dispatch(layoutActions.toggleSidebar(false)); // close slidebar
+    }
+  };
+
+  useEffect(() => {
+    if (hasFetchedLogs.current || logList.length > 0) return;
+    hasFetchedLogs.current = true;
+    // Only fetch logs if userId is not null (user is signed in)
+    if (userId) {
+      dispatch(logActions.fetchLogs());
+    }
+  }, [dispatch, userId, logList.length]);
+
   const navigate = useNavigate();
   return (
     <Sidebar variant="sidebar" className="flex flex-col h-full">
@@ -29,14 +63,21 @@ export function ChatPageSidebar() {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton className="w-full">
-                <div className="flex items-center justify-between w-full text-lg"></div>
-              </SidebarMenuButton>
+              {logList.length > 0 ? (
+                logList.map((log) => (
+                  <ChatLogSidebar
+                    key={log.id}
+                    log={log}
+                    onSelectLog={handleSelectLog}
+                  />
+                ))
+              ) : (
+                <div>No chat logs available</div>
+              )}
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
         {/* Border */}
-
         {/* Border */}
         <div className="border-b border-sidebar-border"></div>
       </SidebarContent>
