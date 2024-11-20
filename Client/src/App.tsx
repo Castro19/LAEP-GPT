@@ -29,7 +29,7 @@ import Terms from "./components/register/SignInFlow/Terms.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
-import ProfilePageLayout from "./components/layout/ProfilePage.tsx/ProfilePageLayout.tsx";
+import ProfilePageLayout from "./components/layout/ProfilePage/ProfilePageLayout.tsx";
 import courses from "./calpolyData/courses.json";
 import interests from "./calpolyData/interests.json";
 import FlowChatPage from "./pages/FlowChatPage.tsx";

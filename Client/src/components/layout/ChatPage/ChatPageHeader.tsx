@@ -1,7 +1,6 @@
-import ModeDropDown from "../customGPT/ModeDropDown";
-import Sidebar from "./sidebar/Sidebar";
+import ModeDropDown from "../../customGPT/ModeDropDown";
 import { BiChat } from "react-icons/bi";
-import NewChat from "../chat/NewChat";
+import NewChat from "../../chat/NewChat";
 import { GptType } from "@/types";
 // Redux:
 import {
@@ -37,8 +36,6 @@ const ChatHeader = () => {
         >
           <BiChat />
         </button>
-        <Sidebar />
-
         <ModeDropDown onSelect={handleModeSelection} />
         <NewChat />
       </div>
