@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import TermContainer from "./termContainer/TermContainer";
 import { FlowchartData } from "@/types";
@@ -63,8 +63,12 @@ const FlowChart = ({
   const totalTerms = termsData.length;
   const totalYears = Math.ceil(totalTerms / termsPerYear);
 
-  // Function to scroll to the selected year
+  // Add state for selected year
+  const [selectedYear, setSelectedYear] = useState(0);
+
+  // Modify the scrollToYear function to update selected year
   const scrollToYear = (yearIndex: number) => {
+    setSelectedYear(yearIndex);
     if (flowchartRef.current) {
       const termWidth = flowchartRef.current.scrollWidth / totalTerms;
       const scrollPosition = yearIndex * termsPerYear * termWidth;
@@ -83,7 +87,11 @@ const FlowChart = ({
             key={index}
             variant="ghost"
             onClick={() => scrollToYear(index)}
-            className=" text-white cursor-pointer"
+            className={`cursor-pointer ${
+              selectedYear === index
+                ? "dark:bg-slate-700 text-white"
+                : "text-white hover:dark:bg-slate-800"
+            }`}
           >
             Year {index + 1}
           </Button>

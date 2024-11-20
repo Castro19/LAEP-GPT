@@ -140,15 +140,18 @@ export function ProfilePage() {
               </p>
             </div>
             <SilverLine />
-            <div className="flex flex-col justify-center gap-4">
-              <AnimatedModalDemo
-                onSave={handleSaveDegreeInfo}
-                title="Change Major"
-                excludeRefs={[flowchartOptionsRef]}
-                disableOutsideClick={true}
-              >
-                <FlowChartOptions type="profile" />
-              </AnimatedModalDemo>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col justify-center items-center">
+                <AnimatedModalDemo
+                  onSave={handleSaveDegreeInfo}
+                  title="Change Major"
+                  excludeRefs={[flowchartOptionsRef]}
+                  disableOutsideClick={true}
+                  className="w-3/4"
+                >
+                  <FlowChartOptions type="profile" />
+                </AnimatedModalDemo>
+              </div>
               <SpecialButton
                 text="Modify Flowcharts"
                 onClick={() => {
@@ -219,11 +222,12 @@ export function ProfilePage() {
               <div className="flex flex-col justify-start h-full py-6">
                 <div className="flex flex-col justify-center items-center">
                   <WeeklyCalendar />
-                  <SpecialButton
-                    onClick={handleSaveToast}
-                    text="Save Availability"
-                  />
                 </div>
+
+                <SpecialButton
+                  onClick={handleSaveToast}
+                  text="Save Availability"
+                />
               </div>
             </Card>
           </TabsContent>
