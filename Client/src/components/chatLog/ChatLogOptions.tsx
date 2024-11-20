@@ -41,7 +41,6 @@ const ChatLogOptions = ({
   );
 
   const onDelete = () => {
-    console.log("NAME:", name);
     if (isDeleting) return; // Prevent multiple deletion attempts
     try {
       if (userId) {
@@ -58,6 +57,19 @@ const ChatLogOptions = ({
       }
     } catch (error) {
       console.error(`Error trying to delete log ${log.id}: `, error);
+    }
+  };
+
+  const handleUpdateData = async () => {
+    try {
+      await dispatch(
+        logActions.updateLogTitle({
+          logId: log.id,
+          title: name,
+        })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to update chat log:", error);
     }
   };
 
@@ -81,7 +93,7 @@ const ChatLogOptions = ({
           </div>
           {/* Actions */}
           <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => {}}>
+            <Button variant="secondary" onClick={handleUpdateData}>
               Save
             </Button>
             <Button variant="destructive" onClick={onDelete}>

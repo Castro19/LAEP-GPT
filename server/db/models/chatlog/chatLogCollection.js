@@ -104,3 +104,16 @@ export const deleteLogItem = async (logId) => {
     throw new Error("Error Deleting log: " + error.message);
   }
 };
+
+// Update Log Title
+export const updateLogTitle = async (logId, userId, title) => {
+  try {
+    const result = await chatLogCollection.updateOne(
+      { _id: logId, userId: userId },
+      { $set: { title: title } }
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error updating log title: " + error.message);
+  }
+};
