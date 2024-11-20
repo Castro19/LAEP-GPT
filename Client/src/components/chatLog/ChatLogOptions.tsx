@@ -76,7 +76,7 @@ const ChatLogOptions = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="flex justify-start">
           <SlOptionsVertical />
         </Button>
       </PopoverTrigger>

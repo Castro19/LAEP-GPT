@@ -18,6 +18,7 @@ import {
 } from "@/redux";
 import { useEffect, useRef } from "react";
 import ChatSidebarFooter from "@/components/chatLog/ChatSidebarFooter";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ChatPageSidebar() {
   const dispatch = useAppDispatch();
@@ -58,20 +59,26 @@ export function ChatPageSidebar() {
           PolyLink
         </Button>
       </SidebarHeader>
-      <SidebarContent className="border-b border-sidebar-border flex-1 overflow-x-hidden m-4">
-        <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
-        <SidebarGroup>
-          <SidebarMenu>
-            {logList.length > 0 ? (
-              logList.map((log) => (
-                <ChatLog key={log.id} log={log} onSelectLog={handleSelectLog} />
-              ))
-            ) : (
-              <div>No chat logs available</div>
-            )}
-          </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
+      <ScrollArea className="h-full">
+        <SidebarContent className="border-b border-sidebar-border flex-1 overflow-x-hidden m-4">
+          <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
+          <SidebarGroup>
+            <SidebarMenu>
+              {logList.length > 0 ? (
+                logList.map((log) => (
+                  <ChatLog
+                    key={log.id}
+                    log={log}
+                    onSelectLog={handleSelectLog}
+                  />
+                ))
+              ) : (
+                <div>No chat logs available</div>
+              )}
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </ScrollArea>
       <ChatSidebarFooter />
     </Sidebar>
   );
