@@ -121,47 +121,45 @@ export function ProfilePage() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
-      <div className="border border-slate-500 md:col-span-1 p-4">
-        <Card className="h-full">
-          <CardContent>
-            <div className="flex flex-col justify-around items-center my-2">
-              <Avatar className="w-32 h-32 mb-4">
-                <AvatarFallback className="bg-slate-300">
-                  {userData?.name?.charAt(0) || "N/A"}
-                </AvatarFallback>
-              </Avatar>
-              <h3 className="text-3xl font-bold text-center my-2">
-                {userData?.name || "N/A"}
-              </h3>
-              <p className="text-lg text-center">{userData?.email || "N/A"}</p>
-              <p className="text-lg text-center mt-2">
-                {yearMapping(userData?.year || "N/A")}{" "}
-                {userData?.major || "Computer Science"} {userType || "Student"}
-              </p>
-            </div>
-            <SilverLine />
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col justify-center items-center">
-                <AnimatedModalDemo
-                  onSave={handleSaveDegreeInfo}
-                  title="Change Major"
-                  excludeRefs={[flowchartOptionsRef]}
-                  disableOutsideClick={true}
-                  className="w-3/4"
-                >
-                  <FlowChartOptions type="profile" />
-                </AnimatedModalDemo>
-              </div>
-              <SpecialButton
-                text="Modify Flowcharts"
-                onClick={() => {
-                  navigate(`/flowchart/${userData.flowchartId}`);
-                }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <GridItemContainer>
+        <CardContent>
+          <div className="flex flex-col justify-around items-center my-2">
+            <Avatar className="w-32 h-32 mb-4">
+              <AvatarFallback className="bg-slate-300">
+                {userData?.name?.charAt(0) || "N/A"}
+              </AvatarFallback>
+            </Avatar>
+            <h3 className="text-3xl font-bold text-center my-2">
+              {userData?.name || "N/A"}
+            </h3>
+            <p className="text-lg text-center">{userData?.email || "N/A"}</p>
+            <p className="text-lg text-center mt-2">
+              {yearMapping(userData?.year || "N/A")}{" "}
+              {userData?.major || "Computer Science"} {userType || "Student"}
+            </p>
+          </div>
+          <SilverLine />
+        </CardContent>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col justify-center items-center">
+            <AnimatedModalDemo
+              onSave={handleSaveDegreeInfo}
+              title="Change Major"
+              excludeRefs={[flowchartOptionsRef]}
+              disableOutsideClick={true}
+              className="w-3/4"
+            >
+              <FlowChartOptions type="profile" />
+            </AnimatedModalDemo>
+          </div>
+          <SpecialButton
+            text="Modify Flowcharts"
+            onClick={() => {
+              navigate(`/flowchart/${userData.flowchartId}`);
+            }}
+          />
+        </div>
+      </GridItemContainer>
       <GridItemContainer>
         <div className="flex flex-col justify-center items-center">
           <Label className="text-2xl font-bold underline justify-self-center p-2">
