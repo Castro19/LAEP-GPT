@@ -50,7 +50,7 @@ export function ChatPageSidebar() {
   const navigate = useNavigate();
   return (
     <Sidebar className="flex flex-col h-full">
-      <SidebarHeader className="mt-4 border-b border-sidebar-border flex-none">
+      <SidebarHeader className="mt-4 border-b border-sidebar-border dark:border-slate-700 flex-none">
         <Button
           className="text-2xl"
           variant="link"
@@ -60,7 +60,7 @@ export function ChatPageSidebar() {
         </Button>
       </SidebarHeader>
       <ScrollArea className="h-full">
-        <SidebarContent className="border-b border-sidebar-border flex-1 overflow-x-hidden m-4">
+        <SidebarContent className="border-t border-sidebar-border dark:border-slate-700 flex-1 overflow-x-hidden">
           <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
           <SidebarGroup>
             <SidebarMenu>
