@@ -158,13 +158,27 @@ export const deleteFlowchart = async (flowchartId, userId) => {
 // Other Handlers
 export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
   try {
-    // Update all flowcharts except the one with the flowchartId
-    const result = await flowchartCollection.updateMany(
-      { userId, _id: { $ne: new ObjectId(flowchartId) } },
-      { $set: { primaryOption: false } }
-    );
+    // Use bulkWrite to perform both operations atomically
+    const result = await flowchartCollection.bulkWrite([
+      {
+        // Set the specified flowchart to primary
+        updateOne: {
+          filter: { _id: new ObjectId(flowchartId), userId },
+          update: { $set: { primaryOption: true } },
+        },
+      },
+      {
+        // Set all other flowcharts to not primary
+        updateMany: {
+          filter: { userId, _id: { $ne: new ObjectId(flowchartId) } },
+          update: { $set: { primaryOption: false } },
+        },
+      },
+    ]);
     return result;
   } catch (error) {
-    throw new Error(error);
+    throw new Error(
+      `Error updating flowchart primary options: ${error.message}`
+    );
   }
 };

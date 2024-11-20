@@ -36,11 +36,10 @@ export function AppSidebar() {
     (state) => state.flowchart.flowchartList
   );
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { handleChange, userData } = useUserData();
+  const { userData } = useUserData();
 
   // Handler for selecting a log to view
   const handleSelectFlowchart = (flowchartId: string) => {
-    handleChange("flowchartId", flowchartId);
     dispatch(setFlowchart(flowchartId));
   };
 

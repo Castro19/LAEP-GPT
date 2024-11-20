@@ -2,7 +2,7 @@ import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useNavigate } from "react-router-dom";
-import { FetchFlowchartResponse } from "@/types";
+import { FetchFlowchartResponse, MyUserInfo } from "@/types";
 import { SlOptionsVertical } from "react-icons/sl";
 import {
   Popover,
@@ -69,7 +69,13 @@ const FlowchartLogOptions = ({
 
   const handleDeleteFlowchart = async (flowchartId: string) => {
     // Step 1: Delete the flowchart from the database
-    await dispatch(flowchartActions.deleteFlowchart(flowchartId));
+    await dispatch(
+      flowchartActions.deleteFlowchart({
+        flowchartId,
+        handleChange: (name, value) =>
+          handleChange(name as keyof MyUserInfo, value),
+      })
+    ).unwrap();
     // Step 2: Reset the flowchart data
     dispatch(flowchartActions.resetFlowchartData());
     // Step 3: Determine the next flowchart to set
@@ -82,15 +88,14 @@ const FlowchartLogOptions = ({
       // Step 5: Navigate to the next flowchart
       navigate(`/flowchart/${nextFlowchartId}`);
     } else {
+      dispatch(
+        flowchartActions.setCurrentFlowchart({} as FetchFlowchartResponse)
+      );
+      handleChange("flowchartId", "");
       // Step 5: Navigate to the flowchart list
       navigate("/flowchart");
     }
-    if (primaryOption) {
-      // Step 6: Update primary option if necessary
-      handleChange("flowchartId", "");
-      handleSave();
-    }
-    // Step 7: Handle save operation
+    // Step 6: Handle save operation
     toast({
       title: "Flowchart Deleted",
       description: "Your flowchart has been deleted successfully.",
@@ -122,6 +127,7 @@ const FlowchartLogOptions = ({
               id="primary"
               checked={primaryOption}
               onCheckedChange={onPrimaryChange}
+              disabled={flowchart.primaryOption}
             />
           </div>
           {/* Actions */}

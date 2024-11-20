@@ -49,12 +49,21 @@ export function ProfilePage() {
   const { flowchartData, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
-
+  const initialLoadRef = useRef(false);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
 
   const { handleSave } = useUserData();
   const { interests } = useCalpolyData();
+
+  useEffect(() => {
+    if (initialLoadRef.current) return;
+    initialLoadRef.current = true;
+
+    if (userData.flowchartId) {
+      dispatch(flowchartActions.setFlowchart(userData.flowchartId));
+    }
+  }, [dispatch, userData.flowchartId]);
 
   const handleSaveToast = () => {
     handleSave();
@@ -109,12 +118,6 @@ export function ProfilePage() {
       console.error("Failed to update flowchart:", error);
     }
   };
-
-  useEffect(() => {
-    if (userData.flowchartId) {
-      dispatch(flowchartActions.setFlowchart(userData.flowchartId));
-    }
-  }, [dispatch, userData.flowchartId]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
