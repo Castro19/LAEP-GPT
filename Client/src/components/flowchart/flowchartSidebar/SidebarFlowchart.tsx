@@ -84,7 +84,7 @@ export function SidebarFlowchart() {
             variant="ghost"
             size="icon"
             onClick={() => {
-              navigate("/profile/edit");
+              navigate(-1);
             }}
           >
             <ChevronLeft className="w-4 h-4" />
