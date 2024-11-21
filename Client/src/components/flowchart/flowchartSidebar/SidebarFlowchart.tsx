@@ -94,7 +94,7 @@ export function SidebarFlowchart() {
           </span>
         </div>
       </SidebarHeader>
-      <SidebarContent className="border-b border-sidebar-border flex-1 overflow-x-hidden">
+      <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
         <ScrollArea className="h-full">
           <SidebarGroupLabel>Created Flowcharts</SidebarGroupLabel>
           <SidebarGroup>
@@ -102,14 +102,14 @@ export function SidebarFlowchart() {
               <Collapsible defaultOpen className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="w-full">
+                    <SidebarMenuButton>
                       <div className="flex items-center justify-between w-full text-lg">
                         Flowcharts
                         <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                       </div>
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
-                  <CollapsibleContent>
+                  <CollapsibleContent className="max-w-60 overflow-auto transition-max-height duration-300 ease-in-out">
                     <SidebarMenuSub className="w-full gap-y-4">
                       {flowchartList?.map((flowchart) => (
                         <SidebarMenuSubItem key={flowchart.flowchartId}>
@@ -120,14 +120,16 @@ export function SidebarFlowchart() {
                         </SidebarMenuSubItem>
                       ))}
                     </SidebarMenuSub>
-                    <div className="w-full my-4">
-                      <AnimatedModalDemo
-                        onSave={handleSaveFlowchart}
-                        title="Create Flowchart"
-                        disableOutsideClick={true}
-                      >
-                        <FlowChartOptions type="flowchart" />
-                      </AnimatedModalDemo>
+                    <div className="flex items-center justify-center">
+                      <div className="w-11/12 my-4">
+                        <AnimatedModalDemo
+                          onSave={handleSaveFlowchart}
+                          title="Create Flowchart"
+                          disableOutsideClick={true}
+                        >
+                          <FlowChartOptions type="flowchart" />
+                        </AnimatedModalDemo>
+                      </div>
                     </div>
                   </CollapsibleContent>
                 </SidebarMenuItem>

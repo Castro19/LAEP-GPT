@@ -104,7 +104,7 @@ const FlowchartLogOptions = ({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="flex justify-end m-0 p-0 w-4">
         <Button variant="ghost" size="icon">
           <SlOptionsVertical />
         </Button>
