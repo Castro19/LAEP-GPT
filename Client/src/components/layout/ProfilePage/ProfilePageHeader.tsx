@@ -5,7 +5,7 @@ const ChatHeader = () => {
   const navigate = useNavigate();
   const handleBackToChat = () => {
     // Map back to the previous page
-    navigate(-1);
+    navigate("/chat");
   };
 
   return (

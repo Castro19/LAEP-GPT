@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import CourseSearchbar from "./courses/CourseSearchbar";
-import { SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar";
+import { SidebarMenuSub } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import CourseDropdown from "./courses/CourseDropdown";
@@ -84,7 +84,7 @@ export function SidebarFlowchart() {
             variant="ghost"
             size="icon"
             onClick={() => {
-              navigate(-1);
+              navigate("/profile/edit");
             }}
           >
             <ChevronLeft className="w-4 h-4" />
@@ -112,12 +112,11 @@ export function SidebarFlowchart() {
                   <CollapsibleContent className="max-w-60 overflow-auto transition-max-height duration-300 ease-in-out">
                     <SidebarMenuSub className="w-full gap-y-4">
                       {flowchartList?.map((flowchart) => (
-                        <SidebarMenuSubItem key={flowchart.flowchartId}>
-                          <FlowchartLog
-                            flowchart={flowchart}
-                            onSelectFlowchart={handleSelectFlowchart}
-                          />
-                        </SidebarMenuSubItem>
+                        <FlowchartLog
+                          key={flowchart.flowchartId}
+                          flowchart={flowchart}
+                          onSelectFlowchart={handleSelectFlowchart}
+                        />
                       ))}
                     </SidebarMenuSub>
                     <div className="flex items-center justify-center">
