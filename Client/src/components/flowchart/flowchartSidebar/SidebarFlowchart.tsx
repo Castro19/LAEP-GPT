@@ -112,12 +112,11 @@ export function SidebarFlowchart() {
                   <CollapsibleContent className="max-w-60 overflow-auto transition-max-height duration-300 ease-in-out">
                     <SidebarMenuSub className="w-full gap-y-4">
                       {flowchartList?.map((flowchart) => (
-                        <SidebarMenuSubItem key={flowchart.flowchartId}>
-                          <FlowchartLog
-                            flowchart={flowchart}
-                            onSelectFlowchart={handleSelectFlowchart}
-                          />
-                        </SidebarMenuSubItem>
+                        <FlowchartLog
+                          key={flowchart.flowchartId}
+                          flowchart={flowchart}
+                          onSelectFlowchart={handleSelectFlowchart}
+                        />
                       ))}
                     </SidebarMenuSub>
                     <div className="flex items-center justify-center">
