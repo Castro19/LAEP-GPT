@@ -6,6 +6,7 @@ import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
 import defaultTermData from "./exampleData/flowPlaceholder";
 import { Button } from "../ui/button";
 import FlowchartUnitCounts from "./flowchartFooter/FlowchartUnitCounts";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -97,26 +98,31 @@ const FlowChart = ({
           </Button>
         ))}
       </div>
-      <div
-        className="flex overflow-x-auto p-1 scroll-smooth w-full dark:bg-gray-900 "
-        ref={flowchartRef}
-      >
-        {termsData.map((term) => {
-          const termName = getTermName(term.tIndex);
-          return (
-            <div
-              className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 text-center border-2 border-slate-500"
-              key={term.tIndex + termName}
-            >
-              <TermContainer
-                term={term}
-                termName={termName}
-                onCourseToggleComplete={onCourseToggleComplete}
-              />
-            </div>
-          );
-        })}
-      </div>
+
+      <ScrollArea ref={flowchartRef} className="dark:bg-gray-900">
+        <div className="flex w-max space-x-4 p-4">
+          {termsData.map((term) => {
+            const termName = getTermName(term.tIndex);
+            return (
+              <div
+                className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 text-center border-2 border-slate-500"
+                key={term.tIndex + termName}
+              >
+                <TermContainer
+                  term={term}
+                  termName={termName}
+                  onCourseToggleComplete={onCourseToggleComplete}
+                />
+              </div>
+            );
+          })}
+          <ScrollBar
+            orientation="horizontal"
+            data-state="visible"
+            className="bg-white h-4"
+          />
+        </div>
+      </ScrollArea>
       <FlowchartUnitCounts />
     </div>
   );

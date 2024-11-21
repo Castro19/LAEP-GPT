@@ -166,7 +166,6 @@ const CourseItem: React.FC<CourseItemProps> = ({
 };
 
 const CourseToolTipContent = ({ course }: { course: Course }) => {
-  console.log(course);
   return (
     <TooltipContent className="dark:bg-gray-800 border border-gray-700 shadow-xl">
       <div className="flex flex-col gap-3 p-3 min-w-[300px] max-w-[400px]">

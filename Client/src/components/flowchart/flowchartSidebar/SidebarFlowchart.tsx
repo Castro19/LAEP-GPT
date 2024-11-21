@@ -28,6 +28,7 @@ import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { toast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
@@ -75,7 +76,7 @@ export function SidebarFlowchart() {
 
   return (
     <Sidebar variant="sidebar" className="flex flex-col h-full">
-      <SidebarHeader className="border-b border-sidebar-border flex-none">
+      <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none mt-1">
         <div className="flex items-center justify-start gap-4">
           {/* Back button */}
           <Button
@@ -83,7 +84,7 @@ export function SidebarFlowchart() {
             variant="ghost"
             size="icon"
             onClick={() => {
-              navigate("/profile/edit");
+              navigate(-1);
             }}
           >
             <ChevronLeft className="w-4 h-4" />
@@ -93,51 +94,56 @@ export function SidebarFlowchart() {
           </span>
         </div>
       </SidebarHeader>
-      <SidebarContent className="border-b border-sidebar-border flex-1 overflow-x-hidden">
-        <SidebarGroupLabel>Created Flowcharts</SidebarGroupLabel>
-        <SidebarGroup>
-          <SidebarMenu>
-            <Collapsible defaultOpen className="group/collapsible">
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton className="w-full">
-                    <div className="flex items-center justify-between w-full text-lg">
-                      Flowcharts
-                      <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+      <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
+        <ScrollArea className="h-full">
+          <SidebarGroupLabel>Created Flowcharts</SidebarGroupLabel>
+          <SidebarGroup>
+            <SidebarMenu>
+              <Collapsible defaultOpen className="group/collapsible">
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton>
+                      <div className="flex items-center justify-between w-full text-lg">
+                        Flowcharts
+                        <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                      </div>
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="max-w-60 overflow-auto transition-max-height duration-300 ease-in-out">
+                    <SidebarMenuSub className="w-full gap-y-4">
+                      {flowchartList?.map((flowchart) => (
+                        <SidebarMenuSubItem key={flowchart.flowchartId}>
+                          <FlowchartLog
+                            flowchart={flowchart}
+                            onSelectFlowchart={handleSelectFlowchart}
+                          />
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                    <div className="flex items-center justify-center">
+                      <div className="w-11/12 my-4">
+                        <AnimatedModalDemo
+                          onSave={handleSaveFlowchart}
+                          title="Create Flowchart"
+                          disableOutsideClick={true}
+                        >
+                          <FlowChartOptions type="flowchart" />
+                        </AnimatedModalDemo>
+                      </div>
                     </div>
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub className="w-full gap-y-4">
-                    {flowchartList?.map((flowchart) => (
-                      <SidebarMenuSubItem key={flowchart.flowchartId}>
-                        <FlowchartLog
-                          flowchart={flowchart}
-                          onSelectFlowchart={handleSelectFlowchart}
-                        />
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                  <div className="w-full my-4">
-                    <AnimatedModalDemo
-                      onSave={handleSaveFlowchart}
-                      title="Create Flowchart"
-                      disableOutsideClick={true}
-                    >
-                      <FlowChartOptions type="flowchart" />
-                    </AnimatedModalDemo>
-                  </div>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          </SidebarMenu>
-        </SidebarGroup>
-        {/* Border */}
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroup>
+          {/* Border */}
+          <div className="border-b border-sidebar-border"></div>
+          {/* Classes */}
+          <CourseDropdown />
+          {/* Border */}
+        </ScrollArea>
         <div className="border-b border-sidebar-border"></div>
-        {/* Classes */}
-        <CourseDropdown />
-        {/* Border */}
-        <div className="border-b border-sidebar-border"></div>
+
         <div className="sticky bottom-0 bg-white dark:bg-gray-800">
           <CourseSearchbar />
         </div>
