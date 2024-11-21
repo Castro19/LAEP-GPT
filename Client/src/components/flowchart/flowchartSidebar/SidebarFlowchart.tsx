@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import CourseSearchbar from "./courses/CourseSearchbar";
-import { SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar";
+import { SidebarMenuSub } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import CourseDropdown from "./courses/CourseDropdown";
