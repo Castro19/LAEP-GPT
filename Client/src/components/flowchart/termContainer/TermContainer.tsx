@@ -1,13 +1,18 @@
 // TermContainer.tsx
 import React from "react";
 import CourseItem from "../courseItem/CourseItem";
-import { FlowchartData, Term } from "@/types";
+import { Course, FlowchartData, Term } from "@/types";
 import { Button } from "@/components/ui/button";
 import _ from "lodash";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { Draggable, Droppable } from "@hello-pangea/dnd"; // Import here
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 interface TermContainerProps {
   term: Term;
@@ -99,28 +104,35 @@ const TermContainer: React.FC<TermContainerProps> = ({
             {...provided.droppableProps}
           >
             {term.courses.map((course, index) => (
-              <Draggable
+              <TooltipProvider
                 key={`term-${term.tIndex}-${course.id || index}`}
-                draggableId={`term-${term.tIndex}-${course.id || index}`}
-                index={index}
               >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
+                <Tooltip>
+                  <Draggable
+                    key={`term-${term.tIndex}-${course.id || index}`}
+                    draggableId={`term-${term.tIndex}-${course.id || index}`}
+                    index={index}
                   >
-                    <CourseItem
-                      termIndex={term.tIndex}
-                      course={course}
-                      coursePosition={index}
-                      onToggleComplete={() =>
-                        onCourseToggleComplete(term.tIndex, index)
-                      }
-                    />
-                  </div>
-                )}
-              </Draggable>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <CourseItem
+                          termIndex={term.tIndex}
+                          course={course}
+                          coursePosition={index}
+                          onToggleComplete={() =>
+                            onCourseToggleComplete(term.tIndex, index)
+                          }
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                  <CourseToolTipContent course={course} />
+                </Tooltip>
+              </TooltipProvider>
             ))}
             {provided.placeholder}
           </div>
@@ -136,6 +148,34 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </h4>
       </div>
     </div>
+  );
+};
+
+const CourseToolTipContent = ({ course }: { course: Course }) => {
+  return (
+    <TooltipContent className="dark:bg-gray-800 border border-gray-700 shadow-xl">
+      <div className="flex flex-col gap-3 p-3 min-w-[300px] max-w-[400px]">
+        {/* Header Section */}
+        <div className="space-y-1">
+          <p className="text-lg font-bold text-white">
+            {course.id || course.customId}
+          </p>
+          <p className="text-sm text-gray-300">
+            {course.displayName || course.customDisplayName || course.id}
+          </p>
+        </div>
+
+        <hr className="border-gray-600" />
+
+        {/* Description Section */}
+        <div
+          className="text-sm leading-relaxed text-gray-200 max-h-[250px] overflow-y-auto pr-2 
+          scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
+        >
+          {course.desc || course.customDesc || "No Description"}
+        </div>
+      </div>
+    </TooltipContent>
   );
 };
 

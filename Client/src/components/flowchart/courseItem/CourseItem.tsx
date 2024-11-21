@@ -1,11 +1,6 @@
 // CourseItem.tsx
 import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { Course, FlowchartData } from "@/types";
 import {
   Card,
@@ -24,6 +19,7 @@ import _ from "lodash"; // Import lodash
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { TrashIcon } from "lucide-react";
+import { TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CourseItemProps {
   termIndex: number;
@@ -118,78 +114,43 @@ const CourseItem: React.FC<CourseItemProps> = ({
             </div>
           </ContextMenuItem>
         </ContextMenuContent>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Card
-                onClick={handleClick}
-                className={`w-full h-40 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
-                  course.completed ? "dark:bg-gray-300" : ""
-                }`}
-                style={{
-                  backgroundColor: course.completed ? undefined : course.color,
-                  textDecoration: course.completed ? "line-through" : "none",
-                }}
-              >
-                <div className="flex flex-col h-full">
-                  <CardHeader className="flex-shrink-0 space-y-1 p-3">
-                    <CardTitle className="text-lg font-semibold dark:text-gray-900">
-                      {course.id || course.customId || "No Course ID"}
-                    </CardTitle>
-                    <CardDescription className="text-sm dark:text-gray-600">
-                      {course.displayName ||
-                        course.customDisplayName ||
-                        course.id}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="mt-auto">
-                    {course.units && (
-                      <p className="text-sm dark:text-gray-600">
-                        Units: {course.units}
-                      </p>
-                    )}
-                    {course.customUnits && (
-                      <p className="text-sm dark:text-gray-600">
-                        Units: {course.customUnits}
-                      </p>
-                    )}
-                  </CardContent>
-                </div>
-              </Card>
-            </TooltipTrigger>
-            <CourseToolTipContent course={course} />
-          </Tooltip>
-        </TooltipProvider>
+        <TooltipTrigger asChild>
+          <Card
+            onClick={handleClick}
+            className={`w-full h-40 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
+              course.completed ? "dark:bg-gray-300" : ""
+            }`}
+            style={{
+              backgroundColor: course.completed ? undefined : course.color,
+              textDecoration: course.completed ? "line-through" : "none",
+            }}
+          >
+            <div className="flex flex-col h-full">
+              <CardHeader className="flex-shrink-0 space-y-1 p-3">
+                <CardTitle className="text-lg font-semibold dark:text-gray-900">
+                  {course.id || course.customId || "No Course ID"}
+                </CardTitle>
+                <CardDescription className="text-sm dark:text-gray-600">
+                  {course.displayName || course.customDisplayName || course.id}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="mt-auto">
+                {course.units && (
+                  <p className="text-sm dark:text-gray-600">
+                    Units: {course.units}
+                  </p>
+                )}
+                {course.customUnits && (
+                  <p className="text-sm dark:text-gray-600">
+                    Units: {course.customUnits}
+                  </p>
+                )}
+              </CardContent>
+            </div>
+          </Card>
+        </TooltipTrigger>
       </ContextMenuTrigger>
     </ContextMenu>
-  );
-};
-
-const CourseToolTipContent = ({ course }: { course: Course }) => {
-  return (
-    <TooltipContent className="dark:bg-gray-800 border border-gray-700 shadow-xl">
-      <div className="flex flex-col gap-3 p-3 min-w-[300px] max-w-[400px]">
-        {/* Header Section */}
-        <div className="space-y-1">
-          <p className="text-lg font-bold text-white">
-            {course.id || course.customId}
-          </p>
-          <p className="text-sm text-gray-300">
-            {course.displayName || course.customDisplayName || course.id}
-          </p>
-        </div>
-
-        <hr className="border-gray-600" />
-
-        {/* Description Section */}
-        <div
-          className="text-sm leading-relaxed text-gray-200 max-h-[250px] overflow-y-auto pr-2 
-          scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
-        >
-          {course.desc || course.customDesc || "No Description"}
-        </div>
-      </div>
-    </TooltipContent>
   );
 };
 
