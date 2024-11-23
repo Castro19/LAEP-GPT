@@ -55,3 +55,7 @@ body {
   overflow: hidden; /* Prevent scrolling */
   height: 100vh; /* Ensure full viewport height */
 }
+
+[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+}

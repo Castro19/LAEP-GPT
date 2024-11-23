@@ -59,8 +59,8 @@ export function ChatPageSidebar() {
           PolyLink
         </Button>
       </SidebarHeader>
-      <ScrollArea className="h-full">
-        <SidebarContent className="border-t border-sidebar-border dark:border-slate-700 flex-1 overflow-x-hidden">
+      <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
+        <ScrollArea className="h-full">
           <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
           <SidebarGroup>
             <SidebarMenu>
@@ -77,8 +77,8 @@ export function ChatPageSidebar() {
               )}
             </SidebarMenu>
           </SidebarGroup>
-        </SidebarContent>
-      </ScrollArea>
+        </ScrollArea>
+      </SidebarContent>
       <ChatSidebarFooter />
     </Sidebar>
   );
