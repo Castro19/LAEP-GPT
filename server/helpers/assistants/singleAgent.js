@@ -6,6 +6,8 @@ import { setupVectorStoreAndUpdateAssistant } from "../../helpers/openAI/vectorS
 import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
 import { formatAvailability } from "../../helpers/formatters/availabilityFormatter.js";
 import { runAssistantAndStreamResponse } from "./streamResponse.js";
+import { searchCourses } from "../qdrant/qdrantQuery.js";
+import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
 async function handleSingleAgentModel({
   model,
@@ -43,6 +45,11 @@ async function handleSingleAgentModel({
     const flowchart = await fetchFlowchart(user.flowchartId, userId);
     const catalogYear = user.catalog;
 
+    const courseIds = await searchCourses(message, null, 5);
+    console.log("courseIds: ", courseIds);
+    const courseObjects = await getCourseInfo(courseIds);
+    const courseDescriptions = JSON.stringify(courseObjects);
+    console.log("courseDescriptions: ", courseDescriptions);
     const {
       formattedRequiredCourses,
       techElectivesLeft,
@@ -53,6 +60,16 @@ async function handleSingleAgentModel({
     const interests = user.interests.join(", ");
     const year = user.year;
     messageToAdd = `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
+    messageToAdd = `Search Results: ${courseDescriptions}\n${message}`;
+  } else if (model.title === "Course Catalog") {
+    const courseIds = await searchCourses(message, null, 5);
+    const courseObjects = await getCourseInfo(courseIds);
+    const courseDescriptions = JSON.stringify(courseObjects);
+    messageToAdd = `Search Results: ${courseDescriptions}\n${message}`;
+  } else if (model.title === "Calpoly Clubs") {
+    const interests = user.interests.join(", ");
+    const major = user.major;
+    messageToAdd = `Interests: ${interests}\nMajor: ${major}\n${message}`;
   }
   console.log("messageToAdd: ", messageToAdd);
   try {

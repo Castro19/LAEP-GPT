@@ -236,3 +236,25 @@ export const findSubjectNames = async (query) => {
     throw error;
   }
 };
+
+export const findCourseInfo = async (courseIds) => {
+  try {
+    console.log("courseIds: ", courseIds);
+    return await courseCollection
+      .find({
+        courseId: { $in: courseIds },
+        catalogYear: "2022-2026",
+      })
+      .project({
+        courseId: 1,
+        displayName: 1,
+        desc: 1,
+        units: 1,
+        _id: 0, // Exclude the _id field if not needed
+      })
+      .toArray(); // Convert the cursor to an array
+  } catch (error) {
+    console.error("An error occurred:", error);
+    throw error;
+  }
+};
