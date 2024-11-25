@@ -66,6 +66,10 @@ async function handleSingleAgentModel({
     const courseObjects = await getCourseInfo(courseIds);
     const courseDescriptions = JSON.stringify(courseObjects);
     messageToAdd = `Search Results: ${courseDescriptions}\n${message}`;
+  } else if (model.title === "Calpoly Clubs") {
+    const interests = user.interests.join(", ");
+    const major = user.major;
+    messageToAdd = `Interests: ${interests}\nMajor: ${major}\n${message}`;
   }
   console.log("messageToAdd: ", messageToAdd);
   try {
