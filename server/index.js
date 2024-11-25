@@ -93,6 +93,10 @@ export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+export const qdrant = {
+  qdrantUrl: process.env.QDRANT_URL,
+  qdrantApiKey: process.env.QDRANT_API_KEY,
+};
 // Connect to the database and start the server
 connectToDb()
   .then(() => {

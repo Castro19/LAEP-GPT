@@ -113,3 +113,15 @@ export const getSubjectNames = async (queryParams) => {
 
   return await courseCollection.findSubjectNames(query);
 };
+
+export const getCourseInfo = async (courseIds) => {
+  if (!courseIds) {
+    throw new Error("Course IDs are required");
+  }
+  try {
+    return await courseCollection.findCourseInfo(courseIds);
+  } catch (error) {
+    console.error("Error fetching course info: ", error);
+    throw error;
+  }
+};

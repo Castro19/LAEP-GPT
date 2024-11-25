@@ -5,6 +5,7 @@ import {
   getSubjectNames,
   getCoursesBySubject,
   getCourse,
+  getCourseInfo,
 } from "../db/models/courses/courseServices.js";
 import { fetchFlowchart } from "../db/models/flowchart/flowchartServices.js";
 import flowchartHelper from "../helpers/flowchart/flowchart.js";
@@ -76,6 +77,12 @@ router.get("/test", async (req, res) => {
     user.catalog
   );
 
+  res.status(200).json(result);
+});
+
+router.get("/courseInfo", async (req, res) => {
+  const courseIds = req.body.courseIds;
+  const result = await getCourseInfo(courseIds);
   res.status(200).json(result);
 });
 export default router;

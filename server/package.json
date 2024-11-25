@@ -15,20 +15,21 @@
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "^12.25.0",
+    "@qdrant/js-client-rest": "^1.12.0",
     "@sentry/node": "^8.37.1",
     "@sentry/profiling-node": "^8.37.1",
     "@sentry/vite-plugin": "^2.22.6",
     "body-parser": "^1.20.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "firebase-admin": "^12.6.0",
     "mongodb": "^6.5.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.7",
-    "openai": "^4.28.4"
+    "openai": "^4.73.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1.0.1",
