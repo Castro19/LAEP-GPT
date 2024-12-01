@@ -65,10 +65,30 @@ export async function searchCourses(query_text, subject = null, top_k = 5) {
   return courseIds;
 }
 
-// Example usage of the helper function
-// (async () => {
-//   const query_text = "What classes involve AI?";
-//   const subject_filter = null; // Set to a subject string if needed
-//   const results = await searchCourses(query_text, subject_filter, 5);
-//   console.log(results);
-// })();
+export async function searchProfessors(query_text, top_k = 1) {
+  const query_vector = await getEmbedding(query_text);
+
+  // Initialize Qdrant client
+  const qdrantClient = new QdrantClient({
+    url: qdrant.qdrantUrl,
+    apiKey: qdrant.qdrantApiKey,
+  });
+
+  const collectionName = "professors";
+
+  const searchResult = await qdrantClient.search(collectionName, {
+    vector: query_vector,
+    limit: top_k,
+    with_payload: true,
+  });
+  console.log("searchResult: ", searchResult);
+  const results = searchResult.map((result) => ({
+    id: result.id,
+    score: result.score,
+    courses: result.payload.courses,
+    name: result.payload.name,
+    professorId: result.payload.id,
+  }));
+  console.log("results: ", results);
+  return searchResult[0].payload.id;
+}

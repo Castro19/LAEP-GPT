@@ -1,80 +1,147 @@
-// // import { openai } from "../../index.js";
-// import {
-//   addMessageToThread,
-//   createThread,
-// } from "../../helpers/openAI/threadFunctions.js";
-// // import { getUserByFirebaseId } from "../../db/models/user/userServices.js";
-// // import { addThread, fetchIds } from "../../db/models/threads/threadServices.js";
-// import { getGPT } from "../../db/models/gpt/gptServices.js";
-// import { setupVectorStoreWithFile } from "../../helpers/openAI/vectorStoreFunctions.js";
-// // import { formatAvailability } from "../../helpers/formatters/availabilityFormatter.js";
-// import {
-//   runAssistantAndStreamResponse,
-//   runAssistantAndCollectResponse,
-// } from "./streamResponse.js";
+import { openai } from "../../index.js";
+import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
+import {
+  runAssistantAndStreamResponse,
+  runAssistantAndCollectResponse,
+} from "./streamResponse.js";
+import { getGPT } from "../../db/models/gpt/gptServices.js";
+import { searchProfessors } from "../../helpers/qdrant/qdrantQuery.js";
+import {
+  getProfessorRatings,
+  getProfessorsByCourseIds,
+} from "../../db/models/professorRatings/professorRatingServices.js";
 
-// async function handleMultiAgentModel({ userFile, message, res, file }) {
-//   // Sub-assistants and leading assistant IDs
-//   const subGPTIds = ["66e7b2784a61f99d73371faf", "66e7b3184a61f99d73371fb0"];
-//   const leadingGPTId = "66ec7a68194da294fe19139e";
-//   const assistantIds = [];
-//   const threadIds = [];
+async function handleMultiAgentModel({
+  model,
+  message,
+  res,
+  userMessageId,
+  runningStreams,
+}) {
+  let messageToAdd = message;
 
-//   // Fetch assistant IDs
-//   for (const subGPTId of subGPTIds) {
-//     const assistantId = (await getGPT(subGPTId)).assistantId;
-//     assistantIds.push(assistantId);
-//   }
+  // Create thread and vector store if not already created
+  const threadObj = await openai.beta.threads.create();
+  const threadId = threadObj.id;
 
-//   // Create threads and add messages
-//   for (const assistantId of assistantIds) {
-//     const threadObj = await createThread();
-//     const threadId = threadObj.id;
-//     threadIds.push(threadId);
+  // Setup vector store and update assistant
+  const assistantId = (await getGPT(model.id)).assistantId;
 
-//     if (file) {
-//       await setupVectorStoreWithFile(threadId, assistantId, userFile.id);
-//     }
+  try {
+    // First assistant: process the user's message and return JSON object
+    const helperAssistantId = "asst_JnGRXAtFS8vHDw3dUVYAyBBm";
+    const helperThread = await openai.beta.threads.create();
+    runningStreams[userMessageId].threadId = helperThread.id;
 
-//     await addMessageToThread(
-//       threadId,
-//       "user",
-//       message,
-//       file ? userFile.id : null
-//     );
-//   }
+    // Add user's message to helper thread
+    await addMessageToThread(
+      helperThread.id,
+      "user",
+      messageToAdd,
+      null,
+      model.title
+    );
 
-//   // Collect responses from sub-assistants
-//   const assistantResponses = [];
+    // Run the helper assistant and collect response
+    const helperResponse = await runAssistantAndCollectResponse(
+      helperThread.id,
+      helperAssistantId,
+      userMessageId,
+      runningStreams,
+      res
+    );
+    // Delete the helper thread
+    await openai.beta.threads.del(helperThread.id);
 
-//   for (const [index, assistantId] of assistantIds.entries()) {
-//     const assistantResponse = await runAssistantAndCollectResponse(
-//       threadIds[index],
-//       assistantId
-//     );
-//     assistantResponses.push(assistantResponse);
-//   }
+    // Parse the helper assistant's response (assumes it's a JSON string)
+    let jsonObject;
+    try {
+      jsonObject = JSON.parse(helperResponse);
+    } catch (error) {
+      console.error("Failed to parse JSON from helper assistant:", error);
+      throw new Error("Failed to parse JSON from helper assistant");
+    }
 
-//   // Combine responses
-//   const combinedResponse = `**Ethical Assessment:**\n\n${assistantResponses[0]}\n\n**Social Justice Evaluation:**\n\n${assistantResponses[1]}`;
+    const { type, professors, courses } = jsonObject;
+    console.log("type: ", type);
+    console.log("professors: ", professors);
+    console.log("courses: ", courses);
 
-//   const finalAssistantId = (await getGPT(leadingGPTId)).assistantId;
-//   const finalThreadObj = await createThread();
-//   const finalThreadId = finalThreadObj.id;
+    let professorArray = [];
+    let courseArray = [];
+    if (professors) {
+      professorArray = professors;
+    }
+    if (courses) {
+      courseArray = courses;
+    }
 
-//   if (file) {
-//     await setupVectorStoreWithFile(
-//       finalThreadId,
-//       finalAssistantId,
-//       userFile.id
-//     );
-//   }
+    // Modify messageToAdd based on the query results
+    if (professorArray.length > 0) {
+      // Search through vector database for professors
+      let professorIds = [];
+      try {
+        for (const professor of professorArray) {
+          const professorId = await searchProfessors(professor, 1);
+          professorIds.push(professorId);
+        }
+      } catch (error) {
+        console.error("Failed to search professors:", error);
+      }
+      // Query MongoDB for professors & courses
+      try {
+        const professorRatings = await getProfessorRatings(
+          professorIds,
+          courseArray.length > 0 ? courseArray : undefined
+        );
+        messageToAdd += `\nProfessor Ratings: ${JSON.stringify(
+          professorRatings
+        )}`;
+      } catch (error) {
+        console.error("Failed to get professors by course IDs:", error);
+      }
+    } else if (courseArray.length > 0 && professorArray.length === 0) {
+      // Search through vector database for courses
+      try {
+        const professorRatings = await getProfessorsByCourseIds(courseArray);
+        messageToAdd += `\nCourse Descriptions: ${JSON.stringify(
+          professorRatings
+        )}`;
+      } catch (error) {
+        console.error("Failed to search courses:", error);
+      }
+    } else {
+      messageToAdd +=
+        "No professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Or if they are asking about a specific question regarding the previous messages. Either way, respond with a message that is helpful to the user.";
+    }
 
-//   // Add combined response as user message
-//   await addMessageToThread(finalThreadId, "user", combinedResponse, null);
+    console.log("messageToAdd: ", messageToAdd);
 
-//   // Stream final assistant's response
-//   await runAssistantAndStreamResponse(finalThreadId, finalAssistantId, res);
-// }
+    // Add user's modified message to the main thread
+    await addMessageToThread(
+      threadId,
+      "user",
+      messageToAdd,
+      null, // no file
+      model.title
+    );
 
-// export default handleMultiAgentModel;
+    // Run the assistant and stream response
+    await runAssistantAndStreamResponse(
+      threadId,
+      assistantId,
+      res,
+      userMessageId,
+      runningStreams
+    );
+  } catch (error) {
+    console.error("Error in multi-agent model:", error);
+    if (!res.headersSent) {
+      res.status(500).send("Failed to process request.");
+    } else {
+      res.end();
+    }
+  }
+}
+
+export default handleMultiAgentModel;
