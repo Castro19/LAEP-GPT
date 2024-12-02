@@ -1,6 +1,4 @@
-import { openai } from "../../index.js";
-
-const ASST_ID = "asst_JnGRXAtFS8vHDw3dUVYAyBBm";
+import { openai, formatAssistantId } from "../../index.js";
 
 // Create a new thread
 async function createThread() {
@@ -29,7 +27,7 @@ async function addMessage(threadId, message) {
 async function runAssistant(threadId) {
   console.log("Running assistant for thread: " + threadId);
   const response = await openai.beta.threads.runs.create(threadId, {
-    assistant_id: ASST_ID,
+    assistant_id: formatAssistantId,
   });
   return response;
 }

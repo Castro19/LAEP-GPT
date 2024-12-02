@@ -94,7 +94,7 @@ app.use(function (err, req, res, next) {
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
+export const formatAssistantId = process.env.FORMAT_ASST_ID;
 export const qdrant = {
   qdrantUrl: process.env.QDRANT_URL,
   qdrantApiKey: process.env.QDRANT_API_KEY,

@@ -1,4 +1,4 @@
-import { openai } from "../../index.js";
+import { openai, formatAssistantId } from "../../index.js";
 import {
   runAssistantAndStreamResponse,
   runAssistantAndCollectResponse,
@@ -26,7 +26,7 @@ async function handleMultiAgentModel({
 
   try {
     // First assistant: process the user's message and return JSON object
-    const helperAssistantId = "asst_JnGRXAtFS8vHDw3dUVYAyBBm";
+    const helperAssistantId = formatAssistantId;
     const helperThread = await openai.beta.threads.create();
     runningStreams[userMessageId].threadId = helperThread.id;
 
