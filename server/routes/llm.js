@@ -121,14 +121,15 @@ router.post(
     const runData = runningStreams[userMessageId];
     if (runData) {
       runData.canceled = true;
-      if (runData.runId) {
+      if (runData.runId && runData.threadId) {
         try {
           await openai.beta.threads.runs.cancel(
             runData.threadId,
             runData.runId
           );
-
-          delete runningStreams[userMessageId];
+          if (runningStreams[userMessageId]) {
+            delete runningStreams[userMessageId];
+          }
           res.status(200).send("Run(s) cancelled");
           return;
         } catch (error) {

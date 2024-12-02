@@ -1,15 +1,18 @@
 import { openai } from "../../index.js";
-import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
 import {
   runAssistantAndStreamResponse,
   runAssistantAndCollectResponse,
 } from "./streamResponse.js";
+
 import { getGPT } from "../../db/models/gpt/gptServices.js";
-import { searchProfessors } from "../../helpers/qdrant/qdrantQuery.js";
 import {
   getProfessorRatings,
   getProfessorsByCourseIds,
 } from "../../db/models/professorRatings/professorRatingServices.js";
+import { searchProfessors } from "../../helpers/qdrant/qdrantQuery.js";
+
+import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
+import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
 
 async function handleMultiAgentModel({
   model,
@@ -17,15 +20,9 @@ async function handleMultiAgentModel({
   res,
   userMessageId,
   runningStreams,
+  chatId,
 }) {
   let messageToAdd = message;
-
-  // Create thread and vector store if not already created
-  const threadObj = await openai.beta.threads.create();
-  const threadId = threadObj.id;
-
-  // Setup vector store and update assistant
-  const assistantId = (await getGPT(model.id)).assistantId;
 
   try {
     // First assistant: process the user's message and return JSON object
@@ -47,12 +44,16 @@ async function handleMultiAgentModel({
       helperThread.id,
       helperAssistantId,
       userMessageId,
-      runningStreams,
-      res
+      runningStreams
     );
     // Delete the helper thread
     await openai.beta.threads.del(helperThread.id);
-
+    // Set the main thread ID
+    // Create thread and vector store if not already created
+    const { threadId } = await initializeOrFetchIds(chatId);
+    // Setup assistant
+    const assistantId = (await getGPT(model.id)).assistantId;
+    runningStreams[userMessageId].threadId = threadId;
     // Parse the helper assistant's response (assumes it's a JSON string)
     let jsonObject;
     try {
@@ -135,10 +136,17 @@ async function handleMultiAgentModel({
       runningStreams
     );
   } catch (error) {
-    console.error("Error in multi-agent model:", error);
-    if (!res.headersSent) {
-      res.status(500).send("Failed to process request.");
+    if (error.message === "Response canceled") {
+      if (!res.headersSent) {
+        res.status(200).end("Run canceled");
+      }
     } else {
+      if (!res.headersSent) {
+        res.status(500).end("Failed to process request.");
+      }
+    }
+    // Ensure the response is ended
+    if (!res.headersSent) {
       res.end();
     }
   }
