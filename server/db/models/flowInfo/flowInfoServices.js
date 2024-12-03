@@ -1,15 +1,5 @@
 import * as flowInfoModel from "./flowInfoCollection.js";
 
-// Upload
-// export const uploadFlowchart = async () => {
-//   try {
-//     const result = await flowInfoModel.uploadFlowchart();
-//     return result;
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// };
-
 // Fetch majors by catalog
 export const searchFlowInfo = async (catalog, majorName, code) => {
   let query = {};
