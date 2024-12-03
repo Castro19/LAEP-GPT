@@ -20,6 +20,7 @@ import courses from "./routes/courses.js";
 import flowchart from "./routes/flowchart.js";
 import flowInfo from "./routes/flowInfo.js";
 import messageAnalytics from "./routes/analytics/messageAnalytics.js";
+import professorRatings from "./routes/professorRating.js";
 // import assistants from "./routes/assistants.js";
 // import signupAccessRouter from "./routes/signupAccess.js";
 // import generateTeacherFileRoute from "./routes/teacherFile.js";
@@ -61,6 +62,7 @@ app.use("/gpts", authenticate, gpts);
 app.use("/flowchart", authenticate, flowchart);
 app.use("/flowInfo", authenticate, flowInfo);
 app.use("/analytics", authenticate, messageAnalytics);
+app.use("/professorRatings", authenticate, professorRatings);
 // app.use("/assistants", authenticate, assistants);
 // app.use("/signupAccess", signupAccessRouter);
 // app.use("/generateTeacherFile", generateTeacherFileRoute);
@@ -92,7 +94,7 @@ app.use(function (err, req, res, next) {
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
+export const formatAssistantId = process.env.FORMAT_ASST_ID;
 export const qdrant = {
   qdrantUrl: process.env.QDRANT_URL,
   qdrantApiKey: process.env.QDRANT_API_KEY,

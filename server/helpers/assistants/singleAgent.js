@@ -9,6 +9,7 @@ import { runAssistantAndStreamResponse } from "./streamResponse.js";
 import { searchCourses } from "../qdrant/qdrantQuery.js";
 import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
+
 async function handleSingleAgentModel({
   model,
   chatId,
@@ -25,7 +26,7 @@ async function handleSingleAgentModel({
   // Create thread and vector store if not already created
   // Creates from OpenAI API & Stores in DB if not already created
   const { threadId, vectorStoreId } = await initializeOrFetchIds(chatId);
-
+  runningStreams[userMessageId].threadId = threadId;
   // Setup vector store and update assistant
   await setupVectorStoreAndUpdateAssistant(
     vectorStoreId,

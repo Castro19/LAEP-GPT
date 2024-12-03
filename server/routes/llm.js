@@ -7,7 +7,7 @@ import { openai } from "../index.js";
 import { handleFileUpload } from "../helpers/azure/blobFunctions.js";
 import asyncHandler from "../middlewares/asyncMiddleware.js";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent.js";
-
+import handleMultiAgentModel from "../helpers/assistants/multiAgent.js";
 const router = express.Router();
 
 //init storage for user documents
@@ -42,7 +42,11 @@ router.post(
 
     let userFile = null;
     // Current state of the stream
-    runningStreams[userMessageId] = { canceled: false };
+    runningStreams[userMessageId] = {
+      canceled: false,
+      runId: null,
+      threadId: null,
+    };
 
     // Add file size validation
     if (file) {
@@ -69,23 +73,42 @@ router.post(
       }
     }
 
-    try {
-      await handleSingleAgentModel({
-        model,
-        chatId,
-        userFile,
-        message,
-        res,
-        userId,
-        userMessageId,
-        runningStreams,
-      });
-    } catch (error) {
-      console.error("Error in single-agent model:", error);
-      if (!res.headersSent) {
-        res.status(500).send("Failed to process request.");
-      } else {
-        res.end();
+    if (model.title === "Professor & Course Advisor") {
+      try {
+        await handleMultiAgentModel({
+          model,
+          message,
+          res,
+          userMessageId,
+          runningStreams,
+        });
+      } catch (error) {
+        console.error("Error in multi-agent model:", error);
+        if (!res.headersSent) {
+          res.status(500).send("Failed to process request.");
+        } else {
+          res.end();
+        }
+      }
+    } else {
+      try {
+        await handleSingleAgentModel({
+          model,
+          chatId,
+          userFile,
+          message,
+          res,
+          userId,
+          userMessageId,
+          runningStreams,
+        });
+      } catch (error) {
+        console.error("Error in single-agent model:", error);
+        if (!res.headersSent) {
+          res.status(500).send("Failed to process request.");
+        } else {
+          res.end();
+        }
       }
     }
   })
@@ -98,16 +121,20 @@ router.post(
     const runData = runningStreams[userMessageId];
     if (runData) {
       runData.canceled = true;
-      if (runData.runId) {
-        const { threadId, runId } = runData;
+      if (runData.runId && runData.threadId) {
         try {
-          await openai.beta.threads.runs.cancel(threadId, runId);
-          delete runningStreams[userMessageId];
-          res.status(200).send("Run cancelled");
+          await openai.beta.threads.runs.cancel(
+            runData.threadId,
+            runData.runId
+          );
+          if (runningStreams[userMessageId]) {
+            delete runningStreams[userMessageId];
+          }
+          res.status(200).send("Run(s) cancelled");
           return;
         } catch (error) {
-          console.error("Error cancelling run:", error);
-          res.status(500).send("Error cancelling run");
+          console.error("Error cancelling run(s):", error);
+          res.status(500).send("Error cancelling run(s)");
           return;
         }
       } else {
@@ -133,7 +160,7 @@ router.post(
       // model: "gpt-3.5-turbo-0125",
       // model: "gpt-4-0613",
       const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-0125",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
