@@ -10,6 +10,50 @@ import { searchCourses } from "../qdrant/qdrantQuery.js";
 import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
 
+const matchingAssistant = (user, message) => {
+  const availability = formatAvailability(user.availability);
+  const interests = user.interests.join(", ");
+  return `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
+};
+
+const csciClassesAssistant = (user, message) => {
+  const year = user.year;
+  const interests = user.interests.join(", ");
+  return `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${interests}\n${message}`;
+};
+
+const flowchartAssistant = async (user, message) => {
+  const flowchart = await fetchFlowchart(user.flowchartId, user.userId);
+  const courseIds = await searchCourses(message, null, 5);
+  console.log("courseIds: ", courseIds);
+  const courseObjects = await getCourseInfo(courseIds);
+  const courseDescriptions = JSON.stringify(courseObjects);
+  console.log("courseDescriptions: ", courseDescriptions);
+  const {
+    formattedRequiredCourses,
+    techElectivesLeft,
+    generalWritingMet,
+    uscpMet,
+  } = await flowchartHelper(flowchart.flowchartData.termData, user.catalog);
+
+  const interests = user.interests.join(", ");
+  const year = user.year;
+  return `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
+};
+
+const courseCatalogAssistant = async (user, message) => {
+  const courseIds = await searchCourses(message, null, 5);
+  const courseObjects = await getCourseInfo(courseIds);
+  const courseDescriptions = JSON.stringify(courseObjects);
+  return `Search Results: ${courseDescriptions}\n${message}`;
+};
+
+const calpolyClubsAssistant = (user, message) => {
+  const interests = user.interests.join(", ");
+  const major = user.major;
+  return `Interests: ${interests}\nMajor: ${major}\n${message}`;
+};
+
 async function handleSingleAgentModel({
   model,
   chatId,
@@ -22,8 +66,6 @@ async function handleSingleAgentModel({
 }) {
   let messageToAdd = message;
   const assistantId = (await getGPT(model.id)).assistantId;
-
-  // Create thread and vector store if not already created
   // Creates from OpenAI API & Stores in DB if not already created
   const { threadId, vectorStoreId } = await initializeOrFetchIds(chatId);
   runningStreams[userMessageId].threadId = threadId;
@@ -36,42 +78,17 @@ async function handleSingleAgentModel({
   const user = await getUserByFirebaseId(userId);
 
   if (model.title === "Matching Assistant") {
-    const availability = formatAvailability(user.availability);
-    const interests = user.interests.join(", ");
-    messageToAdd = `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
+    messageToAdd = matchingAssistant(user, message);
   } else if (model.title === "CSCI Classes Assistant") {
-    const year = user.year;
-    messageToAdd = `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${user.interests}\n${message}`;
+    messageToAdd = csciClassesAssistant(user, message);
   } else if (model.title === "Flowchart Assistant") {
-    const flowchart = await fetchFlowchart(user.flowchartId, userId);
-    const catalogYear = user.catalog;
-
-    const courseIds = await searchCourses(message, null, 5);
-    console.log("courseIds: ", courseIds);
-    const courseObjects = await getCourseInfo(courseIds);
-    const courseDescriptions = JSON.stringify(courseObjects);
-    console.log("courseDescriptions: ", courseDescriptions);
-    const {
-      formattedRequiredCourses,
-      techElectivesLeft,
-      generalWritingMet,
-      uscpMet,
-    } = await flowchartHelper(flowchart.flowchartData.termData, catalogYear);
-
-    const interests = user.interests.join(", ");
-    const year = user.year;
-    messageToAdd = `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
-    messageToAdd = `Search Results: ${courseDescriptions}\n${message}`;
+    messageToAdd = await flowchartAssistant(user, message);
   } else if (model.title === "Course Catalog") {
-    const courseIds = await searchCourses(message, null, 5);
-    const courseObjects = await getCourseInfo(courseIds);
-    const courseDescriptions = JSON.stringify(courseObjects);
-    messageToAdd = `Search Results: ${courseDescriptions}\n${message}`;
+    messageToAdd = await courseCatalogAssistant(user, message);
   } else if (model.title === "Calpoly Clubs") {
-    const interests = user.interests.join(", ");
-    const major = user.major;
-    messageToAdd = `Interests: ${interests}\nMajor: ${major}\n${message}`;
+    messageToAdd = calpolyClubsAssistant(user, message);
   }
+
   console.log("messageToAdd: ", messageToAdd);
   try {
     // Add user message to thread
