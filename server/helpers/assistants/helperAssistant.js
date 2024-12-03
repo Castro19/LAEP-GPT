@@ -1,18 +1,5 @@
 import { openai, formatAssistantId } from "../../index.js";
 
-// Create a new thread
-async function createThread() {
-  console.log("Creating a new thread...");
-  const thread = await openai.beta.threads.create();
-  console.log(thread);
-  return thread;
-}
-
-async function deleteThread(threadId) {
-  console.log("Deleting thread: " + threadId);
-  await openai.beta.threads.del(threadId);
-}
-
 // Add a message to the thread
 async function addMessage(threadId, message) {
   console.log("Adding a new message to thread: " + threadId);
@@ -34,7 +21,7 @@ async function runAssistant(threadId) {
 
 export const helperAssistant = async (message) => {
   // Create a new thread
-  const threadObject = await createThread();
+  const threadObject = await openai.beta.threads.create();
 
   // Add the user's message to the thread
   await addMessage(threadObject.id, message);
@@ -62,7 +49,8 @@ export const helperAssistant = async (message) => {
     // Wait for a short period before checking again (e.g., 500ms)
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  await deleteThread(threadObject.id);
+  await openai.beta.threads.del(threadObject.id);
+
   // Once completed, retrieve the assistant's response
   const messagesList = await openai.beta.threads.messages.list(threadObject.id);
   const data = messagesList.body.data;
