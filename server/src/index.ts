@@ -14,6 +14,8 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import courses from "./routes/courses";
 import chatLogs from "./routes/chatLog";
+import messageAnalytics from "./routes/analytics/messageAnalytics";
+
 // LLM API
 import OpenAI from "openai";
 
@@ -42,6 +44,7 @@ admin.initializeApp({
 });
 
 // Routes
+app.use("/analytics", authenticate, messageAnalytics);
 app.use("/auth", authRouter);
 app.use("/chatLogs", authenticate, chatLogs);
 app.use("/courses", authenticate, courses);

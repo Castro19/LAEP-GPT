@@ -45,6 +45,7 @@ var import_auth = __toESM(require("./routes/auth"));
 var import_user = __toESM(require("./routes/user"));
 var import_courses = __toESM(require("./routes/courses"));
 var import_chatLog = __toESM(require("./routes/chatLog"));
+var import_messageAnalytics = __toESM(require("./routes/analytics/messageAnalytics"));
 var import_openai = __toESM(require("openai"));
 import_dotenv.default.config();
 const app = (0, import_express.default)();
@@ -65,6 +66,7 @@ app.use(import_express.default.text({ type: "text/plain" }));
 import_firebase_admin.default.initializeApp({
   credential: import_firebase_admin.default.credential.cert(serviceAccount)
 });
+app.use("/analytics", import_authMiddleware.authenticate, import_messageAnalytics.default);
 app.use("/auth", import_auth.default);
 app.use("/chatLogs", import_authMiddleware.authenticate, import_chatLog.default);
 app.use("/courses", import_authMiddleware.authenticate, import_courses.default);

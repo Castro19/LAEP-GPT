@@ -96,23 +96,3 @@ const useTrackAnalytics = () => {
 };
 
 export default useTrackAnalytics;
-
-// Message Analytics
-
-/*
-  id: msg.id // client
-  logId: string  // client
-  assistantId: string  // client
-  userId: string // middleware
-  createdAt: msg.createdAt // server
-  userReaction: "like" | "dislike" | null  // client (put)
-  responseTime: Number,  // server 
-  hadFile: boolean, // client
-  hadError: boolean, // client
-  errorMessage: string | null, // client
-
-  // Not implemented yet
-  inputMessage: string, // server?
-  outputMessage: string, // server?
-  tokensUsed: number, // server
-*/

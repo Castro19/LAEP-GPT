@@ -1,13 +1,16 @@
-import * as messageAnalyticsModel from "./messageAnalyticsCollection.js";
+import { MessageAnalyticsCreate, MessageAnalyticsUpdate } from "types";
+import * as messageAnalyticsModel from "./messageAnalyticsCollection";
 
 // create
-export const createMessageAnalytics = async (messageAnalyticsData) => {
+export const createMessageAnalytics = async (
+  messageAnalyticsData: MessageAnalyticsCreate
+) => {
   try {
     // Convert timestamps to Date objects if they aren't already
     const sanitizedData = {
       ...messageAnalyticsData,
       createdAt: new Date(messageAnalyticsData.createdAt),
-    };
+    } as MessageAnalyticsCreate;
 
     const result =
       await messageAnalyticsModel.addMessageAnalytics(sanitizedData);
@@ -15,12 +18,16 @@ export const createMessageAnalytics = async (messageAnalyticsData) => {
     return result;
   } catch (error) {
     throw new Error(
-      "Error creating message analytics in database: " + error.message
+      "Error creating message analytics in database: " +
+        (error as Error).message
     );
   }
 };
 
-export const updateMessageAnalytics = async (userMessageId, updateData) => {
+export const updateMessageAnalytics = async (
+  userMessageId: string,
+  updateData: MessageAnalyticsUpdate
+) => {
   try {
     const result = await messageAnalyticsModel.updateMessageAnalytics(
       userMessageId,
@@ -29,13 +36,14 @@ export const updateMessageAnalytics = async (userMessageId, updateData) => {
     return result;
   } catch (error) {
     throw new Error(
-      "Error updating message analytics in database: " + error.message
+      "Error updating message analytics in database: " +
+        (error as Error).message
     );
   }
 };
 export const updateMessageAnalyticsReaction = async (
-  botMessageId,
-  userReaction
+  botMessageId: string,
+  userReaction: "like" | "dislike"
 ) => {
   try {
     const result = await messageAnalyticsModel.updateMessageAnalyticsReaction(
@@ -45,7 +53,8 @@ export const updateMessageAnalyticsReaction = async (
     return result;
   } catch (error) {
     throw new Error(
-      "Error updating message analytics reaction in database: " + error.message
+      "Error updating message analytics reaction in database: " +
+        (error as Error).message
     );
   }
 };

@@ -12,13 +12,16 @@ export type Availability = {
   [day: string]: [number, number][];
 };
 
-export type UserType = "student" | "admin";
+export enum UserType {
+  STUDENT = "student",
+  ADMIN = "admin",
+}
 // All information stored in the database
 // changed from MyUserInfo to UserData
 export interface UserData {
   userId: string;
   name: string;
-  userType: UserType;
+  userType: "student" | "admin";
   email: string;
   availability: Availability;
   bio: string;
