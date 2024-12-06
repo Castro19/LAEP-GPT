@@ -1,5 +1,0 @@
-This is information on every teacher in the database.
-name: Nathan Limteachertest
-availability: I'm available on Mondays, Wednesdays, and Thursdays.
-about: Dr. Lim is a research professor at the intersection of music and AI. With a passion for blending creativity and technology, Dr. Lim explores how artificial intelligence can revolutionize music composition, performance, and analysis. Their work focuses on using AI to enhance musical creativity, develop intelligent instruments, and create immersive soundscapes. Through research and innovation, Dr. Lim aims to bridge the gap between art and science, pushing the boundaries of what's possible in both music and technology.
-

@@ -26,8 +26,8 @@ yarn-error.log*
 
 # added firebase
 
-/helpers/firebase/laep-firebase.json
+src/helpers/firebase/laep-firebase.json
 
 
 # Course Catalog data
-/db/models/courses/courses/
+src/db/models/courses/courses/

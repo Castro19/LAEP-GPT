@@ -1,0 +1,11 @@
+{
+  "watch": ["src"],
+  "ignore": ["node_modules"],
+  "ext": "ts,mjs,js,json,graphql",
+  "exec": "npx etsc && node ./dist/index.js",
+  "env": {
+    "DEBUG": "express/*",
+    "STATIC": "../proto/public"
+  },
+  "legacyWatch": true
+}
