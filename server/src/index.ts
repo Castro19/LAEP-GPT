@@ -7,14 +7,12 @@ import { readFileSync } from "fs";
 import admin from "firebase-admin";
 import cookieParser from "cookie-parser";
 
-import { connectToDb, getDb } from "./db/connection";
-import { authenticate } from "./middlewares/authMiddleware.js";
+import { connectToDb } from "./db/connection";
+import { authenticate } from "./middlewares/authMiddleware";
 // Routes
-import authRouter from "./routes/auth.js";
-// import assistants from "./routes/assistants.js";
-// import signupAccessRouter from "./routes/signupAccess.js";
-// import generateTeacherFileRoute from "./routes/teacherFile.js";
-// import fileOperations from "./routes/fileOperations.js";
+import authRouter from "./routes/auth";
+import userRouter from "./routes/user";
+
 // LLM API
 import OpenAI from "openai";
 
@@ -44,10 +42,7 @@ admin.initializeApp({
 
 // Routes
 app.use("/auth", authRouter);
-// app.use("/assistants", authenticate, assistants);
-// app.use("/signupAccess", signupAccessRouter);
-// app.use("/generateTeacherFile", generateTeacherFileRoute);
-// app.use("/fileOperations", fileOperations);
+app.use("/users", authenticate, userRouter);
 
 // Initialize OpenAI API client
 export const openai = new OpenAI({

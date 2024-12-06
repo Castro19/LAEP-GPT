@@ -40,7 +40,7 @@ const authenticate = async (req, res, next) => {
     const decodedToken = await import_firebase_admin.default.auth().verifySessionCookie(sessionCookie, true);
     req.user = decodedToken;
     const user = await (0, import_userServices.getUserByFirebaseId)(decodedToken.uid);
-    if (req.user && user) {
+    if (user) {
       req.user.role = user.userType;
     }
     next();
@@ -51,7 +51,7 @@ const authenticate = async (req, res, next) => {
 };
 const authorizeRoles = (allowedRoles) => {
   return (req, res, next) => {
-    const userRole = req.user.role;
+    const userRole = req.user?.role;
     if (userRole && allowedRoles.includes(userRole)) {
       next();
     } else {

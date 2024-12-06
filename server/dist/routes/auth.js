@@ -38,7 +38,7 @@ var import_userServices2 = require("../db/models/user/userServices");
 var import_firebase_admin = __toESM(require("firebase-admin"));
 const router = import_express.default.Router();
 router.get("/", (req, res) => {
-  res.status(200).send("Hello World");
+  res.status(200).send("Hello W");
 });
 router.post("/login", async (req, res) => {
   const { token } = req.body;

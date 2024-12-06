@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, RequestHandler } from "express";
 import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices";
 import { addUser } from "../db/models/user/userServices";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
@@ -8,7 +8,7 @@ import { UserData } from "../types";
 const router = express.Router();
 
 router.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Hello World");
+  res.status(200).send("Hello W");
 });
 
 // Login endpoint
@@ -90,7 +90,7 @@ router.post("/logout", (req, res) => {
 });
 
 // Check authentication endpoint
-router.get("/check", async (req: Request, res: Response) => {
+router.get("/check", (async (req: Request, res: Response) => {
   const sessionCookie = req.cookies.session;
 
   if (!sessionCookie) {
@@ -118,6 +118,6 @@ router.get("/check", async (req: Request, res: Response) => {
     console.error("Failed to verify session cookie:", error);
     res.status(401).send({ error: "Unauthorized" });
   }
-});
+}) as RequestHandler);
 
 export default router;

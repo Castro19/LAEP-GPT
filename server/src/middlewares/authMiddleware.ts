@@ -1,27 +1,19 @@
 import admin from "firebase-admin";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { DecodedIdToken } from "firebase-admin/auth";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import { UserType } from "../types";
-import { AuthenticatedRequest } from "../types";
 
-export const authenticate = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+// authMiddleware.ts
+export const authenticate: RequestHandler = async (req, res, next) => {
   const sessionCookie = req.cookies?.session || "";
-
   try {
-    // Verify the session cookie
-    const decodedToken: DecodedIdToken = await admin
+    const decodedToken = await admin
       .auth()
       .verifySessionCookie(sessionCookie, true);
-
     req.user = decodedToken;
-    // Set the user role
     const user = await getUserByFirebaseId(decodedToken.uid);
-    if (req.user && user) {
+    if (user) {
       req.user.role = user.userType;
     }
     next();
@@ -32,12 +24,8 @@ export const authenticate = async (
 };
 
 export const authorizeRoles = (allowedRoles: UserType) => {
-  return (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ): void => {
-    const userRole = req.user.role;
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const userRole = req.user?.role;
 
     if (userRole && allowedRoles.includes(userRole)) {
       next();
