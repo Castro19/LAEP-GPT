@@ -26,52 +26,21 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var user_exports = {};
-__export(user_exports, {
-  default: () => user_default
+var assistants_exports = {};
+__export(assistants_exports, {
+  default: () => assistants_default
 });
-module.exports = __toCommonJS(user_exports);
+module.exports = __toCommonJS(assistants_exports);
 var import_express = __toESM(require("express"));
-var import_userServices = require("../db/models/user/userServices");
-var import_authMiddleware = require("../middlewares/authMiddleware");
+var import_assistantFunctions = require("../helpers/openAI/assistantFunctions.js");
 const router = import_express.default.Router();
-router.get("/test", (req, res) => {
-  res.status(200).send("Hello World");
-});
-router.get("/me", async (req, res) => {
+router.post("/", async (req, res) => {
+  const { name, description, prompt } = req.body;
   try {
-    const userId = req.user?.uid;
-    if (!userId) {
-      return res.status(401).send("No user found in request");
-    }
-    const user = await (0, import_userServices.getUserByFirebaseId)(userId);
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-    res.status(200).json(user);
+    const assistant = await (0, import_assistantFunctions.createAssistant)(name, description, prompt);
+    res.status(201).json(assistant);
   } catch (error) {
-    res.status(500).send("Failed to get user: " + error.message);
+    res.status(500).json({ error: error.message });
   }
 });
-router.put("/me", async (req, res) => {
-  try {
-    const userId = req.user?.uid;
-    if (!userId) {
-      return res.status(401).send("No user found in request");
-    }
-    const updateData = req.body;
-    const updatedUser = await (0, import_userServices.updateUser)(userId, updateData);
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).send("Failed to update user: " + error.message);
-  }
-});
-router.get("/", (0, import_authMiddleware.authorizeRoles)(["admin"]), async (req, res) => {
-  try {
-    const users = await (0, import_userServices.getAllUsers)();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).send("Failed to get users: " + error.message);
-  }
-});
-var user_default = router;
+var assistants_default = router;

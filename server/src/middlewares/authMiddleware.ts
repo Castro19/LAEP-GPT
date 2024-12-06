@@ -23,7 +23,7 @@ export const authenticate: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const authorizeRoles = (allowedRoles: UserType) => {
+export const authorizeRoles = (allowedRoles: UserType[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const userRole = req.user?.role;
 

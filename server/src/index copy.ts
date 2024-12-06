@@ -14,7 +14,7 @@ import authRouter from "./routes/auth.js";
 import users from "./routes/user.js";
 import llms from "./routes/llm.js";
 import chatLogs from "./routes/chatLog.js";
-import gpts from "./routes/gpt.js";
+import gpts from "./routes/assistant.js";
 import courses from "./routes/courses.js";
 import flowchart from "./routes/flowchart.js";
 import flowInfo from "./routes/flowInfo.js";

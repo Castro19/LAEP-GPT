@@ -42,6 +42,7 @@ var import_cookie_parser = __toESM(require("cookie-parser"));
 var import_connection = require("./db/connection");
 var import_authMiddleware = require("./middlewares/authMiddleware");
 var import_auth = __toESM(require("./routes/auth"));
+var import_assistant = __toESM(require("./routes/assistant"));
 var import_user = __toESM(require("./routes/user"));
 var import_courses = __toESM(require("./routes/courses"));
 var import_chatLog = __toESM(require("./routes/chatLog"));
@@ -68,6 +69,7 @@ import_firebase_admin.default.initializeApp({
   credential: import_firebase_admin.default.credential.cert(serviceAccount)
 });
 app.use("/analytics", import_authMiddleware.authenticate, import_messageAnalytics.default);
+app.use("/assistants", import_authMiddleware.authenticate, import_assistant.default);
 app.use("/auth", import_auth.default);
 app.use("/chatLogs", import_authMiddleware.authenticate, import_chatLog.default);
 app.use("/courses", import_authMiddleware.authenticate, import_courses.default);

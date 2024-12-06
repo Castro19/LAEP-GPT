@@ -11,6 +11,7 @@ import { connectToDb } from "./db/connection";
 import { authenticate } from "./middlewares/authMiddleware";
 // Routes
 import authRouter from "./routes/auth";
+import assistants from "./routes/assistant";
 import userRouter from "./routes/user";
 import courses from "./routes/courses";
 import chatLogs from "./routes/chatLog";
@@ -46,6 +47,7 @@ admin.initializeApp({
 
 // Routes
 app.use("/analytics", authenticate, messageAnalytics);
+app.use("/assistants", authenticate, assistants);
 app.use("/auth", authRouter);
 app.use("/chatLogs", authenticate, chatLogs);
 app.use("/courses", authenticate, courses);

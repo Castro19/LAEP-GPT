@@ -45,7 +45,7 @@ router.put("/me", (async (req, res) => {
 }) as RequestHandler);
 
 // Route to get all users (admin only)
-router.get("/", authorizeRoles("admin"), (async (req, res) => {
+router.get("/", authorizeRoles(["admin"]), (async (req, res) => {
   try {
     const users = await getAllUsers();
     res.status(200).json(users);
