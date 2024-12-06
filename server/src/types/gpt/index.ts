@@ -1,13 +1,14 @@
 import { ModelType } from "../message";
 
 export type GptType = {
-  id?: string; // The unique id of the assistant
-  userId?: string; // The user who made the assistant
+  _id?: string; // The unique id of the assistant
+  id: string; // The unique id of the assistant
   title: string; // the title of the assistant
+  prompt: string; // the prompt of the assistant
+  assistantId?: string; // The unique id of the assistant
   desc: string; // the displayed description of the assistant
   urlPhoto?: string; // The avatar image of the assistant
-  instructions?: string; // The instructions stored on db for assistant
-  suggestedQuestions?: string[]; // The suggested questions for the assistant
+  suggestedQuestions: string[]; // The suggested questions for the assistant
 };
 
 export type GptSliceType = {

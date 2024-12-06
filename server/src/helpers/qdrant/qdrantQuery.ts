@@ -4,7 +4,7 @@ import { QdrantClient } from "@qdrant/js-client-rest";
 import { openai, qdrant } from "../../index.js";
 
 // Helper function to get embeddings from OpenAI
-async function getEmbedding(text) {
+async function getEmbedding(text: string) {
   const response = await openai.embeddings.create({
     input: text,
     model: "text-embedding-3-large",
@@ -15,7 +15,11 @@ async function getEmbedding(text) {
 }
 
 // Main function to search courses
-export async function searchCourses(query_text, subject = null, top_k = 5) {
+export async function searchCourses(
+  query_text: string,
+  subject = null,
+  top_k = 5
+) {
   // Load API keys from environment variables
 
   // Initialize Qdrant client
@@ -54,18 +58,18 @@ export async function searchCourses(query_text, subject = null, top_k = 5) {
   const results = searchResult.map((hit) => ({
     id: hit.id,
     score: hit.score,
-    courseId: hit.payload.courseId,
-    subject: hit.payload.subject,
-    displayName: hit.payload.displayName,
-    description: hit.payload.description,
+    courseId: hit.payload?.courseId,
+    subject: hit.payload?.subject,
+    displayName: hit.payload?.displayName,
+    description: hit.payload?.description,
   }));
-  const courseIds = searchResult.map((result) => result.payload.courseId);
+  const courseIds = searchResult.map((result) => result.payload?.courseId);
   console.log("results: ", results);
   console.log("courseIds: ", courseIds);
-  return courseIds;
+  return courseIds as string[];
 }
 
-export async function searchProfessors(query_text, top_k = 1) {
+export async function searchProfessors(query_text: string, top_k = 1) {
   const query_vector = await getEmbedding(query_text);
 
   // Initialize Qdrant client
@@ -85,10 +89,10 @@ export async function searchProfessors(query_text, top_k = 1) {
   const results = searchResult.map((result) => ({
     id: result.id,
     score: result.score,
-    courses: result.payload.courses,
-    name: result.payload.name,
-    professorId: result.payload.id,
+    courses: result.payload?.courses,
+    name: result.payload?.name,
+    professorId: result.payload?.id,
   }));
   console.log("results: ", results);
-  return searchResult[0].payload.id;
+  return searchResult[0]?.payload?.id as string;
 }

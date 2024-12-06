@@ -18,9 +18,11 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var assistantCollection_exports = {};
 __export(assistantCollection_exports, {
+  findAssistantById: () => findAssistantById,
   viewGPTs: () => viewGPTs
 });
 module.exports = __toCommonJS(assistantCollection_exports);
+var import_mongodb = require("mongodb");
 var import_connection = require("../../connection.js");
 let gptCollection;
 const initializeCollection = () => {
@@ -37,7 +39,20 @@ const viewGPTs = async () => {
     );
   }
 };
+const findAssistantById = async (gptId) => {
+  try {
+    const result = await gptCollection.findOne({
+      _id: new import_mongodb.ObjectId(gptId)
+    });
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error finding GPT from database: " + error.message
+    );
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  findAssistantById,
   viewGPTs
 });

@@ -28,7 +28,8 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var assistantServices_exports = {};
 __export(assistantServices_exports, {
-  fetchAssistants: () => fetchAssistants
+  fetchAssistants: () => fetchAssistants,
+  getAssistantById: () => getAssistantById
 });
 module.exports = __toCommonJS(assistantServices_exports);
 var gptModel = __toESM(require("./assistantCollection.js"));
@@ -47,7 +48,18 @@ const fetchAssistants = async () => {
     console.error("CONSOLE LOG ERROR: ", error);
   }
 };
+const getAssistantById = async (gptId) => {
+  try {
+    const result = await gptModel.findAssistantById(gptId);
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error finding GPT from database: " + error.message
+    );
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  fetchAssistants
+  fetchAssistants,
+  getAssistantById
 });

@@ -1,4 +1,8 @@
-import { UpdateUserData, UserData } from "../../../types/index.js";
+import {
+  UpdateUserData,
+  UserData,
+  UserDataWithId,
+} from "../../../types/index.js";
 import * as UserModel from "./userCollection.js";
 
 export const addUser = async (userData: UserData) => {
@@ -17,7 +21,7 @@ export const getUserByFirebaseId = async (firebaseUserId: string) => {
     if (!user) {
       return null;
     }
-    return user;
+    return user as UserData;
   } catch (error: unknown) {
     throw new Error("Service error: " + (error as Error).message);
   }

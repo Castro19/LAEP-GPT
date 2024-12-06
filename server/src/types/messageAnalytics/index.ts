@@ -40,6 +40,16 @@ export type MessageAnalyticsUpdate = {
   errorMessage: string | null;
 };
 
+export type MessageAnalyticsTokenAnalytics = {
+  modelType: string;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  promptCost: string;
+  completionCost: string;
+  totalCost: string;
+};
+
 export type MessageAnalyticsReaction = {
   botMessageId: string;
   userReaction: "like" | "dislike" | null;

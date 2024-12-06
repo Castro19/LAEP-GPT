@@ -1,19 +1,30 @@
 import { openai, formatAssistantId } from "../../index.js";
+import { Response } from "express";
 import {
   runAssistantAndStreamResponse,
   runAssistantAndCollectResponse,
 } from "./streamResponse.js";
 
-import { getGPT } from "../../db/models/gpt/gptServices.js";
 import {
   getProfessorRatings,
   getProfessorsByCourseIds,
 } from "../../db/models/professorRatings/professorRatingServices.js";
-import { searchProfessors } from "../../helpers/qdrant/qdrantQuery.js";
+import { searchProfessors } from "../qdrant/qdrantQuery.js";
 
-import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
-import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
+import { addMessageToThread } from "../openAI/threadFunctions.js";
+import { initializeOrFetchIds } from "../openAI/threadFunctions.js";
+import { getAssistantById } from "db/models/assistant/assistantServices.js";
+import { GptType } from "types/gpt/index.js";
+import { RunningStreamData } from "types/index.js";
 
+type MultiAgentRequest = {
+  model: GptType;
+  message: string;
+  res: Response;
+  userMessageId: string;
+  runningStreams: RunningStreamData;
+  chatId: string;
+};
 async function handleMultiAgentModel({
   model,
   message,
@@ -21,7 +32,7 @@ async function handleMultiAgentModel({
   userMessageId,
   runningStreams,
   chatId,
-}) {
+}: MultiAgentRequest) {
   let messageToAdd = message;
 
   try {
@@ -30,6 +41,9 @@ async function handleMultiAgentModel({
     const helperThread = await openai.beta.threads.create();
     runningStreams[userMessageId].threadId = helperThread.id;
 
+    if (!helperAssistantId) {
+      throw new Error("Helper assistant ID not found");
+    }
     // Add user's message to helper thread
     await addMessageToThread(
       helperThread.id,
@@ -52,7 +66,10 @@ async function handleMultiAgentModel({
     // Create thread and vector store if not already created
     const { threadId } = await initializeOrFetchIds(chatId);
     // Setup assistant
-    const assistantId = (await getGPT(model.id)).assistantId;
+    const assistantId = (await getAssistantById(model.id))?.id;
+    if (!assistantId) {
+      throw new Error("Assistant ID not found");
+    }
     runningStreams[userMessageId].threadId = threadId;
     // Parse the helper assistant's response (assumes it's a JSON string)
     let jsonObject;
@@ -80,7 +97,7 @@ async function handleMultiAgentModel({
     // Modify messageToAdd based on the query results
     if (professorArray.length > 0) {
       // Search through vector database for professors
-      let professorIds = [];
+      let professorIds: string[] = [];
       try {
         for (const professor of professorArray) {
           const professorId = await searchProfessors(professor, 1);
@@ -136,7 +153,7 @@ async function handleMultiAgentModel({
       runningStreams
     );
   } catch (error) {
-    if (error.message === "Response canceled") {
+    if (error instanceof Error && error.message === "Response canceled") {
       if (!res.headersSent) {
         res.status(200).end("Run canceled");
       }

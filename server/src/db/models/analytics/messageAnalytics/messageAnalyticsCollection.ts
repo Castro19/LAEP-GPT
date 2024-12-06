@@ -1,6 +1,7 @@
 import {
   MessageAnalytics,
   MessageAnalyticsCreate,
+  MessageAnalyticsTokenAnalytics,
   MessageAnalyticsUpdate,
 } from "types";
 import { getDb } from "../../../connection";
@@ -35,7 +36,7 @@ export const addMessageAnalytics = async (
 // Update
 export const updateMessageAnalytics = async (
   userMessageId: string,
-  updateData: MessageAnalyticsUpdate
+  updateData: MessageAnalyticsUpdate | MessageAnalyticsTokenAnalytics
 ) => {
   try {
     const result = await messageAnalyticsCollection.updateMany(

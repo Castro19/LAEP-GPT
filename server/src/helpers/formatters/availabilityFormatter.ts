@@ -1,8 +1,10 @@
-export function formatAvailability(availability) {
+import { Availability } from "types";
+
+export function formatAvailability(availability: Availability) {
   const formattedOutput = [];
 
   // Helper function to convert hour integer to 12-hour format with AM/PM
-  function formatTime(hour) {
+  function formatTime(hour: number) {
     const period = hour >= 12 ? "PM" : "AM";
     const adjustedHour = hour % 12 === 0 ? 12 : hour % 12;
     return `${adjustedHour}${period}`;

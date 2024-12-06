@@ -1,5 +1,5 @@
 // Helper function to calculate cost (you can adjust rates as needed)
-export default function calculateCost(usage, modelType) {
+export function calculateCost(usage: any, modelType: string) {
   const PROMPT_TOKEN_RATE = modelType === "gpt-4o-mini" ? 0.00015 : 0.01; // per 1K tokens
   const COMPLETION_TOKEN_RATE = modelType === "gpt-4o-mini" ? 0.0006 : 0.00003; // per 1K tokens
   const promptCost = (usage.prompt_tokens / 1000) * PROMPT_TOKEN_RATE;

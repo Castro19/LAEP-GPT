@@ -1,9 +1,9 @@
 import { openai } from "../../index.js";
 
 export async function setupVectorStoreWithFile(
-  threadId,
-  assistantId,
-  userFileId
+  threadId: string,
+  assistantId: string,
+  userFileId: string
 ) {
   const vectorStore = await openai.beta.vectorStores.create({
     name: String(threadId),
@@ -25,9 +25,9 @@ export async function setupVectorStoreWithFile(
 }
 
 export async function setupVectorStoreAndUpdateAssistant(
-  vectorStoreId,
-  assistantId,
-  userFileId
+  vectorStoreId: string,
+  assistantId: string,
+  userFileId: string | null
 ) {
   if (userFileId) {
     await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {

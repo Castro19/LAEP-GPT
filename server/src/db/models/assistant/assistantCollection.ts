@@ -19,3 +19,16 @@ export const viewGPTs = async () => {
     );
   }
 };
+
+export const findAssistantById = async (gptId: string) => {
+  try {
+    const result = await gptCollection.findOne({
+      _id: new ObjectId(gptId) as unknown as string,
+    });
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error finding GPT from database: " + (error as Error).message
+    );
+  }
+};

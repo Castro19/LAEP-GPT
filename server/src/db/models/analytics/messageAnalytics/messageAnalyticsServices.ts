@@ -1,4 +1,8 @@
-import { MessageAnalyticsCreate, MessageAnalyticsUpdate } from "types";
+import {
+  MessageAnalyticsCreate,
+  MessageAnalyticsTokenAnalytics,
+  MessageAnalyticsUpdate,
+} from "types";
 import * as messageAnalyticsModel from "./messageAnalyticsCollection";
 
 // create
@@ -26,7 +30,7 @@ export const createMessageAnalytics = async (
 
 export const updateMessageAnalytics = async (
   userMessageId: string,
-  updateData: MessageAnalyticsUpdate
+  updateData: MessageAnalyticsUpdate | MessageAnalyticsTokenAnalytics
 ) => {
   try {
     const result = await messageAnalyticsModel.updateMessageAnalytics(

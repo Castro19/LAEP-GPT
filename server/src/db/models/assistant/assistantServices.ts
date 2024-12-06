@@ -19,3 +19,14 @@ export const fetchAssistants = async () => {
     console.error("CONSOLE LOG ERROR: ", error);
   }
 };
+
+export const getAssistantById = async (gptId: string) => {
+  try {
+    const result = await gptModel.findAssistantById(gptId);
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error finding GPT from database: " + (error as Error).message
+    );
+  }
+};

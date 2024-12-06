@@ -2,7 +2,7 @@ import { GptType } from "@/types";
 // Create
 export async function createGPT(gptData: GptType) {
   try {
-    const response = await fetch("http://localhost:4000/gpts", {
+    const response = await fetch("http://localhost:4000/assistants", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -21,7 +21,7 @@ export async function createGPT(gptData: GptType) {
 // Read
 export async function viewGPTs() {
   try {
-    const response = await fetch("http://localhost:4000/gpts", {
+    const response = await fetch("http://localhost:4000/assistants", {
       credentials: "include",
     });
     if (!response.ok) {
@@ -36,7 +36,7 @@ export async function viewGPTs() {
 
 export async function deleteGPT(id: string) {
   try {
-    const response = await fetch("http://localhost:4000/gpts", {
+    const response = await fetch("http://localhost:4000/assistants", {
       method: "DELETE",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

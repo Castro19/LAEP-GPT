@@ -1,32 +1,36 @@
-import { addMessageToThread } from "../../helpers/openAI/threadFunctions.js";
+import { addMessageToThread } from "../openAI/threadFunctions.js";
 import { getUserByFirebaseId } from "../../db/models/user/userServices.js";
 import { fetchFlowchart } from "../../db/models/flowchart/flowchartServices.js";
-import { getGPT } from "../../db/models/gpt/gptServices.js";
-import { setupVectorStoreAndUpdateAssistant } from "../../helpers/openAI/vectorStoreFunctions.js";
-import { initializeOrFetchIds } from "../../helpers/openAI/threadFunctions.js";
-import { formatAvailability } from "../../helpers/formatters/availabilityFormatter.js";
-import { runAssistantAndStreamResponse } from "./streamResponse.js";
+import { getAssistantById } from "../../db/models/assistant/assistantServices.js";
+import { setupVectorStoreAndUpdateAssistant } from "../openAI/vectorStoreFunctions.js";
+import { initializeOrFetchIds } from "../openAI/threadFunctions.js";
+import { formatAvailability } from "../formatters/availabilityFormatter";
+import { runAssistantAndStreamResponse } from "./streamResponse";
 import { searchCourses } from "../qdrant/qdrantQuery.js";
 import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
-
-const matchingAssistant = (user, message) => {
+import { CourseDocument, GptType, RunningStreamData, UserData } from "types";
+import { FileObject } from "openai/resources/index.mjs";
+import { Response } from "express";
+const matchingAssistant = (user: UserData, message: string) => {
   const availability = formatAvailability(user.availability);
   const interests = user.interests.join(", ");
   return `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
 };
 
-const csciClassesAssistant = (user, message) => {
+const csciClassesAssistant = (user: UserData, message: string) => {
   const year = user.year;
   const interests = user.interests.join(", ");
   return `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${interests}\n${message}`;
 };
 
-const flowchartAssistant = async (user, message) => {
+const flowchartAssistant = async (user: UserData, message: string) => {
   const flowchart = await fetchFlowchart(user.flowchartId, user.userId);
   const courseIds = await searchCourses(message, null, 5);
   console.log("courseIds: ", courseIds);
-  const courseObjects = await getCourseInfo(courseIds);
+  const courseObjects = (await getCourseInfo(
+    courseIds
+  )) as unknown as CourseDocument[];
   const courseDescriptions = JSON.stringify(courseObjects);
   console.log("courseDescriptions: ", courseDescriptions);
   const {
@@ -41,17 +45,28 @@ const flowchartAssistant = async (user, message) => {
   return `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
 };
 
-const courseCatalogAssistant = async (user, message) => {
+const courseCatalogAssistant = async (user: UserData, message: string) => {
   const courseIds = await searchCourses(message, null, 5);
   const courseObjects = await getCourseInfo(courseIds);
   const courseDescriptions = JSON.stringify(courseObjects);
   return `Search Results: ${courseDescriptions}\n${message}`;
 };
 
-const calpolyClubsAssistant = (user, message) => {
+const calpolyClubsAssistant = (user: UserData, message: string) => {
   const interests = user.interests.join(", ");
   const major = user.major;
   return `Interests: ${interests}\nMajor: ${major}\n${message}`;
+};
+
+type SingleAgentRequestBody = {
+  model: GptType;
+  chatId: string;
+  userFile: FileObject | null;
+  message: string;
+  res: Response;
+  userId: string;
+  userMessageId: string;
+  runningStreams: RunningStreamData;
 };
 
 async function handleSingleAgentModel({
@@ -63,9 +78,16 @@ async function handleSingleAgentModel({
   userId,
   userMessageId,
   runningStreams,
-}) {
+}: SingleAgentRequestBody) {
   let messageToAdd = message;
-  const assistantId = (await getGPT(model.id)).assistantId;
+  const assistant = await getAssistantById(model.id);
+  if (!assistant) {
+    throw new Error("Assistant not found");
+  }
+  const assistantId = assistant.assistantId;
+  if (!assistantId) {
+    throw new Error("Assistant ID not found");
+  }
   // Creates from OpenAI API & Stores in DB if not already created
   const { threadId, vectorStoreId } = await initializeOrFetchIds(chatId);
   runningStreams[userMessageId].threadId = threadId;
@@ -76,6 +98,10 @@ async function handleSingleAgentModel({
     userFile ? userFile.id : null
   );
   const user = await getUserByFirebaseId(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   if (model.title === "Matching Assistant") {
     messageToAdd = matchingAssistant(user, message);

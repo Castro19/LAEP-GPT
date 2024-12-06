@@ -5,11 +5,18 @@ and return the following:
  - Whether the General Writing requirement is met
 */
 
-import db from "../../db/connection.js"; // Adjust the import path as needed
+import { Term } from "types";
+import { getDb } from "../../db/connection.js";
+import { Collection } from "mongodb";
 
-const courseCollection = db.collection("courses");
+let courseCollection: Collection;
 
-const flowchartHelper = async (termData, catalogYear) => {
+const initializeCourseCollection = () => {
+  courseCollection = getDb().collection("courses");
+};
+
+const flowchartHelper = async (termData: Term[], catalogYear: string) => {
+  if (!courseCollection) initializeCourseCollection();
   const requiredCourses = [];
   let techElectivesLeft = 0;
   let generalWritingMet = false;

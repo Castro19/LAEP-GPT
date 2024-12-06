@@ -116,7 +116,9 @@ const getCourseInfo = async (courseIds) => {
     throw new Error("Course IDs are required");
   }
   try {
-    return await courseCollection.findCourseInfo(courseIds);
+    return await courseCollection.findCourseInfo(
+      courseIds
+    );
   } catch (error) {
     console.error("Error fetching course info: ", error);
     throw error;

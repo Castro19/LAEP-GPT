@@ -18,7 +18,7 @@ import chatLogRouter from "./routes/chatLog";
 import flowchartRouter from "./routes/flowchart";
 import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
 import professorRatingRouter from "./routes/professorRating";
-
+import llmRouter from "./routes/llm";
 // LLM API
 import OpenAI from "openai";
 
@@ -55,6 +55,8 @@ app.use("/courses", authenticate, courseRouter);
 app.use("/users", authenticate, userRouter);
 app.use("/flowcharts", authenticate, flowchartRouter);
 app.use("/professorRatings", professorRatingRouter);
+app.use("/llm", llmRouter);
+
 // Initialize OpenAI API client
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

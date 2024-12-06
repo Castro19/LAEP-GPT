@@ -1,8 +1,8 @@
 import { Collection } from "mongodb";
-import { UpdateUserData, UserData } from "../../../types";
+import { UpdateUserData, UserData, UserDataWithId } from "../../../types";
 import { getDb } from "../../connection";
 
-let userCollection: Collection;
+let userCollection: Collection<UserData>;
 
 // Function to initialize the collection
 const initializeCollection = () => {
@@ -13,7 +13,7 @@ export const createUser = async (userData: UserData) => {
   if (!userCollection) initializeCollection();
   console.log("Creating user in database", userData);
   try {
-    const newUser = {
+    const newUser: UserData = {
       userId: userData.userId,
       name: userData.name,
       userType: userData.userType,

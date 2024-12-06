@@ -33,4 +33,5 @@ export type UserData = {
   flowchartId: string;
 };
 
+export type UserDataWithId = UserData & { _id: string };
 export type UpdateUserData = Partial<UserData>;
