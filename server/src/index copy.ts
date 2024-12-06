@@ -54,8 +54,8 @@ admin.initializeApp({
 // Routes
 app.use("/auth", authRouter);
 app.use("/users", authenticate, users);
-app.use("/llms", llms);
 app.use("/courses", authenticate, courses);
+app.use("/llms", llms);
 app.use("/chatLogs", authenticate, chatLogs);
 app.use("/gpts", authenticate, gpts);
 app.use("/flowchart", authenticate, flowchart);

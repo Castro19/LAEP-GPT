@@ -43,6 +43,7 @@ var import_connection = require("./db/connection");
 var import_authMiddleware = require("./middlewares/authMiddleware");
 var import_auth = __toESM(require("./routes/auth"));
 var import_user = __toESM(require("./routes/user"));
+var import_courses = __toESM(require("./routes/courses"));
 var import_openai = __toESM(require("openai"));
 import_dotenv.default.config();
 const app = (0, import_express.default)();
@@ -65,6 +66,7 @@ import_firebase_admin.default.initializeApp({
 });
 app.use("/auth", import_auth.default);
 app.use("/users", import_authMiddleware.authenticate, import_user.default);
+app.use("/courses", import_authMiddleware.authenticate, import_courses.default);
 const openai = new import_openai.default({
   apiKey: process.env.OPENAI_API_KEY
 });

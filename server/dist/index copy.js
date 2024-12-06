@@ -73,8 +73,8 @@ import_firebase_admin.default.initializeApp({
 });
 app.use("/auth", import_auth.default);
 app.use("/users", import_authMiddleware.authenticate, import_user.default);
-app.use("/llms", import_llm.default);
 app.use("/courses", import_authMiddleware.authenticate, import_courses.default);
+app.use("/llms", import_llm.default);
 app.use("/chatLogs", import_authMiddleware.authenticate, import_chatLog.default);
 app.use("/gpts", import_authMiddleware.authenticate, import_gpt.default);
 app.use("/flowchart", import_authMiddleware.authenticate, import_flowchart.default);

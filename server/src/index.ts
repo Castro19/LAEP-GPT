@@ -12,7 +12,7 @@ import { authenticate } from "./middlewares/authMiddleware";
 // Routes
 import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
-
+import courses from "./routes/courses";
 // LLM API
 import OpenAI from "openai";
 
@@ -43,6 +43,7 @@ admin.initializeApp({
 // Routes
 app.use("/auth", authRouter);
 app.use("/users", authenticate, userRouter);
+app.use("/courses", authenticate, courses);
 
 // Initialize OpenAI API client
 export const openai = new OpenAI({

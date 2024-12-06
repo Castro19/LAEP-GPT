@@ -1,12 +1,21 @@
-import db from "../../connection.js";
+import { CourseDocument } from "types";
+import { MongoQuery } from "types";
+import { getDb } from "../../connection";
+import { Collection } from "mongodb";
 
-const courseCollection = db.collection("courses");
+let courseCollection: Collection;
 
-export const findCourse = async (catalogYear, courseId) => {
+const initializeCollection = () => {
+  courseCollection = getDb().collection("courses");
+};
+
+export const findCourse = async (catalogYear: string, courseId: string) => {
+  if (!courseCollection) initializeCollection();
   return await courseCollection.findOne({ catalogYear, courseId });
 };
 
-export const findCourses = async (query) => {
+export const findCourses = async (query: MongoQuery<CourseDocument>) => {
+  if (!courseCollection) initializeCollection();
   console.log("query: ", query);
   const result = {
     courseId: 1,
@@ -29,8 +38,8 @@ export const findCourses = async (query) => {
 };
 
 export const findCoursesGroupedBySubjectNames = async (
-  subject,
-  query,
+  subject: string,
+  query: MongoQuery<CourseDocument>,
   page = 1,
   pageSize = 10
 ) => {
@@ -75,7 +84,7 @@ export const findCoursesGroupedBySubjectNames = async (
   }
 };
 
-export const findSubjectNames = async (query) => {
+export const findSubjectNames = async (query: MongoQuery<CourseDocument>) => {
   try {
     const result = await courseCollection
       .aggregate([
@@ -96,7 +105,7 @@ export const findSubjectNames = async (query) => {
   }
 };
 
-export const findCourseInfo = async (courseIds) => {
+export const findCourseInfo = async (courseIds: string[]) => {
   try {
     console.log("courseIds: ", courseIds);
     return await courseCollection

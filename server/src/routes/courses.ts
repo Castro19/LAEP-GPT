@@ -1,23 +1,16 @@
 import express from "express";
 import {
-  // createCourses,
   getCourses,
   getSubjectNames,
   getCoursesBySubject,
   getCourse,
-} from "../db/models/courses/courseServices.js";
+} from "../db/models/courses/courseServices";
+import { SubjectQuery } from "types";
 const router = express.Router();
 
-// Post All courses
-// router.post("/", async (req, res) => {
-//   try {
-//     const result = await createCourses();
-//     res.status(201).json(result);
-//   } catch (error) {
-//     res.status(500).send("Failed to create courses: " + error.message);
-//   }
-// });
-
+router.get("/test", (req, res) => {
+  res.status(200).send("Hello World");
+});
 // Query courses by catalog year and search term
 router.get("/", async (req, res) => {
   try {
@@ -26,7 +19,7 @@ router.get("/", async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to get courses:", error);
-    res.status(500).send("Failed to get courses: " + error.message);
+    res.status(500).send("Failed to get courses: " + (error as Error).message);
   }
 });
 
@@ -34,21 +27,21 @@ router.get("/", async (req, res) => {
 
 router.get("/subjectNames", async (req, res) => {
   try {
-    const result = await getSubjectNames(req.query);
+    const result = await getSubjectNames(req.query as SubjectQuery);
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to get courses by subject:", error);
-    res.status(500).send("Failed to get courses: " + error.message);
+    res.status(500).send("Failed to get courses: " + (error as Error).message);
   }
 });
 
 router.get("/subject", async (req, res) => {
   try {
-    const result = await getCoursesBySubject(req.query);
+    const result = await getCoursesBySubject(req.query as SubjectQuery);
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to get courses by subject:", error);
-    res.status(500).send("Failed to get courses: " + error.message);
+    res.status(500).send("Failed to get courses: " + (error as Error).message);
   }
 });
 
@@ -59,7 +52,7 @@ router.get("/course", async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to get course:", error);
-    res.status(500).send("Failed to get course: " + error.message);
+    res.status(500).send("Failed to get course: " + (error as Error).message);
   }
 });
 

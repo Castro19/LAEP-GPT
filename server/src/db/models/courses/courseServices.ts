@@ -1,9 +1,15 @@
 // Store the course catalog data in MongoDB
 import * as courseCollection from "./courseCollection.js";
+import {
+  CourseQuery,
+  SubjectQuery,
+  CourseDocument,
+  MongoQuery,
+} from "../../../types";
 
-export const getCourses = async (queryParams) => {
+export const getCourses = async (queryParams: CourseQuery) => {
   const { catalogYear, searchTerm } = queryParams;
-  let query = {};
+  let query = {} as MongoQuery<CourseDocument>;
 
   if (catalogYear) {
     query.catalogYear = catalogYear;
@@ -21,13 +27,13 @@ export const getCourses = async (queryParams) => {
 
   // Combine filters
   if (filters.length > 0) {
-    query = { ...query, $and: filters };
+    query = { ...query, $and: filters as MongoQuery<CourseDocument>[] };
   }
 
   return await courseCollection.findCourses(query);
 };
 
-export const getCourse = async (queryParams) => {
+export const getCourse = async (queryParams: CourseQuery) => {
   const { catalogYear, courseId } = queryParams;
   if (!catalogYear || !courseId) {
     throw new Error("Catalog year and course ID are required");
@@ -36,10 +42,14 @@ export const getCourse = async (queryParams) => {
   return await courseCollection.findCourse(catalogYear, courseId);
 };
 
-export const getCoursesBySubject = async (queryParams) => {
+export const getCoursesBySubject = async (queryParams: SubjectQuery) => {
   const { catalogYear, GE, GWR, USCP, subject, page, pageSize } = queryParams;
 
-  let query = {};
+  let query = {} as MongoQuery<CourseDocument>;
+
+  if (!subject) {
+    throw new Error("Subject is required");
+  }
 
   if (catalogYear) {
     query.catalogYear = catalogYear;
@@ -81,7 +91,7 @@ export const getCoursesBySubject = async (queryParams) => {
   return result[0].courses;
 };
 
-export const getSubjectNames = async (queryParams) => {
+export const getSubjectNames = async (queryParams: SubjectQuery) => {
   const { GWR, USCP } = queryParams;
 
   let query = {};
@@ -109,7 +119,7 @@ export const getSubjectNames = async (queryParams) => {
   return await courseCollection.findSubjectNames(query);
 };
 
-export const getCourseInfo = async (courseIds) => {
+export const getCourseInfo = async (courseIds: string[]) => {
   if (!courseIds) {
     throw new Error("Course IDs are required");
   }
