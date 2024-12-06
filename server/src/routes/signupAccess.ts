@@ -1,10 +1,10 @@
-import express from "express";
-import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices.js";
+import express, { RequestHandler } from "express";
+import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices";
 
 const router = express.Router();
 
 // route to get a signup access entry by email
-router.get("/:email", async (req, res) => {
+router.get("/:email", (async (req, res) => {
   try {
     const { email } = req.params;
 
@@ -23,9 +23,11 @@ router.get("/:email", async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .send("Failed to retrieve signup access entry: " + error.message);
+      .send(
+        "Failed to retrieve signup access entry: " + (error as Error).message
+      );
     console.error("Failed to retrieve signup access entry:", error);
   }
-});
+}) as RequestHandler);
 
 export default router;
