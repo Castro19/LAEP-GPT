@@ -21,8 +21,9 @@ __reExport(types_exports, require("./layout"), module.exports);
 __reExport(types_exports, require("./log"), module.exports);
 __reExport(types_exports, require("./auth"), module.exports);
 __reExport(types_exports, require("./flowChart"), module.exports);
+__reExport(types_exports, require("./flowInfo"), module.exports);
 __reExport(types_exports, require("./courses"), module.exports);
-__reExport(types_exports, require("./threads"), module.exports);
+__reExport(types_exports, require("./thread"), module.exports);
 __reExport(types_exports, require("./middleware/index"), module.exports);
 __reExport(types_exports, require("./messageAnalytics"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
@@ -33,8 +34,9 @@ __reExport(types_exports, require("./messageAnalytics"), module.exports);
   ...require("./log"),
   ...require("./auth"),
   ...require("./flowChart"),
+  ...require("./flowInfo"),
   ...require("./courses"),
-  ...require("./threads"),
+  ...require("./thread"),
   ...require("./middleware/index"),
   ...require("./messageAnalytics")
 });

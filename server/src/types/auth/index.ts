@@ -12,13 +12,10 @@ export type Availability = {
   [day: string]: [number, number][];
 };
 
-export enum UserType {
-  STUDENT = "student",
-  ADMIN = "admin",
-}
+export type UserType = "student" | "admin";
 // All information stored in the database
 // changed from MyUserInfo to UserData
-export interface UserData {
+export type UserData = {
   userId: string;
   name: string;
   userType: "student" | "admin";
@@ -34,4 +31,6 @@ export interface UserData {
   year: string;
   courses: string[];
   flowchartId: string;
-}
+};
+
+export type UpdateUserData = Partial<UserData>;

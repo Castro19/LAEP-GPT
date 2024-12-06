@@ -3,8 +3,8 @@ import {
   getUserByFirebaseId,
   updateUser,
   getAllUsers,
-} from "../db/models/user/userServices.js";
-import { authorizeRoles } from "../middlewares/authMiddleware.js";
+} from "../db/models/user/userServices";
+import { authorizeRoles } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 

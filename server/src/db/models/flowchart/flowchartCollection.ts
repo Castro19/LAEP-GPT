@@ -1,15 +1,22 @@
-import db from "../../connection.js";
-import { ObjectId } from "mongodb";
-const flowchartCollection = db.collection("flowcharts");
+import { Collection, ObjectId } from "mongodb";
+import { getDb } from "../../connection";
+import { FlowchartData } from "types";
+
+let flowchartCollection: Collection;
+
+const initializeCollection = () => {
+  flowchartCollection = getDb().collection("flowcharts");
+};
 
 // Create
 // Make a 1:many relationship between the user and the flowchart
 export const createFlowchart = async (
-  flowchartData,
-  name,
-  primaryOption,
-  userId
+  flowchartData: FlowchartData,
+  name: string,
+  primaryOption: boolean,
+  userId: string
 ) => {
+  if (!flowchartCollection) initializeCollection();
   try {
     // Validate that userId exists and is valid
     if (!userId || typeof userId !== "string") {
@@ -26,14 +33,16 @@ export const createFlowchart = async (
     });
     return result;
   } catch (error) {
-    throw new Error("Error creating flowchart in database: " + error.message);
+    throw new Error(
+      "Error creating flowchart in database: " + (error as Error).message
+    );
   }
 };
 
 // Read
 // Create 403 error if the user is not the owner of the flowchart
 // Create 404 error if the flowchart does not exist
-export const fetchFlowchart = async (flowchartId, userId) => {
+export const fetchFlowchart = async (flowchartId: string, userId: string) => {
   try {
     const result = await flowchartCollection.findOne({
       _id: new ObjectId(flowchartId),
@@ -49,12 +58,14 @@ export const fetchFlowchart = async (flowchartId, userId) => {
     }
     return result;
   } catch (error) {
-    throw new Error("Error fetching flowchart from database: " + error.message);
+    throw new Error(
+      "Error fetching flowchart from database: " + (error as Error).message
+    );
   }
 };
 
 // Read All
-export const fetchAllFlowcharts = async (userId) => {
+export const fetchAllFlowcharts = async (userId: string) => {
   try {
     // Only return the flowchartId: _id and the name
     const result = await flowchartCollection
@@ -63,18 +74,18 @@ export const fetchAllFlowcharts = async (userId) => {
     return result;
   } catch (error) {
     throw new Error(
-      "Error fetching all flowcharts from database: " + error.message
+      "Error fetching all flowcharts from database: " + (error as Error).message
     );
   }
 };
 
 // Update
 export const updateFlowchart = async (
-  flowchartId,
-  flowchartData,
-  name,
-  primaryOption,
-  userId
+  flowchartId: string,
+  flowchartData: FlowchartData,
+  name: string,
+  primaryOption: boolean,
+  userId: string
 ) => {
   try {
     // First, get the existing document
@@ -125,12 +136,14 @@ export const updateFlowchart = async (
 
     return result;
   } catch (error) {
-    throw new Error(error.message);
+    throw new Error(
+      "Error updating flowchart in database: " + (error as Error).message
+    );
   }
 };
 
 // Delete
-export const deleteFlowchart = async (flowchartId, userId) => {
+export const deleteFlowchart = async (flowchartId: string, userId: string) => {
   try {
     // First, get the existing document
     const existingDoc = await flowchartCollection.findOne({
@@ -138,7 +151,7 @@ export const deleteFlowchart = async (flowchartId, userId) => {
       userId,
     });
     // User ID does not match
-    if (existingDoc.userId !== userId) {
+    if (existingDoc?.userId !== userId) {
       throw new Error("Forbidden");
     }
     const result = await flowchartCollection.deleteOne({
@@ -151,12 +164,17 @@ export const deleteFlowchart = async (flowchartId, userId) => {
 
     return result;
   } catch (error) {
-    throw new Error("Error deleting flowchart from database: " + error.message);
+    throw new Error(
+      "Error deleting flowchart from database: " + (error as Error).message
+    );
   }
 };
 
 // Other Handlers
-export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
+export const updateAllOtherFlowcharts = async (
+  flowchartId: string,
+  userId: string
+) => {
   try {
     // Use bulkWrite to perform both operations atomically
     const result = await flowchartCollection.bulkWrite([
@@ -178,7 +196,7 @@ export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
     return result;
   } catch (error) {
     throw new Error(
-      `Error updating flowchart primary options: ${error.message}`
+      `Error updating flowchart primary options: ${(error as Error).message}`
     );
   }
 };

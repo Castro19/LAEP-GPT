@@ -1,5 +1,5 @@
 import { Collection } from "mongodb";
-import { UserData } from "../../../types";
+import { UpdateUserData, UserData } from "../../../types";
 import { getDb } from "../../connection";
 
 let userCollection: Collection;
@@ -49,7 +49,7 @@ export const findUserByFirebaseId = async (firebaseUserId: string) => {
 
 export const updateUserByFirebaseId = async (
   firebaseUserId: string,
-  updateData: UserData
+  updateData: UpdateUserData
 ) => {
   if (!userCollection) initializeCollection();
   try {

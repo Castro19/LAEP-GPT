@@ -32,8 +32,8 @@ __export(user_exports, {
 });
 module.exports = __toCommonJS(user_exports);
 var import_express = __toESM(require("express"));
-var import_userServices = require("../db/models/user/userServices.js");
-var import_authMiddleware = require("../middlewares/authMiddleware.js");
+var import_userServices = require("../db/models/user/userServices");
+var import_authMiddleware = require("../middlewares/authMiddleware");
 const router = import_express.default.Router();
 router.get("/test", (req, res) => {
   res.status(200).send("Hello World");

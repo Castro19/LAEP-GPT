@@ -1,18 +1,28 @@
-import * as flowchartModel from "./flowchartCollection.js";
-import { searchFlowInfo } from "../flowInfo/flowInfoServices.js";
+import * as flowchartModel from "./flowchartCollection";
+import { searchFlowInfo } from "../flowInfo/flowInfoServices";
 import { updateUser } from "../user/userServices.js";
+import { FetchFlowchartResponse, FlowchartData, FlowInfoDocument } from "types";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one
-export const createFlowchart = async (flowchartData, name, userId) => {
+export const createFlowchart = async (
+  flowchartData: FlowchartData,
+  name: string,
+  userId: string
+) => {
   let flowchartName = "Untitled Flowchart";
   let primaryOption = false;
   let flowchartList = [];
   try {
     const flowchartInfo =
-      (await searchFlowInfo(undefined, undefined, name))[0] ||
-      "Untitled Flowchart";
-    flowchartName = flowchartInfo.concName;
+      (
+        await searchFlowInfo({
+          catalog: undefined,
+          majorName: undefined,
+          code: name,
+        })
+      )?.[0] || "Untitled Flowchart";
+    flowchartName = (flowchartInfo as FlowInfoDocument).concName;
     flowchartList = (await fetchAllFlowcharts(userId)) || [];
     // If there are no flowcharts, or all flowcharts are not primary, then the new flowchart is primary
     primaryOption =
@@ -31,15 +41,19 @@ export const createFlowchart = async (flowchartData, name, userId) => {
         primaryOption,
       };
     } catch (error) {
-      throw new Error("Service error Creating Flowchart: " + error.message);
+      throw new Error(
+        "Service error Creating Flowchart: " + (error as Error).message
+      );
     }
   } catch (error) {
-    throw new Error(error);
+    throw new Error(
+      "Service error Creating Flowchart: " + (error as Error).message
+    );
   }
 };
 
 // Read: Get the flowchart associated with the user and the flowchartId
-export const fetchFlowchart = async (flowchartId, userId) => {
+export const fetchFlowchart = async (flowchartId: string, userId: string) => {
   try {
     const result = await flowchartModel.fetchFlowchart(flowchartId, userId);
     const flowchartMeta = {
@@ -52,12 +66,14 @@ export const fetchFlowchart = async (flowchartId, userId) => {
       flowchartMeta: flowchartMeta,
     };
   } catch (error) {
-    throw new Error(error);
+    throw new Error(
+      "Service error Fetching Flowchart: " + (error as Error).message
+    );
   }
 };
 
 // Read All: Get all flowcharts associated with the user
-export const fetchAllFlowcharts = async (userId) => {
+export const fetchAllFlowcharts = async (userId: string) => {
   let flowchartList = [];
   try {
     const result = await flowchartModel.fetchAllFlowcharts(userId);
@@ -103,11 +119,11 @@ export const fetchAllFlowcharts = async (userId) => {
 
 // Update
 export const updateFlowchart = async (
-  flowchartId,
-  flowchartData,
-  name,
-  primaryOption,
-  userId
+  flowchartId: string,
+  flowchartData: FlowchartData,
+  name: string,
+  primaryOption: boolean,
+  userId: string
 ) => {
   try {
     const result = await flowchartModel.updateFlowchart(
@@ -119,12 +135,14 @@ export const updateFlowchart = async (
     );
     return result;
   } catch (error) {
-    throw new Error(error);
+    throw new Error(
+      "Service error Updating Flowchart: " + (error as Error).message
+    );
   }
 };
 
 // Delete
-export const deleteFlowchart = async (flowchartId, userId) => {
+export const deleteFlowchart = async (flowchartId: string, userId: string) => {
   const flowchartList = await fetchAllFlowcharts(userId);
   const primaryOption = await isPrimaryFlowchart(flowchartList, flowchartId);
   await flowchartModel.deleteFlowchart(flowchartId, userId);
@@ -166,12 +184,17 @@ export const deleteFlowchart = async (flowchartId, userId) => {
       newPrimaryFlowchartId,
     };
   } catch (error) {
-    throw new Error(error);
+    throw new Error(
+      "Service error Deleting Flowchart: " + (error as Error).message
+    );
   }
 };
 
 // Other Handlers
-export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
+export const updateAllOtherFlowcharts = async (
+  flowchartId: string,
+  userId: string
+) => {
   try {
     const result = await flowchartModel.updateAllOtherFlowcharts(
       flowchartId,
@@ -179,11 +202,16 @@ export const updateAllOtherFlowcharts = async (flowchartId, userId) => {
     );
     return result;
   } catch (error) {
-    throw new Error(error);
+    throw new Error(
+      "Service error Updating All Other Flowcharts: " + (error as Error).message
+    );
   }
 };
 
-export const isPrimaryFlowchart = async (flowchartList, flowchartId) => {
+export const isPrimaryFlowchart = async (
+  flowchartList: FetchFlowchartResponse[],
+  flowchartId: string
+) => {
   const primaryFlowchart = flowchartList.find(
     (flowchart) => flowchart.flowchartId.toString() === flowchartId
   );

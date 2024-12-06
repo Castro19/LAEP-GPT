@@ -1,5 +1,4 @@
-import { CourseDocument } from "types";
-import { MongoQuery } from "types";
+import { CourseDocument, MongoQuery } from "types";
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
 

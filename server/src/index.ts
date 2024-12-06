@@ -14,6 +14,7 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import courses from "./routes/courses";
 import chatLogs from "./routes/chatLog";
+import flowcharts from "./routes/flowchart";
 import messageAnalytics from "./routes/analytics/messageAnalytics";
 
 // LLM API
@@ -49,6 +50,7 @@ app.use("/auth", authRouter);
 app.use("/chatLogs", authenticate, chatLogs);
 app.use("/courses", authenticate, courses);
 app.use("/users", authenticate, userRouter);
+app.use("/flowcharts", authenticate, flowcharts);
 
 // Initialize OpenAI API client
 export const openai = new OpenAI({

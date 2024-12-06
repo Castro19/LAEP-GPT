@@ -1,4 +1,4 @@
-import { UserData } from "../../../types/index.js";
+import { UpdateUserData, UserData } from "../../../types/index.js";
 import * as UserModel from "./userCollection.js";
 
 export const addUser = async (userData: UserData) => {
@@ -25,7 +25,7 @@ export const getUserByFirebaseId = async (firebaseUserId: string) => {
 
 export const updateUser = async (
   firebaseUserId: string,
-  updateData: UserData
+  updateData: UpdateUserData
 ) => {
   try {
     const result = await UserModel.updateUserByFirebaseId(

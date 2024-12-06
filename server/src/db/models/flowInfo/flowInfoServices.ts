@@ -1,9 +1,22 @@
-import * as flowInfoModel from "./flowInfoCollection.js";
+import { FlowInfoDocument, FlowInfoProjection, MongoQuery } from "types";
+import * as flowInfoModel from "./flowInfoCollection";
 
 // Fetch majors by catalog
-export const searchFlowInfo = async (catalog, majorName, code) => {
-  let query = {};
-  let projection = {};
+export const searchFlowInfo = async ({
+  catalog,
+  majorName,
+  code,
+}: {
+  catalog: string | undefined;
+  majorName: string | undefined;
+  code: string | undefined;
+}) => {
+  let query: MongoQuery<FlowInfoDocument> = {};
+  let projection: FlowInfoProjection = {
+    majorName: 0,
+    concName: 0,
+    code: 0,
+  };
 
   if (code) {
     query.code = code;
@@ -31,7 +44,7 @@ export const searchFlowInfo = async (catalog, majorName, code) => {
       return result;
     } else if (catalog) {
       const uniqueMajorNames = [
-        ...new Set(result.map((item) => item.majorName)),
+        ...new Set(result.map((item: FlowInfoDocument) => item.majorName)),
       ];
       return uniqueMajorNames;
     }
