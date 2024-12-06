@@ -1,4 +1,10 @@
-export const sortAndLimitReviews = (reviews, courseIds, limit = 5) => {
+import { ProfessRatingList, reviewObject, Reviews } from "types";
+
+export const sortAndLimitReviews = (
+  reviews: ProfessRatingList[],
+  courseIds: string[] | undefined,
+  limit = 5
+) => {
   return reviews.map((professor) => {
     if (courseIds) {
       const filteredReviews = Object.fromEntries(
@@ -15,7 +21,11 @@ export const sortAndLimitReviews = (reviews, courseIds, limit = 5) => {
     // Sort and limit reviews to the top k (limit) most recent
     for (const courseId in professor.reviews) {
       professor.reviews[courseId] = professor.reviews[courseId]
-        .sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
+        .sort((a, b) => {
+          const aDate = Object.values(a)[0]?.postDate ?? "";
+          const bDate = Object.values(b)[0]?.postDate ?? "";
+          return bDate.localeCompare(aDate);
+        })
         .slice(0, limit)
         .map((review) => {
           // All props I want to delete keep
@@ -27,7 +37,7 @@ export const sortAndLimitReviews = (reviews, courseIds, limit = 5) => {
             "rating",
             // "tags", // Add if tags are not empty
           ];
-          const filteredReview = keepProps.reduce((acc, prop) => {
+          const filteredReview = keepProps.reduce((acc: any, prop: string) => {
             acc[prop] = review[prop];
             return acc;
           }, {});

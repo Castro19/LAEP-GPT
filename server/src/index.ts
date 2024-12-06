@@ -11,12 +11,13 @@ import { connectToDb } from "./db/connection";
 import { authenticate } from "./middlewares/authMiddleware";
 // Routes
 import authRouter from "./routes/auth";
-import assistants from "./routes/assistant";
+import assistantRouter from "./routes/assistant";
 import userRouter from "./routes/user";
-import courses from "./routes/courses";
-import chatLogs from "./routes/chatLog";
-import flowcharts from "./routes/flowchart";
-import messageAnalytics from "./routes/analytics/messageAnalytics";
+import courseRouter from "./routes/courses";
+import chatLogRouter from "./routes/chatLog";
+import flowchartRouter from "./routes/flowchart";
+import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
+import professorRatingRouter from "./routes/professorRating";
 
 // LLM API
 import OpenAI from "openai";
@@ -46,14 +47,14 @@ admin.initializeApp({
 });
 
 // Routes
-app.use("/analytics", authenticate, messageAnalytics);
-app.use("/assistants", authenticate, assistants);
+app.use("/analytics", authenticate, messageAnalyticRouter);
+app.use("/assistants", authenticate, assistantRouter);
 app.use("/auth", authRouter);
-app.use("/chatLogs", authenticate, chatLogs);
-app.use("/courses", authenticate, courses);
+app.use("/chatLogs", authenticate, chatLogRouter);
+app.use("/courses", authenticate, courseRouter);
 app.use("/users", authenticate, userRouter);
-app.use("/flowcharts", authenticate, flowcharts);
-
+app.use("/flowcharts", authenticate, flowchartRouter);
+app.use("/professorRatings", professorRatingRouter);
 // Initialize OpenAI API client
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

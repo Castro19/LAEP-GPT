@@ -1,8 +1,13 @@
-import * as professorRatingCollection from "./professorRatingCollection.js";
-import { sortAndLimitReviews } from "./professorRatingUtil.js";
+import * as professorRatingCollection from "./professorRatingCollection";
+import { sortAndLimitReviews } from "./professorRatingUtil";
 
-export const getProfessorRatings = async (professorIds, courseIds) => {
-  let query = {};
+export const getProfessorRatings = async (
+  professorIds: string[],
+  courseIds?: string[]
+) => {
+  let query = {
+    id: {},
+  };
 
   if (professorIds) {
     query.id = { $in: professorIds };
@@ -17,14 +22,18 @@ export const getProfessorRatings = async (professorIds, courseIds) => {
     const filteredResult = sortAndLimitReviews(result, courseIds);
     return filteredResult;
   } catch (error) {
-    throw new Error("Error fetching professor ratings: " + error.message);
+    throw new Error(
+      "Error fetching professor ratings: " + (error as Error).message
+    );
   }
 };
 
-export const getProfessorsByCourseIds = async (courseIds) => {
-  let query = {};
+export const getProfessorsByCourseIds = async (courseIds: string[]) => {
+  let query = {
+    courses: {},
+  };
 
-  if (courseIds) {
+  if (courseIds && courseIds.length > 0) {
     query.courses = { $in: courseIds };
   }
   try {
@@ -39,7 +48,7 @@ export const getProfessorsByCourseIds = async (courseIds) => {
     return filteredResult;
   } catch (error) {
     throw new Error(
-      "Error fetching professors by course IDs: " + error.message
+      "Error fetching professors by course IDs: " + (error as Error).message
     );
   }
 };
