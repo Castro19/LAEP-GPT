@@ -1,7 +1,7 @@
 // TermContainer.tsx
 import React from "react";
 import CourseItem from "../courseItem/CourseItem";
-import { Course, FlowchartData, Term } from "@/types";
+import { Course, FlowchartData, Term } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import _ from "lodash";
 import { useAppDispatch, useAppSelector } from "@/redux";

@@ -1,6 +1,6 @@
 import { Collection, ObjectId } from "mongodb";
 import { getDb } from "../../connection.js";
-import { GptTypeDB } from "types";
+import { GptTypeDB } from "@polylink/shared/types";
 
 let gptCollection: Collection<GptTypeDB>;
 

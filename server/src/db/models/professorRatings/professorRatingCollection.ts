@@ -1,6 +1,6 @@
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
-import { ProfessorRatingDB, ProfessRatingList } from "types";
+import { ProfessorRatingDB, ProfessRatingList } from "@polylink/shared/types";
 
 let professorRatingCollection: Collection<ProfessorRatingDB>;
 

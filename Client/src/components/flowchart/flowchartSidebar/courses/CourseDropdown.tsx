@@ -17,7 +17,12 @@ import {
 import { SidebarGroup } from "@/components/ui/sidebar";
 import React, { useState, useEffect } from "react";
 import { Droppable } from "@hello-pangea/dnd";
-import { Course, CourseSidebar, CourseSubject, SidebarInfo } from "@/types";
+import {
+  Course,
+  CourseSidebar,
+  CourseSubject,
+  SidebarInfo,
+} from "@polylink/shared/types";
 import {
   fetchCoursesBySubjectAPI,
   fetchSubjectNamesAPI,

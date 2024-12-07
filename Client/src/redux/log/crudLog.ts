@@ -1,4 +1,4 @@
-import { LogData, MessageObjType } from "@/types";
+import { LogData, MessageObjType } from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
 
 export default async function createLogTitle(msg: string, modelTitle: string) {

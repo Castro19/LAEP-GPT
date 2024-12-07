@@ -1,5 +1,5 @@
 {
-  "name": "laep-backend",
+  "name": "@polylink/server",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "^12.25.0",
+    "@polylink/shared": "file:../shared",
     "@qdrant/js-client-rest": "^1.12.0",
     "@sentry/node": "^8.37.1",
     "@sentry/profiling-node": "^8.37.1",

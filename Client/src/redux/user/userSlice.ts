@@ -4,7 +4,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store"; // Adjust the import path as needed
 import { putUserProfile } from "./crudUser"; // Adjust the import path as needed
 import { auth } from "@/firebase";
-import { MyUserInfo } from "@/types";
+import { MyUserInfo } from "@polylink/shared/types";
 
 // Define the initial state for the user
 interface UserState {

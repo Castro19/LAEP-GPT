@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 // Redux
 import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
-import { FetchFlowchartResponse } from "@/types";
+import { FetchFlowchartResponse } from "@polylink/shared/types";
 import FlowchartLogOptions from "./FlowchartLogOptions";
 import { useState, useEffect } from "react";
 import { SidebarMenuButton, SidebarMenuSubItem } from "@/components/ui/sidebar";

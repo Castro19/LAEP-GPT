@@ -3,7 +3,7 @@ import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessSe
 import { addUser } from "../db/models/user/userServices";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import admin from "firebase-admin";
-import { UserData } from "../types";
+import { UserData } from "@polylink/shared/types";
 
 const router = express.Router();
 

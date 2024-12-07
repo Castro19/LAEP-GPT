@@ -1,4 +1,4 @@
-import { CourseDocument, MongoQuery } from "types";
+import { CourseDocument, MongoQuery } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
 

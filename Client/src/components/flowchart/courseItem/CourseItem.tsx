@@ -1,7 +1,7 @@
 // CourseItem.tsx
 import React from "react";
 
-import { Course, FlowchartData } from "@/types";
+import { Course, FlowchartData } from "@polylink/shared/types";
 import {
   Card,
   CardContent,

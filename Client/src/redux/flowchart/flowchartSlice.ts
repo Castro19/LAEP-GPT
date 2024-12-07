@@ -4,7 +4,7 @@ import {
   FlowchartData,
   PostFlowchartInDB,
   Term,
-} from "@/types";
+} from "@polylink/shared/types";
 import {
   deleteFlowchartFromDB,
   fetchAllFlowchartsFromDB,

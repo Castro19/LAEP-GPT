@@ -9,7 +9,7 @@ import {
   CommandGroup,
 } from "@/components/ui/command";
 import { useUserData } from "@/hooks/useUserData";
-import { Course, CourseSidebar } from "@/types";
+import { Course, CourseSidebar } from "@polylink/shared/types";
 import { fetchCoursesAPI } from "../../helpers/fetchCourses";
 import { SidebarMenuSubItem } from "@/components/ui/sidebar";
 import { Draggable } from "@hello-pangea/dnd";

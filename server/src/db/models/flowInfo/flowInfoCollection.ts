@@ -1,4 +1,8 @@
-import { FlowInfoProjection, FlowInfoDocument, MongoQuery } from "types";
+import {
+  FlowInfoProjection,
+  FlowInfoDocument,
+  MongoQuery,
+} from "@polylink/shared/types";
 import { getDb } from "../../connection.js";
 import { Collection } from "mongodb";
 

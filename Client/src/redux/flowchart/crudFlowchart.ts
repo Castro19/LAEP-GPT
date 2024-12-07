@@ -2,7 +2,7 @@ import {
   CreateFlowchartResponse,
   FetchFlowchartResponse,
   FlowchartData,
-} from "@/types";
+} from "@polylink/shared/types";
 
 /**
  * Creates a flowchart based on the flowchart data.

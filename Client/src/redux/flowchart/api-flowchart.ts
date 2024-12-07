@@ -1,7 +1,7 @@
 import { fetchFlowchartData } from "./flowchartSlice";
 import { AppDispatch } from "../store";
 import { resetFlowchartData } from "./flowchartSlice";
-import { Course, Term } from "@/types";
+import { Course, Term } from "@polylink/shared/types";
 
 /**
  * Helper function to fetch the flowchart data JSON based on user selections.

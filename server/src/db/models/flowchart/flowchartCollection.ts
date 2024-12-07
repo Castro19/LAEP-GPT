@@ -1,6 +1,6 @@
 import { Collection, ObjectId } from "mongodb";
 import { getDb } from "../../connection";
-import { FlowchartData } from "types";
+import { FlowchartData } from "@polylink/shared/types";
 
 let flowchartCollection: Collection;
 

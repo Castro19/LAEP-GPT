@@ -6,7 +6,7 @@ import {
   CrudErrorCodes,
   errorMessages,
   CustomErrorType,
-} from "@/types";
+} from "@polylink/shared/types";
 
 // Create
 export const addGpt = createAsyncThunk<

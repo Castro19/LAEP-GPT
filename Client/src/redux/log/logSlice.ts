@@ -12,7 +12,7 @@ import {
   LogErrorCodes,
   logErrorMessages,
   MessageObjType,
-} from "@/types";
+} from "@polylink/shared/types";
 import { RootState } from "../store";
 
 export type AddLogParams = {

@@ -1,7 +1,7 @@
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { MessageObjType } from "@/types";
+import { MessageObjType } from "@polylink/shared/types";
 import { Button } from "../ui/button";
 import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";

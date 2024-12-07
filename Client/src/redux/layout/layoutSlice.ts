@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { LayoutSliceType } from "@/types";
+import { LayoutSliceType } from "@polylink/shared/types";
 
 const initialState: LayoutSliceType = {
   isSidebarVisible: true,

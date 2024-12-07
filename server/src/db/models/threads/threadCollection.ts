@@ -1,6 +1,6 @@
 import { getDb } from "../../connection.js";
 import { Collection, ObjectId } from "mongodb";
-import { ThreadDocument } from "types";
+import { ThreadDocument } from "@polylink/shared/types";
 
 let threadCollection: Collection<ThreadDocument>;
 

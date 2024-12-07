@@ -14,7 +14,7 @@ import { searchProfessors } from "../qdrant/qdrantQuery.js";
 import { addMessageToThread } from "../openAI/threadFunctions.js";
 import { initializeOrFetchIds } from "../openAI/threadFunctions.js";
 import { getAssistantById } from "../../db/models/assistant/assistantServices.js";
-import { GptType, RunningStreamData } from "types";
+import { GptType, RunningStreamData } from "@polylink/shared/types";
 
 type MultiAgentRequest = {
   model: GptType;

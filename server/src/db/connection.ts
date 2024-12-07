@@ -13,11 +13,9 @@ const client = new MongoClient(URI, {
 
 let db: Db;
 
-async function connectToDb() {
+async function connectToDb(): Promise<Db> {
   try {
-    // Connect the client to the server
     await client.connect();
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
 
     db = client.db("laep");
@@ -28,7 +26,7 @@ async function connectToDb() {
   }
 }
 
-function getDb() {
+function getDb(): Db {
   if (!db) {
     throw new Error("Database not connected. Please connect first.");
   }

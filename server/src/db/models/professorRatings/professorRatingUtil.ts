@@ -1,4 +1,8 @@
-import { ProfessRatingList, reviewObject, Reviews } from "types";
+import {
+  ProfessRatingList,
+  reviewObject,
+  Reviews,
+} from "@polylink/shared/types";
 
 export const sortAndLimitReviews = (
   reviews: ProfessRatingList[],

@@ -5,7 +5,7 @@ import {
   getCoursesBySubject,
   getCourse,
 } from "../db/models/courses/courseServices";
-import { SubjectQuery } from "types";
+import { SubjectQuery } from "@polylink/shared/types";
 const router = express.Router();
 
 router.get("/test", (req, res) => {

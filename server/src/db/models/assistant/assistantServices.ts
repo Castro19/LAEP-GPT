@@ -1,4 +1,4 @@
-import { GptTypeDB } from "types";
+import { GptTypeDB } from "@polylink/shared/types";
 import * as gptModel from "./assistantCollection.js";
 
 // Read All

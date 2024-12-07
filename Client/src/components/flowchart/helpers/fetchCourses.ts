@@ -1,6 +1,6 @@
 // helpers/apiHelper.js
 
-import { CourseSidebar } from "@/types";
+import { CourseSidebar } from "@polylink/shared/types";
 
 export const fetchCoursesAPI = async (
   catalogYear: string,

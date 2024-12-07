@@ -10,7 +10,7 @@ import {
 } from "../db/models/chatlog/chatLogServices";
 import { fetchIds } from "../db/models/threads/threadServices";
 import { openai } from "../index.js";
-import { MongoLogData } from "types";
+import { MongoLogData } from "@polylink/shared/types";
 
 const router = express.Router();
 

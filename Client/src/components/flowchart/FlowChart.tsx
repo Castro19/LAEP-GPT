@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import TermContainer from "./termContainer/TermContainer";
-import { FlowchartData } from "@/types";
+import { FlowchartData } from "@polylink/shared/types";
 import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
 import defaultTermData from "./exampleData/flowPlaceholder";
 import { Button } from "../ui/button";

@@ -1,4 +1,8 @@
-import { FlowInfoDocument, FlowInfoProjection, MongoQuery } from "types";
+import {
+  FlowInfoDocument,
+  FlowInfoProjection,
+  MongoQuery,
+} from "@polylink/shared/types";
 import * as flowInfoModel from "./flowInfoCollection";
 
 // Fetch majors by catalog

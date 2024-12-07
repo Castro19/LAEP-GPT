@@ -1,4 +1,4 @@
-import { Availability } from "types";
+import { Availability } from "@polylink/shared/types";
 
 export function formatAvailability(availability: Availability) {
   const formattedOutput = [];

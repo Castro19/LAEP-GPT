@@ -1,4 +1,4 @@
-import { MyUserInfo } from "@/types";
+import { MyUserInfo } from "@polylink/shared/types";
 
 export async function putUserProfile(userData: MyUserInfo): Promise<void> {
   try {

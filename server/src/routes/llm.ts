@@ -15,7 +15,7 @@ import {
   llmRequestBody,
   RunningStreamData,
   TitleRequestBody,
-} from "types";
+} from "@polylink/shared/types";
 
 const router = express.Router();
 

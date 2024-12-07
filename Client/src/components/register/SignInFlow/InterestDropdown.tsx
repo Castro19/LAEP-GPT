@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
 import { RootState } from "@/redux/store";
-import { MyUserInfo } from "@/types";
+import { MyUserInfo } from "@polylink/shared/types";
 
 const InterestDropdown = ({
   name,

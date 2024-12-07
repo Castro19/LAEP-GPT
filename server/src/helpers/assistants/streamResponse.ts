@@ -1,4 +1,7 @@
-import { MessageAnalyticsTokenAnalytics, RunningStreamData } from "types";
+import {
+  MessageAnalyticsTokenAnalytics,
+  RunningStreamData,
+} from "@polylink/shared/types";
 import { Response } from "express";
 import { openai } from "../../index.js";
 import { calculateCost } from "../openAI/costFunction.js";

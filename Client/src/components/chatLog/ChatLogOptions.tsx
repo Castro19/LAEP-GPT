@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { LogData } from "@/types";
+import { LogData } from "@polylink/shared/types";
 
 const ChatLogOptions = ({
   log,

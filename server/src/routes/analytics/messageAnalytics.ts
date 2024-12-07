@@ -4,7 +4,7 @@ import {
   updateMessageAnalytics,
   updateMessageAnalyticsReaction,
 } from "../../db/models/analytics/messageAnalytics/messageAnalyticsServices";
-import { MessageAnalyticsCreate } from "types";
+import { MessageAnalyticsCreate } from "@polylink/shared/types";
 
 const router = express.Router();
 

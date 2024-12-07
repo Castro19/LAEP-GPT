@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
 // UI
 
-import { GptType } from "@/types";
+import { GptType } from "@polylink/shared/types";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   NavigationMenu,

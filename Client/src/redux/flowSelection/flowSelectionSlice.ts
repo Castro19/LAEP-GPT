@@ -1,4 +1,4 @@
-import { ConcentrationInfo } from "@/types";
+import { ConcentrationInfo } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface FlowchartState {

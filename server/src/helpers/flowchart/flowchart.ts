@@ -5,7 +5,7 @@ and return the following:
  - Whether the General Writing requirement is met
 */
 
-import { Term } from "types";
+import { Term } from "@polylink/shared/types";
 import { getDb } from "../../db/connection.js";
 import { Collection } from "mongodb";
 

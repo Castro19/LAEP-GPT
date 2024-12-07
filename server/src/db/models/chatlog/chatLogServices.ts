@@ -1,4 +1,9 @@
-import { LogData, LogListType, MessageObjType, MongoLogData } from "types";
+import {
+  LogData,
+  LogListType,
+  MessageObjType,
+  MongoLogData,
+} from "@polylink/shared/types";
 import * as ChatLogModel from "./chatLogCollection.js";
 
 // Create

@@ -2,8 +2,8 @@
 import React from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { Course, CourseSearch, Term } from "@/types";
-import { FlowchartData } from "@/types";
+import { Course, CourseSearch, Term } from "@polylink/shared/types";
+import { FlowchartData } from "@polylink/shared/types";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import _ from "lodash";
 import { toast } from "@/components/ui/use-toast";

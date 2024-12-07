@@ -2,7 +2,7 @@ import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useNavigate } from "react-router-dom";
-import { FetchFlowchartResponse, MyUserInfo } from "@/types";
+import { FetchFlowchartResponse, MyUserInfo } from "@polylink/shared/types";
 import { SlOptionsVertical } from "react-icons/sl";
 import {
   Popover,

@@ -9,7 +9,12 @@ import { runAssistantAndStreamResponse } from "./streamResponse";
 import { searchCourses } from "../qdrant/qdrantQuery.js";
 import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
-import { CourseDocument, GptType, RunningStreamData, UserData } from "types";
+import {
+  CourseDocument,
+  GptType,
+  RunningStreamData,
+  UserData,
+} from "@polylink/shared/types";
 import { FileObject } from "openai/resources/index.mjs";
 import { Response } from "express";
 

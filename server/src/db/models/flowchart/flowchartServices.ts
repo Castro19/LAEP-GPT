@@ -1,7 +1,11 @@
 import * as flowchartModel from "./flowchartCollection";
 import { searchFlowInfo } from "../flowInfo/flowInfoServices";
 import { updateUser } from "../user/userServices.js";
-import { FetchFlowchartResponse, FlowchartData, FlowInfoDocument } from "types";
+import {
+  FetchFlowchartResponse,
+  FlowchartData,
+  FlowInfoDocument,
+} from "@polylink/shared/types";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one

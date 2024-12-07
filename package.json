@@ -1,6 +1,12 @@
 {
-  "name": "laep-gpt",
+  "name": "@polylink/root",
   "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "Client",
+    "server",
+    "shared"
+  ],
   "type": "module",
   "description": "## Description This project is a part of California Polytechnic State University (Cal Poly) in San Luis Obispo under the supervision of Prof. Franz J. Kurfess. It is an open-source repository intended to aid students in their senior project.",
   "main": "index.js",

@@ -1,4 +1,4 @@
-import { GptType } from "@/types";
+import { GptType } from "@polylink/shared/types";
 // Create
 export async function createGPT(gptData: GptType) {
   try {

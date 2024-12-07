@@ -2,7 +2,7 @@ import {
   MessageAnalyticsCreate,
   MessageAnalyticsTokenAnalytics,
   MessageAnalyticsUpdate,
-} from "types";
+} from "@polylink/shared/types";
 import * as messageAnalyticsModel from "./messageAnalyticsCollection";
 
 // create

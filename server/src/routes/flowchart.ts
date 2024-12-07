@@ -7,7 +7,7 @@ import {
   deleteFlowchart,
   updateAllOtherFlowcharts,
 } from "../db/models/flowchart/flowchartServices";
-import { FlowchartData } from "types";
+import { FlowchartData } from "@polylink/shared/types";
 
 const router = express.Router();
 

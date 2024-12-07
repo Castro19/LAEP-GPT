@@ -1,9 +1,8 @@
 import {
-  MessageAnalytics,
   MessageAnalyticsCreate,
   MessageAnalyticsTokenAnalytics,
   MessageAnalyticsUpdate,
-} from "types";
+} from "@polylink/shared/types";
 import { getDb } from "../../../connection";
 import { Collection, ObjectId } from "mongodb";
 

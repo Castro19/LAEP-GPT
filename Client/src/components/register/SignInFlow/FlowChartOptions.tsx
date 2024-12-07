@@ -3,7 +3,7 @@ import ReusableDropdown from "../../ui/reusable-dropdown";
 import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
 import { setSelection } from "@/redux/flowSelection/flowSelectionSlice";
 import { useUserData } from "@/hooks/useUserData";
-import { ConcentrationInfo } from "@/types";
+import { ConcentrationInfo } from "@polylink/shared/types";
 
 // Move configuration to a separate constant
 const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];

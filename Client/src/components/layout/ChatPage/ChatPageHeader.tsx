@@ -1,7 +1,7 @@
 import ModeDropDown from "../../customGPT/ModeDropDown";
 import { useSidebar } from "@/components/ui/sidebar";
 import NewChat from "../../chat/NewChat";
-import { GptType } from "@/types";
+import { GptType } from "@polylink/shared/types";
 import { BiChat } from "react-icons/bi";
 // Redux:
 import { useAppDispatch, gptActions, layoutActions } from "@/redux";

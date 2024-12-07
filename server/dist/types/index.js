@@ -28,6 +28,7 @@ __reExport(types_exports, require("./middleware/index"), module.exports);
 __reExport(types_exports, require("./messageAnalytics"), module.exports);
 __reExport(types_exports, require("./professorRating"), module.exports);
 __reExport(types_exports, require("./llm"), module.exports);
+__reExport(types_exports, require("./user"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ...require("./message"),
@@ -42,5 +43,6 @@ __reExport(types_exports, require("./llm"), module.exports);
   ...require("./middleware/index"),
   ...require("./messageAnalytics"),
   ...require("./professorRating"),
-  ...require("./llm")
+  ...require("./llm"),
+  ...require("./user")
 });
