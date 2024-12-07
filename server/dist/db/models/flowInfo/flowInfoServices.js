@@ -42,6 +42,7 @@ const searchFlowInfo = async ({
 }) => {
   const query = {};
   const projection = {
+    _id: 0,
     majorName: 0,
     concName: 0,
     code: 0

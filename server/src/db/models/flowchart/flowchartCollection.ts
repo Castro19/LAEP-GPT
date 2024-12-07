@@ -1,10 +1,17 @@
-import { Collection, ObjectId } from "mongodb";
+import {
+  BulkWriteResult,
+  Collection,
+  DeleteResult,
+  InsertOneResult,
+  ObjectId,
+  UpdateResult,
+} from "mongodb";
 import { getDb } from "../../connection";
-import { FlowchartData } from "@polylink/shared/types";
+import { FlowchartData, FlowchartDocument } from "@polylink/shared/types";
 
-let flowchartCollection: Collection;
+let flowchartCollection: Collection<FlowchartDocument>;
 
-const initializeCollection = () => {
+const initializeCollection = (): void => {
   flowchartCollection = getDb().collection("flowcharts");
 };
 
@@ -15,7 +22,7 @@ export const createFlowchart = async (
   name: string,
   primaryOption: boolean,
   userId: string
-) => {
+): Promise<InsertOneResult<FlowchartDocument>> => {
   if (!flowchartCollection) initializeCollection();
   try {
     // Validate that userId exists and is valid
@@ -30,7 +37,7 @@ export const createFlowchart = async (
       userId,
       createdAt: new Date(), // Adding timestamp for better tracking
       updatedAt: new Date(),
-    });
+    } as FlowchartDocument);
     return result;
   } catch (error) {
     throw new Error(
@@ -42,7 +49,11 @@ export const createFlowchart = async (
 // Read
 // Create 403 error if the user is not the owner of the flowchart
 // Create 404 error if the flowchart does not exist
-export const fetchFlowchart = async (flowchartId: string, userId: string) => {
+export const fetchFlowchart = async (
+  flowchartId: string,
+  userId: string
+): Promise<FlowchartDocument | null> => {
+  if (!flowchartCollection) initializeCollection();
   try {
     const result = await flowchartCollection.findOne({
       _id: new ObjectId(flowchartId),
@@ -65,7 +76,10 @@ export const fetchFlowchart = async (flowchartId: string, userId: string) => {
 };
 
 // Read All
-export const fetchAllFlowcharts = async (userId: string) => {
+export const fetchAllFlowcharts = async (
+  userId: string
+): Promise<FlowchartDocument[]> => {
+  if (!flowchartCollection) initializeCollection();
   try {
     // Only return the flowchartId: _id and the name
     const result = await flowchartCollection
@@ -86,7 +100,8 @@ export const updateFlowchart = async (
   name: string,
   primaryOption: boolean,
   userId: string
-) => {
+): Promise<UpdateResult> => {
+  if (!flowchartCollection) initializeCollection();
   try {
     // First, get the existing document
     const existingDoc = await flowchartCollection.findOne({
@@ -143,7 +158,11 @@ export const updateFlowchart = async (
 };
 
 // Delete
-export const deleteFlowchart = async (flowchartId: string, userId: string) => {
+export const deleteFlowchart = async (
+  flowchartId: string,
+  userId: string
+): Promise<DeleteResult> => {
+  if (!flowchartCollection) initializeCollection();
   try {
     // First, get the existing document
     const existingDoc = await flowchartCollection.findOne({
@@ -174,7 +193,8 @@ export const deleteFlowchart = async (flowchartId: string, userId: string) => {
 export const updateAllOtherFlowcharts = async (
   flowchartId: string,
   userId: string
-) => {
+): Promise<BulkWriteResult> => {
+  if (!flowchartCollection) initializeCollection();
   try {
     // Use bulkWrite to perform both operations atomically
     const result = await flowchartCollection.bulkWrite([

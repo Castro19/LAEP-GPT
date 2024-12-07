@@ -14,14 +14,14 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { LogData } from "@polylink/shared/types";
+import { LogListType } from "@polylink/shared/types";
 
 const ChatLogOptions = ({
   log,
   name,
   onNameChange,
 }: {
-  log: LogData;
+  log: LogListType;
   name: string;
   // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;

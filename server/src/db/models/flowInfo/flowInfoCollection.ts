@@ -22,10 +22,7 @@ export const searchFlowInfo = async (
   try {
     const result = await flowInfoCollection
       .find(query)
-      .project({
-        _id: 0,
-        ...projection,
-      })
+      .project(projection)
       .toArray();
     return result as ConcentrationInfo[] | string[];
   } catch (error) {

@@ -55,6 +55,7 @@ const createFlowchart = async (flowchartData, name, primaryOption, userId) => {
   }
 };
 const fetchFlowchart = async (flowchartId, userId) => {
+  if (!flowchartCollection) initializeCollection();
   try {
     const result = await flowchartCollection.findOne({
       _id: new import_mongodb.ObjectId(flowchartId),
@@ -74,6 +75,7 @@ const fetchFlowchart = async (flowchartId, userId) => {
   }
 };
 const fetchAllFlowcharts = async (userId) => {
+  if (!flowchartCollection) initializeCollection();
   try {
     const result = await flowchartCollection.find({ userId }, { projection: { _id: 1, name: 1, primaryOption: 1 } }).toArray();
     return result;
@@ -84,6 +86,7 @@ const fetchAllFlowcharts = async (userId) => {
   }
 };
 const updateFlowchart = async (flowchartId, flowchartData, name, primaryOption, userId) => {
+  if (!flowchartCollection) initializeCollection();
   try {
     const existingDoc = await flowchartCollection.findOne({
       _id: new import_mongodb.ObjectId(flowchartId),
@@ -133,6 +136,7 @@ const updateFlowchart = async (flowchartId, flowchartData, name, primaryOption, 
   }
 };
 const deleteFlowchart = async (flowchartId, userId) => {
+  if (!flowchartCollection) initializeCollection();
   try {
     const existingDoc = await flowchartCollection.findOne({
       _id: new import_mongodb.ObjectId(flowchartId),
@@ -156,6 +160,7 @@ const deleteFlowchart = async (flowchartId, userId) => {
   }
 };
 const updateAllOtherFlowcharts = async (flowchartId, userId) => {
+  if (!flowchartCollection) initializeCollection();
   try {
     const result = await flowchartCollection.bulkWrite([
       {

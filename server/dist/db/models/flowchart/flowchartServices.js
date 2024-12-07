@@ -61,7 +61,7 @@ const createFlowchart = async (flowchartData, name, userId) => {
         userId
       );
       return {
-        flowchartId: result.insertedId,
+        flowchartId: result.insertedId.toString(),
         name: flowchartName,
         primaryOption
       };
@@ -79,6 +79,9 @@ const createFlowchart = async (flowchartData, name, userId) => {
 const fetchFlowchart = async (flowchartId, userId) => {
   try {
     const result = await flowchartModel.fetchFlowchart(flowchartId, userId);
+    if (!result) {
+      throw new Error("Flowchart not found");
+    }
     const flowchartMeta = {
       flowchartId: result._id.toString(),
       name: result.name,
@@ -143,7 +146,10 @@ const updateFlowchart = async (flowchartId, flowchartData, name, primaryOption, 
       primaryOption,
       userId
     );
-    return result;
+    if (!result) {
+      throw new Error("Flowchart not found");
+    }
+    return { message: "Flowchart updated successfully" };
   } catch (error) {
     throw new Error(
       "Service error Updating Flowchart: " + error.message
@@ -186,6 +192,8 @@ const deleteFlowchart = async (flowchartId, userId) => {
       flowchartId: newPrimaryFlowchartId || ""
     });
     return {
+      success: true,
+      deletedFlowchartId: flowchartId,
       deletedPrimaryOption: primaryOption,
       newPrimaryFlowchartId
     };
@@ -212,7 +220,7 @@ const isPrimaryFlowchart = async (flowchartList, flowchartId) => {
   const primaryFlowchart = flowchartList.find(
     (flowchart) => flowchart.flowchartId.toString() === flowchartId
   );
-  return primaryFlowchart?.primaryOption;
+  return primaryFlowchart?.primaryOption || false;
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

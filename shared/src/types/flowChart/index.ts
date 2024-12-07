@@ -1,16 +1,19 @@
 // types.ts
 
+import { ObjectId } from "mongodb";
+
 // 1-1 match #FEFD9A --> Major, #FCD09E --> Support, #DCFDD2 --> GE, #F5F5DC --> Other
 type colors = "#FEFD9A" | "#FCD09E" | "#DCFDD2" | "#F5F5DC";
-export interface UnitCounts {
+
+export type UnitCounts = {
   total: number;
   major: number; // #FEFD9A
   support: number; // #FCD09E
   ge: number; // #DCFDD2
   other: number; // #F5F5DC
-}
+};
 
-export interface Course {
+export type Course = {
   id: string | null;
   color: colors;
   displayName?: string;
@@ -21,22 +24,22 @@ export interface Course {
   customDesc?: string;
   customDisplayName?: string;
   completed?: boolean; // New property
-}
+};
 
-export interface SidebarInfo {
+export type SidebarInfo = {
   [key: string]: CourseSubject[];
-}
-export interface CourseSidebar {
+};
+export type CourseSidebar = {
   courseId: string;
   displayName: string;
   units: string;
   desc: string;
-}
-export interface CourseSubject {
+};
+export type CourseSubject = {
   subject: string;
   courses: CourseSidebar[];
-}
-export interface CourseSearch {
+};
+export type CourseSearch = {
   courseId: string;
   catalog: string;
   displayName: string;
@@ -45,26 +48,26 @@ export interface CourseSearch {
   addl: string;
   gwrCourse: boolean;
   uscpCourse: boolean;
-}
+};
 
-export interface CourseCatalog {
+export type CourseCatalog = {
   [key: string]: CourseSearch[];
-}
+};
 
-export interface Term {
+export type Term = {
   tIndex: number;
   tUnits: string;
   courses: Course[];
-}
+};
 
-export interface CatalogOption {
+export type CatalogOption = {
   startingYear: string;
   catalog: string;
   major: string;
   concentration: string;
-}
+};
 
-export interface FlowchartData {
+export type FlowchartData = {
   id: string;
   ownerId: string;
   name: string;
@@ -78,22 +81,43 @@ export interface FlowchartData {
   publishedId: string | null;
   importedId: string | null;
   lastUpdatedUTC: string;
-}
+};
 
 // api response types
-export interface PostFlowchartInDB {
+export type PostFlowchartInDB = {
   flowchartData: FlowchartData;
   name: string;
   primaryOption?: boolean;
-}
-export interface CreateFlowchartResponse {
+};
+export type CreateFlowchartResponse = {
   flowchartId: string;
   name: string;
   primaryOption?: boolean;
-}
+};
+export type FetchFlowchartResponse = {
+  flowchartData: FlowchartData;
+  flowchartMeta: FetchedFlowchartObject;
+};
 
-export interface FetchFlowchartResponse {
+export type FetchedFlowchartObject = {
   flowchartId: string;
   name: string;
   primaryOption?: boolean;
-}
+};
+
+export type DeleteFlowchartResponse = {
+  success: boolean;
+  deletedFlowchartId: string;
+  deletedPrimaryOption: boolean;
+  newPrimaryFlowchartId: string | null;
+};
+
+export type FlowchartDocument = {
+  _id: ObjectId;
+  flowchartData: FlowchartData;
+  name: string;
+  primaryOption: boolean;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { updateUserProfile, updateUserData } from "../redux/user/userSlice";
-import { MyUserInfo } from "../types";
+import { UserData } from "@polylink/shared/types";
 
 export function useUserData() {
   const dispatch = useAppDispatch();
@@ -12,24 +12,24 @@ export function useUserData() {
   ) => {
     const { name, value } = e.target;
 
-    dispatch(updateUserData({ [name]: value } as Partial<MyUserInfo>));
+    dispatch(updateUserData({ [name]: value } as Partial<UserData>));
   };
 
-  const handleChange = <K extends keyof MyUserInfo>(
+  const handleChange = <K extends keyof UserData>(
     name: K,
-    value: MyUserInfo[K]
+    value: UserData[K]
   ) => {
-    dispatch(updateUserData({ [name]: value } as Partial<MyUserInfo>));
+    dispatch(updateUserData({ [name]: value } as Partial<UserData>));
   };
 
-  const handleAddItem = (field: keyof MyUserInfo, value: string) => {
+  const handleAddItem = (field: keyof UserData, value: string) => {
     const currentArray = userData[field] as string[];
     if (!currentArray.includes(value)) {
       dispatch(updateUserData({ [field]: [...currentArray, value] }));
     }
   };
 
-  const handleRemoveItem = (field: keyof MyUserInfo, value: string) => {
+  const handleRemoveItem = (field: keyof UserData, value: string) => {
     const currentArray = userData[field] as string[];
     dispatch(
       updateUserData({ [field]: currentArray.filter((item) => item !== value) })

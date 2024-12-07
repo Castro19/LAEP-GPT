@@ -122,12 +122,7 @@ router.delete("/:flowchartId", (async (req, res) => {
   try {
     const flowchartId = req.params.flowchartId;
     const result = await deleteFlowchart(flowchartId, userId);
-    res.status(200).json({
-      success: true,
-      deletedFlowchartId: flowchartId,
-      deletedPrimaryOption: result.deletedPrimaryOption,
-      newPrimaryFlowchartId: result.newPrimaryFlowchartId,
-    });
+    res.status(200).json(result);
   } catch (error) {
     console.error("Failed to delete flowchart: ", error);
     if ((error as Error).message === "Flowchart not found") {

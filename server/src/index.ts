@@ -16,6 +16,7 @@ import userRouter from "./routes/user";
 import courseRouter from "./routes/courses";
 import chatLogRouter from "./routes/chatLog";
 import flowchartRouter from "./routes/flowchart";
+import flowInfoRouter from "./routes/flowInfo";
 import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
 import professorRatingRouter from "./routes/professorRating";
 import llmRouter from "./routes/llm";
@@ -64,6 +65,7 @@ app.use("/chatLogs", authenticate, chatLogRouter);
 app.use("/courses", authenticate, courseRouter);
 app.use("/users", authenticate, userRouter);
 app.use("/flowcharts", authenticate, flowchartRouter);
+app.use("/flowInfo", authenticate, flowInfoRouter);
 app.use("/professorRatings", professorRatingRouter);
 app.use("/llms", llmRouter);
 

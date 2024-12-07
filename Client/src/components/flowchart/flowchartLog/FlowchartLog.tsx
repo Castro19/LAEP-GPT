@@ -1,13 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 // Redux
 import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
-import { FetchFlowchartResponse } from "@polylink/shared/types";
+import { FetchedFlowchartObject } from "@polylink/shared/types";
 import FlowchartLogOptions from "./FlowchartLogOptions";
 import { useState, useEffect } from "react";
 import { SidebarMenuButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
 
 type FlowchartLogProps = {
-  flowchart: FetchFlowchartResponse;
+  flowchart: FetchedFlowchartObject;
   // eslint-disable-next-line no-unused-vars
   onSelectFlowchart: (flowchartId: string) => void;
 };

@@ -2,10 +2,14 @@ import * as flowchartModel from "./flowchartCollection";
 import { searchFlowInfo } from "../flowInfo/flowInfoServices";
 import { updateUser } from "../user/userServices.js";
 import {
+  CreateFlowchartResponse,
+  DeleteFlowchartResponse,
+  FetchedFlowchartObject,
   FetchFlowchartResponse,
   FlowchartData,
   FlowInfoDocument,
 } from "@polylink/shared/types";
+import { BulkWriteResult } from "mongodb";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one
@@ -13,7 +17,7 @@ export const createFlowchart = async (
   flowchartData: FlowchartData,
   name: string,
   userId: string
-) => {
+): Promise<CreateFlowchartResponse> => {
   let flowchartName = "Untitled Flowchart";
   let primaryOption = false;
   let flowchartList = [];
@@ -40,7 +44,7 @@ export const createFlowchart = async (
         userId
       );
       return {
-        flowchartId: result.insertedId,
+        flowchartId: result.insertedId.toString(),
         name: flowchartName,
         primaryOption,
       };
@@ -57,9 +61,15 @@ export const createFlowchart = async (
 };
 
 // Read: Get the flowchart associated with the user and the flowchartId
-export const fetchFlowchart = async (flowchartId: string, userId: string) => {
+export const fetchFlowchart = async (
+  flowchartId: string,
+  userId: string
+): Promise<FetchFlowchartResponse> => {
   try {
     const result = await flowchartModel.fetchFlowchart(flowchartId, userId);
+    if (!result) {
+      throw new Error("Flowchart not found");
+    }
     const flowchartMeta = {
       flowchartId: result._id.toString(),
       name: result.name,
@@ -77,8 +87,10 @@ export const fetchFlowchart = async (flowchartId: string, userId: string) => {
 };
 
 // Read All: Get all flowcharts associated with the user
-export const fetchAllFlowcharts = async (userId: string) => {
-  let flowchartList = [];
+export const fetchAllFlowcharts = async (
+  userId: string
+): Promise<FetchedFlowchartObject[]> => {
+  let flowchartList: FetchedFlowchartObject[] = [];
   try {
     const result = await flowchartModel.fetchAllFlowcharts(userId);
     if (result.length === 0) {
@@ -128,7 +140,7 @@ export const updateFlowchart = async (
   name: string,
   primaryOption: boolean,
   userId: string
-) => {
+): Promise<{ message: string }> => {
   try {
     const result = await flowchartModel.updateFlowchart(
       flowchartId,
@@ -137,7 +149,10 @@ export const updateFlowchart = async (
       primaryOption,
       userId
     );
-    return result;
+    if (!result) {
+      throw new Error("Flowchart not found");
+    }
+    return { message: "Flowchart updated successfully" };
   } catch (error) {
     throw new Error(
       "Service error Updating Flowchart: " + (error as Error).message
@@ -146,7 +161,10 @@ export const updateFlowchart = async (
 };
 
 // Delete
-export const deleteFlowchart = async (flowchartId: string, userId: string) => {
+export const deleteFlowchart = async (
+  flowchartId: string,
+  userId: string
+): Promise<DeleteFlowchartResponse> => {
   const flowchartList = await fetchAllFlowcharts(userId);
   const primaryOption = await isPrimaryFlowchart(flowchartList, flowchartId);
   await flowchartModel.deleteFlowchart(flowchartId, userId);
@@ -184,9 +202,11 @@ export const deleteFlowchart = async (flowchartId: string, userId: string) => {
     });
 
     return {
+      success: true,
+      deletedFlowchartId: flowchartId,
       deletedPrimaryOption: primaryOption,
       newPrimaryFlowchartId,
-    };
+    } as DeleteFlowchartResponse;
   } catch (error) {
     throw new Error(
       "Service error Deleting Flowchart: " + (error as Error).message
@@ -198,7 +218,7 @@ export const deleteFlowchart = async (flowchartId: string, userId: string) => {
 export const updateAllOtherFlowcharts = async (
   flowchartId: string,
   userId: string
-) => {
+): Promise<BulkWriteResult> => {
   try {
     const result = await flowchartModel.updateAllOtherFlowcharts(
       flowchartId,
@@ -213,11 +233,11 @@ export const updateAllOtherFlowcharts = async (
 };
 
 export const isPrimaryFlowchart = async (
-  flowchartList: FetchFlowchartResponse[],
+  flowchartList: FetchedFlowchartObject[],
   flowchartId: string
-) => {
+): Promise<boolean> => {
   const primaryFlowchart = flowchartList.find(
     (flowchart) => flowchart.flowchartId.toString() === flowchartId
   );
-  return primaryFlowchart?.primaryOption;
+  return primaryFlowchart?.primaryOption || false;
 };

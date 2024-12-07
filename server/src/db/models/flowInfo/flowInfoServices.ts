@@ -26,6 +26,7 @@ export const searchFlowInfo = async ({
 }): Promise<ConcentrationInfo[] | string[] | null> => {
   const query: MongoQuery<FlowInfoDocument> = {};
   const projection: FlowInfoProjection = {
+    _id: 0,
     majorName: 0,
     concName: 0,
     code: 0,

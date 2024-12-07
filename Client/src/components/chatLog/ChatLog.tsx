@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 // Redux
 import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
-import { LogData } from "@polylink/shared/types";
+import { LogListType } from "@polylink/shared/types";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import ChatLogOptions from "./ChatLogOptions";
 import { useState } from "react";
 
 type ChatLogSidebarProps = {
-  log: LogData;
+  log: LogListType;
   // eslint-disable-next-line no-unused-vars
   onSelectLog: (logId: string) => void;
 };

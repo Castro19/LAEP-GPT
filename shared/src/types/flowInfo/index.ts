@@ -12,6 +12,7 @@ export type FlowInfoDocument = {
 };
 
 export type FlowInfoProjection = {
+  _id: 0;
   majorName: number;
   concName: number;
   code: number;
