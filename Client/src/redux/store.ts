@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { messageReducer } from "./message/messageSlice";
-import { gptReducer } from "./gpt/gptSlice";
+import { assistantReducer } from "./assistant/assistantSlice";
 import { layoutReducer } from "./layout/layoutSlice";
 import { logReducer } from "./log/logSlice";
 import { authReducer } from "./auth/authSlice";
@@ -10,7 +10,7 @@ import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 const store = configureStore({
   reducer: {
     message: messageReducer,
-    gpt: gptReducer,
+    assistant: assistantReducer,
     layout: layoutReducer,
     log: logReducer,
     auth: authReducer,

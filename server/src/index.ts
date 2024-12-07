@@ -21,6 +21,16 @@ import professorRatingRouter from "./routes/professorRating";
 import llmRouter from "./routes/llm";
 // LLM API
 import OpenAI from "openai";
+import { DecodedIdToken } from "firebase-admin/auth";
+import { UserType } from "@polylink/shared/types";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: DecodedIdToken & { role?: UserType };
+    }
+  }
+}
 
 // Initialize express app
 const app = express();

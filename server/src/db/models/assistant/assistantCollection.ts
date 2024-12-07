@@ -1,34 +1,36 @@
 import { Collection, ObjectId } from "mongodb";
 import { getDb } from "../../connection.js";
-import { GptTypeDB } from "@polylink/shared/types";
+import { AssistantDocument } from "@polylink/shared/types";
 
-let gptCollection: Collection<GptTypeDB>;
+let assistantCollection: Collection<AssistantDocument>;
 
-const initializeCollection = () => {
-  gptCollection = getDb().collection("gpts");
+const initializeCollection: () => void = () => {
+  assistantCollection = getDb().collection("gpts");
 };
 
-export const viewGPTs = async () => {
-  if (!gptCollection) initializeCollection();
+export const viewGPTs: () => Promise<AssistantDocument[]> = async () => {
+  if (!assistantCollection) initializeCollection();
   try {
-    const result = await gptCollection.find({}).toArray();
+    const result = await assistantCollection.find({}).toArray();
     return result;
   } catch (error) {
     throw new Error(
-      "Error fetching GPTs from database: " + (error as Error).message
+      "Error fetching Assistants from database: " + (error as Error).message
     );
   }
 };
 
-export const findAssistantById = async (gptId: string) => {
+export const findAssistantById: (
+  gptId: string
+) => Promise<AssistantDocument | null> = async (gptId: string) => {
   try {
-    const result = await gptCollection.findOne({
+    const result = await assistantCollection.findOne({
       _id: new ObjectId(gptId) as unknown as string,
     });
     return result;
   } catch (error) {
     throw new Error(
-      "Error finding GPT from database: " + (error as Error).message
+      "Error finding Assistant from database: " + (error as Error).message
     );
   }
 };

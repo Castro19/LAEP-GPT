@@ -24,30 +24,30 @@ __export(assistantCollection_exports, {
 module.exports = __toCommonJS(assistantCollection_exports);
 var import_mongodb = require("mongodb");
 var import_connection = require("../../connection.js");
-let gptCollection;
+let assistantCollection;
 const initializeCollection = () => {
-  gptCollection = (0, import_connection.getDb)().collection("gpts");
+  assistantCollection = (0, import_connection.getDb)().collection("gpts");
 };
 const viewGPTs = async () => {
-  if (!gptCollection) initializeCollection();
+  if (!assistantCollection) initializeCollection();
   try {
-    const result = await gptCollection.find({}).toArray();
+    const result = await assistantCollection.find({}).toArray();
     return result;
   } catch (error) {
     throw new Error(
-      "Error fetching GPTs from database: " + error.message
+      "Error fetching Assistants from database: " + error.message
     );
   }
 };
 const findAssistantById = async (gptId) => {
   try {
-    const result = await gptCollection.findOne({
+    const result = await assistantCollection.findOne({
       _id: new import_mongodb.ObjectId(gptId)
     });
     return result;
   } catch (error) {
     throw new Error(
-      "Error finding GPT from database: " + error.message
+      "Error finding Assistant from database: " + error.message
     );
   }
 };

@@ -31,9 +31,7 @@ const initializeCollection = () => {
 const addMessageAnalytics = async (messageAnalyticsData) => {
   if (!messageAnalyticsCollection) initializeCollection();
   try {
-    const result = await messageAnalyticsCollection.insertOne(
-      messageAnalyticsData
-    );
+    const result = await messageAnalyticsCollection.insertOne(messageAnalyticsData);
     return result;
   } catch (error) {
     console.error("Full error:", error);

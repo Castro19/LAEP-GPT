@@ -11,7 +11,7 @@ import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
 import {
   CourseDocument,
-  GptType,
+  AssistantType,
   RunningStreamData,
   UserData,
 } from "@polylink/shared/types";
@@ -65,7 +65,7 @@ const calpolyClubsAssistant = (user: UserData, message: string) => {
 };
 
 type SingleAgentRequestBody = {
-  model: GptType;
+  model: AssistantType;
   chatId: string;
   userFile: FileObject | null;
   message: string;

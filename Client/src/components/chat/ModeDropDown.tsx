@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
 // UI
 
-import { GptType } from "@polylink/shared/types";
+import { AssistantType } from "@polylink/shared/types";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   NavigationMenu,
@@ -19,13 +19,15 @@ import { ToastAction } from "@radix-ui/react-toast";
 
 type ModeDropDownProps = {
   // eslint-disable-next-line no-unused-vars
-  onSelect: (model: GptType) => void;
+  onSelect: (model: AssistantType) => void;
 };
 
 export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { currentModel, gptList } = useAppSelector((state) => state.gpt);
+  const { currentModel, assistantList } = useAppSelector(
+    (state) => state.assistant
+  );
   const { userData } = useAppSelector((state) => state.user);
   const [matchingAssistantLocked, setMatchingAssistantLocked] = useState(true);
   const [flowchartAssistantLocked, setFlowchartAssistantLocked] =
@@ -34,6 +36,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   const [toastFlowchartDescription, setToastFlowchartDescription] =
     useState("");
 
+  console.log("GPT LIST", assistantList);
   useEffect(() => {
     const { availability, interests } = userData;
 
@@ -60,8 +63,8 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
     setFlowchartAssistantLocked(userHasNoPrimaryFlowchart);
     setMatchingAssistantLocked(matchingAssistantLocked);
   }, [userData]);
-  // Transform gptList to prioritize 'name' over 'title'
-  const transformedGptList = gptList.map((option) => {
+  // Transform assistantList to prioritize 'name' over 'title'
+  const transformedassistantList = assistantList.map((option) => {
     // Prioritize displaying 'name', fallback to 'title' if 'name' is not available
     const title = option.title || "Unnamed Assistant";
     const description = option.desc || "No description available";
@@ -77,7 +80,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
     };
   });
 
-  const handleLockClick = (gpt: GptType) => {
+  const handleLockClick = (gpt: AssistantType) => {
     const handleToastAction = () => {
       if (gpt.title === "Matching Assistant") {
         navigate(`/profile/edit`);
@@ -115,10 +118,10 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
                 </p>
               </li>
               <div className="grid gap-2">
-                {transformedGptList.map((option) => (
+                {transformedassistantList.map((option) => (
                   <ListItem
                     key={option.id}
-                    gpt={option}
+                    assistant={option}
                     onClick={() =>
                       option.locked ? handleLockClick(option) : onSelect(option)
                     }
@@ -134,13 +137,17 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   );
 }
 
+type ListItemAssistant = AssistantType & {
+  locked: boolean;
+};
+
 const ListItem = React.forwardRef<
   React.ElementRef<"button">,
   React.ComponentPropsWithoutRef<"button"> & {
-    gpt: GptType;
+    assistant: ListItemAssistant;
   }
->(({ className, gpt, ...props }, ref) => {
-  const { title, urlPhoto } = gpt;
+>(({ className, assistant, ...props }, ref) => {
+  const { title, urlPhoto } = assistant;
 
   return (
     <button

@@ -1,4 +1,5 @@
-export type MessageAnalytics = {
+export type MessageAnalyticsDocument = {
+    _id: string;
     userId: string;
     userMessageId: string;
     botMessageId: string;
@@ -17,16 +18,6 @@ export type MessageAnalytics = {
     userMessage: string | null;
     userReaction: "like" | "dislike" | null;
 };
-export type MessageAnalyticsCreate = {
-    _id: string;
-    userId: string;
-    userMessageId: string;
-    botMessageId: string;
-    logId: string;
-    assistantId: string;
-    hadFile: boolean;
-    createdAt: Date | number;
-};
 export type MessageAnalyticsUpdate = {
     userMessage: string | null;
     responseTime: number;
@@ -42,6 +33,16 @@ export type MessageAnalyticsTokenAnalytics = {
     promptCost: string;
     completionCost: string;
     totalCost: string;
+};
+export type MessageAnalyticsCreate = {
+    _id?: string;
+    userId: string;
+    userMessageId: string;
+    botMessageId: string;
+    logId: string;
+    assistantId: string;
+    hadFile: boolean;
+    createdAt: Date | number;
 };
 export type MessageAnalyticsReaction = {
     botMessageId: string;

@@ -4,11 +4,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store"; // Adjust the import path as needed
 import { putUserProfile } from "./crudUser"; // Adjust the import path as needed
 import { auth } from "@/firebase";
-import { MyUserInfo } from "@polylink/shared/types";
+import { UpdateUserData, UserData } from "@polylink/shared/types";
 
 // Define the initial state for the user
 interface UserState {
-  userData: MyUserInfo;
+  userData: UserData;
   loading: boolean;
   error: string | null;
 }
@@ -18,6 +18,7 @@ const initialState: UserState = {
     userId: "",
     bio: "",
     year: "",
+    userType: "student",
     interests: [],
     courses: [],
     availability: {
@@ -78,7 +79,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUserData(state, action: PayloadAction<MyUserInfo>) {
+    setUserData(state, action: PayloadAction<UserData>) {
       state.userData = action.payload;
     },
     setUserLoading(state, action: PayloadAction<boolean>) {
@@ -87,7 +88,7 @@ const userSlice = createSlice({
     setUserError(state, action) {
       state.error = action.payload;
     },
-    updateUserData(state, action: PayloadAction<Partial<MyUserInfo>>) {
+    updateUserData(state, action: PayloadAction<UpdateUserData>) {
       Object.assign(state.userData, action.payload);
     },
     // ... other reducers

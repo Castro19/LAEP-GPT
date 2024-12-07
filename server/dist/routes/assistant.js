@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
   }
   try {
     const result = await (0, import_assistantServices.fetchAssistants)();
-    res.status(200).json({ gptList: result });
+    res.status(200).json(result);
   } catch (error) {
     console.error("Failed to fetch GPTs: ", error);
   }

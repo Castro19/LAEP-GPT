@@ -1,17 +1,17 @@
-import { ModelType } from "../message/messageType";
+import { ModelType } from "../message";
 
-export type GptType = {
-  userId?: string; // The user who made the assistant
-  id?: string; // The unique id of the assistant
+export type AssistantType = {
+  id: string; // The unique id of the assistant
   title: string; // the title of the assistant
+  prompt?: string; // the prompt of the assistant
+  assistantId?: string; // The unique id of the assistant
   desc: string; // the displayed description of the assistant
   urlPhoto?: string; // The avatar image of the assistant
-  instructions?: string; // The instructions stored on db for assistant
   suggestedQuestions?: string[]; // The suggested questions for the assistant
 };
 
-export type GptSliceType = {
-  gptList: GptType[]; // The list of assistants fetched from DB
+export type AssistantSliceType = {
+  assistantList: AssistantType[]; // The list of assistants fetched from DB
   currentModel: ModelType; // The current assistant Model selected
   isLoading: boolean; // Is being created
   error: string | null; // Error when submitting form to create assistant
@@ -24,3 +24,7 @@ export type CurrentModelType =
   | "Social Justice Assistant"
   | "Enhanced ESJ Assistant"
   | "Matching Assistant";
+
+export type AssistantDocument = AssistantType & {
+  _id: string;
+};

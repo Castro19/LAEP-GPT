@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import ChatContainer from "@/components/chat/ChatContainer";
-import { viewGPTs } from "../redux/gpt/crudGPT";
 import {
   useAppSelector,
   useAppDispatch,
-  gptActions,
+  assistantActions,
   messageActions,
 } from "@/redux";
 import { useParams } from "react-router-dom";
@@ -19,25 +18,26 @@ const ChatPage = () => {
 
   const userId = useAppSelector((state) => state.auth.userId);
 
-  const gptList = useAppSelector((state) => state.gpt.gptList);
-  const hasFetchedGptList = useRef(false);
+  const assistantList = useAppSelector(
+    (state) => state.assistant.assistantList
+  );
+  const hasFetchedassistantList = useRef(false);
 
   useEffect(() => {
-    if (hasFetchedGptList.current || gptList.length > 0) return;
-    hasFetchedGptList.current = true;
+    if (hasFetchedassistantList.current || assistantList.length > 0) return;
+    hasFetchedassistantList.current = true;
 
-    const fetchGptList = async () => {
+    const fetchassistantList = async () => {
       if (userId) {
         try {
-          const fetchedGptList = await viewGPTs();
-          dispatch(gptActions.initGptList(fetchedGptList.gptList));
+          dispatch(assistantActions.fetchAll());
         } catch (error) {
           console.error("Error fetching GPT list: ", error);
         }
       }
     };
-    fetchGptList();
-  }, [userId, dispatch, gptList.length]);
+    fetchassistantList();
+  }, [userId, dispatch, assistantList.length]);
 
   useEffect(() => {
     const fetchLog = async () => {

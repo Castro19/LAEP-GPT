@@ -32,25 +32,27 @@ __export(assistantServices_exports, {
   getAssistantById: () => getAssistantById
 });
 module.exports = __toCommonJS(assistantServices_exports);
-var gptModel = __toESM(require("./assistantCollection.js"));
+var assistantModel = __toESM(require("./assistantCollection.js"));
 const fetchAssistants = async () => {
   try {
-    const result = await gptModel.viewGPTs();
-    const gptList = result.map((gpt) => ({
-      id: gpt._id,
-      title: gpt.title,
-      desc: gpt.desc,
-      urlPhoto: gpt.urlPhoto,
-      suggestedQuestions: gpt.suggestedQuestions
+    const result = await assistantModel.viewGPTs();
+    if (!result) throw new Error("No assistants found");
+    const assistantList = result.map((assistant) => ({
+      id: assistant._id,
+      title: assistant.title,
+      desc: assistant.desc,
+      urlPhoto: assistant.urlPhoto,
+      suggestedQuestions: assistant.suggestedQuestions
     }));
-    return gptList;
+    return assistantList;
   } catch (error) {
     console.error("CONSOLE LOG ERROR: ", error);
+    throw new Error("Error fetching assistants: " + error.message);
   }
 };
 const getAssistantById = async (gptId) => {
   try {
-    const result = await gptModel.findAssistantById(gptId);
+    const result = await assistantModel.findAssistantById(gptId);
     return result;
   } catch (error) {
     throw new Error(

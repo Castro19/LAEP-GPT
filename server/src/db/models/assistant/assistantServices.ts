@@ -1,28 +1,33 @@
-import { GptTypeDB } from "@polylink/shared/types";
-import * as gptModel from "./assistantCollection.js";
+import { AssistantDocument, AssistantType } from "@polylink/shared/types";
+import * as assistantModel from "./assistantCollection.js";
 
 // Read All
-export const fetchAssistants = async () => {
+export const fetchAssistants: () => Promise<AssistantType[]> = async () => {
   try {
     // Potential Future: Certain assistants are only visible to certain users
-    const result = await gptModel.viewGPTs();
+    const result = await assistantModel.viewGPTs();
 
-    const gptList = result.map((gpt: GptTypeDB) => ({
-      id: gpt._id,
-      title: gpt.title,
-      desc: gpt.desc,
-      urlPhoto: gpt.urlPhoto,
-      suggestedQuestions: gpt.suggestedQuestions,
-    }));
-    return gptList;
+    if (!result) throw new Error("No assistants found");
+    const assistantList = result.map((assistant: AssistantDocument) => ({
+      id: assistant._id,
+      title: assistant.title,
+      desc: assistant.desc,
+      urlPhoto: assistant.urlPhoto,
+      suggestedQuestions: assistant.suggestedQuestions,
+    })) as AssistantType[];
+
+    return assistantList;
   } catch (error) {
     console.error("CONSOLE LOG ERROR: ", error);
+    throw new Error("Error fetching assistants: " + (error as Error).message);
   }
 };
 
-export const getAssistantById = async (gptId: string) => {
+export const getAssistantById: (
+  gptId: string
+) => Promise<AssistantDocument | null> = async (gptId: string) => {
   try {
-    const result = await gptModel.findAssistantById(gptId);
+    const result = await assistantModel.findAssistantById(gptId);
     return result;
   } catch (error) {
     throw new Error(

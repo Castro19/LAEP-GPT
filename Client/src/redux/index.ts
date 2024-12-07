@@ -5,7 +5,7 @@ export { default as store } from "./store";
 
 // Export all reducers for modular access
 export { messageReducer } from "./message/messageSlice.ts";
-export { gptReducer } from "./gpt/gptSlice";
+export { assistantReducer } from "./assistant/assistantSlice.ts";
 export { layoutReducer } from "./layout/layoutSlice.ts";
 export { logReducer } from "./log/logSlice.ts";
 export { authReducer } from "./auth/authSlice.ts";
@@ -14,7 +14,7 @@ export { flowchartReducer } from "./flowchart/flowchartSlice.ts";
 export { flowSelectionReducer } from "./flowSelection/flowSelectionSlice.ts";
 // Export all actions for easy dispatching in components
 export * as messageActions from "./message/messageSlice.ts";
-export * as gptActions from "./gpt/gptSlice";
+export * as assistantActions from "./assistant/assistantSlice.ts";
 export * as layoutActions from "./layout/layoutSlice.ts";
 export * as logActions from "./log/logSlice.ts";
 export * as authActions from "./auth/authSlice.ts";

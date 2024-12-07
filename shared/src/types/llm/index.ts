@@ -1,5 +1,3 @@
-import { GptType } from "types/gpt";
-
 export type RespondRequestBody = {
   message: string;
   chatId?: string;

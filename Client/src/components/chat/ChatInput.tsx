@@ -30,7 +30,7 @@ const ChatInput = ({
   const [currentUserMessageId, setCurrentUserMessageId] = useState<
     string | null
   >(null);
-  const currentModel = useAppSelector((state) => state.gpt.currentModel);
+  const currentModel = useAppSelector((state) => state.assistant.currentModel);
   const { msg, isNewChat, currentChatId, isLoading, error } = useAppSelector(
     (state) => state.message
   );

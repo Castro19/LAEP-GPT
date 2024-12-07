@@ -6,14 +6,9 @@ import createLogTitle, {
   deleteLogItem,
   updateLogTitleInDB,
 } from "./crudLog";
-import {
-  LogData,
-  LogSliceType,
-  LogErrorCodes,
-  logErrorMessages,
-  MessageObjType,
-} from "@polylink/shared/types";
+import { LogData, LogSliceType, MessageObjType } from "@polylink/shared/types";
 import { RootState } from "../store";
+import { LogErrorCodes } from "@/types/log/logErrorTypes";
 
 export type AddLogParams = {
   msg: string;

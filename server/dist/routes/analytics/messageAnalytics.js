@@ -34,24 +34,31 @@ module.exports = __toCommonJS(messageAnalytics_exports);
 var import_express = __toESM(require("express"));
 var import_messageAnalyticsServices = require("../../db/models/analytics/messageAnalytics/messageAnalyticsServices");
 const router = import_express.default.Router();
-router.get("/test", async (req, res) => {
-  res.status(200).send("Message analytics route");
-});
 router.post("/", async (req, res) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).send("No user found in request");
     }
-    const userData = req.body;
+    const {
+      userMessageId,
+      botMessageId,
+      logId,
+      assistantId,
+      hadFile,
+      createdAt
+    } = req.body;
     const messageAnalyticsData = {
-      _id: userData.userMessageId,
+      _id: userMessageId,
       userId,
-      ...userData
+      userMessageId,
+      botMessageId,
+      logId,
+      assistantId,
+      hadFile,
+      createdAt
     };
-    await (0, import_messageAnalyticsServices.createMessageAnalytics)(
-      messageAnalyticsData
-    );
+    await (0, import_messageAnalyticsServices.createMessageAnalytics)(messageAnalyticsData);
     res.status(200).send("Message created successfully");
   } catch (error) {
     res.status(500).send("Failed to create message: " + error.message);

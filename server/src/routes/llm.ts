@@ -11,7 +11,7 @@ import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index.mjs";
 import {
   CancelRequestBody,
-  GptType,
+  AssistantType,
   llmRequestBody,
   RunningStreamData,
   TitleRequestBody,
@@ -62,7 +62,7 @@ router.post(
       res.status(401).end("Unauthorized");
       return;
     }
-    const model = JSON.parse(currentModel) as GptType;
+    const model = JSON.parse(currentModel) as AssistantType;
     const file = req.file;
 
     let userFile: FileObject | null = null;

@@ -1182,10 +1182,10 @@ Visual Studio Code is a source-code editor that includes support for development
      dispatch(initGptList(gptList));
      ```
 
-5. **setCurrentGpt**: Sets the currently active GPT model by ID.
+5. **setCurrentAssistant**: Sets the currently active GPT model by ID.
    - **Dispatch Example**:
      ```typescript
-     dispatch(setCurrentGpt("gpt123"));
+     dispatch(setCurrentAssistant("gpt123"));
      ```
 
 #### Gpt Asynchronous Thunks
@@ -1558,7 +1558,7 @@ The layout slice includes reducers to manage the visibility of various UI compon
 - **GPT Type**:
 
 ```typescript
-export type GptType = {
+export type AssistantType = {
   userId?: string; // The user who made the assistant
   id?: string; // The unique id of the assistant
   title: string; // the title of the assistant
@@ -1567,8 +1567,8 @@ export type GptType = {
   instructions?: string; // The instructions stored on db for assistant
 };
 
-export type GptSliceType = {
-  gptList: GptType[]; // The list of assistants fetched from DB
+export type AssistantSliceType = {
+  gptList: AssistantType[]; // The list of assistants fetched from DB
   currentModel: ModelType; // The current assistant Model selected
   isLoading: boolean; // Is being created
   error: string | null; // Error when submitting form to create assistant
