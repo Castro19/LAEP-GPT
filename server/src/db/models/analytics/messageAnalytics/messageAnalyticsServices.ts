@@ -1,12 +1,16 @@
 import {
+  MessageAnalyticsDocument,
   MessageAnalyticsCreate,
   MessageAnalyticsTokenAnalytics,
   MessageAnalyticsUpdate,
 } from "@polylink/shared/types";
 import * as messageAnalyticsModel from "./messageAnalyticsCollection";
+import { InsertOneResult, UpdateResult } from "mongodb";
 
 // create
-export const createMessageAnalytics = async (
+export const createMessageAnalytics: (
+  messageAnalyticsData: MessageAnalyticsCreate
+) => Promise<InsertOneResult<MessageAnalyticsDocument>> = async (
   messageAnalyticsData: MessageAnalyticsCreate
 ) => {
   try {
@@ -28,7 +32,10 @@ export const createMessageAnalytics = async (
   }
 };
 
-export const updateMessageAnalytics = async (
+export const updateMessageAnalytics: (
+  userMessageId: string,
+  updateData: MessageAnalyticsUpdate | MessageAnalyticsTokenAnalytics
+) => Promise<UpdateResult> = async (
   userMessageId: string,
   updateData: MessageAnalyticsUpdate | MessageAnalyticsTokenAnalytics
 ) => {
@@ -45,10 +52,10 @@ export const updateMessageAnalytics = async (
     );
   }
 };
-export const updateMessageAnalyticsReaction = async (
+export const updateMessageAnalyticsReaction: (
   botMessageId: string,
   userReaction: "like" | "dislike"
-) => {
+) => Promise<UpdateResult> = async (botMessageId, userReaction) => {
   try {
     const result = await messageAnalyticsModel.updateMessageAnalyticsReaction(
       botMessageId,

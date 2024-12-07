@@ -8,9 +8,6 @@ import { MessageAnalyticsCreate } from "@polylink/shared/types";
 
 const router = express.Router();
 
-router.get("/test", async (req, res) => {
-  res.status(200).send("Message analytics route");
-});
 // Create message analytics in db
 router.post("/", (async (req, res) => {
   try {
@@ -18,18 +15,27 @@ router.post("/", (async (req, res) => {
     if (!userId) {
       return res.status(401).send("No user found in request");
     }
-    const userData = req.body;
-    const messageAnalyticsData = {
-      _id: userData.userMessageId,
-      userId,
-      ...userData,
-    };
-    // still need to add responseTime, inputMessage, outputMessage, tokensUsed, and completed_at after message stream is completed
-    // user can also update this data by adding userReaction
+    const {
+      userMessageId,
+      botMessageId,
+      logId,
+      assistantId,
+      hadFile,
+      createdAt,
+    } = req.body;
 
-    await createMessageAnalytics(
-      messageAnalyticsData as MessageAnalyticsCreate
-    );
+    const messageAnalyticsData: MessageAnalyticsCreate = {
+      _id: userMessageId,
+      userId,
+      userMessageId,
+      botMessageId,
+      logId,
+      assistantId,
+      hadFile,
+      createdAt,
+    };
+
+    await createMessageAnalytics(messageAnalyticsData);
     res.status(200).send("Message created successfully");
   } catch (error) {
     res
