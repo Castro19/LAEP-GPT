@@ -5,6 +5,7 @@ import {
   addThreadToDB,
   fetchIds,
 } from "../../db/models/threads/threadServices.js";
+import { Message } from "openai/resources/beta/threads/messages.mjs";
 
 //add fileId. fileId can be null if user does not submit file
 export async function addMessageToThread(
@@ -13,7 +14,7 @@ export async function addMessageToThread(
   message: string,
   fileId: string | null,
   modelTitle: string
-) {
+): Promise<Message | null> {
   let threadMessages;
   try {
     // null check fileId
@@ -46,15 +47,19 @@ export async function addMessageToThread(
       `Failed to send message or get response from ${threadId}\nError:`,
       error
     );
+    return null;
   }
 }
 
-export async function deleteThread(threadId: string) {
-  return await openai.beta.threads.del(threadId);
+export async function deleteThread(threadId: string): Promise<void> {
+  await openai.beta.threads.del(threadId);
 }
 
 // Create thread and vector store from OpenAI API if not already created
-export async function initializeOrFetchIds(chatId: string) {
+export async function initializeOrFetchIds(chatId: string): Promise<{
+  threadId: string;
+  vectorStoreId: string;
+}> {
   const existing = await fetchIds(chatId);
   if (existing) {
     return existing;

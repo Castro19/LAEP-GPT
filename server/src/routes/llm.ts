@@ -10,24 +10,15 @@ import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index.mjs";
 import {
-  CancelRequestBody,
   AssistantType,
   llmRequestBody,
   RunningStreamData,
-  TitleRequestBody,
 } from "@polylink/shared/types";
 
 const router = express.Router();
 
 // Add a global definition for `req.file` if necessary
 // (Alternatively, you can do this in a global .d.ts file)
-declare global {
-  namespace Express {
-    interface Request {
-      file?: Express.Multer.File;
-    }
-  }
-}
 
 // init storage for user documents
 const upload = multer({ dest: "temp/" }); // 'temp/' is where Multer stores uploaded files
@@ -49,7 +40,7 @@ router.post(
   "/respond",
   messageRateLimiter,
   upload.single("file"),
-  asyncHandler(async (req: Request<{}, {}, llmRequestBody>, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     if (!res.headersSent) {
       res.setHeader("Content-Type", "text/plain");
       res.setHeader("Transfer-Encoding", "chunked");
@@ -140,66 +131,62 @@ router.post(
 
 router.post(
   "/cancel",
-  asyncHandler(
-    async (req: Request<{}, {}, CancelRequestBody>, res: Response) => {
-      const { userMessageId } = req.body;
+  asyncHandler(async (req: Request, res: Response) => {
+    const { userMessageId } = req.body;
 
-      const runData = runningStreams[userMessageId];
-      if (runData) {
-        runData.canceled = true;
-        if (runData.runId && runData.threadId) {
-          try {
-            await openai.beta.threads.runs.cancel(
-              runData.threadId,
-              runData.runId
-            );
-            delete runningStreams[userMessageId];
-            res.status(200).send("Run(s) cancelled");
-          } catch (error) {
-            console.error("Error cancelling run(s):", error);
-            res.status(500).send("Error cancelling run(s)");
-          }
-        } else {
-          // `runId` not yet available; cancellation flag is set
-          res.status(200).send("Run cancellation requested");
+    const runData = runningStreams[userMessageId];
+    if (runData) {
+      runData.canceled = true;
+      if (runData.runId && runData.threadId) {
+        try {
+          await openai.beta.threads.runs.cancel(
+            runData.threadId,
+            runData.runId
+          );
+          delete runningStreams[userMessageId];
+          res.status(200).send("Run(s) cancelled");
+        } catch (error) {
+          console.error("Error cancelling run(s):", error);
+          res.status(500).send("Error cancelling run(s)");
         }
       } else {
-        res.status(404).send("Run not found");
+        // `runId` not yet available; cancellation flag is set
+        res.status(200).send("Run cancellation requested");
       }
+    } else {
+      res.status(404).send("Run not found");
     }
-  )
+  })
 );
 
 router.post(
   "/title",
-  asyncHandler(
-    async (req: Request<{}, {}, TitleRequestBody>, res: Response) => {
-      try {
-        const { message } = req.body;
-        const contentStr =
-          "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { message } = req.body;
+      const contentStr =
+        "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
 
-        const chatCompletion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: contentStr,
-            },
-            { role: "user", content: message },
-          ],
-        });
+      const chatCompletion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: contentStr,
+          },
+          { role: "user", content: message },
+        ],
+      });
 
-        const title = chatCompletion.choices[0].message.content;
-        res.json({ title: title });
-      } catch (error) {
-        console.error("Error calling OpenAI:", error);
-        res
-          .status(500)
-          .json({ error: "Failed to generate response from OpenAI" });
-      }
+      const title = chatCompletion.choices[0].message.content;
+      res.json({ title: title });
+    } catch (error) {
+      console.error("Error calling OpenAI:", error);
+      res
+        .status(500)
+        .json({ error: "Failed to generate response from OpenAI" });
     }
-  )
+  })
 );
 
 export default router;

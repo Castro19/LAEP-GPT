@@ -10,7 +10,6 @@ import { searchCourses } from "../qdrant/qdrantQuery.js";
 import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
 import {
-  CourseDocument,
   AssistantType,
   RunningStreamData,
   UserData,
@@ -18,19 +17,22 @@ import {
 import { FileObject } from "openai/resources/index.mjs";
 import { Response } from "express";
 
-const matchingAssistant = (user: UserData, message: string) => {
+const matchingAssistant = (user: UserData, message: string): string => {
   const availability = formatAvailability(user.availability);
   const interests = user.interests.join(", ");
   return `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
 };
 
-const csciClassesAssistant = (user: UserData, message: string) => {
+const csciClassesAssistant = (user: UserData, message: string): string => {
   const year = user.year;
   const interests = user.interests.join(", ");
   return `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${interests}\n${message}`;
 };
 
-const flowchartAssistant = async (user: UserData, message: string) => {
+const flowchartAssistant = async (
+  user: UserData,
+  message: string
+): Promise<string> => {
   const flowchart = await fetchFlowchart(user.flowchartId, user.userId);
   const courseIds = await searchCourses(message, null, 5);
   console.log("courseIds: ", courseIds);
@@ -49,14 +51,17 @@ const flowchartAssistant = async (user: UserData, message: string) => {
   return `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
 };
 
-const courseCatalogAssistant = async (user: UserData, message: string) => {
+const courseCatalogAssistant = async (
+  user: UserData,
+  message: string
+): Promise<string> => {
   const courseIds = await searchCourses(message, null, 5);
   const courseObjects = await getCourseInfo(courseIds);
   const courseDescriptions = JSON.stringify(courseObjects);
   return `Search Results: ${courseDescriptions}\n${message}`;
 };
 
-const calpolyClubsAssistant = (user: UserData, message: string) => {
+const calpolyClubsAssistant = (user: UserData, message: string): string => {
   const interests = user.interests.join(", ");
   const major = user.major;
   return `Interests: ${interests}\nMajor: ${major}\n${message}`;
@@ -82,7 +87,7 @@ async function handleSingleAgentModel({
   userId,
   userMessageId,
   runningStreams,
-}: SingleAgentRequestBody) {
+}: SingleAgentRequestBody): Promise<void> {
   let messageToAdd = message;
   const assistant = await getAssistantById(model.id);
   if (!assistant) {

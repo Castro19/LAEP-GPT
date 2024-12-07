@@ -4,7 +4,7 @@ export async function setupVectorStoreWithFile(
   threadId: string,
   assistantId: string,
   userFileId: string
-) {
+): Promise<string> {
   const vectorStore = await openai.beta.vectorStores.create({
     name: String(threadId),
   });
@@ -28,7 +28,7 @@ export async function setupVectorStoreAndUpdateAssistant(
   vectorStoreId: string,
   assistantId: string,
   userFileId: string | null
-) {
+): Promise<void> {
   if (userFileId) {
     await openai.beta.vectorStores.files.createAndPoll(vectorStoreId, {
       file_id: userFileId,

@@ -1,8 +1,7 @@
 import admin from "firebase-admin";
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { DecodedIdToken } from "firebase-admin/auth";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
-import { UserType } from "../types";
+import { UserType } from "@polylink/shared/types";
 
 // authMiddleware.ts
 export const authenticate: RequestHandler = async (req, res, next) => {

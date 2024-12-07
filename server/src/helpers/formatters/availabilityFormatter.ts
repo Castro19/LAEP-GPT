@@ -1,10 +1,10 @@
 import { Availability } from "@polylink/shared/types";
 
-export function formatAvailability(availability: Availability) {
+export function formatAvailability(availability: Availability): string {
   const formattedOutput = [];
 
   // Helper function to convert hour integer to 12-hour format with AM/PM
-  function formatTime(hour: number) {
+  function formatTime(hour: number): string {
     const period = hour >= 12 ? "PM" : "AM";
     const adjustedHour = hour % 12 === 0 ? 12 : hour % 12;
     return `${adjustedHour}${period}`;

@@ -11,11 +11,21 @@ import { Collection } from "mongodb";
 
 let courseCollection: Collection;
 
-const initializeCourseCollection = () => {
+const initializeCourseCollection = (): void => {
   courseCollection = getDb().collection("courses");
 };
 
-const flowchartHelper = async (termData: Term[], catalogYear: string) => {
+type FlowchartCourseCompletion = {
+  techElectivesLeft: number;
+  generalWritingMet: boolean;
+  uscpMet: boolean;
+  formattedRequiredCourses: string;
+};
+
+const flowchartHelper = async (
+  termData: Term[],
+  catalogYear: string
+): Promise<FlowchartCourseCompletion> => {
   if (!courseCollection) initializeCourseCollection();
   const requiredCourses = [];
   let techElectivesLeft = 0;
@@ -23,8 +33,8 @@ const flowchartHelper = async (termData: Term[], catalogYear: string) => {
   let uscpMet = false;
 
   // Collect required courses and count technical electives left
-  for (let term of termData) {
-    for (let course of term.courses) {
+  for (const term of termData) {
+    for (const course of term.courses) {
       if (course.completed) {
         continue;
       }

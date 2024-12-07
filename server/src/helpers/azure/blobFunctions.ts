@@ -1,5 +1,6 @@
 import { openai } from "../../index.js";
 import fs from "fs";
+import { FileObject } from "openai/resources/index.mjs";
 import path from "path";
 
 /**
@@ -7,7 +8,9 @@ import path from "path";
  * @param {Object} file - The uploaded file object (e.g., from a form submission via Multer).
  * @returns {string} - The path to the saved file on the local machine.
  */
-export async function saveFileLocally(file: Express.Multer.File) {
+export async function saveFileLocally(
+  file: Express.Multer.File
+): Promise<string> {
   const uploadDir = "src/uploads";
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir); // Create the uploads directory if it doesn't exist
@@ -27,7 +30,9 @@ export async function saveFileLocally(file: Express.Multer.File) {
  * Example: Handle file upload, save it locally, and then upload it to OpenAI.
  * @param {Object} file - The uploaded file object from the form submission.
  */
-export async function handleFileUpload(file: Express.Multer.File) {
+export async function handleFileUpload(
+  file: Express.Multer.File
+): Promise<FileObject> {
   try {
     // Step 1: Save the file locally
     const localFilePath = await saveFileLocally(file);
@@ -48,7 +53,7 @@ export async function handleFileUpload(file: Express.Multer.File) {
  * Function to upload file to OpenAI API
  * @param {string} filePath - The local file path of the file to be uploaded
  */
-async function uploadFileToOpenAI(filePath: string) {
+async function uploadFileToOpenAI(filePath: string): Promise<FileObject> {
   try {
     const fileStream = fs.createReadStream(filePath); // Create a file stream from the local file
 

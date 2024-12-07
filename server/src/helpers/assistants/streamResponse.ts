@@ -9,22 +9,6 @@ import { updateMessageAnalytics } from "../../db/models/analytics/messageAnalyti
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs";
 import { Run } from "openai/resources/beta/threads/runs/runs.mjs";
 
-// Define event data interfaces if possible (replace with actual types if known)
-interface RunData {
-  id: string;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-  model?: string;
-}
-
-interface EventObject {
-  event: string;
-  data: RunData;
-}
-
 export async function runAssistantAndStreamResponse(
   threadId: string,
   assistantId: string,
@@ -62,7 +46,7 @@ export async function runAssistantAndStreamResponse(
                 res.status(200).end(); // End the response
               }
               return;
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error("Error cancelling run:", error);
               if (!res.headersSent) {
                 res.status(500).end("Error cancelling run");
@@ -90,12 +74,12 @@ export async function runAssistantAndStreamResponse(
             updateMessageAnalytics(
               userMessageId,
               tokenAnalytics as MessageAnalyticsTokenAnalytics
-            ).catch((error: any) =>
+            ).catch((error: unknown) =>
               console.error("Failed to update message analytics:", error)
             );
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error in event handler:", error);
         // Clean up runningStreams
         if (runningStreams[userMessageId]) {
@@ -110,7 +94,7 @@ export async function runAssistantAndStreamResponse(
     run.on("textDelta", (textDelta) => {
       try {
         res.write(textDelta.value);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error writing text delta:", error);
       }
     });
@@ -118,12 +102,12 @@ export async function runAssistantAndStreamResponse(
     run.on("end", () => {
       try {
         res.end();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error ending response:", error);
       }
     });
 
-    run.on("error", (error: any) => {
+    run.on("error", (error: unknown) => {
       console.error("Run error:", error);
       // Remove this run from runningStreams
       if (runningStreams[userMessageId]) {
@@ -133,7 +117,7 @@ export async function runAssistantAndStreamResponse(
         res.status(500).end("Failed to process stream.");
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in runAssistantAndStreamResponse:", error);
     if (!res.headersSent) {
       res.status(500).end("Failed to process assistant response.");

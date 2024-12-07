@@ -31,7 +31,7 @@ async function handleMultiAgentModel({
   userMessageId,
   runningStreams,
   chatId,
-}: MultiAgentRequest) {
+}: MultiAgentRequest): Promise<void> {
   let messageToAdd = message;
 
   try {
@@ -96,7 +96,7 @@ async function handleMultiAgentModel({
     // Modify messageToAdd based on the query results
     if (professorArray.length > 0) {
       // Search through vector database for professors
-      let professorIds: string[] = [];
+      const professorIds: string[] = [];
       try {
         for (const professor of professorArray) {
           const professorId = await searchProfessors(professor, 1);

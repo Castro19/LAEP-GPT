@@ -4,7 +4,7 @@ import { QdrantClient } from "@qdrant/js-client-rest";
 import { openai, qdrant } from "../../index.js";
 
 // Helper function to get embeddings from OpenAI
-async function getEmbedding(text: string) {
+export async function getEmbedding(text: string): Promise<number[]> {
   const response = await openai.embeddings.create({
     input: text,
     model: "text-embedding-3-large",
@@ -19,7 +19,7 @@ export async function searchCourses(
   query_text: string,
   subject = null,
   top_k = 5
-) {
+): Promise<string[]> {
   // Load API keys from environment variables
 
   // Initialize Qdrant client
@@ -69,7 +69,10 @@ export async function searchCourses(
   return courseIds as string[];
 }
 
-export async function searchProfessors(query_text: string, top_k = 1) {
+export async function searchProfessors(
+  query_text: string,
+  top_k = 1
+): Promise<string> {
   const query_vector = await getEmbedding(query_text);
 
   // Initialize Qdrant client
