@@ -4,7 +4,6 @@ export type Availability = {
 
 export type UserType = "student" | "admin";
 // All information stored in the database
-// changed from MyUserInfo to UserData
 export type UserData = {
   userId: string;
   name: string;

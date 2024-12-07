@@ -4,7 +4,7 @@ export const addThreadToDB = async (
   chatId: string,
   threadId: string,
   vectorStoreId: string
-) => {
+): Promise<{ message: string; threadId: string }> => {
   try {
     const result = await ThreadModel.createThread(
       chatId,
@@ -22,7 +22,9 @@ export const addThreadToDB = async (
 };
 
 // Read
-export const fetchIds = async (chatId: string) => {
+export const fetchIds = async (
+  chatId: string
+): Promise<{ threadId: string; vectorStoreId: string } | null> => {
   try {
     const ids = await ThreadModel.getIds(chatId);
     if (!ids) return null;
@@ -34,11 +36,11 @@ export const fetchIds = async (chatId: string) => {
 };
 
 // Delete
-export const deleteThread = async (threadId: string) => {
+export const deleteThread = async (threadId: string): Promise<void> => {
   try {
     await ThreadModel.deleteThreadByID(threadId);
   } catch (error) {
     console.error("Error fetching thread ID: ", (error as Error).message);
-    return null;
+    return;
   }
 };

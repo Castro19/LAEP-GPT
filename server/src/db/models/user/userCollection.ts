@@ -1,15 +1,17 @@
-import { Collection } from "mongodb";
-import { UpdateUserData, UserData, UserDataWithId } from "../../../types";
+import { Collection, UpdateResult } from "mongodb";
+import { UpdateUserData, UserData } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 
 let userCollection: Collection<UserData>;
 
 // Function to initialize the collection
-const initializeCollection = () => {
+const initializeCollection = (): void => {
   userCollection = getDb().collection("users");
 };
 
-export const createUser = async (userData: UserData) => {
+export const createUser = async (
+  userData: UserData
+): Promise<{ message: string; userId: string }> => {
   if (!userCollection) initializeCollection();
   console.log("Creating user in database", userData);
   try {
@@ -31,13 +33,18 @@ export const createUser = async (userData: UserData) => {
       flowchartId: userData.flowchartId,
     };
     const result = await userCollection.insertOne(newUser);
-    return result;
+    return {
+      message: "User created successfully",
+      userId: result.insertedId.toString(),
+    };
   } catch (error: unknown) {
     throw new Error("Error creating a new user: " + (error as Error).message);
   }
 };
 
-export const findUserByFirebaseId = async (firebaseUserId: string) => {
+export const findUserByFirebaseId = async (
+  firebaseUserId: string
+): Promise<UserData | null> => {
   if (!userCollection) initializeCollection();
   try {
     const user = await userCollection.findOne({ userId: firebaseUserId });
@@ -50,7 +57,7 @@ export const findUserByFirebaseId = async (firebaseUserId: string) => {
 export const updateUserByFirebaseId = async (
   firebaseUserId: string,
   updateData: UpdateUserData
-) => {
+): Promise<UpdateResult | null> => {
   if (!userCollection) initializeCollection();
   try {
     const result = await userCollection.updateOne(
@@ -64,7 +71,7 @@ export const updateUserByFirebaseId = async (
 };
 
 // Add the function to find all users
-export const findAllUsers = async () => {
+export const findAllUsers = async (): Promise<UserData[]> => {
   if (!userCollection) initializeCollection();
   try {
     const users = await userCollection.find({}).toArray();

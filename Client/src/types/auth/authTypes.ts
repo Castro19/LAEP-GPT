@@ -13,7 +13,7 @@ export type Availability = {
 };
 
 // All information stored in the database
-export interface MyUserInfo {
+export interface UserData {
   userId: string;
   name: string;
   email: string;

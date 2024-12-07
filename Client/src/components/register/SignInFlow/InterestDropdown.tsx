@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
 import { RootState } from "@/redux/store";
-import { MyUserInfo } from "@polylink/shared/types";
+import { UserData } from "@polylink/shared/types";
 
 const InterestDropdown = ({
   name,
@@ -75,7 +75,7 @@ const InterestDropdown = ({
         <Label className="underline">{name}</Label>
         <Select
           onValueChange={(value) =>
-            handleAddItem(name.toLowerCase() as keyof MyUserInfo, value)
+            handleAddItem(name.toLowerCase() as keyof UserData, value)
           }
           value={""} // Controlled component
         >
@@ -96,7 +96,7 @@ const InterestDropdown = ({
                 key={index}
                 value={value}
                 onClick={() =>
-                  handleAddItem(name.toLowerCase() as keyof MyUserInfo, value)
+                  handleAddItem(name.toLowerCase() as keyof UserData, value)
                 }
                 data-testid={`home-dropdown-${name}-item-${index}`}
                 className="whitespace-normal break-words"
@@ -112,7 +112,7 @@ const InterestDropdown = ({
           <Button
             key={index}
             onClick={() =>
-              handleRemoveItem(name.toLowerCase() as keyof MyUserInfo, item)
+              handleRemoveItem(name.toLowerCase() as keyof UserData, item)
             }
             style={{ margin: "5px" }}
             className="whitespace-normal h-auto py-2"

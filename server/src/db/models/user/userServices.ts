@@ -1,21 +1,24 @@
-import {
-  UpdateUserData,
-  UserData,
-  UserDataWithId,
-} from "../../../types/index.js";
+import { UpdateUserData, UserData } from "@polylink/shared/types";
 import * as UserModel from "./userCollection.js";
 
-export const addUser = async (userData: UserData) => {
+export const addUser = async (
+  userData: UserData
+): Promise<{ message: string; userId: string }> => {
   try {
     // Find whether the role of the user
     const result = await UserModel.createUser(userData);
-    return { message: "User created successfully", userId: result.insertedId };
+    return {
+      message: result.message,
+      userId: result.userId,
+    };
   } catch (error: unknown) {
     throw new Error("Service error: " + (error as Error).message);
   }
 };
 
-export const getUserByFirebaseId = async (firebaseUserId: string) => {
+export const getUserByFirebaseId = async (
+  firebaseUserId: string
+): Promise<UserData | null> => {
   try {
     const user = await UserModel.findUserByFirebaseId(firebaseUserId);
     if (!user) {
@@ -30,20 +33,16 @@ export const getUserByFirebaseId = async (firebaseUserId: string) => {
 export const updateUser = async (
   firebaseUserId: string,
   updateData: UpdateUserData
-) => {
+): Promise<void> => {
   try {
-    const result = await UserModel.updateUserByFirebaseId(
-      firebaseUserId,
-      updateData
-    );
-    return result;
+    await UserModel.updateUserByFirebaseId(firebaseUserId, updateData);
   } catch (error: unknown) {
     throw new Error("Service error: " + (error as Error).message);
   }
 };
 
 // Add the function to get all users
-export const getAllUsers = async () => {
+export const getAllUsers = async (): Promise<UserData[]> => {
   try {
     const users = await UserModel.findAllUsers();
     return users;

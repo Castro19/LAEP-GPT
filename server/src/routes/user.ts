@@ -8,10 +8,6 @@ import { authorizeRoles } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.get("/test", (req, res) => {
-  res.status(200).send("Hello World");
-});
-
 // Route to get the authenticated user's data
 router.get("/me", (async (req, res) => {
   try {

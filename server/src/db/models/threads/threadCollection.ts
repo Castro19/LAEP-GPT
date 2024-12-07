@@ -1,10 +1,10 @@
 import { getDb } from "../../connection.js";
-import { Collection, ObjectId } from "mongodb";
+import { Collection, InsertOneResult, ObjectId } from "mongodb";
 import { ThreadDocument } from "@polylink/shared/types";
 
 let threadCollection: Collection<ThreadDocument>;
 
-const initializeCollection = async () => {
+const initializeCollection = (): void => {
   threadCollection = getDb().collection<ThreadDocument>("threads");
 };
 
@@ -13,7 +13,7 @@ export const createThread = async (
   chatId: string,
   threadId: string,
   vectorStoreId: string
-) => {
+): Promise<InsertOneResult<ThreadDocument>> => {
   if (!threadCollection) initializeCollection();
 
   try {
@@ -31,7 +31,9 @@ export const createThread = async (
 };
 
 // Read
-export const getIds = async (chatId: string) => {
+export const getIds = async (
+  chatId: string
+): Promise<ThreadDocument | null> => {
   if (!threadCollection) initializeCollection();
 
   try {
@@ -40,6 +42,7 @@ export const getIds = async (chatId: string) => {
     });
     if (!thread) return null;
     return {
+      _id: thread._id,
       threadId: thread.threadId,
       vectorStoreId: thread.vectorStoreId,
     };
@@ -49,7 +52,7 @@ export const getIds = async (chatId: string) => {
 };
 
 // Delete
-export const deleteThreadByID = async (threadId: string) => {
+export const deleteThreadByID = async (threadId: string): Promise<void> => {
   if (!threadCollection) initializeCollection();
   try {
     // Could be something to look out in the future: Usually threadId --> ChatID should be a one to one relationship but there could sometimes be an error where multiple chatId map to a single threadId
