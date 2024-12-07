@@ -2,13 +2,14 @@ import {
   FlowInfoProjection,
   FlowInfoDocument,
   MongoQuery,
+  ConcentrationInfo,
 } from "@polylink/shared/types";
 import { getDb } from "../../connection.js";
 import { Collection } from "mongodb";
 
 let flowInfoCollection: Collection<FlowInfoDocument>;
 
-const initializeCollection = () => {
+const initializeCollection = (): void => {
   flowInfoCollection = getDb().collection("flowInfo");
 };
 
@@ -16,7 +17,7 @@ const initializeCollection = () => {
 export const searchFlowInfo = async (
   query: MongoQuery<FlowInfoDocument>,
   projection: FlowInfoProjection
-) => {
+): Promise<ConcentrationInfo[] | string[]> => {
   if (!flowInfoCollection) initializeCollection();
   try {
     const result = await flowInfoCollection
@@ -26,7 +27,7 @@ export const searchFlowInfo = async (
         ...projection,
       })
       .toArray();
-    return result as FlowInfoDocument[];
+    return result as ConcentrationInfo[] | string[];
   } catch (error) {
     throw new Error(
       "Error searching flowchart info: " + (error as Error).message

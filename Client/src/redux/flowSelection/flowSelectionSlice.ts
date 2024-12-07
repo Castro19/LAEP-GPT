@@ -108,7 +108,7 @@ const flowSelectionSlice = createSlice({
     ) => {
       if (action.payload.key === "concentration") {
         state.selections.concentration = action.payload
-          .value as unknown as ConcentrationInfo;
+          .value as ConcentrationInfo;
       } else {
         state.selections[action.payload.key] = action.payload.value as string;
       }

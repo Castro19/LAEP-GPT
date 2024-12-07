@@ -32,13 +32,16 @@ __export(flowInfoServices_exports, {
 });
 module.exports = __toCommonJS(flowInfoServices_exports);
 var flowInfoModel = __toESM(require("./flowInfoCollection"));
+function isMajorNameAndCatalog(majorName, catalog) {
+  return !!majorName && !!catalog;
+}
 const searchFlowInfo = async ({
   catalog,
   majorName,
   code
 }) => {
-  let query = {};
-  let projection = {
+  const query = {};
+  const projection = {
     majorName: 0,
     concName: 0,
     code: 0
@@ -63,7 +66,7 @@ const searchFlowInfo = async ({
   }
   try {
     const result = await flowInfoModel.searchFlowInfo(query, projection);
-    if (majorName && catalog) {
+    if (isMajorNameAndCatalog(majorName, catalog)) {
       return result;
     } else if (catalog) {
       const uniqueMajorNames = [
@@ -71,7 +74,7 @@ const searchFlowInfo = async ({
       ];
       return uniqueMajorNames;
     }
-    return result;
+    return [];
   } catch (error) {
     console.error("Error searching flowinfo:", error);
     return null;

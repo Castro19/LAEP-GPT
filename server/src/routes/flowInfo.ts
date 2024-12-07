@@ -6,11 +6,17 @@ const router = express.Router();
 type FlowInfoQuery = {
   catalog: string | undefined;
   majorName: string | undefined;
+  code: string | undefined;
 };
-// Fetch majors by catalog or both by catalog and majorName
+//
 router.get("/", async (req, res) => {
   const { catalog, majorName } = req.query as FlowInfoQuery;
-  const result = await searchFlowInfo({ catalog, majorName, code: undefined });
+  const result = await searchFlowInfo({
+    catalog,
+    majorName,
+    code: undefined,
+  });
   res.status(200).json(result);
 });
+
 export default router;

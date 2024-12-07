@@ -36,7 +36,11 @@ var import_flowInfoServices = require("../db/models/flowInfo/flowInfoServices.js
 const router = import_express.default.Router();
 router.get("/", async (req, res) => {
   const { catalog, majorName } = req.query;
-  const result = await (0, import_flowInfoServices.searchFlowInfo)({ catalog, majorName, code: void 0 });
+  const result = await (0, import_flowInfoServices.searchFlowInfo)({
+    catalog,
+    majorName,
+    code: void 0
+  });
   res.status(200).json(result);
 });
 var flowInfo_default = router;

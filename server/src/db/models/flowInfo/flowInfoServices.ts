@@ -1,9 +1,18 @@
 import {
+  ConcentrationInfo,
   FlowInfoDocument,
   FlowInfoProjection,
   MongoQuery,
 } from "@polylink/shared/types";
 import * as flowInfoModel from "./flowInfoCollection";
+
+// First, define the return type using a type predicate function
+function isMajorNameAndCatalog(
+  majorName: string | undefined,
+  catalog: string | undefined
+): majorName is string {
+  return !!majorName && !!catalog;
+}
 
 // Fetch majors by catalog
 export const searchFlowInfo = async ({
@@ -14,9 +23,9 @@ export const searchFlowInfo = async ({
   catalog: string | undefined;
   majorName: string | undefined;
   code: string | undefined;
-}) => {
-  let query: MongoQuery<FlowInfoDocument> = {};
-  let projection: FlowInfoProjection = {
+}): Promise<ConcentrationInfo[] | string[] | null> => {
+  const query: MongoQuery<FlowInfoDocument> = {};
+  const projection: FlowInfoProjection = {
     majorName: 0,
     concName: 0,
     code: 0,
@@ -43,17 +52,16 @@ export const searchFlowInfo = async ({
   try {
     const result = await flowInfoModel.searchFlowInfo(query, projection);
 
-    // Process results to return unique major names if catalog is provided
-    if (majorName && catalog) {
-      return result;
+    if (isMajorNameAndCatalog(majorName, catalog)) {
+      return result as ConcentrationInfo[];
     } else if (catalog) {
-      const uniqueMajorNames = [
-        ...new Set(result.map((item: FlowInfoDocument) => item.majorName)),
+      const uniqueMajorNames: string[] = [
+        ...new Set(result.map((item) => (item as ConcentrationInfo).majorName)),
       ];
       return uniqueMajorNames;
     }
 
-    return result;
+    return [];
   } catch (error) {
     console.error("Error searching flowinfo:", error);
     return null;

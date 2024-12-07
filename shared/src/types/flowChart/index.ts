@@ -97,9 +97,3 @@ export interface FetchFlowchartResponse {
   name: string;
   primaryOption?: boolean;
 }
-
-export interface ConcentrationInfo {
-  majorName: string;
-  concName: string;
-  code: string;
-}

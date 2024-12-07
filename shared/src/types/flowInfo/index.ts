@@ -16,3 +16,9 @@ export type FlowInfoProjection = {
   concName: number;
   code: number;
 };
+
+export type ConcentrationInfo = {
+  majorName: string;
+  concName: string;
+  code: string;
+};
