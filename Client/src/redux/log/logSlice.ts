@@ -59,7 +59,6 @@ export const fetchLogs = createAsyncThunk(
       const fetchedLogs = await fetchAllLogs();
       // reverse the order of the logs
       const logs = fetchedLogs.reverse();
-      console.log("fetchedLogs", logs);
       return logs;
     } catch (error) {
       console.error("Failed to fetch logs: ", error);
@@ -202,7 +201,6 @@ const logSlice = createSlice({
         }
       })
       .addCase(updateLogTitle.fulfilled, (state, action) => {
-        console.log("updateLogTitle fulfilled: ", action.payload);
         const { message, logId, title } = action.payload;
         if (message === "Log title updated successfully") {
           const logIndex = state.logList.findIndex(

@@ -55,11 +55,6 @@ const flowchartHelper = async (termData, catalogYear) => {
     return `${course.id}: ${course.displayName} (${course.units})
 ${course.desc}`;
   }).join("\n\n");
-  console.log("requiredCourses: ", requiredCourses);
-  console.log("techElectivesLeft: ", techElectivesLeft);
-  console.log("generalWritingMet: ", generalWritingMet);
-  console.log("uscpMet: ", uscpMet);
-  console.log("Formatted Required Courses: ", formattedRequiredCourses);
   return {
     techElectivesLeft,
     generalWritingMet,

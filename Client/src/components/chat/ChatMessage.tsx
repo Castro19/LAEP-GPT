@@ -39,7 +39,6 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       });
     }
     // Send the like to the backend
-    console.log("like", id);
   };
   const handleDislike = (id: string) => {
     if (currentChatId) {
@@ -56,7 +55,6 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       });
     }
     // Send the dislike to the backend
-    console.log("dislike", id);
   };
 
   const renderLikeButtons = () => {

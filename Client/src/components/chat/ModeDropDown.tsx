@@ -36,7 +36,6 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
   const [toastFlowchartDescription, setToastFlowchartDescription] =
     useState("");
 
-  console.log("GPT LIST", assistantList);
   useEffect(() => {
     const { availability, interests } = userData;
 

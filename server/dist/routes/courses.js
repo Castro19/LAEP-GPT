@@ -36,7 +36,6 @@ var import_courseServices = require("../db/models/courses/courseServices");
 const router = import_express.default.Router();
 router.get("/", async (req, res) => {
   try {
-    console.log("req: ", req.query);
     const result = await (0, import_courseServices.getCourses)(req.query);
     res.status(200).json(result);
   } catch (error) {
@@ -65,7 +64,6 @@ router.get("/subject", async (req, res) => {
 router.get("/course", async (req, res) => {
   try {
     const result = await (0, import_courseServices.getCourse)(req.query);
-    console.log("result: ", result);
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to get course:", error);

@@ -45,7 +45,7 @@ export const getProfessorsByCourseIds = async (
   }
   try {
     const result = await professorRatingCollection.viewProfessorRatings(query);
-    console.log("result: ", result);
+
     if (result.length === 0) {
       throw new Error("No professors found");
     }

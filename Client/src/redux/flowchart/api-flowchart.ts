@@ -63,7 +63,6 @@ export async function fetchFlowchartDataHelper(
       });
     });
 
-    console.log("termData with desc: ", termData);
     // Dispatch the action to update the flowchart data in the Redux store
     dispatch(fetchFlowchartData.fulfilled(jsonData, "", ""));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

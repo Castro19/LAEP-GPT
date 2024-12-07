@@ -30,9 +30,6 @@ const updateFlowchartTermData = (
 
   // Update the termData property
   updatedFlowchartData.termData = newTermData;
-
-  // Now you can use updatedFlowchartData as needed
-  console.log("Updated Flowchart Data:", updatedFlowchartData);
 };
 
 const TermContainer: React.FC<TermContainerProps> = ({

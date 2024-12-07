@@ -29,7 +29,17 @@ const initializeCollection = () => {
 const searchFlowInfo = async (query, projection) => {
   if (!flowInfoCollection) initializeCollection();
   try {
-    const result = await flowInfoCollection.find(query).project(projection).toArray();
+    const normalizedProjection = Object.entries(projection).reduce(
+      (acc, [key, value]) => {
+        const hasInclusion = Object.values(projection).includes(1);
+        if (hasInclusion && value === 0 && key !== "_id") {
+          return { ...acc, [key]: 1 };
+        }
+        return { ...acc, [key]: value };
+      },
+      {}
+    );
+    const result = await flowInfoCollection.find(query).project(normalizedProjection).toArray();
     return result;
   } catch (error) {
     throw new Error(

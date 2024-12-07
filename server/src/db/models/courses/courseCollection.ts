@@ -28,7 +28,7 @@ export const findCourses = async (
   query: MongoQuery<CourseDocument>
 ): Promise<CourseObject[]> => {
   if (!courseCollection) initializeCollection();
-  console.log("query: ", query);
+
   const result = {
     courseId: 1,
     displayName: 1,
@@ -131,7 +131,6 @@ export const findCourseInfo = async (
   if (!courseCollection) initializeCollection();
 
   try {
-    console.log("courseIds: ", courseIds);
     const result = await courseCollection
       .find({
         courseId: { $in: courseIds },

@@ -50,9 +50,8 @@ const DragDropContextWrapper = ({
         units: courseFetched?.units || "",
         desc: courseFetched?.desc || "",
       };
-      console.log("course", course);
+
       if (course && flowchartData) {
-        console.log("course", course);
         addCourseToTerm(flowchartData, termIndex, destination.index, course);
       }
     } else if (

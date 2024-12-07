@@ -78,7 +78,7 @@ const FlowChartOptions = ({
     const concentration = concentrationOptions.find(
       (item) => item.concName === value
     );
-    console.log("CONCENTRATION", concentration?.code);
+
     if (type !== "flowchart") {
       handleChange("concentration", concentration?.code || "");
     }

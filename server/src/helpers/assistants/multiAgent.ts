@@ -83,10 +83,7 @@ async function handleMultiAgentModel({
       throw new Error("Failed to parse JSON from helper assistant");
     }
 
-    const { type, professors, courses } = jsonObject;
-    console.log("type: ", type);
-    console.log("professors: ", professors);
-    console.log("courses: ", courses);
+    const { professors, courses } = jsonObject;
 
     let professorArray = [];
     let courseArray = [];

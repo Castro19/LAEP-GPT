@@ -332,7 +332,7 @@ const flowchartSlice = createSlice({
           deletedPrimaryOption,
           newPrimaryFlowchartId,
         } = action.payload;
-        console.log("action.payload: ", action.payload);
+
         if (state.flowchartList) {
           const removedFlowchartList = state.flowchartList.filter(
             (flowchart) => flowchart.flowchartId !== deletedFlowchartId

@@ -103,7 +103,6 @@ export const fetchCoursesBySubjectAPI = async (
     }
 
     const data: CourseObject[] = await response.json();
-    console.log("data: ", data);
     return data;
   } catch (err) {
     console.error("Failed to fetch courses by subject:", err);

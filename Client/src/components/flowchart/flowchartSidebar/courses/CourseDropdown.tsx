@@ -175,7 +175,6 @@ const CourseDropdown = React.memo(() => {
                               displayName: item.displayName,
                               desc: item.desc,
                             } as Course;
-                            console.log(course);
                             return (
                               <Droppable
                                 key={`sidebar-${course.id}`}

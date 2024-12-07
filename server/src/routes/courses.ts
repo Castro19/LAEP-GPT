@@ -11,7 +11,6 @@ const router = express.Router();
 // Query courses by catalog year and search term
 router.get("/", async (req, res) => {
   try {
-    console.log("req: ", req.query);
     const result = await getCourses(req.query);
     res.status(200).json(result);
   } catch (error) {
@@ -45,7 +44,7 @@ router.get("/subject", async (req, res) => {
 router.get("/course", async (req, res) => {
   try {
     const result = await getCourse(req.query);
-    console.log("result: ", result);
+
     res.status(200).json(result);
   } catch (error) {
     console.error("Failed to get course:", error);

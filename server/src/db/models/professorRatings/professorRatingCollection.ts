@@ -30,7 +30,7 @@ export const viewProfessorRatings = async (
   query: MongoQuery<ProfessorRatingDocument>
 ): Promise<ProfessRatingList[]> => {
   if (!professorRatingCollection) initializeCollection();
-  console.log("query: ", query);
+
   try {
     const result = await professorRatingCollection
       .find(query)

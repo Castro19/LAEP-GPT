@@ -41,7 +41,6 @@ const PROJECTION = {
 };
 const viewProfessorRatings = async (query) => {
   if (!professorRatingCollection) initializeCollection();
-  console.log("query: ", query);
   try {
     const result = await professorRatingCollection.find(query).project(PROJECTION).toArray();
     return result;

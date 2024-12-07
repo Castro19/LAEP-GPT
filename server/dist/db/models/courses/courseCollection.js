@@ -40,7 +40,6 @@ const findCourse = async (catalogYear, courseId) => {
 };
 const findCourses = async (query) => {
   if (!courseCollection) initializeCollection();
-  console.log("query: ", query);
   const result = {
     courseId: 1,
     displayName: 1,
@@ -117,7 +116,6 @@ const findSubjectNames = async (query) => {
 const findCourseInfo = async (courseIds) => {
   if (!courseCollection) initializeCollection();
   try {
-    console.log("courseIds: ", courseIds);
     const result = await courseCollection.find({
       courseId: { $in: courseIds },
       catalogYear: "2022-2026"

@@ -15,7 +15,7 @@ import { useEffect, useRef } from "react";
 import useCalpolyData from "@/hooks/useCalpolyData";
 import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
 import { useNavigate } from "react-router-dom";
-import { ToastAction } from "@/components/ui/toast";
+
 import SpecialButton from "@/components/ui/specialButton";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
@@ -80,16 +80,6 @@ export function ProfilePage() {
       toast({
         title: "Degree Information Updated",
         description: "Your degree information has been updated successfully.",
-        action: (
-          <ToastAction
-            altText="Create Flowchart"
-            onClick={() => {
-              console.log("Create Flowchart");
-            }}
-          >
-            Create Flowchart
-          </ToastAction>
-        ),
       });
     } else {
       toast({

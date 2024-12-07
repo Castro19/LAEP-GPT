@@ -24,8 +24,6 @@ router.get("/professors/:professorId/:courseId", async (req, res) => {
   const professorIdsArray = professorId ? professorId.split(",") : [];
   const courseIdsArray = courseId ? courseId.split(",") : [];
   try {
-    console.log("professorIdsArray: ", professorIdsArray);
-    console.log("courseIdsArray: ", courseIdsArray);
     const result = await getProfessorRatings(professorIdsArray, courseIdsArray);
     res.status(200).json(result);
   } catch (error) {

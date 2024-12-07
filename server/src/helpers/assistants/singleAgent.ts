@@ -30,11 +30,10 @@ const flowchartAssistant = async (
   message: string
 ): Promise<string> => {
   const flowchart = await fetchFlowchart(user.flowchartId, user.userId);
-  const courseIds = await searchCourses(message, null, 5);
-  console.log("courseIds: ", courseIds);
-  const courseObjects = await getCourseInfo(courseIds);
-  const courseDescriptions = JSON.stringify(courseObjects);
-  console.log("courseDescriptions: ", courseDescriptions);
+  // const courseIds = await searchCourses(message, null, 5);
+  // const courseObjects = await getCourseInfo(courseIds);
+  // const courseDescriptions = JSON.stringify(courseObjects);
+
   const {
     formattedRequiredCourses,
     techElectivesLeft,

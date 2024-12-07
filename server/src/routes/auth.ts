@@ -69,8 +69,8 @@ router.post("/login", async (req, res) => {
         flowchartId: "",
       };
       console.log("Adding user to database");
-      const userResponse = await addUser(userData);
-      console.log("User Response: ", userResponse);
+      await addUser(userData);
+
       res.status(200).send({ userData: userData, isNewUser: true });
     } else {
       // Else, user already exists in database
