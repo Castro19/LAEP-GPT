@@ -23,8 +23,13 @@ __export(threadCollection_exports, {
   getIds: () => getIds
 });
 module.exports = __toCommonJS(threadCollection_exports);
+var import_connection = require("../../connection.js");
 let threadCollection;
+const initializeCollection = async () => {
+  threadCollection = (0, import_connection.getDb)().collection("threads");
+};
 const createThread = async (chatId, threadId, vectorStoreId) => {
+  if (!threadCollection) initializeCollection();
   try {
     const newThread = {
       _id: chatId,
@@ -39,6 +44,7 @@ const createThread = async (chatId, threadId, vectorStoreId) => {
   }
 };
 const getIds = async (chatId) => {
+  if (!threadCollection) initializeCollection();
   try {
     const thread = await threadCollection.findOne({
       _id: chatId
@@ -53,6 +59,7 @@ const getIds = async (chatId) => {
   }
 };
 const deleteThreadByID = async (threadId) => {
+  if (!threadCollection) initializeCollection();
   try {
     await threadCollection.deleteOne({ threadId });
   } catch (error) {

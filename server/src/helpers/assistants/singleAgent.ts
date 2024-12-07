@@ -12,6 +12,7 @@ import flowchartHelper from "../flowchart/flowchart.js";
 import { CourseDocument, GptType, RunningStreamData, UserData } from "types";
 import { FileObject } from "openai/resources/index.mjs";
 import { Response } from "express";
+
 const matchingAssistant = (user: UserData, message: string) => {
   const availability = formatAvailability(user.availability);
   const interests = user.interests.join(", ");

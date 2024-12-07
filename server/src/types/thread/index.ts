@@ -6,6 +6,8 @@ export type ThreadData = {
   vectorStoreId: string;
 };
 
-export type MongoThreadData = ThreadData & {
-  _id: string | ObjectId;
+export type ThreadDocument = {
+  _id: ObjectId;
+  threadId: string;
+  vectorStoreId: string;
 };

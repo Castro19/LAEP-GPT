@@ -8,24 +8,24 @@ import {
 
 //add fileId. fileId can be null if user does not submit file
 export async function addMessageToThread(
-  threadId,
-  role,
-  message,
-  fileId,
-  modelTitle
+  threadId: string,
+  role: string,
+  message: string,
+  fileId: string | null,
+  modelTitle: string
 ) {
   let threadMessages;
   try {
     // null check fileId
     if (fileId !== null) {
       threadMessages = await openai.beta.threads.messages.create(threadId, {
-        role: role,
+        role: role as "user",
         content: message,
         attachments: [{ file_id: fileId, tools: [{ type: "file_search" }] }],
       });
     } else if (modelTitle === "Matching Assistant") {
       threadMessages = await openai.beta.threads.messages.create(threadId, {
-        role: role,
+        role: role as "user",
         content: message,
         attachments: [
           {
@@ -36,7 +36,7 @@ export async function addMessageToThread(
       });
     } else {
       threadMessages = await openai.beta.threads.messages.create(threadId, {
-        role: role,
+        role: role as "user",
         content: message,
       });
     }
@@ -49,12 +49,12 @@ export async function addMessageToThread(
   }
 }
 
-export async function deleteThread(threadId) {
+export async function deleteThread(threadId: string) {
   return await openai.beta.threads.del(threadId);
 }
 
 // Create thread and vector store from OpenAI API if not already created
-export async function initializeOrFetchIds(chatId) {
+export async function initializeOrFetchIds(chatId: string) {
   const existing = await fetchIds(chatId);
   if (existing) {
     return existing;

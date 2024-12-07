@@ -9,7 +9,9 @@
     "start": "npm run build && npm run start:node",
     "start:node": "node dist/index.js",
     "start:app": "cross-env STATIC=../app/dist npm run start",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "lint": "eslint 'src/**/*.{js,ts}' --report-unused-disable-directives",
+    "lint:fix": "eslint 'src/**/*.{js,ts}' --fix"
   },
   "author": "Cristian Castro Oliva",
   "license": "ISC",
@@ -38,6 +40,8 @@
     "@types/express": "^5.0.0",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
     "esbuild-node-tsc": "^2.0.5",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",

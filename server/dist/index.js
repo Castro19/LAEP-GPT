@@ -49,6 +49,7 @@ var import_chatLog = __toESM(require("./routes/chatLog"));
 var import_flowchart = __toESM(require("./routes/flowchart"));
 var import_messageAnalytics = __toESM(require("./routes/analytics/messageAnalytics"));
 var import_professorRating = __toESM(require("./routes/professorRating"));
+var import_llm = __toESM(require("./routes/llm"));
 var import_openai = __toESM(require("openai"));
 import_dotenv.default.config();
 const app = (0, import_express.default)();
@@ -77,6 +78,7 @@ app.use("/courses", import_authMiddleware.authenticate, import_courses.default);
 app.use("/users", import_authMiddleware.authenticate, import_user.default);
 app.use("/flowcharts", import_authMiddleware.authenticate, import_flowchart.default);
 app.use("/professorRatings", import_professorRating.default);
+app.use("/llms", import_llm.default);
 const openai = new import_openai.default({
   apiKey: process.env.OPENAI_API_KEY
 });

@@ -35,12 +35,8 @@ module.exports = __toCommonJS(blobFunctions_exports);
 var import__ = require("../../index.js");
 var import_fs = __toESM(require("fs"));
 var import_path = __toESM(require("path"));
-var import_url = require("url");
-const import_meta = {};
-const __filename = (0, import_url.fileURLToPath)(import_meta.url);
-const __dirname = import_path.default.dirname(__filename);
 async function saveFileLocally(file) {
-  const uploadDir = import_path.default.join(__dirname, "uploads");
+  const uploadDir = "src/uploads";
   if (!import_fs.default.existsSync(uploadDir)) {
     import_fs.default.mkdirSync(uploadDir);
   }

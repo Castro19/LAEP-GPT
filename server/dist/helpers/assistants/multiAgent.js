@@ -27,7 +27,7 @@ var import_professorRatingServices = require("../../db/models/professorRatings/p
 var import_qdrantQuery = require("../qdrant/qdrantQuery.js");
 var import_threadFunctions = require("../openAI/threadFunctions.js");
 var import_threadFunctions2 = require("../openAI/threadFunctions.js");
-var import_assistantServices = require("db/models/assistant/assistantServices.js");
+var import_assistantServices = require("../../db/models/assistant/assistantServices.js");
 async function handleMultiAgentModel({
   model,
   message,

@@ -1,11 +1,6 @@
 import { openai } from "../../index.js";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /**
  * Temporary function to store the file on the local file system.
@@ -13,7 +8,7 @@ const __dirname = path.dirname(__filename);
  * @returns {string} - The path to the saved file on the local machine.
  */
 export async function saveFileLocally(file: Express.Multer.File) {
-  const uploadDir = path.join(__dirname, "uploads"); // Directory where files will be stored locally
+  const uploadDir = "src/uploads";
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir); // Create the uploads directory if it doesn't exist
   }

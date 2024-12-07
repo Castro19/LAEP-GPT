@@ -55,7 +55,7 @@ app.use("/courses", authenticate, courseRouter);
 app.use("/users", authenticate, userRouter);
 app.use("/flowcharts", authenticate, flowchartRouter);
 app.use("/professorRatings", professorRatingRouter);
-app.use("/llm", llmRouter);
+app.use("/llms", llmRouter);
 
 // Initialize OpenAI API client
 export const openai = new OpenAI({
