@@ -57,6 +57,7 @@ const fetchLogsByUserId = async (userId) => {
   }
 };
 const fetchLogById = async (logId, userId) => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const log = await chatLogCollection.findOne(
       { logId },
@@ -74,6 +75,7 @@ const fetchLogById = async (logId, userId) => {
   }
 };
 const updateLogContent = async (logId, firebaseUserId, content, timestamp) => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const result = await chatLogCollection.updateOne(
       { logId },
@@ -93,15 +95,23 @@ const updateLogContent = async (logId, firebaseUserId, content, timestamp) => {
   }
 };
 const updateChatMessageReaction = async (logId, botMessageId, userReaction) => {
-  const result = await chatLogCollection.updateOne(
-    { logId, "content.id": botMessageId },
-    // Find the document with matching _id and content.id
-    { $set: { "content.$.userReaction": userReaction } }
-    // Use the positional operator $ to target the matching element in content array
-  );
-  return result;
+  if (!chatLogCollection) initializeCollection();
+  try {
+    const result = await chatLogCollection.updateOne(
+      { logId, "content.id": botMessageId },
+      // Find the document with matching _id and content.id
+      { $set: { "content.$.userReaction": userReaction } }
+      // Use the positional operator $ to target the matching element in content array
+    );
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error updating chat message reaction: " + error.message
+    );
+  }
 };
 const deleteLogItem = async (logId, userId) => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const result = await chatLogCollection.deleteOne({
       logId,
@@ -113,6 +123,7 @@ const deleteLogItem = async (logId, userId) => {
   }
 };
 const updateLogTitle = async (logId, userId, title) => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const result = await chatLogCollection.updateOne(
       { logId, userId },

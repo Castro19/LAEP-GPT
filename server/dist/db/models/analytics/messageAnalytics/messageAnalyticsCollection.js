@@ -41,6 +41,7 @@ const addMessageAnalytics = async (messageAnalyticsData) => {
   }
 };
 const updateMessageAnalytics = async (userMessageId, updateData) => {
+  if (!messageAnalyticsCollection) initializeCollection();
   try {
     const result = await messageAnalyticsCollection.updateMany(
       { _id: userMessageId },
@@ -55,6 +56,7 @@ const updateMessageAnalytics = async (userMessageId, updateData) => {
   }
 };
 const updateMessageAnalyticsReaction = async (botMessageId, userReaction) => {
+  if (!messageAnalyticsCollection) initializeCollection();
   try {
     const result = await messageAnalyticsCollection.updateOne(
       { botMessageId },

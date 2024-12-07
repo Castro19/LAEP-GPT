@@ -23,6 +23,7 @@ export const viewGPTs: () => Promise<AssistantDocument[]> = async () => {
 export const findAssistantById: (
   gptId: string
 ) => Promise<AssistantDocument | null> = async (gptId: string) => {
+  if (!assistantCollection) initializeCollection();
   try {
     const result = await assistantCollection.findOne({
       _id: new ObjectId(gptId) as unknown as string,

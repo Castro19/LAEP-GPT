@@ -44,6 +44,7 @@ export const updateMessageAnalytics: (
   userMessageId: string,
   updateData: MessageAnalyticsUpdate | MessageAnalyticsTokenAnalytics
 ) => {
+  if (!messageAnalyticsCollection) initializeCollection();
   try {
     const result = await messageAnalyticsCollection.updateMany(
       { _id: userMessageId },
@@ -62,6 +63,7 @@ export const updateMessageAnalyticsReaction: (
   botMessageId: string,
   userReaction: "like" | "dislike"
 ) => Promise<UpdateResult> = async (botMessageId, userReaction) => {
+  if (!messageAnalyticsCollection) initializeCollection();
   try {
     const result = await messageAnalyticsCollection.updateOne(
       { botMessageId },

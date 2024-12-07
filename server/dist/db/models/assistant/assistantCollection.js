@@ -40,6 +40,7 @@ const viewGPTs = async () => {
   }
 };
 const findAssistantById = async (gptId) => {
+  if (!assistantCollection) initializeCollection();
   try {
     const result = await assistantCollection.findOne({
       _id: new import_mongodb.ObjectId(gptId)

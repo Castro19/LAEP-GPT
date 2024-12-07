@@ -56,6 +56,7 @@ export const fetchLogById = async (
   logId: string,
   userId: string
 ): Promise<ChatLogDocument> => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const log = await chatLogCollection.findOne(
       { logId: logId },
@@ -83,6 +84,7 @@ export const updateLogContent = async (
   content: MessageObjType[],
   timestamp: string
 ): Promise<UpdateResult> => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const result = await chatLogCollection.updateOne(
       { logId: logId },
@@ -105,19 +107,26 @@ export const updateChatMessageReaction = async (
   botMessageId: string,
   userReaction: "like" | "dislike" | null
 ): Promise<UpdateResult> => {
-  // Use the positional operator to find the message within the content array
-  const result = await chatLogCollection.updateOne(
-    { logId: logId, "content.id": botMessageId }, // Find the document with matching _id and content.id
-    { $set: { "content.$.userReaction": userReaction } } // Use the positional operator $ to target the matching element in content array
-  );
-
-  return result;
+  if (!chatLogCollection) initializeCollection();
+  try {
+    // Use the positional operator to find the message within the content array
+    const result = await chatLogCollection.updateOne(
+      { logId: logId, "content.id": botMessageId }, // Find the document with matching _id and content.id
+      { $set: { "content.$.userReaction": userReaction } } // Use the positional operator $ to target the matching element in content array
+    );
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error updating chat message reaction: " + (error as Error).message
+    );
+  }
 };
 // Delete
 export const deleteLogItem = async (
   logId: string,
   userId: string
 ): Promise<DeleteResult> => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const result = await chatLogCollection.deleteOne({
       logId: logId,
@@ -135,6 +144,7 @@ export const updateLogTitle = async (
   userId: string,
   title: string
 ): Promise<UpdateResult> => {
+  if (!chatLogCollection) initializeCollection();
   try {
     const result = await chatLogCollection.updateOne(
       { logId: logId, userId: userId },
