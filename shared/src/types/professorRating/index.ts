@@ -34,7 +34,7 @@ export type reviewObject = Record<
   }
 >;
 
-export type ProfessorRatingDB = ProfessorRatingType & {
+export type ProfessorRatingDocument = ProfessorRatingType & {
   _id: ObjectId;
 };
 

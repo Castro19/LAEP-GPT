@@ -1,14 +1,10 @@
-import {
-  ProfessRatingList,
-  reviewObject,
-  Reviews,
-} from "@polylink/shared/types";
+import { ProfessRatingList } from "@polylink/shared/types";
 
 export const sortAndLimitReviews = (
   reviews: ProfessRatingList[],
   courseIds: string[] | undefined,
   limit = 5
-) => {
+): ProfessRatingList[] => {
   return reviews.map((professor) => {
     if (courseIds) {
       const filteredReviews = Object.fromEntries(
@@ -41,6 +37,7 @@ export const sortAndLimitReviews = (
             "rating",
             // "tags", // Add if tags are not empty
           ];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const filteredReview = keepProps.reduce((acc: any, prop: string) => {
             acc[prop] = review[prop];
             return acc;

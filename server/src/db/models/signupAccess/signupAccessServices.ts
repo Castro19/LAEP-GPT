@@ -4,11 +4,13 @@ import { getDb } from "../../connection";
 let signupAccessCollection: Collection;
 
 // Function to initialize the collection
-const initializeCollection = () => {
+const initializeCollection = (): void => {
   signupAccessCollection = getDb().collection("signupAccess");
 };
 
-export const getSignupAccessByEmail = async (email: string) => {
+export const getSignupAccessByEmail = async (
+  email: string
+): Promise<string> => {
   if (!signupAccessCollection) initializeCollection();
   try {
     const signupAccessEntry = await signupAccessCollection.findOne({ email });

@@ -37,7 +37,7 @@ router.post("/login", async (req, res) => {
     const name = decodedToken.name || "";
 
     // Check if user already exists in your database
-    let user = await getUserByFirebaseId(userId);
+    const user = await getUserByFirebaseId(userId);
 
     if (!user) {
       // Determine userType
@@ -46,7 +46,7 @@ router.post("/login", async (req, res) => {
       const userData: UserData = {
         userId,
         name,
-        userType,
+        userType: userType as "student" | "admin",
         email,
         bio: "",
         year: "",

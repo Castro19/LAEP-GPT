@@ -1,11 +1,16 @@
+import {
+  ProfessorRatingDocument,
+  ProfessRatingList,
+} from "@polylink/shared/types";
+import { MongoQuery } from "@polylink/shared/types";
 import * as professorRatingCollection from "./professorRatingCollection";
 import { sortAndLimitReviews } from "./professorRatingUtil";
 
 export const getProfessorRatings = async (
   professorIds: string[],
   courseIds?: string[]
-) => {
-  let query = {
+): Promise<ProfessRatingList[]> => {
+  const query: MongoQuery<ProfessorRatingDocument> = {
     id: {},
   };
 
@@ -28,8 +33,10 @@ export const getProfessorRatings = async (
   }
 };
 
-export const getProfessorsByCourseIds = async (courseIds: string[]) => {
-  let query = {
+export const getProfessorsByCourseIds = async (
+  courseIds: string[]
+): Promise<ProfessRatingList[]> => {
+  const query: MongoQuery<ProfessorRatingDocument> = {
     courses: {},
   };
 

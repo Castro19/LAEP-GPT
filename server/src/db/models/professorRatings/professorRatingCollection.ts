@@ -1,10 +1,14 @@
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
-import { ProfessorRatingDB, ProfessRatingList } from "@polylink/shared/types";
+import {
+  MongoQuery,
+  ProfessorRatingDocument,
+  ProfessRatingList,
+} from "@polylink/shared/types";
 
-let professorRatingCollection: Collection<ProfessorRatingDB>;
+let professorRatingCollection: Collection<ProfessorRatingDocument>;
 
-const initializeCollection = () => {
+const initializeCollection = (): void => {
   professorRatingCollection = getDb().collection("professorRatings");
 };
 
@@ -22,7 +26,9 @@ const PROJECTION = {
   reviews: 1,
 };
 // Read an individual professor rating
-export const viewProfessorRatings = async (query: any) => {
+export const viewProfessorRatings = async (
+  query: MongoQuery<ProfessorRatingDocument>
+): Promise<ProfessRatingList[]> => {
   if (!professorRatingCollection) initializeCollection();
   console.log("query: ", query);
   try {
@@ -31,7 +37,8 @@ export const viewProfessorRatings = async (query: any) => {
       .project(PROJECTION)
       .toArray();
     return result as ProfessRatingList[];
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("Error viewing professor ratings: ", error);
     return [];
   }
 };
