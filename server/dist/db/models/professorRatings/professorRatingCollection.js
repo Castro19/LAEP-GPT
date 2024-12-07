@@ -46,6 +46,7 @@ const viewProfessorRatings = async (query) => {
     const result = await professorRatingCollection.find(query).project(PROJECTION).toArray();
     return result;
   } catch (error) {
+    console.error("Error viewing professor ratings: ", error);
     return [];
   }
 };

@@ -66,7 +66,7 @@ const deleteThread = async (threadId) => {
     await ThreadModel.deleteThreadByID(threadId);
   } catch (error) {
     console.error("Error fetching thread ID: ", error.message);
-    return null;
+    return;
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

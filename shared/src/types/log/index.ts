@@ -29,5 +29,3 @@ export type CreateLogTitleData = {
   logId: string;
   title: string;
 };
-
-// TODO: Migrate to follow RESTful API Practices by updating entire document for PUT requests or using PATCH requests

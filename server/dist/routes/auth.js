@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
     const userId = decodedToken.uid;
     const email = decodedToken.email || "";
     const name = decodedToken.name || "";
-    let user = await (0, import_userServices2.getUserByFirebaseId)(userId);
+    const user = await (0, import_userServices2.getUserByFirebaseId)(userId);
     if (!user) {
       const userType = await (0, import_signupAccessServices.getSignupAccessByEmail)(email);
       const userData = {

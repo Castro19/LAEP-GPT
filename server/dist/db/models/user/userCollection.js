@@ -51,7 +51,10 @@ const createUser = async (userData) => {
       flowchartId: userData.flowchartId
     };
     const result = await userCollection.insertOne(newUser);
-    return result;
+    return {
+      message: "User created successfully",
+      userId: result.insertedId.toString()
+    };
   } catch (error) {
     throw new Error("Error creating a new user: " + error.message);
   }

@@ -84,7 +84,7 @@ async function handleMultiAgentModel({
       courseArray = courses;
     }
     if (professorArray.length > 0) {
-      let professorIds = [];
+      const professorIds = [];
       try {
         for (const professor of professorArray) {
           const professorId = await (0, import_qdrantQuery.searchProfessors)(professor, 1);

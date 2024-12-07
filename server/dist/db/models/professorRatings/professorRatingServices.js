@@ -35,7 +35,7 @@ module.exports = __toCommonJS(professorRatingServices_exports);
 var professorRatingCollection = __toESM(require("./professorRatingCollection"));
 var import_professorRatingUtil = require("./professorRatingUtil");
 const getProfessorRatings = async (professorIds, courseIds) => {
-  let query = {
+  const query = {
     id: {}
   };
   if (professorIds) {
@@ -55,7 +55,7 @@ const getProfessorRatings = async (professorIds, courseIds) => {
   }
 };
 const getProfessorsByCourseIds = async (courseIds) => {
-  let query = {
+  const query = {
     courses: {}
   };
   if (courseIds && courseIds.length > 0) {

@@ -18,6 +18,7 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var qdrantQuery_exports = {};
 __export(qdrantQuery_exports, {
+  getEmbedding: () => getEmbedding,
   searchCourses: () => searchCourses,
   searchProfessors: () => searchProfessors
 });
@@ -95,6 +96,7 @@ async function searchProfessors(query_text, top_k = 1) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  getEmbedding,
   searchCourses,
   searchProfessors
 });

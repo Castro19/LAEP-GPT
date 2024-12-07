@@ -70,10 +70,11 @@ async function addMessageToThread(threadId, role, message, fileId, modelTitle) {
 Error:`,
       error
     );
+    return null;
   }
 }
 async function deleteThread(threadId) {
-  return await import__.openai.beta.threads.del(threadId);
+  await import__.openai.beta.threads.del(threadId);
 }
 async function initializeOrFetchIds(chatId) {
   const existing = await (0, import_threadServices.fetchIds)(chatId);

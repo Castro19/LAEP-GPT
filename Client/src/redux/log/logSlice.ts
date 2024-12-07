@@ -8,7 +8,6 @@ import createLogTitle, {
 } from "./crudLog";
 import { LogData, LogSliceType, MessageObjType } from "@polylink/shared/types";
 import { RootState } from "../store";
-import { LogErrorCodes, logErrorMessages } from "@/types/log/logErrorTypes";
 
 export type AddLogParams = {
   msg: string;
@@ -47,7 +46,7 @@ export const addLog = createAsyncThunk(
       return { success: true, logId: id };
     } catch (error) {
       console.error("Failed to create log title: ", error);
-      return rejectWithValue(logErrorMessages[LogErrorCodes.CREATE_FAILED]);
+      return rejectWithValue({ message: "Failed to create log title" });
     }
   }
 );
@@ -63,7 +62,7 @@ export const fetchLogs = createAsyncThunk(
       return logs;
     } catch (error) {
       console.error("Failed to fetch logs: ", error);
-      return rejectWithValue(logErrorMessages[LogErrorCodes.READ_FAILED]);
+      return rejectWithValue({ message: "Failed to fetch logs" });
     }
   }
 );
@@ -106,7 +105,7 @@ export const updateLog = createAsyncThunk(
       }
     } catch (error) {
       console.error("Failed to update log: ", error);
-      return rejectWithValue(logErrorMessages[LogErrorCodes.UPDATE_FAILED]);
+      return rejectWithValue({ message: "Failed to update log" });
     }
   }
 );
@@ -123,7 +122,7 @@ export const updateLogTitle = createAsyncThunk(
       return updatedLog;
     } catch (error) {
       console.error("Failed to update log title: ", error);
-      return rejectWithValue(logErrorMessages[LogErrorCodes.UPDATE_FAILED]);
+      return rejectWithValue({ message: "Failed to update log title" });
     }
   }
 );
@@ -139,7 +138,7 @@ export const deleteLog = createAsyncThunk(
       return deletedLog;
     } catch (error) {
       console.error("Failed to delete log: ", error);
-      return rejectWithValue(logErrorMessages[LogErrorCodes.DELETE_FAILED]);
+      return rejectWithValue({ message: "Failed to delete log" });
     }
   }
 );

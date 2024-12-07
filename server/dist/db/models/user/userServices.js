@@ -38,7 +38,10 @@ var UserModel = __toESM(require("./userCollection.js"));
 const addUser = async (userData) => {
   try {
     const result = await UserModel.createUser(userData);
-    return { message: "User created successfully", userId: result.insertedId };
+    return {
+      message: result.message,
+      userId: result.userId
+    };
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }
@@ -56,11 +59,7 @@ const getUserByFirebaseId = async (firebaseUserId) => {
 };
 const updateUser = async (firebaseUserId, updateData) => {
   try {
-    const result = await UserModel.updateUserByFirebaseId(
-      firebaseUserId,
-      updateData
-    );
-    return result;
+    await UserModel.updateUserByFirebaseId(firebaseUserId, updateData);
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }

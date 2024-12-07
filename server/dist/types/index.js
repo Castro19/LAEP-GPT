@@ -15,34 +15,8 @@ var __reExport = (target, mod, secondTarget) => (__copyProps(target, mod, "defau
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var types_exports = {};
 module.exports = __toCommonJS(types_exports);
-__reExport(types_exports, require("./message"), module.exports);
-__reExport(types_exports, require("./gpt"), module.exports);
-__reExport(types_exports, require("./layout"), module.exports);
-__reExport(types_exports, require("./log"), module.exports);
-__reExport(types_exports, require("./auth"), module.exports);
-__reExport(types_exports, require("./flowChart"), module.exports);
-__reExport(types_exports, require("./flowInfo"), module.exports);
-__reExport(types_exports, require("./courses"), module.exports);
-__reExport(types_exports, require("./thread"), module.exports);
-__reExport(types_exports, require("./middleware/index"), module.exports);
-__reExport(types_exports, require("./messageAnalytics"), module.exports);
-__reExport(types_exports, require("./professorRating"), module.exports);
-__reExport(types_exports, require("./llm"), module.exports);
-__reExport(types_exports, require("./user"), module.exports);
+__reExport(types_exports, require("./express"), module.exports);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ...require("./message"),
-  ...require("./gpt"),
-  ...require("./layout"),
-  ...require("./log"),
-  ...require("./auth"),
-  ...require("./flowChart"),
-  ...require("./flowInfo"),
-  ...require("./courses"),
-  ...require("./thread"),
-  ...require("./middleware/index"),
-  ...require("./messageAnalytics"),
-  ...require("./professorRating"),
-  ...require("./llm"),
-  ...require("./user")
+  ...require("./express")
 });

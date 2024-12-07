@@ -32,8 +32,8 @@ const flowchartHelper = async (termData, catalogYear) => {
   let techElectivesLeft = 0;
   let generalWritingMet = false;
   let uscpMet = false;
-  for (let term of termData) {
-    for (let course of term.courses) {
+  for (const term of termData) {
+    for (const course of term.courses) {
       if (course.completed) {
         continue;
       }

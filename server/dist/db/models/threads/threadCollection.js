@@ -25,7 +25,7 @@ __export(threadCollection_exports, {
 module.exports = __toCommonJS(threadCollection_exports);
 var import_connection = require("../../connection.js");
 let threadCollection;
-const initializeCollection = async () => {
+const initializeCollection = () => {
   threadCollection = (0, import_connection.getDb)().collection("threads");
 };
 const createThread = async (chatId, threadId, vectorStoreId) => {
@@ -51,6 +51,7 @@ const getIds = async (chatId) => {
     });
     if (!thread) return null;
     return {
+      _id: thread._id,
       threadId: thread.threadId,
       vectorStoreId: thread.vectorStoreId
     };
