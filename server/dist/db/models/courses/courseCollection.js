@@ -32,7 +32,11 @@ const initializeCollection = () => {
 };
 const findCourse = async (catalogYear, courseId) => {
   if (!courseCollection) initializeCollection();
-  return await courseCollection.findOne({ catalogYear, courseId });
+  const course = await courseCollection.findOne({ catalogYear, courseId });
+  if (!course) {
+    return null;
+  }
+  return course;
 };
 const findCourses = async (query) => {
   if (!courseCollection) initializeCollection();
@@ -45,13 +49,15 @@ const findCourses = async (query) => {
   };
   const resultLimit = 25;
   try {
-    return await courseCollection.find(query).project({ _id: 0, ...result }).limit(resultLimit).toArray();
+    const courses = await courseCollection.find(query).project({ _id: 0, ...result }).limit(resultLimit).toArray();
+    return courses;
   } catch (error) {
     console.error("An error occurred:", error);
     throw error;
   }
 };
 const findCoursesGroupedBySubjectNames = async (subject, query, page = 1, pageSize = 10) => {
+  if (!courseCollection) initializeCollection();
   try {
     query.subject = subject;
     const start = (page - 1) * pageSize;
@@ -82,13 +88,14 @@ const findCoursesGroupedBySubjectNames = async (subject, query, page = 1, pageSi
         }
       }
     ]).toArray();
-    return result;
+    return result[0].courses;
   } catch (error) {
     console.error("An error occurred:", error);
     throw error;
   }
 };
 const findSubjectNames = async (query) => {
+  if (!courseCollection) initializeCollection();
   try {
     const result = await courseCollection.aggregate([
       { $match: query },
@@ -108,9 +115,10 @@ const findSubjectNames = async (query) => {
   }
 };
 const findCourseInfo = async (courseIds) => {
+  if (!courseCollection) initializeCollection();
   try {
     console.log("courseIds: ", courseIds);
-    return await courseCollection.find({
+    const result = await courseCollection.find({
       courseId: { $in: courseIds },
       catalogYear: "2022-2026"
     }).project({
@@ -121,6 +129,7 @@ const findCourseInfo = async (courseIds) => {
       _id: 0
       // Exclude the _id field if not needed
     }).toArray();
+    return result;
   } catch (error) {
     console.error("An error occurred:", error);
     throw error;

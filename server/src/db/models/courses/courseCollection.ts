@@ -1,19 +1,32 @@
-import { CourseDocument, MongoQuery } from "@polylink/shared/types";
+import {
+  CourseDocument,
+  CourseObject,
+  MongoQuery,
+} from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
 
-let courseCollection: Collection;
+let courseCollection: Collection<CourseDocument>;
 
-const initializeCollection = () => {
+const initializeCollection = (): void => {
   courseCollection = getDb().collection("courses");
 };
 
-export const findCourse = async (catalogYear: string, courseId: string) => {
+export const findCourse = async (
+  catalogYear: string,
+  courseId: string
+): Promise<CourseDocument | null> => {
   if (!courseCollection) initializeCollection();
-  return await courseCollection.findOne({ catalogYear, courseId });
+  const course = await courseCollection.findOne({ catalogYear, courseId });
+  if (!course) {
+    return null;
+  }
+  return course as CourseDocument;
 };
 
-export const findCourses = async (query: MongoQuery<CourseDocument>) => {
+export const findCourses = async (
+  query: MongoQuery<CourseDocument>
+): Promise<CourseObject[]> => {
   if (!courseCollection) initializeCollection();
   console.log("query: ", query);
   const result = {
@@ -25,11 +38,12 @@ export const findCourses = async (query: MongoQuery<CourseDocument>) => {
   const resultLimit = 25;
 
   try {
-    return await courseCollection
+    const courses = await courseCollection
       .find(query)
       .project({ _id: 0, ...result })
       .limit(resultLimit)
       .toArray();
+    return courses as CourseObject[];
   } catch (error) {
     console.error("An error occurred:", error);
     throw error; // Re-throw the error to be handled by the caller
@@ -41,7 +55,9 @@ export const findCoursesGroupedBySubjectNames = async (
   query: MongoQuery<CourseDocument>,
   page = 1,
   pageSize = 10
-) => {
+): Promise<CourseObject[]> => {
+  if (!courseCollection) initializeCollection();
+
   try {
     // Add subjectName to the query
     query.subject = subject;
@@ -49,7 +65,7 @@ export const findCoursesGroupedBySubjectNames = async (
     // Calculate the starting index for pagination
     const start = (page - 1) * pageSize;
 
-    const result = await courseCollection
+    const result = (await courseCollection
       .aggregate([
         { $match: query },
         {
@@ -68,22 +84,27 @@ export const findCoursesGroupedBySubjectNames = async (
           },
         },
         { $sort: { _id: 1 } }, // Sort subjects alphabetically
+
         {
           $project: {
             courses: { $slice: ["$courses", start, pageSize] }, // Paginate courses array
           },
         },
       ])
-      .toArray();
+      .toArray()) as { _id: string; courses: CourseObject[] }[];
 
-    return result;
+    return result[0].courses;
   } catch (error) {
     console.error("An error occurred:", error);
     throw error;
   }
 };
 
-export const findSubjectNames = async (query: MongoQuery<CourseDocument>) => {
+export const findSubjectNames = async (
+  query: MongoQuery<CourseDocument>
+): Promise<string[]> => {
+  if (!courseCollection) initializeCollection();
+
   try {
     const result = await courseCollection
       .aggregate([
@@ -104,10 +125,14 @@ export const findSubjectNames = async (query: MongoQuery<CourseDocument>) => {
   }
 };
 
-export const findCourseInfo = async (courseIds: string[]) => {
+export const findCourseInfo = async (
+  courseIds: string[]
+): Promise<CourseObject[]> => {
+  if (!courseCollection) initializeCollection();
+
   try {
     console.log("courseIds: ", courseIds);
-    return await courseCollection
+    const result = await courseCollection
       .find({
         courseId: { $in: courseIds },
         catalogYear: "2022-2026",
@@ -120,6 +145,7 @@ export const findCourseInfo = async (courseIds: string[]) => {
         _id: 0, // Exclude the _id field if not needed
       })
       .toArray(); // Convert the cursor to an array
+    return result as CourseObject[];
   } catch (error) {
     console.error("An error occurred:", error);
     throw error;

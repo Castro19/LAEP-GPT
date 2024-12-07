@@ -61,9 +61,7 @@ const flowchartAssistant = async (user, message) => {
   const flowchart = await (0, import_flowchartServices.fetchFlowchart)(user.flowchartId, user.userId);
   const courseIds = await (0, import_qdrantQuery.searchCourses)(message, null, 5);
   console.log("courseIds: ", courseIds);
-  const courseObjects = await (0, import_courseServices.getCourseInfo)(
-    courseIds
-  );
+  const courseObjects = await (0, import_courseServices.getCourseInfo)(courseIds);
   const courseDescriptions = JSON.stringify(courseObjects);
   console.log("courseDescriptions: ", courseDescriptions);
   const {

@@ -5,9 +5,12 @@ import {
   SubjectQuery,
   CourseDocument,
   MongoQuery,
-} from "../../../types";
+  CourseObject,
+} from "@polylink/shared/types";
 
-export const getCourses = async (queryParams: CourseQuery) => {
+export const getCourses = async (
+  queryParams: CourseQuery
+): Promise<CourseObject[]> => {
   const { catalogYear, searchTerm } = queryParams;
   let query = {} as MongoQuery<CourseDocument>;
 
@@ -33,16 +36,35 @@ export const getCourses = async (queryParams: CourseQuery) => {
   return await courseCollection.findCourses(query);
 };
 
-export const getCourse = async (queryParams: CourseQuery) => {
+export const getCourse = async (
+  queryParams: CourseQuery
+): Promise<CourseObject | null> => {
   const { catalogYear, courseId } = queryParams;
   if (!catalogYear || !courseId) {
     throw new Error("Catalog year and course ID are required");
   }
 
-  return await courseCollection.findCourse(catalogYear, courseId);
+  const courseDocument = await courseCollection.findCourse(
+    catalogYear,
+    courseId
+  );
+
+  if (!courseDocument) {
+    return null;
+  }
+
+  const course = {
+    courseId: courseDocument.courseId,
+    displayName: courseDocument.displayName,
+    units: courseDocument.units,
+    desc: courseDocument.desc,
+  };
+  return course as CourseObject;
 };
 
-export const getCoursesBySubject = async (queryParams: SubjectQuery) => {
+export const getCoursesBySubject = async (
+  queryParams: SubjectQuery
+): Promise<CourseObject[]> => {
   const { catalogYear, GE, GWR, USCP, subject, page, pageSize } = queryParams;
 
   let query = {} as MongoQuery<CourseDocument>;
@@ -88,10 +110,12 @@ export const getCoursesBySubject = async (queryParams: SubjectQuery) => {
     page,
     Number(pageSize)
   );
-  return result[0].courses;
+  return result;
 };
 
-export const getSubjectNames = async (queryParams: SubjectQuery) => {
+export const getSubjectNames = async (
+  queryParams: SubjectQuery
+): Promise<string[]> => {
   const { GWR, USCP } = queryParams;
 
   let query = {};
@@ -119,14 +143,14 @@ export const getSubjectNames = async (queryParams: SubjectQuery) => {
   return await courseCollection.findSubjectNames(query);
 };
 
-export const getCourseInfo = async (courseIds: string[]) => {
+export const getCourseInfo = async (
+  courseIds: string[]
+): Promise<CourseObject[]> => {
   if (!courseIds) {
     throw new Error("Course IDs are required");
   }
   try {
-    return (await courseCollection.findCourseInfo(
-      courseIds
-    )) as unknown as CourseDocument[];
+    return (await courseCollection.findCourseInfo(courseIds)) as CourseObject[];
   } catch (error) {
     console.error("Error fetching course info: ", error);
     throw error;

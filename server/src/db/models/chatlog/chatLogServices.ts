@@ -5,7 +5,7 @@ import {
   MessageObjType,
 } from "@polylink/shared/types";
 import * as ChatLogModel from "./chatLogCollection.js";
-import { openai } from "index.js";
+import { openai } from "../../../index";
 import { fetchIds } from "../threads/threadServices";
 
 // Create

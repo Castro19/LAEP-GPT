@@ -1,6 +1,6 @@
 // helpers/apiHelper.js
 
-import { CourseSidebar } from "@polylink/shared/types";
+import { CourseObject } from "@polylink/shared/types";
 
 export const fetchCoursesAPI = async (
   catalogYear: string,
@@ -21,7 +21,7 @@ export const fetchCoursesAPI = async (
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data: CourseObject[] = await response.json();
     return data;
   } catch (err) {
     console.error("Failed to fetch courses:", err);
@@ -58,7 +58,7 @@ export const fetchSubjectNamesAPI = async (
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data: string[] = await response.json();
     return data;
   } catch (err) {
     console.error("Failed to fetch subject names:", err);
@@ -81,7 +81,7 @@ export const fetchCoursesBySubjectAPI = async (
     pageSize: string;
     subject: string;
   }
-): Promise<CourseSidebar[]> => {
+): Promise<CourseObject[]> => {
   try {
     const params = new URLSearchParams();
     params.append("catalogYear", catalogYear);
@@ -102,7 +102,7 @@ export const fetchCoursesBySubjectAPI = async (
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data: CourseObject[] = await response.json();
     console.log("data: ", data);
     return data;
   } catch (err) {

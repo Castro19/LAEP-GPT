@@ -38,10 +38,15 @@ __export(chatLogServices_exports, {
 });
 module.exports = __toCommonJS(chatLogServices_exports);
 var ChatLogModel = __toESM(require("./chatLogCollection.js"));
+var import__ = require("../../../index");
+var import_threadServices = require("../threads/threadServices");
 const createLog = async (logData) => {
   try {
     const result = await ChatLogModel.addLog(logData);
-    return { message: "Log created successfully", logId: result.insertedId };
+    if (!result.acknowledged) {
+      throw new Error("Failed to create log");
+    }
+    return;
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }
@@ -69,21 +74,55 @@ const updateLog = async (logId, firebaseUserId, content, timestamp) => {
       content,
       timestamp
     );
-    return {
-      message: "Log updated successfully",
-      modifiedCount: result.modifiedCount
-    };
+    if (!result.acknowledged) {
+      throw new Error("Failed to update log");
+    }
+    return;
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }
 };
 const deleteLog = async (logId, userId) => {
   try {
-    const result = await ChatLogModel.deleteLogItem(logId, userId);
-    return {
-      message: "Log Deleted successfully",
-      deletedCount: result.deletedCount
-    };
+    const ids = await (0, import_threadServices.fetchIds)(logId);
+    const { threadId, vectorStoreId } = ids || {};
+    if (vectorStoreId) {
+      try {
+        const vectorStoreFiles = await import__.openai.beta.vectorStores.files.list(vectorStoreId);
+        for (const file of vectorStoreFiles.data) {
+          try {
+            await import__.openai.files.del(file.id);
+          } catch (error) {
+            console.warn(
+              `Failed to delete file ${file.id}:`,
+              error.message
+            );
+          }
+        }
+        await import__.openai.beta.vectorStores.del(String(vectorStoreId));
+      } catch (error) {
+        console.warn(
+          "Failed to delete vector store:",
+          error.message
+        );
+      }
+    }
+    if (threadId) {
+      try {
+        await import__.openai.beta.threads.del(threadId);
+      } catch (error) {
+        console.warn("Failed to delete thread:", error.message);
+      }
+    }
+    try {
+      const result = await ChatLogModel.deleteLogItem(logId, userId);
+      if (!result.acknowledged) {
+        throw new Error("Failed to delete log");
+      }
+      return;
+    } catch (error) {
+      throw new Error("Service error: " + error.message);
+    }
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }
@@ -95,10 +134,10 @@ const updateChatMessageReaction = async (logId, botMessageId, userReaction) => {
       botMessageId,
       userReaction
     );
-    return {
-      message: "Chat message reaction updated successfully",
-      modifiedCount: result.modifiedCount
-    };
+    if (!result.acknowledged) {
+      throw new Error("Failed to update chat message reaction");
+    }
+    return;
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }
@@ -106,7 +145,10 @@ const updateChatMessageReaction = async (logId, botMessageId, userReaction) => {
 const updateLogTitle = async (logId, userId, title) => {
   try {
     const result = await ChatLogModel.updateLogTitle(logId, userId, title);
-    return result;
+    if (!result.acknowledged) {
+      throw new Error("Failed to update log title");
+    }
+    return;
   } catch (error) {
     throw new Error("Service error: " + error.message);
   }

@@ -34,9 +34,6 @@ module.exports = __toCommonJS(courses_exports);
 var import_express = __toESM(require("express"));
 var import_courseServices = require("../db/models/courses/courseServices");
 const router = import_express.default.Router();
-router.get("/test", (req, res) => {
-  res.status(200).send("Hello World");
-});
 router.get("/", async (req, res) => {
   try {
     console.log("req: ", req.query);

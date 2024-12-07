@@ -33,8 +33,6 @@ __export(chatLog_exports, {
 module.exports = __toCommonJS(chatLog_exports);
 var import_express = __toESM(require("express"));
 var import_chatLogServices = require("../db/models/chatlog/chatLogServices");
-var import_threadServices = require("../db/models/threads/threadServices");
-var import__ = require("../index.js");
 const router = import_express.default.Router();
 router.post("/", async (req, res) => {
   try {
@@ -44,15 +42,14 @@ router.post("/", async (req, res) => {
     }
     const { id, title, content, timestamp } = req.body;
     const newLog = {
-      _id: id,
       logId: id,
-      userId,
       title,
       timestamp,
-      content
+      content,
+      userId
     };
-    const result = await (0, import_chatLogServices.createLog)(newLog);
-    res.status(201).json(result);
+    await (0, import_chatLogServices.createLog)(newLog);
+    res.status(201).json({ message: "Log created successfully" });
   } catch (error) {
     res.status(500).send("Failed to create log: " + error.message);
     console.error("Failed to create log: ", error);
@@ -98,9 +95,8 @@ router.put("/", async (req, res) => {
     return res.status(400).json({ message: "Log ID is required" });
   }
   try {
-    const result = await (0, import_chatLogServices.updateLog)(logId, userId, content, timestamp);
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify(result));
+    await (0, import_chatLogServices.updateLog)(logId, userId, content, timestamp);
+    res.status(200).json({ message: "Log updated successfully" });
   } catch (error) {
     console.error("Failed to update log: ", error);
     res.status(500).json("Failed to update log in database: " + error.message);
@@ -117,11 +113,12 @@ router.put("/title", async (req, res) => {
   }
   try {
     await (0, import_chatLogServices.updateLogTitle)(logId, userId, title);
-    res.status(200).json({
+    const response = {
       message: "Log title updated successfully",
       logId,
       title
-    });
+    };
+    res.status(200).json(response);
   } catch (error) {
     console.error("Failed to update log title: ", error);
     res.status(500).json("Failed to update log title: " + error.message);
@@ -137,45 +134,18 @@ router.delete("/:logId", async (req, res) => {
     return res.status(400).json({ message: "Log ID is required" });
   }
   try {
-    const ids = await (0, import_threadServices.fetchIds)(logId);
-    const { threadId, vectorStoreId } = ids || {};
-    if (vectorStoreId) {
-      try {
-        const vectorStoreFiles = await import__.openai.beta.vectorStores.files.list(vectorStoreId);
-        for (const file of vectorStoreFiles.data) {
-          try {
-            await import__.openai.files.del(file.id);
-          } catch (error) {
-            console.warn(
-              `Failed to delete file ${file.id}:`,
-              error.message
-            );
-          }
-        }
-        await import__.openai.beta.vectorStores.del(String(vectorStoreId));
-      } catch (error) {
-        console.warn(
-          "Failed to delete vector store:",
-          error.message
-        );
-      }
-    }
-    if (threadId) {
-      try {
-        await import__.openai.beta.threads.del(threadId);
-      } catch (error) {
-        console.warn("Failed to delete thread:", error.message);
-      }
-    }
-    console.log("Deleting log:", logId);
-    const response = await (0, import_chatLogServices.deleteLog)(logId, userId);
-    res.status(204).json({ message: "Log deleted successfully", response });
+    await (0, import_chatLogServices.deleteLog)(logId, userId);
+    res.status(204).json({ message: "Log deleted successfully" });
   } catch (error) {
     console.error("Failed to Delete log: ", error);
     res.status(500).send("Failed to Delete log in database: " + error.message);
   }
 });
 router.put("/reaction", async (req, res) => {
+  const userId = req.user?.uid;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
   const { logId, botMessageId, userReaction } = req.body;
   try {
     if (userReaction && botMessageId) {

@@ -59,7 +59,20 @@ const getCourse = async (queryParams) => {
   if (!catalogYear || !courseId) {
     throw new Error("Catalog year and course ID are required");
   }
-  return await courseCollection.findCourse(catalogYear, courseId);
+  const courseDocument = await courseCollection.findCourse(
+    catalogYear,
+    courseId
+  );
+  if (!courseDocument) {
+    return null;
+  }
+  const course = {
+    courseId: courseDocument.courseId,
+    displayName: courseDocument.displayName,
+    units: courseDocument.units,
+    desc: courseDocument.desc
+  };
+  return course;
 };
 const getCoursesBySubject = async (queryParams) => {
   const { catalogYear, GE, GWR, USCP, subject, page, pageSize } = queryParams;
@@ -92,7 +105,7 @@ const getCoursesBySubject = async (queryParams) => {
     page,
     Number(pageSize)
   );
-  return result[0].courses;
+  return result;
 };
 const getSubjectNames = async (queryParams) => {
   const { GWR, USCP } = queryParams;
@@ -116,9 +129,7 @@ const getCourseInfo = async (courseIds) => {
     throw new Error("Course IDs are required");
   }
   try {
-    return await courseCollection.findCourseInfo(
-      courseIds
-    );
+    return await courseCollection.findCourseInfo(courseIds);
   } catch (error) {
     console.error("Error fetching course info: ", error);
     throw error;

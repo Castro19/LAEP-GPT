@@ -8,9 +8,6 @@ import {
 import { SubjectQuery } from "@polylink/shared/types";
 const router = express.Router();
 
-router.get("/test", (req, res) => {
-  res.status(200).send("Hello World");
-});
 // Query courses by catalog year and search term
 router.get("/", async (req, res) => {
   try {

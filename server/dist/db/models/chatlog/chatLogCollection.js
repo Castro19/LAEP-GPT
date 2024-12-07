@@ -35,7 +35,9 @@ const initializeCollection = () => {
 const addLog = async (logData) => {
   if (!chatLogCollection) initializeCollection();
   try {
-    const result = await chatLogCollection.insertOne(logData);
+    const result = await chatLogCollection.insertOne(
+      logData
+    );
     return result;
   } catch (error) {
     throw new Error("Error creating a new Log: " + error.message);
@@ -45,7 +47,11 @@ const fetchLogsByUserId = async (userId) => {
   if (!chatLogCollection) initializeCollection();
   try {
     const logs = await chatLogCollection.find({ userId }, { projection: { content: 0 } }).toArray();
-    return logs;
+    return logs.map((log) => ({
+      logId: log.logId,
+      title: log.title,
+      timestamp: log.timestamp
+    }));
   } catch (error) {
     throw new Error("Error fetching logs: " + error.message);
   }
@@ -53,9 +59,8 @@ const fetchLogsByUserId = async (userId) => {
 const fetchLogById = async (logId, userId) => {
   try {
     const log = await chatLogCollection.findOne(
-      // { logId: logId },
-      { _id: logId },
-      { projection: { content: 1, userId: 1 } }
+      { logId },
+      { projection: { _id: 0, logId: 1, content: 1, userId: 1 } }
     );
     if (!log) {
       throw new Error("Log not found");
@@ -71,8 +76,7 @@ const fetchLogById = async (logId, userId) => {
 const updateLogContent = async (logId, firebaseUserId, content, timestamp) => {
   try {
     const result = await chatLogCollection.updateOne(
-      // { logId: logId },
-      { _id: logId },
+      { logId },
       {
         $set: {
           userId: firebaseUserId,
@@ -90,8 +94,7 @@ const updateLogContent = async (logId, firebaseUserId, content, timestamp) => {
 };
 const updateChatMessageReaction = async (logId, botMessageId, userReaction) => {
   const result = await chatLogCollection.updateOne(
-    // { logId: logId, "content.id": botMessageId }, // Find the document with matching _id and content.id
-    { _id: logId, "content.id": botMessageId },
+    { logId, "content.id": botMessageId },
     // Find the document with matching _id and content.id
     { $set: { "content.$.userReaction": userReaction } }
     // Use the positional operator $ to target the matching element in content array
@@ -101,8 +104,7 @@ const updateChatMessageReaction = async (logId, botMessageId, userReaction) => {
 const deleteLogItem = async (logId, userId) => {
   try {
     const result = await chatLogCollection.deleteOne({
-      // logId: logId,
-      _id: logId,
+      logId,
       userId
     });
     return result;
@@ -113,8 +115,7 @@ const deleteLogItem = async (logId, userId) => {
 const updateLogTitle = async (logId, userId, title) => {
   try {
     const result = await chatLogCollection.updateOne(
-      // { logId: logId, userId: userId },
-      { _id: logId, userId },
+      { logId, userId },
       { $set: { title } }
     );
     return result;
