@@ -1,7 +1,7 @@
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { MessageObjType } from "@/types";
+import { MessageObjType } from "@polylink/shared/types";
 import { Button } from "../ui/button";
 import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
@@ -39,7 +39,6 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       });
     }
     // Send the like to the backend
-    console.log("like", id);
   };
   const handleDislike = (id: string) => {
     if (currentChatId) {
@@ -56,7 +55,6 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       });
     }
     // Send the dislike to the backend
-    console.log("dislike", id);
   };
 
   const renderLikeButtons = () => {

@@ -7,15 +7,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
 
       - name: Install Client Dependencies
-        run: cd Client && npm install
+        run: |
+          cd Client
+          npm install
         env:
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
@@ -27,20 +29,34 @@ jobs:
         env:
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
+      # Add this step to cache the build
+      - name: Cache build artifacts
+        uses: actions/cache@v3
+        with:
+          path: Client/dist
+          key: ${{ runner.os }}-client-build-${{ github.sha }}
+
   server-setup:
     needs: client-build-and-lint
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "18"
+
+      # Restore client build cache
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: Client/dist
+          key: ${{ runner.os }}-client-build-${{ github.sha }}
 
       - name: Install Server Dependencies
-        run: cd server && npm install
+        run: cd server && npm install --ignore-scripts # Added --ignore-scripts flag
 
       - name: Run lint
         run: cd server && npm run lint

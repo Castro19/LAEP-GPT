@@ -1,3 +1,8 @@
+import {
+  MessageAnalyticsCreate,
+  MessageAnalyticsReaction,
+} from "@polylink/shared/types";
+
 const useTrackAnalytics = () => {
   const trackCreateMessage = async ({
     userMessageId,
@@ -6,14 +11,7 @@ const useTrackAnalytics = () => {
     assistantId,
     hadFile,
     createdAt,
-  }: {
-    userMessageId: string;
-    botMessageId: string;
-    logId: string | null;
-    assistantId: string | undefined;
-    hadFile: boolean;
-    createdAt: Date;
-  }) => {
+  }: MessageAnalyticsCreate) => {
     try {
       const response = await fetch("http://localhost:4000/analytics", {
         method: "POST",
@@ -75,10 +73,7 @@ const useTrackAnalytics = () => {
   const trackUserReaction = async ({
     botMessageId,
     userReaction,
-  }: {
-    botMessageId: string;
-    userReaction: "like" | "dislike" | null;
-  }) => {
+  }: MessageAnalyticsReaction) => {
     try {
       await fetch("http://localhost:4000/analytics/reaction", {
         method: "PUT",
@@ -96,23 +91,3 @@ const useTrackAnalytics = () => {
 };
 
 export default useTrackAnalytics;
-
-// Message Analytics
-
-/*
-  id: msg.id // client
-  logId: string  // client
-  assistantId: string  // client
-  userId: string // middleware
-  createdAt: msg.createdAt // server
-  userReaction: "like" | "dislike" | null  // client (put)
-  responseTime: Number,  // server 
-  hadFile: boolean, // client
-  hadError: boolean, // client
-  errorMessage: string | null, // client
-
-  // Not implemented yet
-  inputMessage: string, // server?
-  outputMessage: string, // server?
-  tokensUsed: number, // server
-*/

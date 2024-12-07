@@ -1,7 +1,7 @@
 import { fetchFlowchartData } from "./flowchartSlice";
 import { AppDispatch } from "../store";
 import { resetFlowchartData } from "./flowchartSlice";
-import { Course, Term } from "@/types";
+import { Course, Term } from "@polylink/shared/types";
 
 /**
  * Helper function to fetch the flowchart data JSON based on user selections.
@@ -63,7 +63,6 @@ export async function fetchFlowchartDataHelper(
       });
     });
 
-    console.log("termData with desc: ", termData);
     // Dispatch the action to update the flowchart data in the Redux store
     dispatch(fetchFlowchartData.fulfilled(jsonData, "", ""));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,16 +1,16 @@
 import { useEffect, useRef } from "react";
 import ChatContainer from "@/components/chat/ChatContainer";
-import { viewGPTs } from "../redux/gpt/crudGPT";
 import {
   useAppSelector,
   useAppDispatch,
-  gptActions,
+  assistantActions,
   messageActions,
 } from "@/redux";
 import { useParams } from "react-router-dom";
 import { fetchLogById } from "@/redux/log/crudLog";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
+import { LogData } from "@polylink/shared/types";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
@@ -19,33 +19,37 @@ const ChatPage = () => {
 
   const userId = useAppSelector((state) => state.auth.userId);
 
-  const gptList = useAppSelector((state) => state.gpt.gptList);
-  const hasFetchedGptList = useRef(false);
+  const assistantList = useAppSelector(
+    (state) => state.assistant.assistantList
+  );
+  const hasFetchedassistantList = useRef(false);
 
   useEffect(() => {
-    if (hasFetchedGptList.current || gptList.length > 0) return;
-    hasFetchedGptList.current = true;
+    if (hasFetchedassistantList.current || assistantList.length > 0) return;
+    hasFetchedassistantList.current = true;
 
-    const fetchGptList = async () => {
+    const fetchassistantList = async () => {
       if (userId) {
         try {
-          const fetchedGptList = await viewGPTs();
-          dispatch(gptActions.initGptList(fetchedGptList.gptList));
+          dispatch(assistantActions.fetchAll());
         } catch (error) {
           console.error("Error fetching GPT list: ", error);
         }
       }
     };
-    fetchGptList();
-  }, [userId, dispatch, gptList.length]);
+    fetchassistantList();
+  }, [userId, dispatch, assistantList.length]);
 
   useEffect(() => {
     const fetchLog = async () => {
       if (chatId) {
         dispatch(messageActions.toggleNewChat(false));
         try {
-          const log = await fetchLogById(chatId);
-          dispatch(messageActions.setMsgList(log.content));
+          const log = (await fetchLogById(chatId)) as LogData;
+          if (log.content) {
+            dispatch(messageActions.setMsgList(log.content));
+          }
+          dispatch(messageActions.setCurrentChatId(chatId));
         } catch (error) {
           console.error("Error fetching log: ", error);
         }

@@ -2,7 +2,7 @@ import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
 import { useNavigate } from "react-router-dom";
-import { FetchFlowchartResponse, MyUserInfo } from "@/types";
+import { FetchedFlowchartObject, UserData } from "@polylink/shared/types";
 import { SlOptionsVertical } from "react-icons/sl";
 import {
   Popover,
@@ -21,7 +21,7 @@ const FlowchartLogOptions = ({
   primaryOption,
   onPrimaryChange,
 }: {
-  flowchart: FetchFlowchartResponse;
+  flowchart: FetchedFlowchartObject;
   name: string;
   // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;
@@ -73,7 +73,7 @@ const FlowchartLogOptions = ({
       flowchartActions.deleteFlowchart({
         flowchartId,
         handleChange: (name, value) =>
-          handleChange(name as keyof MyUserInfo, value),
+          handleChange(name as keyof UserData, value),
       })
     ).unwrap();
     // Step 2: Reset the flowchart data
@@ -89,7 +89,7 @@ const FlowchartLogOptions = ({
       navigate(`/flowchart/${nextFlowchartId}`);
     } else {
       dispatch(
-        flowchartActions.setCurrentFlowchart({} as FetchFlowchartResponse)
+        flowchartActions.setCurrentFlowchart({} as FetchedFlowchartObject)
       );
       handleChange("flowchartId", "");
       // Step 5: Navigate to the flowchart list

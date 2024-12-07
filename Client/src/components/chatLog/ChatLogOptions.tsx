@@ -14,14 +14,14 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { LogData } from "@/types";
+import { LogListType } from "@polylink/shared/types";
 
 const ChatLogOptions = ({
   log,
   name,
   onNameChange,
 }: {
-  log: LogData;
+  log: LogListType;
   name: string;
   // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;
@@ -37,14 +37,14 @@ const ChatLogOptions = ({
   };
 
   const isDeleting = useAppSelector((state) =>
-    state.log.deletingLogIds.includes(log.id)
+    state.log.deletingLogIds.includes(log.logId)
   );
 
   const onDelete = () => {
     if (isDeleting) return; // Prevent multiple deletion attempts
     try {
       if (userId) {
-        dispatch(logActions.deleteLog({ logId: log.id }))
+        dispatch(logActions.deleteLog({ logId: log.logId }))
           .unwrap()
           .then(() => {
             navigate(`/chat`);
@@ -52,11 +52,11 @@ const ChatLogOptions = ({
             dispatch(messageActions.toggleNewChat(true));
           })
           .catch((error) =>
-            console.error(`Error trying to delete log ${log.id}: `, error)
+            console.error(`Error trying to delete log ${log.logId}: `, error)
           );
       }
     } catch (error) {
-      console.error(`Error trying to delete log ${log.id}: `, error);
+      console.error(`Error trying to delete log ${log.logId}: `, error);
     }
   };
 
@@ -64,7 +64,7 @@ const ChatLogOptions = ({
     try {
       await dispatch(
         logActions.updateLogTitle({
-          logId: log.id,
+          logId: log.logId,
           title: name,
         })
       ).unwrap();

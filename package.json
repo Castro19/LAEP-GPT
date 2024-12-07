@@ -1,6 +1,12 @@
 {
-  "name": "laep-gpt",
+  "name": "@polylink/root",
   "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "Client",
+    "server",
+    "shared"
+  ],
   "type": "module",
   "description": "## Description This project is a part of California Polytechnic State University (Cal Poly) in San Luis Obispo under the supervision of Prof. Franz J. Kurfess. It is an open-source repository intended to aid students in their senior project.",
   "main": "index.js",
@@ -9,8 +15,10 @@
     "install:server": "cd server && npm install",
     "install:all": "npm run install:Client && npm run install:server",
     "start:Client": "cd Client && npm run dev",
-    "start:server": "cd server && nodemon index.js",
+    "start:server": "cd server && npm start",
     "start": "concurrently \"npm run start:Client\" \"npm run start:server\"",
+    "dev:server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run start:Client\" \"npm run dev:server\"",
     "build:client": "cd Client && npm run build",
     "postinstall": "npm run build:client",
     "format:client": "cd Client && npm run format",

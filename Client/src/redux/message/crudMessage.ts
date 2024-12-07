@@ -1,4 +1,4 @@
-import { ModelType } from "@/types";
+import { ModelType } from "@polylink/shared/types";
 export default async function sendMessage(
   currentModel: ModelType,
   file: File | null, //include file as arguement

@@ -13,9 +13,6 @@ import {
 // Pages
 import Register from "./pages/register/Register.tsx";
 import ChatPage from "./pages/ChatPage.js";
-// import GPTPage from "./pages/customGPT/GPTPage.js";
-// import GPTEditor from "./pages/customGPT/GPTEditorPage.js";
-// import GPTLayout from "./components/layout/gpt/GPTLayout.js";
 import ErrorPage from "./pages/ErrorPage/ErrorPage.js";
 // Page Layout
 // Auth
@@ -93,23 +90,6 @@ const router = sentryCreateBrowserRouter([
           },
         ],
       },
-
-      // {
-      //   path: "gpts",
-      //   element: (
-      //     <GPTLayout>
-      //       <GPTPage />
-      //     </GPTLayout>
-      //   ),
-      // },
-      // {
-      //   path: "gpts/editor",
-      //   element: (
-      //     <GPTLayout>
-      //       <GPTEditor />
-      //     </GPTLayout>
-      //   ),
-      // },
     ],
   },
   {

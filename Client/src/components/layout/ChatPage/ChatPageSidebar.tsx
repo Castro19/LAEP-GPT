@@ -28,7 +28,7 @@ export function ChatPageSidebar() {
 
   // Handler for selecting a log to view
   const handleSelectLog = (logId: string) => {
-    const chosenLog = logList.find((item) => item.id === logId);
+    const chosenLog = logList.find((item) => item.logId === logId);
     if (chosenLog) {
       // Set the current chat id
       dispatch(messageActions.setCurrentChatId(logId));
@@ -67,7 +67,7 @@ export function ChatPageSidebar() {
               {logList.length > 0 ? (
                 logList.map((log) => (
                   <ChatLog
-                    key={log.id}
+                    key={log.logId}
                     log={log}
                     onSelectLog={handleSelectLog}
                   />

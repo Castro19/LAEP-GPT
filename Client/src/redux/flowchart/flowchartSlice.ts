@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
-  FetchFlowchartResponse,
+  FetchedFlowchartObject,
   FlowchartData,
   PostFlowchartInDB,
   Term,
-} from "@/types";
+} from "@polylink/shared/types";
 import {
   deleteFlowchartFromDB,
   fetchAllFlowchartsFromDB,
@@ -15,8 +15,8 @@ import {
 // Define types
 interface FlowchartState {
   flowchartData: FlowchartData | null;
-  flowchartList: FetchFlowchartResponse[] | null;
-  currentFlowchart: FetchFlowchartResponse | null;
+  flowchartList: FetchedFlowchartObject[] | null;
+  currentFlowchart: FetchedFlowchartObject | null;
   loading: {
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
@@ -195,7 +195,7 @@ const flowchartSlice = createSlice({
     },
     setCurrentFlowchart: (
       state,
-      action: PayloadAction<FetchFlowchartResponse | null>
+      action: PayloadAction<FetchedFlowchartObject | null>
     ) => {
       state.currentFlowchart = action.payload;
     },
@@ -204,7 +204,7 @@ const flowchartSlice = createSlice({
     },
     setFlowchartList: (
       state,
-      action: PayloadAction<FetchFlowchartResponse[]>
+      action: PayloadAction<FetchedFlowchartObject[]>
     ) => {
       state.flowchartList = action.payload;
     },
@@ -279,7 +279,7 @@ const flowchartSlice = createSlice({
       })
       .addCase(fetchAllFlowcharts.fulfilled, (state, action) => {
         state.loading.fetchAllFlowcharts = false;
-        state.flowchartList = action.payload as FetchFlowchartResponse[];
+        state.flowchartList = action.payload as FetchedFlowchartObject[];
       })
       .addCase(fetchAllFlowcharts.rejected, (state, action) => {
         state.loading.fetchAllFlowcharts = false;
@@ -332,7 +332,7 @@ const flowchartSlice = createSlice({
           deletedPrimaryOption,
           newPrimaryFlowchartId,
         } = action.payload;
-        console.log("action.payload: ", action.payload);
+
         if (state.flowchartList) {
           const removedFlowchartList = state.flowchartList.filter(
             (flowchart) => flowchart.flowchartId !== deletedFlowchartId
@@ -340,7 +340,7 @@ const flowchartSlice = createSlice({
           if (deletedPrimaryOption && newPrimaryFlowchartId) {
             const newPrimaryFlowchart = removedFlowchartList?.find(
               (flowchart) => flowchart.flowchartId === newPrimaryFlowchartId
-            ) as FetchFlowchartResponse;
+            ) as FetchedFlowchartObject;
             if (newPrimaryFlowchart) {
               newPrimaryFlowchart.primaryOption = true;
               state.currentFlowchart = newPrimaryFlowchart;
@@ -349,11 +349,11 @@ const flowchartSlice = createSlice({
                 ...removedFlowchartList.filter(
                   (flowchart) => flowchart.flowchartId !== newPrimaryFlowchartId
                 ),
-              ] as FetchFlowchartResponse[];
+              ] as FetchedFlowchartObject[];
             }
           } else {
             state.flowchartList =
-              removedFlowchartList as FetchFlowchartResponse[];
+              removedFlowchartList as FetchedFlowchartObject[];
           }
         }
       })

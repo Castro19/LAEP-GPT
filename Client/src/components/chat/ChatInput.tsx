@@ -30,7 +30,7 @@ const ChatInput = ({
   const [currentUserMessageId, setCurrentUserMessageId] = useState<
     string | null
   >(null);
-  const currentModel = useAppSelector((state) => state.gpt.currentModel);
+  const currentModel = useAppSelector((state) => state.assistant.currentModel);
   const { msg, isNewChat, currentChatId, isLoading, error } = useAppSelector(
     (state) => state.message
   );
@@ -67,10 +67,18 @@ const ChatInput = ({
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
+      const logId = isNewChat ? newLogId : currentChatId;
+      if (!logId) {
+        throw new Error("Log ID is required");
+      }
+      if (!currentModel.id) {
+        throw new Error("Assistant ID is required");
+      }
       trackCreateMessage({
+        userId: userId ? userId : "",
         userMessageId: userMessageId,
         botMessageId: botMessageId,
-        logId: isNewChat ? newLogId : currentChatId,
+        logId,
         assistantId: currentModel.id,
         hadFile: selectedFile ? true : false,
         createdAt,

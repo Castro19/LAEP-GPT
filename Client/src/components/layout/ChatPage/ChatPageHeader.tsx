@@ -1,20 +1,20 @@
-import ModeDropDown from "../../customGPT/ModeDropDown";
+import ModeDropDown from "../../chat/ModeDropDown";
 import { useSidebar } from "@/components/ui/sidebar";
 import NewChat from "../../chat/NewChat";
-import { GptType } from "@/types";
+import { AssistantType } from "@polylink/shared/types";
 import { BiChat } from "react-icons/bi";
 // Redux:
-import { useAppDispatch, gptActions, layoutActions } from "@/redux";
+import { useAppDispatch, assistantActions, layoutActions } from "@/redux";
 
 const ChatHeader = () => {
   // Redux:
   const dispatch = useAppDispatch();
   const { toggleSidebar } = useSidebar();
 
-  const handleModeSelection = (model: GptType) => {
+  const handleModeSelection = (model: AssistantType) => {
     if (model && model.id) {
       const modelId = model.id;
-      dispatch(gptActions.setCurrentGpt(modelId));
+      dispatch(assistantActions.setCurrentAssistant(modelId));
       dispatch(layoutActions.toggleDropdown(false));
     }
   };

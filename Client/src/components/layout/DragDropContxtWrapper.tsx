@@ -2,8 +2,8 @@
 import React from "react";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { Course, CourseSearch, Term } from "@/types";
-import { FlowchartData } from "@/types";
+import { Course, CourseObject, Term } from "@polylink/shared/types";
+import { FlowchartData } from "@polylink/shared/types";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import _ from "lodash";
 import { toast } from "@/components/ui/use-toast";
@@ -37,10 +37,11 @@ const DragDropContextWrapper = ({
       // Handle dragging from sidebar to term container
       const termIndex = parseInt(destination.droppableId.split("-")[1], 10);
       const courseId = draggableId.replace("sidebar-", "");
-      const courseFetched: CourseSearch | null = await getCourseFromSidebar(
+      const courseFetched: CourseObject | null = await getCourseFromSidebar(
         catalog,
         courseId
       );
+      if (!courseFetched) return;
       const course: Course = {
         id: courseFetched?.courseId || "",
         // Pick a nice beige color
@@ -49,9 +50,8 @@ const DragDropContextWrapper = ({
         units: courseFetched?.units || "",
         desc: courseFetched?.desc || "",
       };
-      console.log("course", course);
+
       if (course && flowchartData) {
-        console.log("course", course);
         addCourseToTerm(flowchartData, termIndex, destination.index, course);
       }
     } else if (
@@ -106,7 +106,7 @@ const DragDropContextWrapper = ({
   const getCourseFromSidebar = async (
     catalogYear: string,
     courseId: string
-  ): Promise<CourseSearch | null> => {
+  ): Promise<CourseObject | null> => {
     const response = await fetch(
       `http://localhost:4000/courses/course?catalogYear=${catalogYear}&courseId=${courseId}`,
       {

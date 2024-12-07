@@ -3,7 +3,7 @@ import { signInWithPopup, OAuthProvider } from "firebase/auth";
 import { loginUser } from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
-import { AuthState } from "@/types";
+import { AuthState } from "@polylink/shared/types";
 import { setUserData } from "../user/userSlice";
 
 // Initial state for the auth slice

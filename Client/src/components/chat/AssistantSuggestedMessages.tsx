@@ -7,7 +7,7 @@ const AssistantSuggestedMessages = ({
 }: {
   sendButtonRef: React.RefObject<HTMLButtonElement>;
 }) => {
-  const { currentModel } = useAppSelector((state) => state.gpt);
+  const { currentModel } = useAppSelector((state) => state.assistant);
 
   const dispatch = useAppDispatch();
   const suggestions = currentModel.suggestedQuestions;

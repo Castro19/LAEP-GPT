@@ -17,7 +17,12 @@ import {
 import { SidebarGroup } from "@/components/ui/sidebar";
 import React, { useState, useEffect } from "react";
 import { Droppable } from "@hello-pangea/dnd";
-import { Course, CourseSidebar, CourseSubject, SidebarInfo } from "@/types";
+import {
+  Course,
+  CourseSidebar,
+  CourseSubject,
+  SidebarInfo,
+} from "@polylink/shared/types";
 import {
   fetchCoursesBySubjectAPI,
   fetchSubjectNamesAPI,
@@ -26,11 +31,6 @@ import SidebarCourse from "./SidebarCourse";
 
 const CourseDropdown = React.memo(() => {
   const [allClasses, setAllClasses] = useState<SidebarInfo>({});
-  // const [requiredCourses, setRequiredCourses] = useState<
-  //   CourseSubject[] | null
-  // >(null);
-  // const [techCourses, setTechCourses] = useState<CourseSubject[]>([]);
-  // const [geCourses, setGeCourses] = useState<CourseSubject[]>([]);
   const [gwrCourses, setGwrCourses] = useState<CourseSubject[]>([]);
   const [uscpCourses, setUscpFetched] = useState<CourseSubject[]>([]);
 
@@ -41,7 +41,6 @@ const CourseDropdown = React.memo(() => {
       uscp: type === "USCP" ? "true" : "false",
       searchTerm: "",
     });
-    console.log(subjectNamesFetched);
     const subjectCourses: CourseSubject[] = [];
     subjectNamesFetched.map((subject) => {
       subjectCourses.push({
@@ -52,7 +51,7 @@ const CourseDropdown = React.memo(() => {
 
     if (type === "GWR") {
       setGwrCourses(subjectCourses);
-    } else {
+    } else if (type === "USCP") {
       setUscpFetched(subjectCourses);
     }
   };
@@ -108,25 +107,18 @@ const CourseDropdown = React.memo(() => {
     if (open) {
       fetchCourseBySubject(type, subject);
     } else {
-      // Optional: Remove courses from state to free up memory
+      // Remove courses from state to free up memory
       updateCourses(type, subject, []);
     }
   };
 
   useEffect(() => {
     setAllClasses({
-      // "Required Courses": requiredCourses ?? [],
-      // "Tech Courses": techCourses ?? [],
-      // "GE Courses": geCourses ?? [],
       "GWR Courses": gwrCourses ?? [],
       "USCP Courses": uscpCourses ?? [],
     });
   }, [gwrCourses, uscpCourses]);
-  // Handler for selecting a log to view
 
-  useEffect(() => {
-    console.log("ALL CLASSES: ", allClasses);
-  }, [allClasses]);
   return (
     <>
       <SidebarGroupLabel>Classes</SidebarGroupLabel>
@@ -183,7 +175,6 @@ const CourseDropdown = React.memo(() => {
                               displayName: item.displayName,
                               desc: item.desc,
                             } as Course;
-                            console.log(course);
                             return (
                               <Droppable
                                 key={`sidebar-${course.id}`}
