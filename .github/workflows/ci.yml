@@ -12,7 +12,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16"
+          node-version: "18"
 
       - name: Install Client Dependencies
         run: cd Client && npm install
@@ -37,7 +37,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16"
+          node-version: "18"
 
       - name: Install Server Dependencies
         run: cd server && npm install
