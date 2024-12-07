@@ -9,11 +9,7 @@ import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index.mjs";
-import {
-  AssistantType,
-  llmRequestBody,
-  RunningStreamData,
-} from "@polylink/shared/types";
+import { llmRequestBody, RunningStreamData } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -53,7 +49,8 @@ router.post(
       res.status(401).end("Unauthorized");
       return;
     }
-    const model = JSON.parse(currentModel) as AssistantType;
+    const model: { id: string; title: string } = JSON.parse(currentModel);
+
     const file = req.file;
 
     let userFile: FileObject | null = null;

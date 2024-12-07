@@ -14,10 +14,10 @@ import { searchProfessors } from "../qdrant/qdrantQuery.js";
 import { addMessageToThread } from "../openAI/threadFunctions.js";
 import { initializeOrFetchIds } from "../openAI/threadFunctions.js";
 import { getAssistantById } from "../../db/models/assistant/assistantServices.js";
-import { AssistantType, RunningStreamData } from "@polylink/shared/types";
+import { RunningStreamData } from "@polylink/shared/types";
 
 type MultiAgentRequest = {
-  model: AssistantType;
+  model: { id: string; title: string };
   message: string;
   res: Response;
   userMessageId: string;
@@ -65,7 +65,11 @@ async function handleMultiAgentModel({
     // Create thread and vector store if not already created
     const { threadId } = await initializeOrFetchIds(chatId);
     // Setup assistant
-    const assistantId = (await getAssistantById(model.id))?.id;
+    const assistant = await getAssistantById(model.id);
+    if (!assistant) {
+      throw new Error("Assistant not found");
+    }
+    const assistantId = assistant.assistantId;
     if (!assistantId) {
       throw new Error("Assistant ID not found");
     }

@@ -9,7 +9,7 @@ export const fetchAssistants: () => Promise<AssistantType[]> = async () => {
 
     if (!result) throw new Error("No assistants found");
     const assistantList = result.map((assistant: AssistantDocument) => ({
-      id: assistant._id,
+      id: assistant._id.toString(),
       title: assistant.title,
       desc: assistant.desc,
       urlPhoto: assistant.urlPhoto,

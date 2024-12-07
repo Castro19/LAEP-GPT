@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { ModelType } from "../message";
 
 export type AssistantType = {
@@ -26,5 +27,5 @@ export type CurrentModelType =
   | "Matching Assistant";
 
 export type AssistantDocument = AssistantType & {
-  _id: string;
+  _id: ObjectId;
 };

@@ -59,7 +59,11 @@ async function handleMultiAgentModel({
     );
     await import__.openai.beta.threads.del(helperThread.id);
     const { threadId } = await (0, import_threadFunctions2.initializeOrFetchIds)(chatId);
-    const assistantId = (await (0, import_assistantServices.getAssistantById)(model.id))?.id;
+    const assistant = await (0, import_assistantServices.getAssistantById)(model.id);
+    if (!assistant) {
+      throw new Error("Assistant not found");
+    }
+    const assistantId = assistant.assistantId;
     if (!assistantId) {
       throw new Error("Assistant ID not found");
     }

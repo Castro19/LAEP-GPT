@@ -75,6 +75,7 @@ const ChatInput = ({
         throw new Error("Assistant ID is required");
       }
       trackCreateMessage({
+        userId: userId ? userId : "",
         userMessageId: userMessageId,
         botMessageId: botMessageId,
         logId,

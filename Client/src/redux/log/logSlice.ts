@@ -59,6 +59,7 @@ export const fetchLogs = createAsyncThunk(
       const fetchedLogs = await fetchAllLogs();
       // reverse the order of the logs
       const logs = fetchedLogs.reverse();
+      console.log("fetchedLogs", logs);
       return logs;
     } catch (error) {
       console.error("Failed to fetch logs: ", error);

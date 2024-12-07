@@ -40,9 +40,9 @@ router.post("/", async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { id, title, content, timestamp } = req.body;
+    const { logId, title, content, timestamp } = req.body;
     const newLog = {
-      logId: id,
+      logId,
       title,
       timestamp,
       content,

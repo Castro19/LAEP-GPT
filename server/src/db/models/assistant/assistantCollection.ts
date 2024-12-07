@@ -26,7 +26,7 @@ export const findAssistantById: (
   if (!assistantCollection) initializeCollection();
   try {
     const result = await assistantCollection.findOne({
-      _id: new ObjectId(gptId) as unknown as string,
+      _id: new ObjectId(gptId),
     });
     return result;
   } catch (error) {

@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { fetchLogById } from "@/redux/log/crudLog";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
+import { LogData } from "@polylink/shared/types";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
@@ -44,8 +45,11 @@ const ChatPage = () => {
       if (chatId) {
         dispatch(messageActions.toggleNewChat(false));
         try {
-          const log = await fetchLogById(chatId);
-          dispatch(messageActions.setMsgList(log.content));
+          const log = (await fetchLogById(chatId)) as LogData;
+          if (log.content) {
+            dispatch(messageActions.setMsgList(log.content));
+          }
+          dispatch(messageActions.setCurrentChatId(chatId));
         } catch (error) {
           console.error("Error fetching log: ", error);
         }

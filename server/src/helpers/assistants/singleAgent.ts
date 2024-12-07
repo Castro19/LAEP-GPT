@@ -9,11 +9,7 @@ import { runAssistantAndStreamResponse } from "./streamResponse";
 import { searchCourses } from "../qdrant/qdrantQuery.js";
 import { getCourseInfo } from "../../db/models/courses/courseServices.js";
 import flowchartHelper from "../flowchart/flowchart.js";
-import {
-  AssistantType,
-  RunningStreamData,
-  UserData,
-} from "@polylink/shared/types";
+import { RunningStreamData, UserData } from "@polylink/shared/types";
 import { FileObject } from "openai/resources/index.mjs";
 import { Response } from "express";
 
@@ -68,7 +64,7 @@ const calpolyClubsAssistant = (user: UserData, message: string): string => {
 };
 
 type SingleAgentRequestBody = {
-  model: AssistantType;
+  model: { id: string; title: string };
   chatId: string;
   userFile: FileObject | null;
   message: string;
