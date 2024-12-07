@@ -8,9 +8,8 @@ import {
   updateChatMessageReaction,
   updateLogTitle,
 } from "../db/models/chatlog/chatLogServices";
-import { fetchIds } from "../db/models/threads/threadServices";
-import { openai } from "../index.js";
-import { MongoLogData } from "@polylink/shared/types";
+
+import { ChatLogDocument, CreateLogTitleData } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -23,23 +22,22 @@ router.post("/", (async (req, res) => {
     }
     const { id, title, content, timestamp } = req.body;
 
-    const newLog = {
-      _id: id,
+    const newLog: ChatLogDocument = {
       logId: id,
-      userId,
       title,
       timestamp,
       content,
+      userId,
     };
-    const result = await createLog(newLog as MongoLogData);
-    res.status(201).json(result);
+    await createLog(newLog);
+    res.status(201).json({ message: "Log created successfully" });
   } catch (error) {
     res.status(500).send("Failed to create log: " + (error as Error).message);
     console.error("Failed to create log: ", error);
   }
 }) as RequestHandler);
 
-// Get the entire LogList: (Read)
+// Get the entire LogList by userId: (Read)
 router.get("/", (async (req, res) => {
   try {
     const userId = req.user?.uid;
@@ -85,10 +83,8 @@ router.put("/", (async (req, res) => {
     return res.status(400).json({ message: "Log ID is required" });
   }
   try {
-    const result = await updateLog(logId, userId, content, timestamp);
-
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify(result));
+    await updateLog(logId, userId, content, timestamp);
+    res.status(200).json({ message: "Log updated successfully" });
   } catch (error) {
     console.error("Failed to update log: ", error);
     res
@@ -109,11 +105,12 @@ router.put("/title", (async (req, res) => {
   }
   try {
     await updateLogTitle(logId, userId, title);
-    res.status(200).json({
+    const response: CreateLogTitleData = {
       message: "Log title updated successfully",
       logId,
       title,
-    });
+    };
+    res.status(200).json(response);
   } catch (error) {
     console.error("Failed to update log title: ", error);
     res
@@ -132,52 +129,10 @@ router.delete("/:logId", (async (req, res) => {
   if (!logId) {
     return res.status(400).json({ message: "Log ID is required" });
   }
-
+  // Always try to delete the log
   try {
-    // Get IDs first
-    const ids = (await fetchIds(logId)) as {
-      threadId: string;
-      vectorStoreId: string;
-    } | null;
-    const { threadId, vectorStoreId } = ids || {};
-
-    // Try to delete vector store and its files
-    if (vectorStoreId) {
-      try {
-        const vectorStoreFiles =
-          await openai.beta.vectorStores.files.list(vectorStoreId);
-        for (const file of vectorStoreFiles.data) {
-          try {
-            await openai.files.del(file.id);
-          } catch (error) {
-            console.warn(
-              `Failed to delete file ${file.id}:`,
-              (error as Error).message
-            );
-          }
-        }
-        await openai.beta.vectorStores.del(String(vectorStoreId));
-      } catch (error) {
-        console.warn(
-          "Failed to delete vector store:",
-          (error as Error).message
-        );
-      }
-    }
-
-    // Try to delete thread
-    if (threadId) {
-      try {
-        await openai.beta.threads.del(threadId);
-      } catch (error) {
-        console.warn("Failed to delete thread:", (error as Error).message);
-      }
-    }
-
-    console.log("Deleting log:", logId);
-    // Always try to delete the log
-    const response = await deleteLog(logId, userId);
-    res.status(204).json({ message: "Log deleted successfully", response });
+    await deleteLog(logId, userId);
+    res.status(204).json({ message: "Log deleted successfully" });
   } catch (error) {
     console.error("Failed to Delete log: ", error);
     res
@@ -188,8 +143,11 @@ router.delete("/:logId", (async (req, res) => {
 
 // Update Chat Message Reaction
 router.put("/reaction", (async (req, res) => {
+  const userId = req.user?.uid;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
   const { logId, botMessageId, userReaction } = req.body;
-
   try {
     if (userReaction && botMessageId) {
       const result = await updateChatMessageReaction(

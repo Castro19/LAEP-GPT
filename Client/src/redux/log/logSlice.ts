@@ -8,7 +8,7 @@ import createLogTitle, {
 } from "./crudLog";
 import { LogData, LogSliceType, MessageObjType } from "@polylink/shared/types";
 import { RootState } from "../store";
-import { LogErrorCodes } from "@/types/log/logErrorTypes";
+import { LogErrorCodes, logErrorMessages } from "@/types/log/logErrorTypes";
 
 export type AddLogParams = {
   msg: string;
@@ -30,19 +30,19 @@ export const addLog = createAsyncThunk(
       if (logTitle) {
         dispatch(
           addLogList({
-            id: id,
-            title: logTitle,
             content: content, // Include the actual content
+            logId: id,
             timestamp: timestamp, // Include the timestamp
+            title: logTitle,
           })
         );
       }
       // Save Log to Database
       await createLogItem({
-        id,
-        title: logTitle,
         content: content, // Ensure the content is included in the DB save
+        logId: id,
         timestamp: timestamp, // Ensure the timestamp is included in the DB save
+        title: logTitle,
       });
       return { success: true, logId: id };
     } catch (error) {
@@ -85,11 +85,12 @@ export const updateLog = createAsyncThunk(
     try {
       const timestamp = new Date().toISOString(); // Timestamp for updating log
       const content = (getState() as RootState).message.msgList; // Accessing current message list from the state
+
+      // TO-DO: Handle updating the timestamp on server side and update the state on the return value
       dispatch(
-        updateCurrentChat({
-          id: logId,
-          content: content, // Pass the msgList as part of the payload
-          timestamp: timestamp,
+        updateLogTimestamp({
+          logId,
+          timestamp,
         })
       );
 
@@ -155,9 +156,9 @@ const logSlice = createSlice({
     // logList:
     // Reducer to add a new log to the state (CREATE)
     addLogList: (state, action: PayloadAction<LogData>) => {
-      const { id, title, content, timestamp } = action.payload;
+      const { logId, title, content, timestamp } = action.payload;
       const newLog = {
-        id: id,
+        logId,
         content: [...content], // Use the content passed in the action
         title: title,
         timestamp: timestamp, // Use the timestamp passed in the action
@@ -166,18 +167,20 @@ const logSlice = createSlice({
       state.logList.unshift(newLog); // Push to the front of the array
     },
     // Reducer to update an existing log in the state (UPDATE)
-    updateCurrentChat: (state, action: PayloadAction<LogData>) => {
-      const { id, content, timestamp } = action.payload;
-      const logIndex = state.logList.findIndex((log) => log.id === id);
+    updateLogTimestamp: (
+      state,
+      action: PayloadAction<{ logId: string; timestamp: string }>
+    ) => {
+      const { logId, timestamp } = action.payload;
+      const logIndex = state.logList.findIndex((log) => log.logId === logId);
 
       if (logIndex !== -1) {
-        state.logList[logIndex].content = [...content]; // Use content from the payload
         state.logList[logIndex].timestamp = timestamp; // Update the timestamp
       }
     },
     deleteLogListItem: (state, action: PayloadAction<{ logId: string }>) => {
       const { logId } = action.payload;
-      state.logList = state.logList.filter((log) => log.id != logId);
+      state.logList = state.logList.filter((log) => log.logId != logId);
     },
   },
   extraReducers: (builder) => {
@@ -202,7 +205,9 @@ const logSlice = createSlice({
         console.log("updateLogTitle fulfilled: ", action.payload);
         const { message, logId, title } = action.payload;
         if (message === "Log title updated successfully") {
-          const logIndex = state.logList.findIndex((log) => log.id === logId);
+          const logIndex = state.logList.findIndex(
+            (log) => log.logId === logId
+          );
           if (logIndex !== -1) {
             state.logList[logIndex].title = title;
           }
@@ -211,7 +216,7 @@ const logSlice = createSlice({
   },
 });
 
-export const { addLogList, updateCurrentChat, deleteLogListItem } =
+export const { addLogList, updateLogTimestamp, deleteLogListItem } =
   logSlice.actions;
 
 export const logReducer = logSlice.reducer;

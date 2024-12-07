@@ -31,7 +31,7 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
     <SidebarMenuItem className="w-11/12 border-b border-sidebar-border">
       <div className="group flex items-center justify-between px-2 py-2.5 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full">
         <SidebarMenuButton
-          onClick={() => handleNewLog(log.id)}
+          onClick={() => handleNewLog(log.logId)}
           className="flex-1 flex items-center gap-3"
         >
           {/* Title and timestamp */}

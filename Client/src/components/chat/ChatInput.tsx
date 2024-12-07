@@ -67,10 +67,17 @@ const ChatInput = ({
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
     try {
+      const logId = isNewChat ? newLogId : currentChatId;
+      if (!logId) {
+        throw new Error("Log ID is required");
+      }
+      if (!currentModel.id) {
+        throw new Error("Assistant ID is required");
+      }
       trackCreateMessage({
         userMessageId: userMessageId,
         botMessageId: botMessageId,
-        logId: isNewChat ? newLogId : currentChatId,
+        logId,
         assistantId: currentModel.id,
         hadFile: selectedFile ? true : false,
         createdAt,

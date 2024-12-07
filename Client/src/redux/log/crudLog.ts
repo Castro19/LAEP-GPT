@@ -1,4 +1,9 @@
-import { LogData, MessageObjType } from "@polylink/shared/types";
+import {
+  LogData,
+  MessageObjType,
+  CreateLogTitleData,
+  LogListType,
+} from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
 
 export default async function createLogTitle(msg: string, modelTitle: string) {
@@ -13,7 +18,7 @@ export default async function createLogTitle(msg: string, modelTitle: string) {
       throw new Error(`Error: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: CreateLogTitleData = await response.json();
 
     return data.title;
   } catch (error) {
@@ -22,7 +27,7 @@ export default async function createLogTitle(msg: string, modelTitle: string) {
 }
 
 // Creating Log
-export async function createLogItem(logData: LogData) {
+export async function createLogItem(logData: LogData): Promise<void> {
   try {
     const response = await fetch("http://localhost:4000/chatLogs", {
       method: "POST",
@@ -33,15 +38,14 @@ export async function createLogItem(logData: LogData) {
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    return;
   } catch (error) {
     console.error("Failed to create chatlog on server side: ", error);
   }
 }
 
 // Reading: Fetch all lofgs by as userID:
-export async function fetchAllLogs() {
+export async function fetchAllLogs(): Promise<LogListType[] | never[]> {
   try {
     const response = await fetch("http://localhost:4000/chatLogs", {
       credentials: "include",
@@ -50,7 +54,7 @@ export async function fetchAllLogs() {
       console.error("Response Error  fetching chat Logs");
       return [];
     }
-    const logs = await response.json();
+    const logs: LogListType[] = await response.json();
     return logs;
   } catch (error) {
     console.error("Failed to fetch logs: ", error);
@@ -58,7 +62,7 @@ export async function fetchAllLogs() {
   }
 }
 
-export async function fetchLogById(logId: string) {
+export async function fetchLogById(logId: string): Promise<LogData | never[]> {
   try {
     const response = await fetch(`http://localhost:4000/chatLogs/${logId}`, {
       credentials: "include",
@@ -66,10 +70,11 @@ export async function fetchLogById(logId: string) {
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
-    const log = await response.json();
+    const log: LogData = await response.json();
     return log;
   } catch (error) {
     console.error("Failed to fetch log by id: ", error);
+    return [];
   }
 }
 
@@ -81,7 +86,7 @@ type UpdateLogData = {
   timestamp?: string;
 };
 // Update Log (Message gets added)
-export async function updateLogItem(logData: UpdateLogData) {
+export async function updateLogItem(logData: UpdateLogData): Promise<void> {
   try {
     const response = await fetch(`http://localhost:4000/chatLogs`, {
       method: "PUT",
@@ -92,15 +97,18 @@ export async function updateLogItem(logData: UpdateLogData) {
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    return;
   } catch (error) {
     console.error("Failed to update chatlog on server side: ", error);
   }
 }
 
 // delete Log
-export async function deleteLogItem({ logId }: { logId: string }) {
+export async function deleteLogItem({
+  logId,
+}: {
+  logId: string;
+}): Promise<void> {
   try {
     const response = await fetch(`http://localhost:4000/chatLogs/${logId}`, {
       method: "DELETE",
@@ -110,8 +118,7 @@ export async function deleteLogItem({ logId }: { logId: string }) {
       console.error("Error: ", response.status);
       throw new Error("Failed to reach server when deleting log: " + response);
     }
-    const responseData = await response.json();
-    return responseData;
+    return;
   } catch (error) {
     console.error("Error: ", error);
   }
