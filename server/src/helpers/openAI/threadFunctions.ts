@@ -6,6 +6,7 @@ import {
   fetchIds,
 } from "../../db/models/threads/threadServices.js";
 import { Message } from "openai/resources/beta/threads/messages.mjs";
+import { ThreadData } from "@polylink/shared/types";
 
 //add fileId. fileId can be null if user does not submit file
 export async function addMessageToThread(
@@ -56,23 +57,29 @@ export async function deleteThread(threadId: string): Promise<void> {
 }
 
 // Create thread and vector store from OpenAI API if not already created
-export async function initializeOrFetchIds(chatId: string): Promise<{
-  threadId: string;
-  vectorStoreId: string;
-}> {
+export async function initializeOrFetchIds(
+  chatId: string,
+  fileId: string | null,
+  assistantId: string
+): Promise<ThreadData> {
   const existing = await fetchIds(chatId);
   if (existing) {
     return existing;
   }
   // Initialize new thread and vector store
   const thread = await openai.beta.threads.create();
-  const vectorStore = await openai.beta.vectorStores.create({
-    name: String(thread.id),
-  });
+  let vectorStoreId: string | null = null;
+  if (fileId) {
+    const vectorStore = await openai.beta.vectorStores.create({
+      name: String(thread.id),
+    });
+    vectorStoreId = vectorStore.id;
+  }
 
-  await addThreadToDB(chatId, thread.id, vectorStore.id);
+  await addThreadToDB(chatId, thread.id, vectorStoreId, assistantId);
   return {
     threadId: thread.id,
-    vectorStoreId: vectorStore.id,
+    vectorStoreId: vectorStoreId,
+    assistantId: assistantId,
   };
 }

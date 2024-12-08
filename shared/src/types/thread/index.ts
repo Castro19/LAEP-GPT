@@ -1,13 +1,9 @@
-import { ObjectId } from "mongodb";
-
 export type ThreadData = {
-  chatId: string;
   threadId: string;
-  vectorStoreId: string;
+  vectorStoreId: string | null;
+  assistantId?: string; // TO-DO: Eventually make this required (only optional for now for backwards compatibility)
 };
 
-export type ThreadDocument = {
-  _id: ObjectId;
-  threadId: string;
-  vectorStoreId: string;
+export type ThreadDocument = ThreadData & {
+  _id: string;
 };

@@ -63,7 +63,7 @@ async function handleMultiAgentModel({
     await openai.beta.threads.del(helperThread.id);
     // Set the main thread ID
     // Create thread and vector store if not already created
-    const { threadId } = await initializeOrFetchIds(chatId);
+    const { threadId } = await initializeOrFetchIds(chatId, null, model.id);
     // Setup assistant
     const assistant = await getAssistantById(model.id);
     if (!assistant) {

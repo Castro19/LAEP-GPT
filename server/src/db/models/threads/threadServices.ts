@@ -1,15 +1,18 @@
+import { ThreadData } from "@polylink/shared/types";
 import * as ThreadModel from "./threadCollection";
 // Confirming the structure in threadServices.js after adding a thread
 export const addThreadToDB = async (
   chatId: string,
   threadId: string,
-  vectorStoreId: string
+  vectorStoreId: string | null,
+  assistantId: string
 ): Promise<{ message: string; threadId: string }> => {
   try {
     const result = await ThreadModel.createThread(
       chatId,
       threadId,
-      vectorStoreId
+      vectorStoreId,
+      assistantId
     );
     return {
       message: "Thread created successfully",
@@ -22,13 +25,15 @@ export const addThreadToDB = async (
 };
 
 // Read
-export const fetchIds = async (
-  chatId: string
-): Promise<{ threadId: string; vectorStoreId: string } | null> => {
+export const fetchIds = async (chatId: string): Promise<ThreadData | null> => {
   try {
     const ids = await ThreadModel.getIds(chatId);
     if (!ids) return null;
-    return { threadId: ids.threadId, vectorStoreId: ids.vectorStoreId };
+    return {
+      threadId: ids.threadId,
+      vectorStoreId: ids.vectorStoreId,
+      assistantId: ids.assistantId,
+    };
   } catch (error) {
     console.error("No thread found: ", (error as Error).message);
     return null;
