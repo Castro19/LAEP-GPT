@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb";
-import { ModelType } from "../message";
 
 export type AssistantType = {
   id: string; // The unique id of the assistant
@@ -13,7 +12,7 @@ export type AssistantType = {
 
 export type AssistantSliceType = {
   assistantList: AssistantType[]; // The list of assistants fetched from DB
-  currentModel: ModelType; // The current assistant Model selected
+  currentModel: AssistantType; // The current assistant Model selected
   isLoading: boolean; // Is being created
   error: string | null; // Error when submitting form to create assistant
   lastCreatedGpt?: string; // The assistant that was created last (used to undo the creatinon)

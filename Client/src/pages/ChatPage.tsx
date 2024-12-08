@@ -38,7 +38,13 @@ const ChatPage = () => {
       }
     };
     fetchassistantList();
-  }, [userId, dispatch, assistantList.length]);
+  }, [assistantList.length, dispatch, userId]);
+
+  useEffect(() => {
+    if (assistantList.length > 0) {
+      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+    }
+  }, [assistantList, dispatch]);
 
   useEffect(() => {
     const fetchLog = async () => {

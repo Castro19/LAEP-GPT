@@ -2,14 +2,14 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import sendMessage, { cancelRun, sendUserReaction } from "./crudMessage";
 // Types:
 import {
-  ModelType,
+  AssistantType,
   MessageObjType,
   MessageSliceType,
 } from "@polylink/shared/types";
 
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
-  currentModel: ModelType;
+  currentModel: AssistantType;
   file: File | null;
   msg: string; //replace with formData
   currentChatId: string | null;
