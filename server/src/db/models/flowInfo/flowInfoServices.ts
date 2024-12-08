@@ -60,9 +60,10 @@ export const searchFlowInfo = async ({
         ...new Set(result.map((item) => (item as ConcentrationInfo).majorName)),
       ];
       return uniqueMajorNames;
+    } else if (code) {
+      return result as ConcentrationInfo[];
     }
-
-    return [];
+    return null;
   } catch (error) {
     console.error("Error searching flowinfo:", error);
     return null;

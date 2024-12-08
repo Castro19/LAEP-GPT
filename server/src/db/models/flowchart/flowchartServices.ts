@@ -2,12 +2,12 @@ import * as flowchartModel from "./flowchartCollection";
 import { searchFlowInfo } from "../flowInfo/flowInfoServices";
 import { updateUser } from "../user/userServices.js";
 import {
+  ConcentrationInfo,
   CreateFlowchartResponse,
   DeleteFlowchartResponse,
   FetchedFlowchartObject,
   FetchFlowchartResponse,
   FlowchartData,
-  FlowInfoDocument,
 } from "@polylink/shared/types";
 import { BulkWriteResult } from "mongodb";
 // Create
@@ -30,7 +30,7 @@ export const createFlowchart = async (
           code: name,
         })
       )?.[0] || "Untitled Flowchart";
-    flowchartName = (flowchartInfo as FlowInfoDocument).concName;
+    flowchartName = (flowchartInfo as ConcentrationInfo).concName;
     flowchartList = (await fetchAllFlowcharts(userId)) || [];
     // If there are no flowcharts, or all flowcharts are not primary, then the new flowchart is primary
     primaryOption =
