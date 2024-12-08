@@ -60,7 +60,15 @@ export const fetchLogById = async (
   try {
     const log = await chatLogCollection.findOne(
       { logId: logId },
-      { projection: { _id: 0, logId: 1, content: 1, userId: 1 } }
+      {
+        projection: {
+          _id: 0,
+          logId: 1,
+          content: 1,
+          userId: 1,
+          assistantMongoId: 1,
+        },
+      }
     );
 
     if (!log) {

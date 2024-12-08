@@ -6,7 +6,7 @@ export type ChatLogDocument = LogData & {
 };
 
 export type LogData = {
-  assistantId?: string; // The assistantId from the assistant that the user is chatting with
+  assistantMongoId?: string; // The assistantId from the assistant that the user is chatting with
   content: MessageObjType[]; // The message content from the log
   logId: string; // The unique id associated with the chat log
   timestamp: string; // The timee the last message was sent on that chatLog

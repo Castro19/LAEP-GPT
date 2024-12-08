@@ -20,10 +20,11 @@ router.post("/", (async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { logId, title, content, timestamp } = req.body;
+    const { assistantMongoId, logId, title, content, timestamp } = req.body;
 
     const newLog: ChatLogDocument = {
       logId,
+      assistantMongoId,
       title,
       timestamp,
       content,
