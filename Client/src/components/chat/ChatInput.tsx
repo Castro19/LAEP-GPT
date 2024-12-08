@@ -87,18 +87,35 @@ const ChatInput = ({
       console.error("Failed to track message: ", error);
     }
     try {
-      await dispatch(
-        messageActions.fetchBotResponse({
-          currentModel,
-          file: selectedFile, //add pdf file
-          msg,
-          currentChatId: isNewChat ? newLogId : currentChatId,
-          userId: userId ? userId : "",
-          userMessageId,
-          botMessageId,
-        })
-      ).unwrap();
       setSelectedFile(null);
+
+      try {
+        await dispatch(
+          messageActions.fetchBotResponse({
+            currentModel,
+            file: selectedFile, //add pdf file
+            msg,
+            currentChatId: isNewChat ? newLogId : currentChatId,
+            userId: userId ? userId : "",
+            userMessageId,
+            botMessageId,
+          })
+        ).unwrap();
+      } catch (error) {
+        console.error("Failed to fetch bot response: ", error);
+
+        trackUpdateMessage({
+          userMessageId,
+          userMessage: msg,
+          createdAt,
+          hadError: true,
+          errorMessage:
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred",
+        });
+      }
+
       if (isNewChat) {
         dispatch(messageActions.toggleNewChat(false));
         dispatch(
@@ -131,18 +148,8 @@ const ChatInput = ({
         hadError: false,
         errorMessage: null,
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to send message", error);
-      trackUpdateMessage({
-        userMessageId,
-        userMessage: msg,
-        createdAt,
-        hadError: true,
-        errorMessage: error.message
-          ? error.message
-          : "An unknown error occurred",
-      });
     }
   };
 

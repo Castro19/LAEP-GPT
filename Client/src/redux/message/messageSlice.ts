@@ -28,7 +28,7 @@ type SendMessageReturnType = {
 export const fetchBotResponse = createAsyncThunk<
   MessageObjType,
   fetchBotResponseParams,
-  { rejectValue: { message: string } }
+  { rejectValue: { message: string; botMessageId: string } }
 >(
   "message/fetchBotResponse",
   async (
@@ -53,7 +53,7 @@ export const fetchBotResponse = createAsyncThunk<
       } as MessageObjType;
 
       if (msg.length === 0) {
-        return rejectWithValue({ message: "Message is empty" });
+        return rejectWithValue({ message: "Message is empty", botMessageId });
       }
       dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
       dispatch(toggleNewChat(false));
@@ -80,18 +80,27 @@ export const fetchBotResponse = createAsyncThunk<
         );
       dispatch(updateThinkingState({ id: botMessageId, thinkingState: false }));
       // Streaming updates for the bot messages
-      await updateStream((botMessageId: string, text: string) => {
-        dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
-      });
+      try {
+        await updateStream((botMessageId: string, text: string) => {
+          dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
+        });
+      } catch (streamError) {
+        return rejectWithValue({
+          message:
+            "There was a problem streaming the response. Please try again later.",
+          botMessageId,
+        });
+      }
 
       return botMessage; // Returning the final state of the bot message
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
-        return rejectWithValue({ message: error.message });
-      } else {
-        // Handle non-error objects if needed
-        return rejectWithValue({ message: "An unknown error occurred" });
+        return rejectWithValue({ message: error.message, botMessageId });
       }
+      return rejectWithValue({
+        message: "An unknown error occurred",
+        botMessageId,
+      });
     }
   }
 );
@@ -227,16 +236,22 @@ const messageSlice = createSlice({
       .addCase(fetchBotResponse.fulfilled, (state) => {
         state.isLoading = false;
       })
-      .addCase(
-        fetchBotResponse.rejected,
-        (state, action: PayloadAction<{ message: string } | undefined>) => {
-          state.isLoading = false;
-          state.error = action.payload?.message || "Unknown error";
+      .addCase(fetchBotResponse.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || "Unknown error";
+        // ensure that the bot message thinking state is reset
+        if (action.payload?.botMessageId) {
+          const message = state.msgList.find(
+            (msg) => msg.id === action.payload?.botMessageId
+          );
+          if (message) {
+            message.thinkingState = false;
+          }
         }
-      );
-    builder.addCase(cancelBotResponse.fulfilled, (state) => {
-      state.isLoading = false;
-    });
+      })
+      .addCase(cancelBotResponse.fulfilled, (state) => {
+        state.isLoading = false;
+      });
   },
 });
 
