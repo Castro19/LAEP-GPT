@@ -12,7 +12,7 @@ export default async function createLogTitle(msg: string, modelTitle: string) {
     const response = await fetch("http://localhost:4000/llms/title", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: msg, modelType: modelTitle }),
+      body: JSON.stringify({ message: msg, AssistantType: modelTitle }),
     });
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);

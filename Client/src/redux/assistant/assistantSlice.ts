@@ -25,9 +25,9 @@ export const fetchAll = createAsyncThunk<
 });
 
 const defaultModel: AssistantType = {
-  id: "664ca3b0143d529c7bf09f23",
-  title: "General Assistant",
-  desc: "A helpful assistant to help answer any questions you have about Cal Poly!",
+  id: "",
+  title: "Calpoly SLO",
+  desc: "A helpful assistant to help answer any questions you have regarding Calpoly SLO!",
   urlPhoto: "https://live.staticflickr.com/65535/53736681383_5cc3b12e54_n.jpg",
   suggestedQuestions: [
     "What's a good place for coffee near campus?",

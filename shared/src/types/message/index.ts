@@ -1,12 +1,3 @@
-export type ModelType = {
-  id?: string; // The unique id for the assistant
-  title: string; // The title of the assistant
-  desc: string; // The description for the assistant
-  urlPhoto?: string; // The optional photo url for the assistant
-  instructions?: string; // The instructions stored in db for assistant
-  suggestedQuestions?: string[]; // The suggested questions for the assistant
-};
-
 export type MessageObjType = {
   id: string; // the unique id for the single message
   sender: "bot" | "user";

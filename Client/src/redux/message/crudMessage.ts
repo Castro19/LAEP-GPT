@@ -1,6 +1,6 @@
-import { ModelType } from "@polylink/shared/types";
+import { AssistantType } from "@polylink/shared/types";
 export default async function sendMessage(
-  currentModel: ModelType,
+  currentModel: AssistantType,
   file: File | null, //include file as arguement
   msg: string,
   currentChatId: string | null,
