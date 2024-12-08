@@ -93,12 +93,16 @@ async function handleSingleAgentModel({
     throw new Error("Assistant ID not found");
   }
   // Creates from OpenAI API & Stores in DB if not already created
-  const { threadId, vectorStoreId } = await initializeOrFetchIds(chatId);
+  const { threadId, vectorStoreId } = await initializeOrFetchIds(
+    chatId,
+    userFile ? userFile.id : null,
+    model.id
+  );
   // Add threadId to runningStreams
   runningStreams[userMessageId].threadId = threadId;
 
   // Setup vector store and update assistant
-  if (userFile) {
+  if (userFile && vectorStoreId) {
     await setupVectorStoreAndUpdateAssistant(
       vectorStoreId,
       assistantId,
