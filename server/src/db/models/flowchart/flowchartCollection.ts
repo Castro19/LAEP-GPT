@@ -82,15 +82,10 @@ export const fetchAllFlowcharts = async (
   if (!flowchartCollection) initializeCollection();
   try {
     // Only return the flowchartId: _id and the name
-    const result = flowchartCollection.find(
-      { userId },
-      { projection: { _id: 1, name: 1, primaryOption: 1 } }
-    );
-
-    if ((await result.toArray()).length > 0) {
-      return (await result.toArray()) as FlowchartDocument[];
-    }
-    return [];
+    const result = await flowchartCollection
+      .find({ userId }, { projection: { _id: 1, name: 1, primaryOption: 1 } })
+      .toArray();
+    return result;
   } catch (error) {
     throw new Error(
       "Error fetching all flowcharts from database: " + (error as Error).message
