@@ -142,9 +142,17 @@ router.post(
           );
           delete runningStreams[userMessageId];
           res.status(200).send("Run(s) cancelled");
-        } catch (error) {
-          console.error("Error cancelling run(s):", error);
-          res.status(500).send("Error cancelling run(s)");
+        } catch (error: unknown) {
+          const message = (error as { error: Error | null })?.error?.message;
+          if (message?.includes("Cannot cancel run with status")) {
+            console.log("Run canceled");
+          } else if (message?.includes("already has an active run")) {
+            console.log("Run already canceled: ", message);
+            // TO-DO: Edge case where the run is in the pending state of being created while the user cancels the run which makes it so that the run is not canceled
+          } else {
+            console.error("Error cancelling run(s):", error);
+            res.status(500).send("Error cancelling run(s)");
+          }
         }
       } else {
         // `runId` not yet available; cancellation flag is set
