@@ -94,13 +94,17 @@ async function handleSingleAgentModel({
   }
   // Creates from OpenAI API & Stores in DB if not already created
   const { threadId, vectorStoreId } = await initializeOrFetchIds(chatId);
+  // Add threadId to runningStreams
   runningStreams[userMessageId].threadId = threadId;
+
   // Setup vector store and update assistant
-  await setupVectorStoreAndUpdateAssistant(
-    vectorStoreId,
-    assistantId,
-    userFile ? userFile.id : null
-  );
+  if (userFile) {
+    await setupVectorStoreAndUpdateAssistant(
+      vectorStoreId,
+      assistantId,
+      userFile.id
+    );
+  }
   const user = await getUserByFirebaseId(userId);
 
   if (!user) {
