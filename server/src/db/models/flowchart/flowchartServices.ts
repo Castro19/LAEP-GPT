@@ -94,7 +94,7 @@ export const fetchAllFlowcharts = async (
   try {
     const result = await flowchartModel.fetchAllFlowcharts(userId);
     if (result.length === 0) {
-      throw new Error("No flowcharts found");
+      return [];
     }
     const primaryFlowchart = result.find(
       (flowchart) => flowchart.primaryOption
