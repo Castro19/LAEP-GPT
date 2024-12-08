@@ -13,9 +13,6 @@ import { llmRequestBody, RunningStreamData } from "@polylink/shared/types";
 
 const router = express.Router();
 
-// Add a global definition for `req.file` if necessary
-// (Alternatively, you can do this in a global .d.ts file)
-
 // init storage for user documents
 const upload = multer({ dest: "temp/" }); // 'temp/' is where Multer stores uploaded files
 
@@ -75,12 +72,15 @@ router.post(
         return;
       }
 
-      if (model.title !== "Matching Assistant") {
+      if (model.title === "Will NOT Allow File Uploads for right now") {
         try {
           userFile = await handleFileUpload(file);
         } catch (error) {
           console.error("Error uploading file:", error);
         }
+      } else {
+        res.status(400).send("File uploads are not allowed for this model");
+        return;
       }
     }
 

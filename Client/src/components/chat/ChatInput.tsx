@@ -171,7 +171,7 @@ const ChatInput = ({
         onSubmit={isLoading ? () => {} : handleSubmit}
         className="flex items-end gap-2"
       >
-        {currentModel.title !== "Matching Assistant" && (
+        {currentModel.title === "Will NOT Allow File Uploads for right now" && (
           <FileUpload
             onChange={(file) => setSelectedFile(file)}
             selectedFile={selectedFile}
