@@ -9,7 +9,7 @@ export default async function sendMessage(
   botMessageId: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
-  if (!msg.trim() || msg.length >= 2000) {
+  if (msg.length >= 2000) {
     throw new Error("Message is over 2000 characters, please shorten it.");
   }
 
@@ -131,9 +131,12 @@ export default async function sendMessage(
         return accumulatedText.trim(); // Final accumulated text might not be necessary to return
       },
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to fetch response:", error);
-    throw error;
+    return {
+      error: "Please check your internet connection and try again.",
+      botMessageId,
+    };
   }
 }
 
