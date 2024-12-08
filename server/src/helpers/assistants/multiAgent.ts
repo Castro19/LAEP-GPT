@@ -76,6 +76,7 @@ async function handleMultiAgentModel({
     runningStreams[userMessageId].threadId = threadId;
     // Parse the helper assistant's response (assumes it's a JSON string)
     let jsonObject;
+    // TO-DO: How to always ensure that the response is a JSON object?
     try {
       jsonObject = JSON.parse(helperResponse);
     } catch (error) {

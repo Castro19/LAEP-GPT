@@ -14,6 +14,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../ui/button";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
+import createLogTitle from "@/redux/log/crudLog";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -118,11 +119,14 @@ const ChatInput = ({
 
       if (isNewChat) {
         dispatch(messageActions.toggleNewChat(false));
+        const logTitle = await createLogTitle(msg, currentModel.title);
+
         dispatch(
           logActions.addLog({
             msg,
-            modelTitle: currentModel.title,
+            logTitle: logTitle ? logTitle : "New Chat Log",
             id: newLogId,
+            assistantMongoId: currentModel.id,
           })
         )
           .unwrap()

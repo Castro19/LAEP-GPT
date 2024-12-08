@@ -56,6 +56,11 @@ const ChatPage = () => {
             dispatch(messageActions.setMsgList(log.content));
           }
           dispatch(messageActions.setCurrentChatId(chatId));
+          if (log.assistantMongoId) {
+            dispatch(
+              assistantActions.setCurrentAssistant(log.assistantMongoId)
+            );
+          }
         } catch (error) {
           console.error("Error fetching log: ", error);
         }

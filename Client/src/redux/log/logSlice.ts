@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import createLogTitle, {
+import {
   createLogItem,
   fetchAllLogs,
   updateLogItem,
@@ -11,18 +11,18 @@ import { RootState } from "../store";
 
 export type AddLogParams = {
   msg: string;
-  modelTitle: string;
+  logTitle: string;
   id: string;
+  assistantMongoId: string;
 };
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { msg, modelTitle, id }: AddLogParams,
+    { logTitle, id, assistantMongoId }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
-      const logTitle = await createLogTitle(msg, modelTitle);
       const timestamp = new Date().toISOString(); // Timestamp for log
       const content = (getState() as RootState).message.msgList; // Accessing message list from the state
 
@@ -42,6 +42,7 @@ export const addLog = createAsyncThunk(
         logId: id,
         timestamp: timestamp, // Ensure the timestamp is included in the DB save
         title: logTitle,
+        assistantMongoId: assistantMongoId,
       });
       return { success: true, logId: id };
     } catch (error) {

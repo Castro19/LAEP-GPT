@@ -4,11 +4,22 @@ import NewChat from "../../chat/NewChat";
 import { AssistantType } from "@polylink/shared/types";
 import { BiChat } from "react-icons/bi";
 // Redux:
-import { useAppDispatch, assistantActions, layoutActions } from "@/redux";
+import {
+  useAppDispatch,
+  assistantActions,
+  layoutActions,
+  useAppSelector,
+} from "@/redux";
+import { onNewChat } from "@/components/chat/helpers/newChatHandler";
+import { useNavigate } from "react-router-dom";
 
 const ChatHeader = () => {
   // Redux:
   const dispatch = useAppDispatch();
+  const currentMsgList = useAppSelector((state) => state.message.msgList);
+  const error = useAppSelector((state) => state.message.error);
+  const navigate = useNavigate();
+
   const { toggleSidebar } = useSidebar();
 
   const handleModeSelection = (model: AssistantType) => {
@@ -16,6 +27,7 @@ const ChatHeader = () => {
       const modelId = model.id;
       dispatch(assistantActions.setCurrentAssistant(modelId));
       dispatch(layoutActions.toggleDropdown(false));
+      onNewChat(currentMsgList, dispatch, navigate, error);
     }
   };
 
