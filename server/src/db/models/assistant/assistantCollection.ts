@@ -11,7 +11,11 @@ const initializeCollection: () => void = () => {
 export const viewGPTs: () => Promise<AssistantDocument[]> = async () => {
   if (!assistantCollection) initializeCollection();
   try {
-    const result = await assistantCollection.find({}).toArray();
+    const result = await assistantCollection
+      .find({
+        hidden: { $ne: true },
+      })
+      .toArray();
     return result;
   } catch (error) {
     throw new Error(

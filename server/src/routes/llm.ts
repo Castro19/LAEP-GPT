@@ -84,7 +84,7 @@ router.post(
       }
     }
 
-    if (model.title === "Professor & Course Advisor") {
+    if (model.title === "Professor Ratings") {
       try {
         await handleMultiAgentModel({
           model,
