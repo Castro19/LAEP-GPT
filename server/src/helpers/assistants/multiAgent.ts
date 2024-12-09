@@ -131,7 +131,7 @@ async function handleMultiAgentModel({
       }
     } else {
       messageToAdd +=
-        "No professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Or if they are asking about a specific question regarding the previous messages. Either way, respond with a message that is helpful to the user.";
+        ".\nNo professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Answer the user's question as best as possible.";
     }
 
     console.log("messageToAdd: ", messageToAdd);
