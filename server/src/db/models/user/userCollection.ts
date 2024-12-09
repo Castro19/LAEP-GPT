@@ -31,6 +31,7 @@ export const createUser = async (
       major: userData.major,
       concentration: userData.concentration,
       flowchartId: userData.flowchartId,
+      emailVerified: userData.emailVerified,
     };
     const result = await userCollection.insertOne(newUser);
     return {

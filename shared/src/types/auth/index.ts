@@ -6,4 +6,5 @@ export type AuthState = {
   registerError: string | null; // Error while log in or sign up
   isNewUser: boolean | null; // Whether or not the user is new
   userType: string;
+  emailVerified: boolean;
 };

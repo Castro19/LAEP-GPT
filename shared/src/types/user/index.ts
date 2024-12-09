@@ -20,6 +20,7 @@ export type UserData = {
   year: string;
   courses: string[];
   flowchartId: string;
+  emailVerified: boolean;
 };
 
 export type UserDataWithId = UserData & { _id: string };

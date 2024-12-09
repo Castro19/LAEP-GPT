@@ -42,7 +42,7 @@ const SplashPage = () => {
             </p>
             <button
               className="bg-green-600 text-white px-4 py-2 mt-6 rounded hover:bg-green-700"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/register/login")}
             >
               Log In
             </button>

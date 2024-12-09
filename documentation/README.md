@@ -1038,11 +1038,11 @@ Visual Studio Code is a source-code editor that includes support for development
    dispatch(setLoading(false)); // Set loading to false once operation completes
    ```
 
-3. **setSignInError**:
+3. **setRegisterError**:
 
    ```typescript
    dispatch(
-     setSignInError(
+     setRegisterError(
        "Failed to sign in. Please check your credentials and try again."
      )
    );

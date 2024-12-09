@@ -24,7 +24,7 @@ const UserMenu = () => {
         <div className="flex justify-center items-center fixed inset-x-0 bottom-1 shadow-2xl bg-gray-50 dark:bg-gray-800 py-3">
           <div className="max-w-screen-md mx-auto flex gap-4">
             <Button className="dark:bg-slate-300  text-white font-bold py-2 px-4 rounded">
-              <NavLink to="/register/login">Login</NavLink>
+              <NavLink to="/register/register/login">Login</NavLink>
             </Button>
             <Button className="dark:bg-slate-300 font-bold py-2 px-4 rounded">
               <NavLink to="/register/signup">Sign Up</NavLink>

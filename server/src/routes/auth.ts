@@ -1,6 +1,6 @@
 import express, { Request, Response, RequestHandler } from "express";
 import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices";
-import { addUser } from "../db/models/user/userServices";
+import { addUser, updateUser } from "../db/models/user/userServices";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import admin from "firebase-admin";
 import { UserData } from "@polylink/shared/types";
@@ -33,15 +33,20 @@ router.post("/login", async (req, res) => {
     // Verify the ID token to get user info
     const decodedToken = await admin.auth().verifyIdToken(token);
     const userId = decodedToken.uid;
-    const email = decodedToken.email || "";
-    const name = decodedToken.name || "";
 
     // Check if user already exists in your database
     const user = await getUserByFirebaseId(userId);
+    console.log("decodedToken", decodedToken);
 
     if (!user) {
       // Determine userType
+      const email = decodedToken.email || "";
+      const name = decodedToken.name || decodedToken.displayName || "";
       const userType = await getSignupAccessByEmail(email);
+      // Microsoft login is also email verified
+      const emailVerified =
+        decodedToken.email_verified ||
+        decodedToken.sign_in_provider === "microsoft.com";
 
       const userData: UserData = {
         userId,
@@ -67,6 +72,7 @@ router.post("/login", async (req, res) => {
         major: "",
         concentration: "",
         flowchartId: "",
+        emailVerified,
       };
       console.log("Adding user to database");
       await addUser(userData);
@@ -111,6 +117,10 @@ router.get("/check", (async (req: Request, res: Response) => {
     if (!user) {
       console.log("User not found in database");
       return res.status(404).send({ error: "User not found" });
+    }
+
+    if (!user.emailVerified && decodedToken.email_verified) {
+      await updateUser(user.userId, { emailVerified: true });
     }
 
     res.status(200).send(user);

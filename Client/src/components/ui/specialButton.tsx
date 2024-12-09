@@ -3,7 +3,8 @@ import { MdEdit } from "react-icons/md";
 import { ButtonProps } from "./button";
 
 interface SpecialButtonProps {
-  onClick: () => void;
+  // eslint-disable-next-line no-unused-vars
+  onClick: (() => void) | ((e: React.MouseEvent<HTMLButtonElement>) => void);
   text: string;
   icon?: React.ReactNode;
   props?: ButtonProps;

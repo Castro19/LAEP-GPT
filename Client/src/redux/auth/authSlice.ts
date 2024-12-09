@@ -1,9 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { signInWithPopup, OAuthProvider } from "firebase/auth";
+import {
+  signInWithPopup,
+  OAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import { loginUser } from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
-import { AuthState } from "@polylink/shared/types";
+import { AuthState, UserData } from "@polylink/shared/types";
 import { setUserData } from "../user/userSlice";
 
 // Initial state for the auth slice
@@ -14,6 +21,7 @@ const initialState: AuthState = {
   registerError: null,
   isNewUser: null,
   userType: "student",
+  emailVerified: false,
 };
 
 export const checkAuthentication = createAsyncThunk<
@@ -31,15 +39,18 @@ export const checkAuthentication = createAsyncThunk<
     });
 
     if (response.ok) {
-      const data = await response.json();
-      dispatch(
-        setAuthState({
-          userId: data.userId,
-          userLoggedIn: true,
-          userType: data.userType,
-        })
-      );
-      dispatch(setUserData(data));
+      const data: UserData | null = await response.json();
+      if (data) {
+        dispatch(
+          setAuthState({
+            userId: data.userId,
+            userLoggedIn: true,
+            userType: data.userType,
+            emailVerified: data.emailVerified,
+          })
+        );
+        dispatch(setUserData(data));
+      }
     } else {
       // Not authenticated
       dispatch(clearAuthState());
@@ -59,6 +70,7 @@ export const signInWithMicrosoft = createAsyncThunk<
   { dispatch: AppDispatch }
 >("auth/signInWithMicrosoft", async ({ navigate }, { dispatch }) => {
   dispatch(setLoading(true));
+
   const provider = new OAuthProvider("microsoft.com");
   const userCredential = await signInWithPopup(auth, provider);
   const user = userCredential.user;
@@ -68,28 +80,181 @@ export const signInWithMicrosoft = createAsyncThunk<
     // Check if the user's email ends with '@calpoly.edu'
     if (user.email && user.email.endsWith("@calpoly.edu")) {
       const userResponse = await loginUser(token);
-      if (userResponse.isNewUser) {
-        dispatch(setIsNewUser(userResponse.isNewUser));
-        dispatch(setUserData(userResponse.userData));
+      if (userResponse) {
+        if (userResponse.isNewUser) {
+          dispatch(setIsNewUser(userResponse.isNewUser));
+          dispatch(setUserData(userResponse.userData));
+        }
+        dispatch(checkAuthentication());
+      } else {
+        // Invalid email domain, sign out the user
+        dispatch(signOutUser({ navigate }));
+        dispatch(
+          setRegisterError("Access restricted to @calpoly.edu email addresses.")
+        );
       }
-      dispatch(checkAuthentication());
-    } else {
-      // Invalid email domain, sign out the user
-      dispatch(signOutUser({ navigate }));
-      dispatch(
-        setSignInError("Access restricted to @calpoly.edu email addresses.")
-      );
     }
   } catch (error) {
     // FIX: Handle other errors
     dispatch(
-      setSignInError("Failed to sign in with Microsoft. Please try again.")
+      setRegisterError("Failed to sign in with Microsoft. Please try again.")
     );
     console.error("Authentication error:", error);
   } finally {
     dispatch(setLoading(false));
   }
 });
+
+// Thunk for email/password sign-in
+export const signInWithEmail = createAsyncThunk<
+  void,
+  {
+    email: string;
+    password: string;
+    // eslint-disable-next-line no-unused-vars
+    navigate: (path: string) => void;
+  },
+  { dispatch: AppDispatch }
+>(
+  "auth/signInWithEmail",
+  async ({ email, password, navigate }, { dispatch }) => {
+    dispatch(setLoading(true));
+    dispatch(clearRegisterError());
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      const token = await user.getIdToken(); // Get the Firebase ID token
+      // Check if the user's email ends with '@calpoly.edu'
+      if (user.email) {
+        const userResponse = await loginUser(token);
+        if (userResponse) {
+          if (userResponse.isNewUser) {
+            dispatch(setIsNewUser(userResponse.isNewUser));
+            dispatch(setUserData(userResponse.userData));
+          }
+          dispatch(checkAuthentication());
+        } else {
+          dispatch(signOutUser({ navigate }));
+          dispatch(
+            setRegisterError(
+              "Failed to sign in with Microsoft. Please try again."
+            )
+          );
+        }
+      } else {
+        // Invalid email domain, sign out the user
+        dispatch(signOutUser({ navigate }));
+        dispatch(
+          setRegisterError("Access restricted to @calpoly.edu email addresses.")
+        );
+      }
+    } catch (error) {
+      // FIX: Handle other errors
+      dispatch(
+        setRegisterError("Failed to sign in with Microsoft. Please try again.")
+      );
+      console.error("Authentication error:", error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
+// Thunk for email/password sign-up
+export const signUpWithEmail = createAsyncThunk<
+  void,
+  {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    // eslint-disable-next-line no-unused-vars
+    navigate: (path: string) => void;
+  },
+  { dispatch: AppDispatch }
+>(
+  "auth/signUpWithEmail",
+  async ({ email, password, firstName, lastName, navigate }, { dispatch }) => {
+    // Check for Cal Poly email address
+    // const calPolyEmailRegex = /^[A-Z0-9._%+-]+@calpoly\.edu$/i;
+    // if (!calPolyEmailRegex.test(email)) {
+    //   dispatch(
+    //     authActions.setRegisterError(
+    //       "You must use a valid Cal Poly email address."
+    //     )
+    //   );
+    //   return;
+    // }
+    // email.endsWith("@calpoly.edu")
+    if (email) {
+      dispatch(setLoading(true));
+      dispatch(clearRegisterError());
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+
+        // Send verification email immediately after sign-up
+        await sendEmailVerification(user);
+        await updateProfile(user, {
+          displayName: `${firstName} ${lastName}`,
+        });
+        const token = await user.getIdToken(); // Get the Firebase ID token
+        // Send the token to server to set the HTTP-only cookie
+        try {
+          if (user.emailVerified) {
+            const userResponse = await loginUser(token);
+            if (userResponse) {
+              if (userResponse.isNewUser) {
+                dispatch(setIsNewUser(userResponse.isNewUser));
+                dispatch(setUserData(userResponse.userData));
+              }
+              dispatch(checkAuthentication());
+            } else {
+              dispatch(signOutUser({ navigate }));
+              dispatch(
+                setRegisterError(
+                  "Failed to sign in with Microsoft. Please try again."
+                )
+              );
+            }
+          }
+          navigate("/verify-email");
+        } catch (error) {
+          // FIX: Handle other errors
+          dispatch(
+            setRegisterError(
+              "Failed to sign in with Microsoft. Please try again."
+            )
+          );
+          console.error("Authentication error:", error);
+        } finally {
+          dispatch(setLoading(false));
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          dispatch(setRegisterError(error.message));
+        }
+      } finally {
+        dispatch(setLoading(false));
+      }
+    } else {
+      // Invalid email domain, sign out the user
+      dispatch(signOutUser({ navigate }));
+      dispatch(
+        setRegisterError("Access restricted to @calpoly.edu email addresses.")
+      );
+    }
+  }
+);
 
 // Define the sign-out thunk
 export const signOutUser = createAsyncThunk<
@@ -98,6 +263,8 @@ export const signOutUser = createAsyncThunk<
   { navigate: (path: string) => void },
   { dispatch: AppDispatch }
 >("auth/signOutUser", async ({ navigate }, { dispatch }) => {
+  dispatch(clearRegisterError());
+
   try {
     // Request the server to clear the cookie
     await fetch("http://localhost:4000/auth/logout", {
@@ -111,7 +278,6 @@ export const signOutUser = createAsyncThunk<
     console.error("Failed to sign out:", error);
   }
 });
-
 // Creating the slice
 const authSlice = createSlice({
   name: "auth",
@@ -122,13 +288,15 @@ const authSlice = createSlice({
       action: PayloadAction<{
         userId: string | null;
         userLoggedIn: boolean;
-        userType: string;
+        userType: "student" | "admin";
+        emailVerified: boolean;
       }>
     ) {
-      const { userId, userLoggedIn, userType } = action.payload;
+      const { userId, userLoggedIn, userType, emailVerified } = action.payload;
       state.userId = userId;
       state.userLoggedIn = userLoggedIn;
       state.userType = userType;
+      state.emailVerified = emailVerified;
     },
 
     setIsNewUser(state, action: PayloadAction<boolean | null>) {
@@ -140,11 +308,18 @@ const authSlice = createSlice({
       state.loading = false;
       state.isNewUser = null;
       state.userType = "student";
+      state.emailVerified = false;
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
-    setSignInError(state, action: PayloadAction<string | null>) {
+    setRegisterError(state, action: PayloadAction<string | null>) {
+      state.registerError = action.payload;
+    },
+    clearRegisterError(state) {
+      state.registerError = null;
+    },
+    setEmailVerifyError(state, action: PayloadAction<string | null>) {
       state.registerError = action.payload;
     },
   },
@@ -155,7 +330,9 @@ export const {
   setIsNewUser,
   clearAuthState,
   setLoading,
-  setSignInError,
+  setRegisterError,
+  setEmailVerifyError,
+  clearRegisterError,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;
