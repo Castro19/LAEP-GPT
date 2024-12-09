@@ -12,7 +12,7 @@ const NewUserRoute = () => {
   }
 
   if (!userLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/register/login" replace />;
   }
 
   if (!isNewUser) {

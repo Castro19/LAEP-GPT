@@ -33,7 +33,19 @@ router.put("/me", (async (req, res) => {
       return res.status(401).send("No user found in request");
     }
     const updateData = req.body;
-    const updatedUser = await updateUser(userId, updateData);
+    // get all props but the _id as the object
+    const cleanUpdateData = Object.keys(updateData).filter(
+      (key) => key !== "_id"
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateDataObject = cleanUpdateData.reduce((acc: any, key: string) => {
+      acc[key] = updateData[key];
+      return acc;
+    }, {});
+
+    console.log("updateDataObject", updateDataObject);
+
+    const updatedUser = await updateUser(userId, updateDataObject);
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).send("Failed to update user: " + (error as Error).message);

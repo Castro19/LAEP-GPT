@@ -1,5 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function loginUser(token: string): Promise<any> {
+import { UserData } from "@polylink/shared/types";
+
+export async function loginUser(
+  token: string
+): Promise<{ userData: UserData; isNewUser: boolean } | null> {
   // Send the token to the server
   try {
     const response = await fetch("http://localhost:4000/auth/login", {
@@ -10,9 +13,11 @@ export async function loginUser(token: string): Promise<any> {
       },
       body: JSON.stringify({ token }),
     });
-    const responseData = await response.json();
+    const responseData: { userData: UserData; isNewUser: boolean } =
+      await response.json();
     return responseData;
   } catch (error) {
     console.error("Failed to send token to server:", error);
+    return null;
   }
 }

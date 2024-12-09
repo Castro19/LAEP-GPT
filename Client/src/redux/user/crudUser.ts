@@ -1,6 +1,7 @@
 import { UserData } from "@polylink/shared/types";
 
 export async function putUserProfile(userData: UserData): Promise<void> {
+  console.log("putUserProfile", userData);
   try {
     const response = await fetch(`http://localhost:4000/users/me`, {
       method: "PUT",

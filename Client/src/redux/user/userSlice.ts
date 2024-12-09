@@ -38,6 +38,7 @@ const initialState: UserState = {
     major: "",
     concentration: "",
     flowchartId: "",
+    emailVerified: false,
   },
   loading: false,
   error: null,
