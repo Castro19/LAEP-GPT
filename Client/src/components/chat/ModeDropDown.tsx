@@ -108,7 +108,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>{currentModel.title}</NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="w-[80vw]">
             <ul className="grid p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] lg:auto-rows-min bg-white dark:bg-gray-900">
               <li className="row-span-1 mb-3 mr-3 border-b pb-3 lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
                 <div className="text-lg font-medium">{currentModel.title}</div>
@@ -152,12 +152,12 @@ const ListItem = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "block w-full select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-700 hover:text-white focus:bg-slate-700 focus:text-white",
+        "block w-full select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:dark:bg-slate-800 hover:text-white focus:dark:bg-slate-800 focus:text-white",
         className
       )}
       {...props}
     >
-      <div className="flex items-center space-x-4 mb-4">
+      <div className="flex items-center space-x-4 my-1">
         <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
           <AvatarImage
             src={urlPhoto || "/imgs/test.png"}

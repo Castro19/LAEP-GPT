@@ -8,6 +8,7 @@ import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import { putUserReaction } from "@/redux/message/messageSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSidebar } from "../ui/sidebar";
 
 const md = new MarkdownIt();
 
@@ -34,7 +35,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   const dispatch = useAppDispatch();
   const { currentChatId } = useAppSelector((state) => state.message);
   const { trackUserReaction } = useTrackAnalytics();
-
+  const { isMobile } = useSidebar();
   const isUserMessage = msg.sender === "user";
 
   // Convert Markdown to HTML and sanitize
@@ -111,7 +112,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       }`}
     >
       {!isUserMessage && (
-        <div className="pr-2 pt-1">
+        <div className="pt-1">
           {msg?.thinkingState ? (
             <div className="flex items-center space-x-4 mb-12">
               <Skeleton className="h-16 w-16 rounded-full dark:bg-slate-600/50" />
@@ -121,19 +122,21 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
               </div>
             </div>
           ) : (
-            <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
-              <AvatarImage
-                src={msg.urlPhoto || "/imgs/test.png"}
-                alt="Assistant Photo"
-              />
-            </Avatar>
+            !isMobile && (
+              <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110 mr-2">
+                <AvatarImage
+                  src={msg.urlPhoto || "/imgs/test.png"}
+                  alt="Assistant Photo"
+                />
+              </Avatar>
+            )
           )}
         </div>
       )}
       {!msg?.thinkingState && (
         <div className="flex flex-col">
           <div
-            className={`rounded-lg shadow-lg p-4 ${
+            className={`rounded-lg shadow-lg px-2 py-4 ${
               isUserMessage
                 ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white"
                 : "bg-gradient-to-r from-gray-800 to-gray-700 text-white dark:from-gray-700 dark:to-gray-600"
