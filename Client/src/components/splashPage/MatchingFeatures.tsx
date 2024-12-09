@@ -9,8 +9,9 @@ const content = [
       <div className="h-full w-full flex items-center justify-center text-white">
         <img
           src="/imgs/splash/Student.svg"
-          className="h-full w-full"
           alt="linear board demo"
+          width={400}
+          height={400}
         />
       </div>
     ),
@@ -23,8 +24,9 @@ const content = [
       <div className="h-full w-full flex items-center justify-center text-white">
         <img
           src="/imgs/splash/teacher-matching.png"
-          className="h-full w-full"
           alt="linear board demo"
+          width={500}
+          height={500}
         />
       </div>
     ),
@@ -37,7 +39,8 @@ const content = [
       <div className="h-full w-full flex items-center justify-center text-white">
         <img
           src="/imgs/splash/multiple-assistants.png"
-          className="h-full w-full"
+          width={500}
+          height={500}
           alt="linear board demo"
         />
       </div>
@@ -51,7 +54,8 @@ const content = [
       <div className="h-full w-full flex items-center justify-center text-white">
         <img
           src="/imgs/splash/teacher-matching.png"
-          className="h-full w-full"
+          width={500}
+          height={500}
           alt="linear board demo"
         />
       </div>
@@ -65,8 +69,9 @@ const content = [
       <div className="h-full w-full flex items-center justify-center text-white">
         <img
           src="/imgs/splash/teacher-matching.png"
-          className="h-full w-full"
           alt="linear board demo"
+          width={500}
+          height={500}
         />
       </div>
     ),

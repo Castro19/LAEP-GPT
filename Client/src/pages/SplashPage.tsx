@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 const SplashPage = () => {
   const navigate = useNavigate();
   return (
-    <>
+    <div className="bg-slate-900 min-h-screen relative">
       <SplashHeader />
 
-      <div className="bg-slate-900 min-h-screen relative">
+      <div className="bg-slate-900 relative">
         {/* SVG Background Overlays */}
         <svg
           width="100%"
@@ -66,7 +66,6 @@ const SplashPage = () => {
         <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400"></div>
 
         <StickyScrollRevealDemo />
-        {/* <WobbleCardDemo /> */}
         <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400 relative">
           <svg
             width="100%"
@@ -93,7 +92,7 @@ const SplashPage = () => {
         </div>
       </div>
       <SplashFooter />
-    </>
+    </div>
   );
 };
 
