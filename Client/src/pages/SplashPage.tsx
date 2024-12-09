@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 const SplashPage = () => {
   const navigate = useNavigate();
   return (
-    <>
+    <div className="bg-slate-900 min-h-screen relative">
       <SplashHeader />
 
-      <div className="bg-slate-900 min-h-screen relative">
+      <div className="bg-slate-900 relative">
         {/* SVG Background Overlays */}
         <svg
           width="100%"
@@ -28,18 +28,17 @@ const SplashPage = () => {
               PolyLink: Your Personalized AI Advisor at Cal Poly
             </h1>
             <p className="text-lg mt-4">
-              Welcome to PolyLink, a cutting-edge AI assistant designed to help
-              Cal Poly students make the most of their academic journey.
+              Welcome to PolyLink, a personalized AI assistant designed to help
+              students make the most of their academic journey.
               <br />
               <br />
-              Whether you’re seeking an advisor, exploring classes, joining
-              clubs, or connecting with study partners, PolyLink leverages
-              advanced AI to offer personalized recommendations tailored to your
-              goals and interests.
+              Whether you’re exploring classes, joining clubs, or searching for
+              professors. PolyLink leverages AI to offer personalized
+              recommendations tailored to your goals and interests.
               <br />
               <br />
-              Sign in with your Cal Poly account to start exploring a wealth of
-              resources and connections curated for you.
+              Sign in with your Cal Poly account to start exploring resources
+              and connections curated for you.
             </p>
             <button
               className="bg-green-600 text-white px-4 py-2 mt-6 rounded hover:bg-green-700"
@@ -55,7 +54,6 @@ const SplashPage = () => {
               height="315"
               src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
               title="YouTube video player"
-              frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="rounded-lg shadow-lg"
@@ -66,7 +64,6 @@ const SplashPage = () => {
         <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400"></div>
 
         <StickyScrollRevealDemo />
-        {/* <WobbleCardDemo /> */}
         <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400 relative">
           <svg
             width="100%"
@@ -93,7 +90,7 @@ const SplashPage = () => {
         </div>
       </div>
       <SplashFooter />
-    </>
+    </div>
   );
 };
 

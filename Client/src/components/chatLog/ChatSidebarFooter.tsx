@@ -34,7 +34,7 @@ const ChatSidebarFooter = () => {
   };
 
   return (
-    <SidebarFooter className="h-24 border-t dark:border-slate-700">
+    <SidebarFooter className="h-20 border-t dark:border-slate-700">
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>

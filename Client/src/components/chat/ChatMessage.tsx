@@ -11,18 +11,37 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const md = new MarkdownIt();
 
+// Remember the old renderer
+const defaultLinkRenderer =
+  md.renderer.rules.link_open ||
+  function (tokens, idx, options, _env, self) {
+    return self.renderToken(tokens, idx, options);
+  };
+
+// Override link_open rule to add target and rel attributes using attrSet()
+md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+  tokens[idx].attrSet("target", "_blank");
+  tokens[idx].attrSet("rel", "noopener noreferrer");
+  // Return the default renderer
+  return defaultLinkRenderer(tokens, idx, options, env, self);
+};
+
 type ChatMessageProps = {
   msg: MessageObjType;
 };
+
 const ChatMessage = ({ msg }: ChatMessageProps) => {
   const dispatch = useAppDispatch();
   const { currentChatId } = useAppSelector((state) => state.message);
   const { trackUserReaction } = useTrackAnalytics();
-  // Boolean Variable to style messages differently between user and chatbot
+
   const isUserMessage = msg.sender === "user";
 
-  const messageHtml = md.render(msg.text); // Convert Markdown to HTML
-  const safeHtml = DOMPurify.sanitize(messageHtml);
+  // Convert Markdown to HTML and sanitize
+  const messageHtml = md.render(msg.text);
+  const safeHtml = DOMPurify.sanitize(messageHtml, {
+    ADD_ATTR: ["target", "rel"],
+  });
 
   const handleLike = (id: string) => {
     if (currentChatId) {
@@ -33,13 +52,10 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
           userReaction: "like",
         })
       );
-      trackUserReaction({
-        botMessageId: id,
-        userReaction: "like",
-      });
+      trackUserReaction({ botMessageId: id, userReaction: "like" });
     }
-    // Send the like to the backend
   };
+
   const handleDislike = (id: string) => {
     if (currentChatId) {
       dispatch(
@@ -49,12 +65,8 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
           userReaction: "dislike",
         })
       );
-      trackUserReaction({
-        botMessageId: id,
-        userReaction: "dislike",
-      });
+      trackUserReaction({ botMessageId: id, userReaction: "dislike" });
     }
-    // Send the dislike to the backend
   };
 
   const renderLikeButtons = () => {
@@ -91,6 +103,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
       );
     }
   };
+
   return (
     <div
       className={`w-full my-4 flex ${
