@@ -76,7 +76,7 @@ export function SidebarFlowchart() {
 
   return (
     <Sidebar variant="sidebar" className="flex flex-col h-full">
-      <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none mt-1">
+      <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none mt-4">
         <div className="flex items-center justify-start gap-4">
           {/* Back button */}
           <Button

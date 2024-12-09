@@ -1,12 +1,15 @@
-import { Button } from "@/components/ui/button";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
 import { toast } from "@/components/ui/use-toast";
+import { useSidebar } from "@/components/ui/sidebar";
+import SpecialButton from "@/components/ui/specialButton";
+import { MdSave } from "react-icons/md";
 
 const FlowChartFooter = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { isMobile } = useSidebar();
   const { flowchartData, flowchartList, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
@@ -81,17 +84,25 @@ const FlowChartFooter = () => {
 
   return (
     <footer className="flex flex-col justify-between items-center p-4 w-full gap-4">
-      <div className="flex justify-center items-center w-3/4">
-        {flowchartId === "" || flowchartId === undefined ? (
-          <Button onClick={handleSaveData} className="flex-1">
-            Save
-          </Button>
-        ) : (
-          <Button onClick={handleUpdateData} className="flex-1">
-            Update
-          </Button>
-        )}
-      </div>
+      {isMobile && (
+        <div className="flex justify-center items-center w-full">
+          {flowchartId === "" || flowchartId === undefined ? (
+            <SpecialButton
+              onClick={handleSaveData}
+              text="Save"
+              icon={<MdSave />}
+              className="flex-1 w-[80vw]"
+            />
+          ) : (
+            <SpecialButton
+              onClick={handleUpdateData}
+              text="Update"
+              icon={<MdSave />}
+              className="flex-1 w-[80vw]"
+            />
+          )}
+        </div>
+      )}
     </footer>
   );
 };

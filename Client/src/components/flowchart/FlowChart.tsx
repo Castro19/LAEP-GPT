@@ -82,7 +82,7 @@ const FlowChart = ({
 
   return (
     <div className="flex flex-col ">
-      <div className="flex justify-center gap-2 dark:bg-gray-900 border-b-1 border-slate-600">
+      <div className="flex justify-center gap-2 dark:bg-gray-900 border-b-1 border-slate-600 p-2">
         {[...Array(totalYears)].map((_, index) => (
           <Button
             key={index}

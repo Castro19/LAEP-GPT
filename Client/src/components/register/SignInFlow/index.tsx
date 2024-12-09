@@ -12,7 +12,7 @@ const signInFlowSteps = [
   "terms",
   "about-me",
   "interests",
-  "availability",
+  // "availability", // TO-DO: Not needed for now
   "flowchart",
 ];
 
