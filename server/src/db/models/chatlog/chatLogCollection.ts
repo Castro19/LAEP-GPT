@@ -41,6 +41,7 @@ export const fetchLogsByUserId = async (
   try {
     const logs = await chatLogCollection
       .find({ userId }, { projection: { content: 0 } })
+      .sort({ timestamp: -1 })
       .toArray();
     return logs.map((log) => ({
       logId: log.logId,

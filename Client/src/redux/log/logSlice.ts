@@ -58,9 +58,8 @@ export const fetchLogs = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const fetchedLogs = await fetchAllLogs();
-      // reverse the order of the logs
-      const logs = fetchedLogs.reverse();
-      return logs;
+
+      return fetchedLogs;
     } catch (error) {
       console.error("Failed to fetch logs: ", error);
       return rejectWithValue({ message: "Failed to fetch logs" });
@@ -96,14 +95,14 @@ export const updateLog = createAsyncThunk(
 
       if (firebaseUserId) {
         // Update log in the database
-        const updatedLog = await updateLogItem({
+        await updateLogItem({
           logId,
           firebaseUserId,
           content,
           timestamp,
         });
-        return updatedLog;
       }
+      return { success: true, logId };
     } catch (error) {
       console.error("Failed to update log: ", error);
       return rejectWithValue({ message: "Failed to update log" });
@@ -191,6 +190,15 @@ const logSlice = createSlice({
       .addCase(fetchLogs.rejected, (_state, action) => {
         // Optionally handle error state
         console.error("Failed to load logs:", action.payload);
+      })
+      .addCase(updateLog.fulfilled, (state, action) => {
+        const { logId } = action.payload;
+        const logIndex = state.logList.findIndex((log) => log.logId === logId);
+        // Move the log to the front of the list
+        if (logIndex !== -1) {
+          const [removedLog] = state.logList.splice(logIndex, 1);
+          state.logList.unshift(removedLog);
+        }
       })
       .addCase(deleteLog.pending, (state, action) => {
         state.deletingLogIds.push(action.meta.arg.logId);
