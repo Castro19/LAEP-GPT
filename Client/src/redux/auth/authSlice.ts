@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { loginUser } from "./crudAuth";
 import { auth } from "@/firebase";
@@ -19,6 +20,7 @@ const initialState: AuthState = {
   userLoggedIn: false,
   loading: true,
   registerError: null,
+  resetPasswordError: null,
   isNewUser: null,
   userType: "student",
   emailVerified: false,
@@ -278,6 +280,22 @@ export const signOutUser = createAsyncThunk<
     console.error("Failed to sign out:", error);
   }
 });
+
+export const resetPassword = createAsyncThunk<
+  void,
+  { email: string; dispatch: AppDispatch },
+  { dispatch: AppDispatch }
+>("auth/resetPassword", async ({ email, dispatch }) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (error) {
+    dispatch(
+      setResetPasswordError("Failed to reset password. Please try again.")
+    );
+    console.error("Failed to reset password:", error);
+  }
+});
+
 // Creating the slice
 const authSlice = createSlice({
   name: "auth",
@@ -322,6 +340,12 @@ const authSlice = createSlice({
     setEmailVerifyError(state, action: PayloadAction<string | null>) {
       state.registerError = action.payload;
     },
+    setResetPasswordError(state, action: PayloadAction<string | null>) {
+      state.resetPasswordError = action.payload;
+    },
+    clearResetPasswordError(state) {
+      state.resetPasswordError = null;
+    },
   },
 });
 
@@ -333,6 +357,7 @@ export const {
   setRegisterError,
   setEmailVerifyError,
   clearRegisterError,
+  setResetPasswordError,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;
