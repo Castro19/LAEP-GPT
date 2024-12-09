@@ -84,7 +84,15 @@ const CourseSearchbar = () => {
         ) : error ? (
           <div>{error}</div>
         ) : inputValue !== "" && !hasMatches ? (
-          <CommandEmpty>No class found.</CommandEmpty>
+          <CommandEmpty className="text-center">
+            No class found.
+            <br />
+            <br />
+            Search for a course without a space between the course name and the
+            section number.
+            <br />
+            EX: UNIV401 instead of UNIV 401.
+          </CommandEmpty>
         ) : (
           <CommandGroup>
             {courses.map((item, index) => {
