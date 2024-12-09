@@ -92,7 +92,7 @@ export default function LoginForm() {
           <p className="text-center text-sm dark:text-gray-400">
             Forgot your password?
             <Link
-              to={"/reset-password"}
+              to={"/register/reset-password"}
               className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
             >
               Reset Password

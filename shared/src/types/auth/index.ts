@@ -4,6 +4,7 @@ export type AuthState = {
   userLoggedIn: boolean; // Whether or not user is logged in
   loading: boolean; // State for registering
   registerError: string | null; // Error while log in or sign up
+  resetPasswordError: string | null; // Error while resetting password
   isNewUser: boolean | null; // Whether or not the user is new
   userType: string;
   emailVerified: boolean;

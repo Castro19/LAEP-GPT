@@ -35,6 +35,7 @@ import FlowChart from "./components/flowchart/FlowChart.tsx";
 import SignUpForm from "./pages/register/SignUpForm.tsx";
 import LoginForm from "./pages/register/LoginForm.tsx";
 import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
+import ResetPassword from "./pages/register/ResetPassword.tsx";
 
 Sentry.init({
   dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
@@ -107,6 +108,10 @@ const router = sentryCreateBrowserRouter([
       {
         path: "sign-up",
         element: <SignUpForm />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
       },
     ],
   },
