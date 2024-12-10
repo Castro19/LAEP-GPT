@@ -85,7 +85,7 @@ export const signInWithMicrosoft = createAsyncThunk<
     const user = userCredential.user;
     const token = await user.getIdToken(); // Get the Firebase ID token
     // Check if the user's email ends with '@calpoly.edu'
-    if (user.email && user.email.endsWith("@calpoly.edu")) {
+    if (user.email && (await verifyCalPolyEmail(user.email))) {
       const userResponse = await loginUser(token);
       if (userResponse) {
         if (userResponse.isNewUser) {
@@ -106,7 +106,7 @@ export const signInWithMicrosoft = createAsyncThunk<
       if (error.code === "auth/account-exists-with-different-credential") {
         try {
           const email = error.customData?.email;
-          if (email && verifyCalPolyEmail(email as string)) {
+          if (email && (await verifyCalPolyEmail(email as string))) {
             // Get Microsoft credential from the error
             const pendingCred = OAuthProvider.credentialFromError(error);
             if (pendingCred) {
@@ -168,8 +168,7 @@ export const signInWithEmail = createAsyncThunk<
     );
     const user = userCredential.user;
     const token = await user.getIdToken(); // Get the Firebase ID token
-    // Check if the user's email ends with '@calpoly.edu'
-    if (user.email) {
+    if (user.email && (await verifyCalPolyEmail(user.email))) {
       const userResponse = await loginUser(token);
       if (userResponse) {
         if (userResponse.isNewUser) {
@@ -184,7 +183,6 @@ export const signInWithEmail = createAsyncThunk<
             "Failed to sign in with Microsoft. Please try again."
           )
         );
-        throw new Error("Failed to sign in with Microsoft");
       }
     } else {
       // Invalid email domain, sign out the user
@@ -207,6 +205,8 @@ export const signInWithEmail = createAsyncThunk<
       );
     } else if (errorCode.message.includes("auth/invalid-credential")) {
       dispatch(setRegisterError("Invalid credentials."));
+    } else if (errorCode.message.includes("auth/invalid-email")) {
+      dispatch(setRegisterError("Invalid email address."));
     } else {
       dispatch(setRegisterError((error as Error).message));
     }
@@ -232,7 +232,7 @@ export const signUpWithEmail = createAsyncThunk<
 >(
   "auth/signUpWithEmail",
   async ({ email, password, firstName, lastName, navigate }, { dispatch }) => {
-    if (verifyCalPolyEmail(email)) {
+    if (email && (await verifyCalPolyEmail(email))) {
       dispatch(setLoading(true));
       dispatch(clearRegisterError());
 
@@ -263,27 +263,27 @@ export const signUpWithEmail = createAsyncThunk<
             } else {
               dispatch(signOutUser());
               dispatch(
-                setRegisterError(
-                  "Failed to sign in with Microsoft. Please try again."
-                )
+                setRegisterError("Failed to sign up. Please try again.")
               );
             }
           }
           navigate("/verify-email");
         } catch (error) {
           // FIX: Handle other errors
-          dispatch(
-            setRegisterError(
-              "Failed to sign in with Microsoft. Please try again."
-            )
-          );
+          dispatch(setRegisterError("Failed to sign up. Please try again."));
           console.error("Authentication error:", error);
         } finally {
           dispatch(setLoading(false));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          dispatch(setRegisterError(error.message));
+        const errorCode = error as Error;
+
+        if (errorCode.message.includes("auth/invalid-email")) {
+          dispatch(setRegisterError("Invalid email address."));
+        } else if (errorCode.message.includes("auth/email-already-in-use")) {
+          dispatch(setRegisterError("Email already in use."));
+        } else {
+          dispatch(setRegisterError(errorCode.message));
         }
       } finally {
         dispatch(setLoading(false));
@@ -331,7 +331,12 @@ export const sendResetEmail = createAsyncThunk<
       url: "http://localhost:5173/register/reset-password-form",
       handleCodeInApp: true,
     };
-    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    if (email && (await verifyCalPolyEmail(email))) {
+      await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    } else {
+      dispatch(setResetPasswordError("Invalid email address."));
+      return rejectWithValue("Invalid email address.");
+    }
   } catch (error) {
     console.error("Error sending password reset email:", error);
     dispatch(setResetPasswordError("Failed to send password reset email."));

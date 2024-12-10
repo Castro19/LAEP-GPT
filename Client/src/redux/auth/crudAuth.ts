@@ -22,15 +22,38 @@ export async function loginUser(
   }
 }
 
-export function verifyCalPolyEmail(email: string) {
+export async function verifyCalPolyEmail(email: string) {
   const calPolyEmailRegex = /^[A-Z0-9._%+-]+@calpoly\.edu$/i;
 
-  if (email && email.endsWith("@calpoly.edu")) {
+  if (email) {
     if (!calPolyEmailRegex.test(email)) {
-      return false;
+      try {
+        const byPass = await byPassCalPolyEmailCheck(email);
+        if (byPass) {
+          return true;
+        }
+      } catch (error) {
+        console.error("Failed to check if email is valid:", error);
+        return false;
+      }
+    } else {
+      return true;
     }
   }
-  return true;
+
+  return false;
+}
+
+export async function byPassCalPolyEmailCheck(email: string) {
+  const response = await fetch(
+    "http://localhost:4000/auth/can-bypass-calpoly-email-check",
+    {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }
+  );
+  const data: { byPass: boolean } = await response.json();
+  return data.byPass;
 }
 
 export async function checkUserExistsByEmail(email: string) {

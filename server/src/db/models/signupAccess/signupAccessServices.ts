@@ -24,3 +24,21 @@ export const getSignupAccessByEmail = async (
     return "student";
   }
 };
+
+export const byPassCalPolyEmailCheck = async (
+  email: string
+): Promise<boolean> => {
+  if (!signupAccessCollection) initializeCollection();
+  try {
+    const signupAccessEntry = await signupAccessCollection.findOne({
+      email: { $regex: new RegExp(`^${email}$`, "i") },
+    });
+    if (signupAccessEntry) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error getting signup access by email:", error);
+    return false;
+  }
+};

@@ -12,7 +12,10 @@ import SpecialButton from "@/components/ui/specialButton";
 
 import { toast } from "@/components/ui/use-toast";
 import { ErrorMessage } from "@/components/register/ErrorMessage";
-import { checkUserExistsByEmail } from "@/redux/auth/crudAuth";
+import {
+  checkUserExistsByEmail,
+  verifyCalPolyEmail,
+} from "@/redux/auth/crudAuth";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -21,19 +24,26 @@ const ResetPassword = () => {
   const dispatch = useAppDispatch();
 
   const handleResetPassword = async (email: string) => {
-    const userExists = await checkUserExistsByEmail(email);
-    // if (verifyCalPolyEmail(email) ) // More scure if we add back in
-    if (userExists) {
-      dispatch(authActions.sendResetEmail({ email }));
-      toast({
-        title: "Password reset email sent",
-        description: "Check your email for a link to reset your password.",
-      });
-      navigate("/register/login");
+    if (await verifyCalPolyEmail(email)) {
+      const userExists = await checkUserExistsByEmail(email);
+      if (userExists) {
+        dispatch(authActions.sendResetEmail({ email }));
+        toast({
+          title: "Password reset email sent",
+          description: "Check your email for a link to reset your password.",
+        });
+        navigate("/register/login");
+      } else {
+        toast({
+          title: "Invalid email",
+          description: "This email is not registered with PolyLink.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Invalid email",
-        description: "There is no account associated with this email.",
+        description: "This email is not a valid Cal Poly email.",
         variant: "destructive",
       });
     }
