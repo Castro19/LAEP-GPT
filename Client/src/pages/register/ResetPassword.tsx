@@ -12,6 +12,7 @@ import SpecialButton from "@/components/ui/specialButton";
 
 import { toast } from "@/components/ui/use-toast";
 import { ErrorMessage } from "@/components/register/ErrorMessage";
+import { checkUserExistsByEmail } from "@/redux/auth/crudAuth";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -19,14 +20,23 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const handleResetPassword = (email: string) => {
-    console.log("Resetting password for", email);
-    dispatch(authActions.sendResetEmail({ email }));
-    toast({
-      title: "Password reset email sent",
-      description: "Check your email for a link to reset your password.",
-    });
-    navigate("/register/login");
+  const handleResetPassword = async (email: string) => {
+    const userExists = await checkUserExistsByEmail(email);
+    // if (verifyCalPolyEmail(email) ) // More scure if we add back in
+    if (userExists) {
+      dispatch(authActions.sendResetEmail({ email }));
+      toast({
+        title: "Password reset email sent",
+        description: "Check your email for a link to reset your password.",
+      });
+      navigate("/register/login");
+    } else {
+      toast({
+        title: "Invalid email",
+        description: "There is no account associated with this email.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,7 +44,6 @@ const ResetPassword = () => {
     handleResetPassword(email);
   };
 
-  console.log("resetPasswordError", resetPasswordError);
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">

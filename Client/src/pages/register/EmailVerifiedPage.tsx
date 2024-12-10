@@ -69,7 +69,6 @@ export function EmailVerifiedPage() {
 
     applyActionCode(auth, oobCode)
       .then(() => {
-        console.log("Email verified");
         handleChange("emailVerified", true);
         handleSave();
         // Email is verified

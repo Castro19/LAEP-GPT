@@ -43,8 +43,6 @@ router.put("/me", (async (req, res) => {
       return acc;
     }, {});
 
-    console.log("updateDataObject", updateDataObject);
-
     const updatedUser = await updateUser(userId, updateDataObject);
     res.status(200).json(updatedUser);
   } catch (error) {

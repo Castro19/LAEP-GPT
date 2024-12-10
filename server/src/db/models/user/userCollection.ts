@@ -13,7 +13,7 @@ export const createUser = async (
   userData: UserData
 ): Promise<{ message: string; userId: string }> => {
   if (!userCollection) initializeCollection();
-  console.log("Creating user in database", userData);
+
   try {
     const newUser: UserData = {
       userId: userData.userId,
@@ -82,5 +82,19 @@ export const findAllUsers = async (): Promise<UserData[]> => {
     return users;
   } catch (error: unknown) {
     throw new Error("Error retrieving all users: " + (error as Error).message);
+  }
+};
+
+export const findUserByEmail = async (
+  email: string
+): Promise<UserData | null> => {
+  if (!userCollection) initializeCollection();
+  try {
+    const user = await userCollection.findOne({
+      email: { $regex: new RegExp(`^${email}$`, "i") },
+    });
+    return user;
+  } catch (error: unknown) {
+    throw new Error("Error finding user: " + (error as Error).message);
   }
 };

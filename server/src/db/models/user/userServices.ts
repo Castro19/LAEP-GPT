@@ -1,5 +1,6 @@
 import { UpdateUserData, UserData } from "@polylink/shared/types";
 import * as UserModel from "./userCollection.js";
+import { findUserByEmail } from "./userCollection.js";
 
 export const addUser = async (
   userData: UserData
@@ -48,5 +49,17 @@ export const getAllUsers = async (): Promise<UserData[]> => {
     return users;
   } catch (error: unknown) {
     throw new Error("Service error: " + (error as Error).message);
+  }
+};
+
+export const checkUserExistsByEmail = async (
+  email: string
+): Promise<boolean> => {
+  try {
+    const user = await findUserByEmail(email);
+    return user !== null;
+  } catch (error) {
+    console.error("Error checking user existence: ", error);
+    return false;
   }
 };

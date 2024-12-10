@@ -32,3 +32,14 @@ export function verifyCalPolyEmail(email: string) {
   }
   return true;
 }
+
+export async function checkUserExistsByEmail(email: string) {
+  const response = await fetch("http://localhost:4000/auth/check-email", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+
+  const data: { userExists: boolean } = await response.json();
+
+  return data.userExists;
+}
