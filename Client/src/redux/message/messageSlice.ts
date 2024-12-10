@@ -81,9 +81,16 @@ export const fetchBotResponse = createAsyncThunk<
       dispatch(updateThinkingState({ id: botMessageId, thinkingState: false }));
       // Streaming updates for the bot messages
       try {
-        await updateStream((botMessageId: string, text: string) => {
-          dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
-        });
+        if (updateStream) {
+          await updateStream((botMessageId: string, text: string) => {
+            dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
+          });
+        } else {
+          return rejectWithValue({
+            message: "There was a problem streaming the response.",
+            botMessageId,
+          });
+        }
       } catch (streamError) {
         return rejectWithValue({
           message:

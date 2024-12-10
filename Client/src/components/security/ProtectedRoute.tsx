@@ -20,7 +20,7 @@ const ProtectedRoute = () => {
   }
 
   if (isNewUser && !location.pathname.startsWith("/sign-in-flow")) {
-    return <Navigate to="/sign-in-flow/about-me" replace />;
+    return <Navigate to="/sign-in-flow/terms" replace />;
   }
 
   return <Outlet />; // Render child routes

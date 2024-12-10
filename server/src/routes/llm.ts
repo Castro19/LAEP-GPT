@@ -18,10 +18,10 @@ const upload = multer({ dest: "temp/" }); // 'temp/' is where Multer stores uplo
 
 // Rate limiter for GPT messages
 const messageRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 3 * 60 * 60 * 1000, // 3 hours in milliseconds
   max: 25,
   message:
-    "You have exceeded the message limit of 25 messages per hour. Please try again later.",
+    "You have exceeded the message limit of 25 messages per 3 hours. Please try again later.",
   headers: true,
   keyGenerator: (req) => req.body.userId || "unknown-user",
 });
