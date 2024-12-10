@@ -157,9 +157,9 @@ export function EmailVerifiedPage() {
 
         <p className="text-neutral-600 dark:text-neutral-400 text-center">
           Your account has been verified. You can now log in and start using our
-          services.
+          services. If this page still shows, please wait a few seconds, then
+          click the button below.
         </p>
-
         <SpecialButton
           text="Continue to Login"
           onClick={() => navigate("/register/login")}

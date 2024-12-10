@@ -8,6 +8,8 @@ import {
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import admin from "firebase-admin";
 import { UserData } from "@polylink/shared/types";
+import { byPassCalPolyEmailCheck } from "../db/models/signupAccess/signupAccessServices";
+import { verifyCalPolyEmail } from "../helpers/auth/verifyValidEmail";
 
 const router = express.Router();
 
@@ -37,7 +39,14 @@ router.post("/login", async (req, res) => {
     // Verify the ID token to get user info
     const decodedToken = await admin.auth().verifyIdToken(token);
     const userId = decodedToken.uid;
+    const userEmail = decodedToken.email || "";
 
+    const validEmail = await verifyCalPolyEmail(userEmail);
+
+    if (!validEmail) {
+      res.status(401).send({ error: "Invalid email" });
+      return;
+    }
     // Check if user already exists in your database
     const user = await getUserByFirebaseId(userId);
 
@@ -144,5 +153,24 @@ router.post("/check-email", async (req: Request, res: Response) => {
     res.status(500).send({ error: "Internal server error" });
   }
 });
+
+router.post(
+  "/can-bypass-calpoly-email-check",
+  async (req: Request, res: Response) => {
+    let email: string;
+    if (typeof req.body === "string") {
+      email = JSON.parse(req.body).email;
+    } else {
+      email = req.body.email;
+    }
+    try {
+      const byPass = await byPassCalPolyEmailCheck(email);
+      res.status(200).send({ byPass });
+    } catch (error) {
+      console.error("Error checking email: ", error);
+      res.status(500).send({ error: "Internal server error" });
+    }
+  }
+);
 
 export default router;
