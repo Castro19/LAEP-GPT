@@ -46,7 +46,7 @@ router.post("/login", async (req, res) => {
       // Microsoft login is also email verified
       const emailVerified =
         decodedToken.email_verified ||
-        decodedToken.sign_in_provider === "microsoft.com";
+        decodedToken.firebase.sign_in_provider === "microsoft.com";
 
       const userData: UserData = {
         userId,

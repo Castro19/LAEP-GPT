@@ -1,8 +1,8 @@
 import { Collection, UpdateResult } from "mongodb";
-import { UpdateUserData, UserData } from "@polylink/shared/types";
+import { UpdateUserData, UserData, UserDocument } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 
-let userCollection: Collection<UserData>;
+let userCollection: Collection<UserDocument>;
 
 // Function to initialize the collection
 const initializeCollection = (): void => {
@@ -33,7 +33,7 @@ export const createUser = async (
       flowchartId: userData.flowchartId,
       emailVerified: userData.emailVerified,
     };
-    const result = await userCollection.insertOne(newUser);
+    const result = await userCollection.insertOne(newUser as UserDocument);
     return {
       message: "User created successfully",
       userId: result.insertedId.toString(),
@@ -48,7 +48,10 @@ export const findUserByFirebaseId = async (
 ): Promise<UserData | null> => {
   if (!userCollection) initializeCollection();
   try {
-    const user = await userCollection.findOne({ userId: firebaseUserId });
+    const user = await userCollection.findOne(
+      { userId: firebaseUserId },
+      { projection: { _id: 0 } }
+    );
     return user;
   } catch (error: unknown) {
     throw new Error("Error finding user: " + (error as Error).message);

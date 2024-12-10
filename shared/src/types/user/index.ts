@@ -23,5 +23,5 @@ export type UserData = {
   emailVerified: boolean;
 };
 
-export type UserDataWithId = UserData & { _id: string };
+export type UserDocument = UserData & { _id: string };
 export type UpdateUserData = Partial<UserData>;

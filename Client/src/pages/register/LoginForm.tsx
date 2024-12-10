@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { IoSchoolSharp } from "react-icons/io5";
-import { Navigate, Link, useNavigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 // Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
@@ -11,7 +11,9 @@ import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 // Helper Components
 import { ErrorMessage } from "@/components/register/ErrorMessage";
 import SpecialButton from "@/components/ui/specialButton";
-import { setRegisterError } from "@/redux/auth/authSlice";
+import { linkWithMicrosoft, setRegisterError } from "@/redux/auth/authSlice";
+import { OAuthProvider } from "firebase/auth";
+import { toast } from "@/components/ui/use-toast";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -19,19 +21,38 @@ export default function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   // Maybe add
-  const { userLoggedIn, registerError, loading } = useAppSelector(
-    (state) => state.auth
-  );
+  const { userLoggedIn, registerError, loading, pendingCredential } =
+    useAppSelector((state) => state.auth);
 
   const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(authActions.signInWithMicrosoft({ navigate }));
+    dispatch(authActions.signInWithMicrosoft());
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
+  };
+
+  const handleLinkMicrosoft = () => {
+    if (pendingCredential) {
+      const cred = OAuthProvider.credentialFromJSON(pendingCredential);
+      dispatch(linkWithMicrosoft({ pendingCred: cred }))
+        .unwrap()
+        .then(() => {
+          // Successfully linked
+          console.log("Microsoft linked successfully");
+          // Optionally clear pending credential if not done in the reducer
+        })
+        .catch((error) => {
+          console.error("Failed to link Microsoft:", error);
+        });
+
+      toast({
+        title: "Microsoft linked successfully",
+        description: "You can now sign in with Microsoft",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,7 +65,12 @@ export default function LoginForm() {
       return;
     }
 
-    dispatch(authActions.signInWithEmail({ email, password, navigate }));
+    try {
+      await dispatch(authActions.signInWithEmail({ email, password })).unwrap();
+      handleLinkMicrosoft();
+    } catch (error) {
+      console.error("Error signing in with email: ", error);
+    }
   };
 
   return (

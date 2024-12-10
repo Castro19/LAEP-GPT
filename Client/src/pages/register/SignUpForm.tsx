@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-// import { IconBrandGoogle } from "@tabler/icons-react"; legacy google import
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
@@ -65,14 +64,13 @@ export function SignupFormDemo() {
       lastName,
     };
 
-    console.log("User Data passed to signupwithemail thunk: ", userData);
     // Dispatch the signup action
     dispatch(authActions.signUpWithEmail({ ...userData, navigate }));
   };
 
   const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(authActions.signInWithMicrosoft({ navigate }));
+    dispatch(authActions.signInWithMicrosoft());
   };
 
   const renderInitialState = () => (
