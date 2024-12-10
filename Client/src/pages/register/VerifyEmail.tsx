@@ -20,7 +20,7 @@ export function VerifyEmail() {
 
   useEffect(() => {
     // Redirect to main chat page when email is verified
-    console.log("Email verification check:", { emailVerified });
+
     if (emailVerified) {
       navigate(`/sign-in-flow`);
     }

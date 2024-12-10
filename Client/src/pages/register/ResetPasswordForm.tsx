@@ -69,7 +69,6 @@ const ResetPasswordForm = () => {
     e.preventDefault();
     // Validate password length
     if (password.length < 8) {
-      console.log("Password must be at least 8 characters long.");
       dispatch(
         authActions.setResetPasswordError(
           "Password must be at least 8 characters long."
@@ -80,7 +79,6 @@ const ResetPasswordForm = () => {
 
     // Checking if the passwords match
     if (password !== confirmedPassword) {
-      console.log("Passwords do not match.");
       dispatch(authActions.setResetPasswordError("Passwords do not match."));
       return;
     }

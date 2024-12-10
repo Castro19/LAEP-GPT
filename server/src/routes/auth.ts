@@ -1,6 +1,10 @@
 import express, { Request, Response, RequestHandler } from "express";
 import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices";
-import { addUser, updateUser } from "../db/models/user/userServices";
+import {
+  addUser,
+  checkUserExistsByEmail,
+  updateUser,
+} from "../db/models/user/userServices";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import admin from "firebase-admin";
 import { UserData } from "@polylink/shared/types";
@@ -36,7 +40,6 @@ router.post("/login", async (req, res) => {
 
     // Check if user already exists in your database
     const user = await getUserByFirebaseId(userId);
-    console.log("decodedToken", decodedToken);
 
     if (!user) {
       // Determine userType
@@ -129,5 +132,17 @@ router.get("/check", (async (req: Request, res: Response) => {
     res.status(401).send({ error: "Unauthorized" });
   }
 }) as RequestHandler);
+
+router.post("/check-email", async (req: Request, res: Response) => {
+  const { email } = JSON.parse(req.body);
+
+  try {
+    const userExists = await checkUserExistsByEmail(email);
+    res.status(200).send({ userExists });
+  } catch (error) {
+    console.error("Error checking email: ", error);
+    res.status(500).send({ error: "Internal server error" });
+  }
+});
 
 export default router;

@@ -17,7 +17,6 @@ export const getSignupAccessByEmail = async (
     if (signupAccessEntry) {
       return signupAccessEntry.role;
     }
-    console.log("No sign up access entry found");
     const defaultRole = "student";
     return defaultRole;
   } catch (error) {

@@ -41,7 +41,6 @@ export default function LoginForm() {
         .unwrap()
         .then(() => {
           // Successfully linked
-          console.log("Microsoft linked successfully");
           // Optionally clear pending credential if not done in the reducer
         })
         .catch((error) => {
