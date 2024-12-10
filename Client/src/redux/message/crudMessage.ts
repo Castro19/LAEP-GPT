@@ -133,10 +133,12 @@ export default async function sendMessage(
     };
   } catch (error: unknown) {
     console.error("Failed to fetch response:", error);
-    return {
-      error: "Please check your internet connection and try again.",
-      botMessageId,
-    };
+    if ((error as Error).message.includes("Response took too long")) {
+      throw new Error("Response took too long. Please try again.");
+    } else if ((error as Error).message.includes("Failed to fetch")) {
+      throw new Error("Please check your internet connection and try again.");
+    }
+    throw error;
   }
 }
 
