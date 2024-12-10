@@ -7,12 +7,15 @@ import {
   sendEmailVerification,
   updateProfile,
   sendPasswordResetEmail,
+  verifyPasswordResetCode,
+  confirmPasswordReset,
 } from "firebase/auth";
 import { loginUser } from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
 import { AuthState, UserData } from "@polylink/shared/types";
 import { setUserData } from "../user/userSlice";
+import { FirebaseError } from "@firebase/util";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
@@ -281,20 +284,68 @@ export const signOutUser = createAsyncThunk<
   }
 });
 
-export const resetPassword = createAsyncThunk<
+export const sendResetEmail = createAsyncThunk<
   void,
-  { email: string; dispatch: AppDispatch },
-  { dispatch: AppDispatch }
->("auth/resetPassword", async ({ email, dispatch }) => {
+  { email: string },
+  { rejectValue: string; dispatch: AppDispatch }
+>("auth/sendResetEmail", async ({ email }, { rejectWithValue, dispatch }) => {
   try {
-    await sendPasswordResetEmail(auth, email);
+    // Set your actionCodeSettings if you want a custom redirect
+    const actionCodeSettings = {
+      url: "http://localhost:5173/register/reset-password-form",
+      handleCodeInApp: true,
+    };
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
   } catch (error) {
-    dispatch(
-      setResetPasswordError("Failed to reset password. Please try again.")
-    );
-    console.error("Failed to reset password:", error);
+    console.error("Error sending password reset email:", error);
+    dispatch(setResetPasswordError("Failed to send password reset email."));
+    return rejectWithValue("Failed to send password reset email.");
   }
 });
+// Verify the oobCode is valid
+export const verifyResetCode = createAsyncThunk<
+  string, // returns the user's email associated with code
+  { oobCode: string },
+  { rejectValue: string; dispatch: AppDispatch }
+>(
+  "auth/verifyResetCode",
+  async ({ oobCode }, { rejectWithValue, dispatch }) => {
+    try {
+      const email = await verifyPasswordResetCode(auth, oobCode);
+      if (!email) {
+        dispatch(
+          setResetPasswordError("Invalid or expired password reset link.")
+        );
+        return rejectWithValue("Invalid or expired password reset link.");
+      }
+      return email;
+    } catch (error) {
+      console.error("Invalid or expired password reset code:", error);
+      dispatch(
+        setResetPasswordError("Invalid or expired password reset link.")
+      );
+      return rejectWithValue("Invalid or expired password reset link.");
+    }
+  }
+);
+
+// Once verified, confirm the password reset
+export const confirmNewPassword = createAsyncThunk<
+  void,
+  { oobCode: string; newPassword: string },
+  { rejectValue: string; dispatch: AppDispatch }
+>(
+  "auth/confirmNewPassword",
+  async ({ oobCode, newPassword }, { rejectWithValue, dispatch }) => {
+    try {
+      await confirmPasswordReset(auth, oobCode, newPassword);
+    } catch (error: unknown) {
+      console.error("Failed to confirm password reset:", error);
+      dispatch(setResetPasswordError((error as FirebaseError).message));
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
 
 // Creating the slice
 const authSlice = createSlice({
@@ -358,6 +409,7 @@ export const {
   setEmailVerifyError,
   clearRegisterError,
   setResetPasswordError,
+  clearResetPasswordError,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

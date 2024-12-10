@@ -1,15 +1,13 @@
 import { useEffect } from "react";
 import { auth } from "@/firebase";
-import { sendEmailVerification, signOut } from "firebase/auth";
+import { sendEmailVerification } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import {
-  checkAuthentication,
-  setEmailVerifyError,
-} from "@/redux/auth/authSlice.ts";
+import { setEmailVerifyError } from "@/redux/auth/authSlice.ts";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
-
 // redux auth:
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { authActions, useAppDispatch, useAppSelector } from "@/redux";
+import { toast } from "@/components/ui/use-toast";
+import SpecialButton from "@/components/ui/specialButton";
 
 export function VerifyEmail() {
   const navigate = useNavigate();
@@ -18,10 +16,6 @@ export function VerifyEmail() {
   const { userLoggedIn, userId, registerError, emailVerified } = useAppSelector(
     (state) => state.auth
   );
-
-  useEffect(() => {
-    dispatch(checkAuthentication());
-  }, [dispatch]);
 
   useEffect(() => {
     // Redirect to main chat page when email is verified
@@ -36,9 +30,11 @@ export function VerifyEmail() {
     if (auth.currentUser) {
       sendEmailVerification(auth.currentUser)
         .then(() => {
-          alert(
-            "Your verification email has been resent! Please allow up to 5 minutes for the email to arrive and check your spam folder if you do not see it in your inbox."
-          );
+          toast({
+            title: "Email Resent",
+            description:
+              "Your verification email has been resent! Please check your spam folder if you do not see it in your inbox.",
+          });
         })
         .catch((error) => {
           console.error("Error sending verification email:", error);
@@ -63,13 +59,14 @@ export function VerifyEmail() {
   const handleSignOut = async () => {
     // Signs out the user and redirects to the sign up page
     if (auth.currentUser) {
-      await signOut(auth);
-      navigate("/register/sign-up");
+      dispatch(authActions.signOutUser({ navigate }));
+    } else {
+      navigate("/register/login");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-500 to-indigo-700">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 ">
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
         <h2 className="text-center font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Please Verify Your Email
@@ -79,12 +76,11 @@ export function VerifyEmail() {
           refresh this page after verifying your email.
         </p>
 
-        <button
+        <SpecialButton
           onClick={handleSendVerificationEmail}
-          className="bg-gradient-to-br from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full my-4 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-        >
-          Resend Verification Email
-        </button>
+          text="Resend Verification Email"
+          className="mt-4"
+        />
 
         {registerError ? <ErrorMessage text={registerError} /> : <></>}
 
