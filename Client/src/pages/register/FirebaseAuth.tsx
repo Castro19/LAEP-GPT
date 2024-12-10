@@ -1,6 +1,7 @@
 // HomePage.tsx
 import ResetPasswordForm from "./ResetPasswordForm";
 import { EmailVerifiedPage } from "./EmailVerifiedPage";
+import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 
 const FirebaseAuth = () => {
   const params = new URLSearchParams(window.location.search);
@@ -14,9 +15,11 @@ const FirebaseAuth = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 ">
-      {shownComponent}
-    </div>
+    <SplashLayout>
+      <div className="flex items-center justify-center min-h-[50vh] my-20">
+        {shownComponent}
+      </div>
+    </SplashLayout>
   );
 };
 

@@ -1,22 +1,33 @@
 // HomePage.tsx
+import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 import TitleCard from "@/components/register/TitleCard";
+
+import useMobile from "@/hooks/use-mobile";
 import { Outlet } from "react-router-dom";
 
 const Register = () => {
+  const isMobile = useMobile();
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 ">
-      <div className="flex w-full max-w-4xl bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden border border-slate-500">
-        {/* Left Side: Title and Description Component */}
-        <TitleCard
-          title="Welcome!"
-          description="Sign in & get access to the AI4ESJ Chatbot!"
-        />
-        {/* Right Side: Login or Signup Form based on route */}
-        <div className="w-1/2 flex flex-col justify-center">
-          <Outlet />
+    <SplashLayout>
+      <div className="flex items-center justify-center min-h-[50vh] my-20">
+        <div className="flex w-11/12 max-w-4xl bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden border border-slate-500">
+          {/* Left Side: Title and Description Component */}
+          {!isMobile && (
+            <TitleCard
+              title="Welcome!"
+              description="Sign in & get access to the AI4ESJ Chatbot!"
+            />
+          )}
+          {/* Right Side: Login or Signup Form based on route */}
+          <div
+            className={`${isMobile ? "w-full" : "w-1/2"} flex flex-col justify-center`}
+          >
+            <Outlet />
+          </div>
         </div>
       </div>
-    </div>
+    </SplashLayout>
   );
 };
 

@@ -8,6 +8,7 @@ import { ErrorMessage } from "../../components/register/ErrorMessage";
 import { authActions, useAppDispatch, useAppSelector } from "@/redux";
 import { toast } from "@/components/ui/use-toast";
 import SpecialButton from "@/components/ui/specialButton";
+import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 
 export function VerifyEmail() {
   const navigate = useNavigate();
@@ -66,41 +67,43 @@ export function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 ">
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
-        <h2 className="text-center font-bold text-xl text-neutral-800 dark:text-neutral-200">
-          Please Verify Your Email
-        </h2>
-        <p className="text-center text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          You need to verify your email address before continuing. Please
-          refresh this page after verifying your email.
-        </p>
+    <SplashLayout>
+      <div className="min-h-[50vh] my-20 flex items-center justify-center">
+        <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
+          <h2 className="text-center font-bold text-xl text-neutral-800 dark:text-neutral-200">
+            Please Verify Your Email
+          </h2>
+          <p className="text-center text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+            You need to verify your email address before continuing. Please
+            refresh this page after verifying your email.
+          </p>
 
-        <SpecialButton
-          onClick={handleSendVerificationEmail}
-          text="Resend Verification Email"
-          className="mt-4"
-        />
+          <SpecialButton
+            onClick={handleSendVerificationEmail}
+            text="Resend Verification Email"
+            className="mt-4"
+          />
 
-        {registerError ? <ErrorMessage text={registerError} /> : <></>}
+          {registerError ? <ErrorMessage text={registerError} /> : <></>}
 
-        <div className="flex flex-row text-center w-full my-4 dark:text-gray-400">
-          <div className="border-b-2 border-gray-500 mb-2.5 mr-2 w-full"></div>
-          <div className="text-sm font-bold w-fit">OR</div>
-          <div className="border-b-2 border-gray-500 mb-2.5 ml-2 w-full"></div>
+          <div className="flex flex-row text-center w-full my-4 dark:text-gray-400">
+            <div className="border-b-2 border-gray-500 mb-2.5 mr-2 w-full"></div>
+            <div className="text-sm font-bold w-fit">OR</div>
+            <div className="border-b-2 border-gray-500 mb-2.5 ml-2 w-full"></div>
+          </div>
+
+          <p className="text-center text-sm dark:text-gray-400">
+            <button
+              onClick={handleSignOut} // Use the function here
+              className="hover:underline font-bold dark:text-white text-blue-500 mr-2"
+            >
+              Sign in
+            </button>
+            with a different account.
+          </p>
         </div>
-
-        <p className="text-center text-sm dark:text-gray-400">
-          <button
-            onClick={handleSignOut} // Use the function here
-            className="hover:underline font-bold dark:text-white text-blue-500 mr-2"
-          >
-            Sign in
-          </button>
-          with a different account.
-        </p>
       </div>
-    </div>
+    </SplashLayout>
   );
 }
 
