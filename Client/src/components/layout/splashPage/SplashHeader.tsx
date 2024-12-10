@@ -8,6 +8,12 @@ const SplashHeader = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const handleLinkClick = (path: string) => {
+    console.log("clicked", path);
+    navigate(path);
+    setIsMenuOpen(false);
+  };
+
   return (
     <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2 border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-between">
@@ -37,28 +43,19 @@ const SplashHeader = () => {
             >
               <div className="flex flex-col p-4 space-y-4">
                 <button
-                  onClick={() => {
-                    navigate("/engineering");
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={() => handleLinkClick("/coming-soon")}
                   className="text-lg hover:text-gray-300 text-left transform transition-transform duration-200 hover:translate-x-2"
                 >
                   Engineering
                 </button>
                 <button
-                  onClick={() => {
-                    navigate("/about");
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={() => handleLinkClick("/coming-soon")}
                   className="text-lg hover:text-gray-300 text-left transform transition-transform duration-200 hover:translate-x-2"
                 >
                   About
                 </button>
                 <button
-                  onClick={() => {
-                    navigate("/faq");
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={() => handleLinkClick("/coming-soon")}
                   className="text-lg hover:text-gray-300 text-left transform transition-transform duration-200 hover:translate-x-2"
                 >
                   FAQ
@@ -68,8 +65,18 @@ const SplashHeader = () => {
           </>
         ) : (
           <div className="flex items-center space-x-12 mr-6">
-            <button className="text-lg hover:text-gray-300">Engineering</button>
-            <button className="text-lg hover:text-gray-300">About</button>
+            <button
+              onClick={() => handleLinkClick("/coming-soon")}
+              className="text-lg hover:text-gray-300"
+            >
+              Engineering
+            </button>
+            <button
+              onClick={() => handleLinkClick("/coming-soon")}
+              className="text-lg hover:text-gray-300"
+            >
+              About
+            </button>
             <button className="text-lg hover:text-gray-300">FAQ</button>
           </div>
         )}

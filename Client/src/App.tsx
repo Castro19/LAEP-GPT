@@ -36,6 +36,7 @@ import LoginForm from "./pages/register/LoginForm.tsx";
 import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
 import ResetPassword from "./pages/register/ResetPassword.tsx";
 import FirebaseAuth from "./pages/register/FirebaseAuth.tsx";
+import ComingSoonPage from "./pages/ComingSoonPage.tsx";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
@@ -123,6 +124,10 @@ const router = routerChosen([
   {
     path: "verify-email",
     element: <VerifyEmail />,
+  },
+  {
+    path: "coming-soon",
+    element: <ComingSoonPage />,
   },
   {
     path: "/auth",
