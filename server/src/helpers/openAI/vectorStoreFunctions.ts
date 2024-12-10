@@ -1,4 +1,4 @@
-import { openai } from "../../index.js";
+import { openai } from "../../index";
 
 export async function setupVectorStoreAndUpdateAssistant(
   vectorStoreId: string,

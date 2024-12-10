@@ -1,4 +1,4 @@
-import { getDb } from "../../connection.js";
+import { getDb } from "../../connection";
 import {
   ChatLogDocument,
   MessageObjType,

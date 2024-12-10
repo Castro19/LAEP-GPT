@@ -1,5 +1,5 @@
 import express, { RequestHandler } from "express";
-import { fetchAssistants } from "../db/models/assistant/assistantServices.js";
+import { fetchAssistants } from "../db/models/assistant/assistantServices";
 
 const router = express.Router();
 

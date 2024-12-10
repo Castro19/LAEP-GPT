@@ -1,5 +1,5 @@
 // Store the course catalog data in MongoDB
-import * as courseCollection from "./courseCollection.js";
+import * as courseCollection from "./courseCollection";
 import {
   CourseQuery,
   SubjectQuery,

@@ -1,4 +1,4 @@
-import { Run } from "openai/resources/beta/threads/runs/runs.js";
+import { Run } from "openai/resources/beta/threads/runs/runs";
 
 // Helper function to calculate cost (you can adjust rates as needed)
 export function calculateCost(

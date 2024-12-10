@@ -3,9 +3,9 @@ import {
   RunningStreamData,
 } from "@polylink/shared/types";
 import { Response } from "express";
-import { openai } from "../../index.js";
-import { calculateCost } from "../openAI/costFunction.js";
-import { updateMessageAnalytics } from "../../db/models/analytics/messageAnalytics/messageAnalyticsServices.js";
+import { openai } from "../../index";
+import { calculateCost } from "../openAI/costFunction";
+import { updateMessageAnalytics } from "../../db/models/analytics/messageAnalytics/messageAnalyticsServices";
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs";
 import { Run } from "openai/resources/beta/threads/runs/runs.mjs";
 
