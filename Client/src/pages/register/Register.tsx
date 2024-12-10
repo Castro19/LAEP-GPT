@@ -16,7 +16,7 @@ const Register = () => {
           {!isMobile && (
             <TitleCard
               title="Welcome!"
-              description="Sign in & get access to the AI4ESJ Chatbot!"
+              description="Sign in & get access to PolyLink"
             />
           )}
           {/* Right Side: Login or Signup Form based on route */}
