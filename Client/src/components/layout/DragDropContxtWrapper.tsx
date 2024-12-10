@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { Course, CourseObject, Term } from "@polylink/shared/types";
 import { FlowchartData } from "@polylink/shared/types";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
-import _ from "lodash";
+import cloneDeep from "lodash-es/cloneDeep";
 import { toast } from "@/components/ui/use-toast";
 
 const DragDropContextWrapper = ({
@@ -88,7 +88,7 @@ const DragDropContextWrapper = ({
     sourceIndex: number,
     destIndex: number
   ) => {
-    const newTermData = _.cloneDeep(flowchartData.termData);
+    const newTermData: Term[] = cloneDeep(flowchartData.termData);
 
     const sourceTerm = newTermData.find((t) => t.tIndex === sourceTermIndex);
     const destTerm = newTermData.find((t) => t.tIndex === destTermIndex);
@@ -133,7 +133,7 @@ const DragDropContextWrapper = ({
       return; // Prevent adding the duplicate course
     }
 
-    const newTermData = _.cloneDeep(flowchartData.termData);
+    const newTermData: Term[] = cloneDeep(flowchartData.termData);
     const term = newTermData.find((t) => t.tIndex === termIndex);
 
     if (term) {

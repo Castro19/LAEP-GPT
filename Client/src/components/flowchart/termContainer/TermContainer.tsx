@@ -3,7 +3,7 @@ import React from "react";
 import CourseItem from "../courseItem/CourseItem";
 import { Course, FlowchartData, Term } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
-import _ from "lodash";
+import cloneDeep from "lodash-es/cloneDeep";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
@@ -26,7 +26,7 @@ const updateFlowchartTermData = (
   newTermData: Term[]
 ) => {
   // Create a deep copy of flowchartData
-  const updatedFlowchartData = _.cloneDeep(flowchartData);
+  const updatedFlowchartData: FlowchartData = cloneDeep(flowchartData);
 
   // Update the termData property
   updatedFlowchartData.termData = newTermData;

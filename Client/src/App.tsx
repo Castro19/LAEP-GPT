@@ -27,7 +27,6 @@ import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
 import ProfilePageLayout from "./components/layout/ProfilePage/ProfilePageLayout.tsx";
-import courses from "./calpolyData/courses.json";
 import interests from "./calpolyData/interests.json";
 import FlowChatPage from "./pages/FlowChatPage.tsx";
 import FlowChartOptions from "./components/register/SignInFlow/FlowChartOptions.tsx";
@@ -38,34 +37,39 @@ import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
 import ResetPassword from "./pages/register/ResetPassword.tsx";
 import FirebaseAuth from "./pages/register/FirebaseAuth.tsx";
 
-Sentry.init({
-  dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
-  integrations: [
-    Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect: React.useEffect,
-      useLocation,
-      useNavigationType,
-      createRoutesFromChildren,
-      matchRoutes,
-    }),
-  ],
-  tracesSampleRate: 1.0,
-  enabled: process.env.NODE_ENV === "production",
-  // enabled: true,
-});
-const SentryErrorPage = Sentry.withSentryReactRouterV6Routing(ErrorPage);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
+let routerChosen: typeof createBrowserRouter = createBrowserRouter;
+if (process.env.NODE_ENV === "production") {
+  console.log("Initializing Sentry");
+  Sentry.init({
+    dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
+    integrations: [
+      Sentry.reactRouterV6BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
+      }),
+    ],
+    tracesSampleRate: 1.0,
+    enabled: process.env.NODE_ENV === "production",
+    // enabled: true,
+  });
+  ErrorPageChosen = Sentry.withSentryReactRouterV6Routing(ErrorPage);
+  routerChosen = Sentry.wrapCreateBrowserRouter(createBrowserRouter);
+}
 
-const sentryCreateBrowserRouter =
-  Sentry.wrapCreateBrowserRouter(createBrowserRouter);
-const router = sentryCreateBrowserRouter([
+const router = routerChosen([
   {
     path: "/",
     element: <SplashPage />,
-    errorElement: <SentryErrorPage />,
+    errorElement: <ErrorPageChosen />,
   },
   {
     element: <ProtectedRoute />, // Wrap protected routes
-    errorElement: <SentryErrorPage />,
+    errorElement: <ErrorPageChosen />,
     children: [
       {
         path: "chat",
@@ -100,7 +104,7 @@ const router = sentryCreateBrowserRouter([
   {
     path: "/register",
     element: <Register />,
-    errorElement: <SentryErrorPage />,
+    errorElement: <ErrorPageChosen />,
     children: [
       {
         path: "login",
@@ -127,7 +131,7 @@ const router = sentryCreateBrowserRouter([
   {
     path: "/sign-in-flow",
     element: <NewUserRoute />,
-    errorElement: <SentryErrorPage />,
+    errorElement: <ErrorPageChosen />,
     children: [
       {
         path: "about-me",
@@ -136,17 +140,6 @@ const router = sentryCreateBrowserRouter([
       {
         path: "interests",
         element: <InterestDropdown name="Interests" items={interests} />,
-      },
-      {
-        path: "courses",
-        element: (
-          <InterestDropdown
-            name="Courses"
-            items={courses.map(
-              (course) => `CSC${course.number}: ${course.title}`
-            )}
-          />
-        ),
       },
       {
         path: "flowchart",
