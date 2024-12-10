@@ -1,8 +1,16 @@
+import { useNavigate } from "react-router-dom";
+
 const SplashHeader = () => {
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2 border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-between">
-        <button className="text-3xl hover:text-gray-300">PolyLink</button>
+        <button
+          onClick={() => navigate("/")}
+          className="text-3xl hover:text-gray-300"
+        >
+          PolyLink
+        </button>
         <div className="flex items-center space-x-12 mr-6">
           <button className="text-lg hover:text-gray-300">Engineering</button>
 

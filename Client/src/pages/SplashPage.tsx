@@ -1,15 +1,12 @@
 import { Hero } from "@/components/splashPage/Hero";
 import { StickyScrollRevealDemo } from "@/components/splashPage/MatchingFeatures";
-import SplashFooter from "@/components/splashPage/SplashFooter";
-import SplashHeader from "@/components/splashPage/SplashHeader";
 import { useNavigate } from "react-router-dom";
+import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 
 const SplashPage = () => {
   const navigate = useNavigate();
   return (
-    <div className="bg-slate-900 min-h-screen relative">
-      <SplashHeader />
-
+    <SplashLayout>
       <div className="bg-slate-900 relative">
         {/* SVG Background Overlays */}
         <svg
@@ -89,8 +86,7 @@ const SplashPage = () => {
           <Hero />
         </div>
       </div>
-      <SplashFooter />
-    </div>
+    </SplashLayout>
   );
 };
 
