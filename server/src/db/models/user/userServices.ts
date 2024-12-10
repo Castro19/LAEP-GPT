@@ -1,6 +1,6 @@
 import { UpdateUserData, UserData } from "@polylink/shared/types";
-import * as UserModel from "./userCollection.js";
-import { findUserByEmail } from "./userCollection.js";
+import * as UserModel from "./userCollection";
+import { findUserByEmail } from "./userCollection";
 
 export const addUser = async (
   userData: UserData

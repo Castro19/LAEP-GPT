@@ -6,7 +6,7 @@ and return the following:
 */
 
 import { Term } from "@polylink/shared/types";
-import { getDb } from "../../db/connection.js";
+import { getDb } from "../../db/connection";
 import { Collection } from "mongodb";
 
 let courseCollection: Collection;

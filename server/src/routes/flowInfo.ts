@@ -1,5 +1,5 @@
 import express from "express";
-import { searchFlowInfo } from "../db/models/flowInfo/flowInfoServices.js";
+import { searchFlowInfo } from "../db/models/flowInfo/flowInfoServices";
 
 const router = express.Router();
 

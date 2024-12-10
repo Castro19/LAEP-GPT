@@ -1,4 +1,4 @@
-import { getDb } from "../../connection.js";
+import { getDb } from "../../connection";
 import { Collection, InsertOneResult } from "mongodb";
 import { ThreadDocument } from "@polylink/shared/types";
 

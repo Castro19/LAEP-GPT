@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { openai } from "../../index.js";
+import { openai } from "../../index";
 import {
   addThreadToDB,
   fetchIds,
-} from "../../db/models/threads/threadServices.js";
+} from "../../db/models/threads/threadServices";
 import { Message } from "openai/resources/beta/threads/messages.mjs";
 import { ThreadData } from "@polylink/shared/types";
 

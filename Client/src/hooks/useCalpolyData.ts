@@ -1,11 +1,6 @@
-import courseData from "../calpolyData/courses.json";
 import interests from "../calpolyData/interests.json";
 const useCalpolyData = () => {
-  const courses = courseData.map(
-    (course) => `CSC${course.number}: ${course.title}`
-  );
-
-  return { courses, interests };
+  return { interests };
 };
 
 export default useCalpolyData;

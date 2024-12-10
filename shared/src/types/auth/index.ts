@@ -1,5 +1,3 @@
-import { AuthCredential } from "firebase/auth";
-
 // All information can automatically be set for the user (User should not be able to change any of this except for the data inside userData)
 export type AuthState = {
   userId: string | null; // Unique user Id
@@ -11,4 +9,13 @@ export type AuthState = {
   userType: string;
   emailVerified: boolean;
   pendingCredential: Record<string, any> | null;
+};
+
+export type FirebaseError = Error & {
+  /** The error code for this error. */
+  readonly code: string;
+  /** Custom data for this error. */
+  customData?: Record<string, unknown> | undefined;
+  /** The custom name for all FirebaseErrors. */
+  readonly name: string;
 };

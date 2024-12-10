@@ -1,5 +1,5 @@
 import { AssistantDocument, AssistantType } from "@polylink/shared/types";
-import * as assistantModel from "./assistantCollection.js";
+import * as assistantModel from "./assistantCollection";
 
 // Read All
 export const fetchAssistants: () => Promise<AssistantType[]> = async () => {

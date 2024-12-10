@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background with Gradient -->
+  <defs>
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3730A30;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" fill="url(#backgroundGradient)" />
+
+  <!-- Robot Head -->
+  <rect x="16" y="16" width="32" height="24" rx="4" fill="#F8F9FA" stroke="#4B5563" stroke-width="4"/>
+
+  <!-- Antenna -->
+  <line x1="32" y1="8" x2="32" y2="16" stroke="#4B5563" stroke-width="4"/>
+  <circle cx="32" cy="6" r="3" fill="#FFD700"/>
+
+  <!-- Eyes -->
+  <circle cx="24" cy="26" r="3" fill="#4B5563"/>
+  <circle cx="40" cy="26" r="3" fill="#4B5563"/>
+
+  <!-- Mouth -->
+  <rect x="22" y="32" width="20" height="4" rx="2" fill="#4B5563"/>
+
+  <!-- Robot Body -->
+  <rect x="20" y="40" width="24" height="16" rx="4" fill="#4B5563"/>
+  <rect x="28" y="40" width="8" height="10" rx="2" fill="#F8F9FA"/>
+</svg>

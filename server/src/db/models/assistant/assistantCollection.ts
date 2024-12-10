@@ -1,5 +1,5 @@
 import { Collection, ObjectId } from "mongodb";
-import { getDb } from "../../connection.js";
+import { getDb } from "../../connection";
 import { AssistantDocument } from "@polylink/shared/types";
 
 let assistantCollection: Collection<AssistantDocument>;

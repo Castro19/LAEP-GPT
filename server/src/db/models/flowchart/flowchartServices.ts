@@ -1,6 +1,6 @@
 import * as flowchartModel from "./flowchartCollection";
 import { searchFlowInfo } from "../flowInfo/flowInfoServices";
-import { updateUser } from "../user/userServices.js";
+import { updateUser } from "../user/userServices";
 import {
   ConcentrationInfo,
   CreateFlowchartResponse,

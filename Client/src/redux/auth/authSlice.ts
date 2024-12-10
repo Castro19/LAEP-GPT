@@ -15,9 +15,8 @@ import {
 import { loginUser, verifyCalPolyEmail } from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
-import { AuthState, UserData } from "@polylink/shared/types";
+import { AuthState, UserData, FirebaseError } from "@polylink/shared/types";
 import { setUserData } from "../user/userSlice";
-import { FirebaseError } from "@firebase/util";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
@@ -102,13 +101,14 @@ export const signInWithMicrosoft = createAsyncThunk<
       }
     }
   } catch (error) {
-    if (error instanceof FirebaseError) {
-      if (error.code === "auth/account-exists-with-different-credential") {
+    if (error instanceof Error) {
+      const errorCode = error as FirebaseError;
+      if (errorCode.code === "auth/account-exists-with-different-credential") {
         try {
-          const email = error.customData?.email;
+          const email = errorCode.customData?.email;
           if (email && (await verifyCalPolyEmail(email as string))) {
             // Get Microsoft credential from the error
-            const pendingCred = OAuthProvider.credentialFromError(error);
+            const pendingCred = OAuthProvider.credentialFromError(errorCode);
             if (pendingCred) {
               // Store pendingCred in Redux to use later after user signs in with email/password
               const credData = pendingCred.toJSON();
@@ -135,10 +135,10 @@ export const signInWithMicrosoft = createAsyncThunk<
             )
           );
         }
-      } else if (error.code === "auth/invalid-credential") {
+      } else if (errorCode.code === "auth/invalid-credential") {
         dispatch(setRegisterError("Invalid credentials."));
       } else {
-        dispatch(setRegisterError(error.message));
+        dispatch(setRegisterError(errorCode.message));
       }
     } else {
       dispatch(setRegisterError((error as Error).message));

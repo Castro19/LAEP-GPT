@@ -15,7 +15,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import _ from "lodash"; // Import lodash
+import cloneDeep from "lodash-es/cloneDeep";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { TrashIcon } from "lucide-react";
@@ -35,7 +35,7 @@ const deleteCourseFromTerm = (
   coursePosition: number
 ) => {
   // Create a deep copy of flowchartData
-  const updatedFlowchartData = _.cloneDeep(flowchartData);
+  const updatedFlowchartData: FlowchartData = cloneDeep(flowchartData);
 
   const correctIndex = updatedFlowchartData.termData.findIndex(
     (term) => term.tIndex === termIndex

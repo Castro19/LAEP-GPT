@@ -1,19 +1,19 @@
-import { openai, formatAssistantId } from "../../index.js";
+import { openai, formatAssistantId } from "../../index";
 import { Response } from "express";
 import {
   runAssistantAndStreamResponse,
   runAssistantAndCollectResponse,
-} from "./streamResponse.js";
+} from "./streamResponse";
 
 import {
   getProfessorRatings,
   getProfessorsByCourseIds,
-} from "../../db/models/professorRatings/professorRatingServices.js";
-import { searchProfessors } from "../qdrant/qdrantQuery.js";
+} from "../../db/models/professorRatings/professorRatingServices";
+import { searchProfessors } from "../qdrant/qdrantQuery";
 
-import { addMessageToThread } from "../openAI/threadFunctions.js";
-import { initializeOrFetchIds } from "../openAI/threadFunctions.js";
-import { getAssistantById } from "../../db/models/assistant/assistantServices.js";
+import { addMessageToThread } from "../openAI/threadFunctions";
+import { initializeOrFetchIds } from "../openAI/threadFunctions";
+import { getAssistantById } from "../../db/models/assistant/assistantServices";
 import { RunningStreamData } from "@polylink/shared/types";
 
 type MultiAgentRequest = {

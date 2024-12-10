@@ -4,7 +4,7 @@ import {
   MongoQuery,
   ConcentrationInfo,
 } from "@polylink/shared/types";
-import { getDb } from "../../connection.js";
+import { getDb } from "../../connection";
 import { Collection } from "mongodb";
 
 let flowInfoCollection: Collection<FlowInfoDocument>;

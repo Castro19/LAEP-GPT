@@ -1,4 +1,4 @@
-import { openai } from "../../index.js";
+import { openai } from "../../index";
 import fs from "fs";
 import { FileObject } from "openai/resources/index.mjs";
 import path from "path";
