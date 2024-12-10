@@ -12,8 +12,8 @@ import {
 } from "react-router-dom";
 // Pages
 import Register from "./pages/register/Register.tsx";
-import ChatPage from "./pages/ChatPage.js";
-import ErrorPage from "./pages/ErrorPage/ErrorPage.js";
+import ChatPage from "./pages/ChatPage.tsx";
+import ErrorPage from "./pages/ErrorPage/ErrorPage.tsx";
 // Page Layout
 // Auth
 import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
