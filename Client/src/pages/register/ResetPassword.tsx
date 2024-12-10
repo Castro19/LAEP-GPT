@@ -1,27 +1,32 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 // Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 // redux auth:
-import { useAppDispatch } from "@/redux";
+import { authActions, useAppDispatch, useAppSelector } from "@/redux";
 // Helper Components
 
 import SpecialButton from "@/components/ui/specialButton";
-import { resetPassword } from "@/redux/auth/authSlice";
+
 import { toast } from "@/components/ui/use-toast";
+import { ErrorMessage } from "@/components/register/ErrorMessage";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
+  const { resetPasswordError } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const handleResetPassword = (email: string) => {
     console.log("Resetting password for", email);
-    dispatch(resetPassword({ email, dispatch }));
+    dispatch(authActions.sendResetEmail({ email }));
     toast({
       title: "Password reset email sent",
       description: "Check your email for a link to reset your password.",
     });
+    navigate("/register/login");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,10 +34,11 @@ const ResetPassword = () => {
     handleResetPassword(email);
   };
 
+  console.log("resetPasswordError", resetPasswordError);
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome Back!
+        Reset Password
       </h2>
       <form className="my-8" onSubmit={handleSubmit}>
         <LabelInputContainer className="mb-4">
@@ -56,6 +62,7 @@ const ResetPassword = () => {
           />
         </div>
       </form>
+      {resetPasswordError && <ErrorMessage text={resetPasswordError} />}
     </div>
   );
 };

@@ -36,6 +36,7 @@ import SignUpForm from "./pages/register/SignUpForm.tsx";
 import LoginForm from "./pages/register/LoginForm.tsx";
 import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
 import ResetPassword from "./pages/register/ResetPassword.tsx";
+import FirebaseAuth from "./pages/register/FirebaseAuth.tsx";
 
 Sentry.init({
   dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
@@ -116,8 +117,12 @@ const router = sentryCreateBrowserRouter([
     ],
   },
   {
-    path: "/verify-email",
+    path: "verify-email",
     element: <VerifyEmail />,
+  },
+  {
+    path: "/auth",
+    element: <FirebaseAuth />,
   },
   {
     path: "/sign-in-flow",
