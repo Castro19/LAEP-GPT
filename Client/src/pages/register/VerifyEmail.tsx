@@ -60,10 +60,9 @@ export function VerifyEmail() {
   const handleSignOut = async () => {
     // Signs out the user and redirects to the sign up page
     if (auth.currentUser) {
-      dispatch(authActions.signOutUser({ navigate }));
-    } else {
-      navigate("/register/login");
+      dispatch(authActions.signOutUser());
     }
+    navigate("/register/login");
   };
 
   return (

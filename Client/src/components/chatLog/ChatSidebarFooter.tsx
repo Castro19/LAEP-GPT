@@ -19,10 +19,10 @@ import { useNavigate } from "react-router-dom";
 const ChatSidebarFooter = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const userId = useAppSelector((state) => state.auth.userId);
+  const { userId } = useAppSelector((state) => state.auth);
   const userData = useAppSelector((state) => state.user.userData);
   const handleSignOut = () => {
-    dispatch(signOutUser({ navigate })); // Trigger the thunk to sign out the user
+    dispatch(signOutUser()); // Trigger the thunk to sign out the user
   };
 
   const handleNavigateToFlowcharts = () => {

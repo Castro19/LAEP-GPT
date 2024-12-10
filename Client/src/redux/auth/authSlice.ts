@@ -9,8 +9,10 @@ import {
   sendPasswordResetEmail,
   verifyPasswordResetCode,
   confirmPasswordReset,
+  linkWithCredential,
+  AuthCredential,
 } from "firebase/auth";
-import { loginUser } from "./crudAuth";
+import { loginUser, verifyCalPolyEmail } from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
 import { AuthState, UserData } from "@polylink/shared/types";
@@ -27,6 +29,7 @@ const initialState: AuthState = {
   isNewUser: null,
   userType: "student",
   emailVerified: false,
+  pendingCredential: null,
 };
 
 export const checkAuthentication = createAsyncThunk<
@@ -70,18 +73,17 @@ export const checkAuthentication = createAsyncThunk<
 
 export const signInWithMicrosoft = createAsyncThunk<
   void,
-  // eslint-disable-next-line no-unused-vars
-  { navigate: (path: string) => void },
+  void,
   { dispatch: AppDispatch }
->("auth/signInWithMicrosoft", async ({ navigate }, { dispatch }) => {
+>("auth/signInWithMicrosoft", async (_, { dispatch }) => {
   dispatch(setLoading(true));
 
-  const provider = new OAuthProvider("microsoft.com");
-  const userCredential = await signInWithPopup(auth, provider);
-  const user = userCredential.user;
-  const token = await user.getIdToken(); // Get the Firebase ID token
   // Send the token to server to set the HTTP-only cookie
   try {
+    const provider = new OAuthProvider("microsoft.com");
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+    const token = await user.getIdToken(); // Get the Firebase ID token
     // Check if the user's email ends with '@calpoly.edu'
     if (user.email && user.email.endsWith("@calpoly.edu")) {
       const userResponse = await loginUser(token);
@@ -93,17 +95,54 @@ export const signInWithMicrosoft = createAsyncThunk<
         dispatch(checkAuthentication());
       } else {
         // Invalid email domain, sign out the user
-        dispatch(signOutUser({ navigate }));
+        dispatch(signOutUser());
         dispatch(
           setRegisterError("Access restricted to @calpoly.edu email addresses.")
         );
       }
     }
   } catch (error) {
-    // FIX: Handle other errors
-    dispatch(
-      setRegisterError("Failed to sign in with Microsoft. Please try again.")
-    );
+    if (error instanceof FirebaseError) {
+      if (error.code === "auth/account-exists-with-different-credential") {
+        try {
+          const email = error.customData?.email;
+          if (email && verifyCalPolyEmail(email as string)) {
+            // Get Microsoft credential from the error
+            const pendingCred = OAuthProvider.credentialFromError(error);
+            if (pendingCred) {
+              // Store pendingCred in Redux to use later after user signs in with email/password
+              const credData = pendingCred.toJSON();
+              dispatch(setPendingCredential(credData));
+              dispatch(
+                setRegisterError(
+                  "Account already exists with a different credential. Please sign in with your existing account (email/password) and then link Microsoft from your profile."
+                )
+              );
+            }
+          } else {
+            dispatch(signOutUser());
+            dispatch(
+              setRegisterError(
+                "Access restricted to @calpoly.edu email addresses."
+              )
+            );
+          }
+        } catch (linkError) {
+          console.error("Error linking accounts:", linkError);
+          dispatch(
+            setRegisterError(
+              "Failed to link accounts. Please try signing in with your existing method."
+            )
+          );
+        }
+      } else if (error.code === "auth/invalid-credential") {
+        dispatch(setRegisterError("Invalid credentials."));
+      } else {
+        dispatch(setRegisterError(error.message));
+      }
+    } else {
+      dispatch(setRegisterError((error as Error).message));
+    }
     console.error("Authentication error:", error);
   } finally {
     dispatch(setLoading(false));
@@ -116,58 +155,67 @@ export const signInWithEmail = createAsyncThunk<
   {
     email: string;
     password: string;
-    // eslint-disable-next-line no-unused-vars
-    navigate: (path: string) => void;
   },
   { dispatch: AppDispatch }
->(
-  "auth/signInWithEmail",
-  async ({ email, password, navigate }, { dispatch }) => {
-    dispatch(setLoading(true));
-    dispatch(clearRegisterError());
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      const token = await user.getIdToken(); // Get the Firebase ID token
-      // Check if the user's email ends with '@calpoly.edu'
-      if (user.email) {
-        const userResponse = await loginUser(token);
-        if (userResponse) {
-          if (userResponse.isNewUser) {
-            dispatch(setIsNewUser(userResponse.isNewUser));
-            dispatch(setUserData(userResponse.userData));
-          }
-          dispatch(checkAuthentication());
-        } else {
-          dispatch(signOutUser({ navigate }));
-          dispatch(
-            setRegisterError(
-              "Failed to sign in with Microsoft. Please try again."
-            )
-          );
+>("auth/signInWithEmail", async ({ email, password }, { dispatch }) => {
+  dispatch(setLoading(true));
+  dispatch(clearRegisterError());
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    const token = await user.getIdToken(); // Get the Firebase ID token
+    // Check if the user's email ends with '@calpoly.edu'
+    if (user.email) {
+      const userResponse = await loginUser(token);
+      if (userResponse) {
+        if (userResponse.isNewUser) {
+          dispatch(setIsNewUser(userResponse.isNewUser));
+          dispatch(setUserData(userResponse.userData));
         }
+        dispatch(checkAuthentication());
       } else {
-        // Invalid email domain, sign out the user
-        dispatch(signOutUser({ navigate }));
+        dispatch(signOutUser());
         dispatch(
-          setRegisterError("Access restricted to @calpoly.edu email addresses.")
+          setRegisterError(
+            "Failed to sign in with Microsoft. Please try again."
+          )
         );
+        throw new Error("Failed to sign in with Microsoft");
       }
-    } catch (error) {
-      // FIX: Handle other errors
+    } else {
+      // Invalid email domain, sign out the user
+      dispatch(signOutUser());
       dispatch(
-        setRegisterError("Failed to sign in with Microsoft. Please try again.")
+        setRegisterError("Access restricted to @calpoly.edu email addresses.")
       );
-      console.error("Authentication error:", error);
-    } finally {
-      dispatch(setLoading(false));
+      throw new Error("Invalid email domain");
     }
+  } catch (error) {
+    // FIX: Handle other errors
+    const errorCode = error as Error;
+    if (
+      errorCode.message.includes(
+        "auth/account-exists-with-different-credential"
+      )
+    ) {
+      dispatch(
+        setRegisterError("Account already exists with a different credential.")
+      );
+    } else if (errorCode.message.includes("auth/invalid-credential")) {
+      dispatch(setRegisterError("Invalid credentials."));
+    } else {
+      dispatch(setRegisterError((error as Error).message));
+    }
+    console.error("Authentication error:", error);
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
   }
-);
+});
 
 // Thunk for email/password sign-up
 export const signUpWithEmail = createAsyncThunk<
@@ -184,18 +232,7 @@ export const signUpWithEmail = createAsyncThunk<
 >(
   "auth/signUpWithEmail",
   async ({ email, password, firstName, lastName, navigate }, { dispatch }) => {
-    // Check for Cal Poly email address
-    // const calPolyEmailRegex = /^[A-Z0-9._%+-]+@calpoly\.edu$/i;
-    // if (!calPolyEmailRegex.test(email)) {
-    //   dispatch(
-    //     authActions.setRegisterError(
-    //       "You must use a valid Cal Poly email address."
-    //     )
-    //   );
-    //   return;
-    // }
-    // email.endsWith("@calpoly.edu")
-    if (email) {
+    if (verifyCalPolyEmail(email)) {
       dispatch(setLoading(true));
       dispatch(clearRegisterError());
 
@@ -224,7 +261,7 @@ export const signUpWithEmail = createAsyncThunk<
               }
               dispatch(checkAuthentication());
             } else {
-              dispatch(signOutUser({ navigate }));
+              dispatch(signOutUser());
               dispatch(
                 setRegisterError(
                   "Failed to sign in with Microsoft. Please try again."
@@ -253,7 +290,7 @@ export const signUpWithEmail = createAsyncThunk<
       }
     } else {
       // Invalid email domain, sign out the user
-      dispatch(signOutUser({ navigate }));
+      dispatch(signOutUser());
       dispatch(
         setRegisterError("Access restricted to @calpoly.edu email addresses.")
       );
@@ -264,10 +301,9 @@ export const signUpWithEmail = createAsyncThunk<
 // Define the sign-out thunk
 export const signOutUser = createAsyncThunk<
   void,
-  // eslint-disable-next-line no-unused-vars
-  { navigate: (path: string) => void },
+  void,
   { dispatch: AppDispatch }
->("auth/signOutUser", async ({ navigate }, { dispatch }) => {
+>("auth/signOutUser", async (_, { dispatch }) => {
   dispatch(clearRegisterError());
 
   try {
@@ -278,7 +314,7 @@ export const signOutUser = createAsyncThunk<
     });
     // Clear the user data in Redux
     dispatch(clearAuthState());
-    navigate("/");
+    // navigate("/");
   } catch (error) {
     console.error("Failed to sign out:", error);
   }
@@ -302,6 +338,7 @@ export const sendResetEmail = createAsyncThunk<
     return rejectWithValue("Failed to send password reset email.");
   }
 });
+
 // Verify the oobCode is valid
 export const verifyResetCode = createAsyncThunk<
   string, // returns the user's email associated with code
@@ -343,6 +380,28 @@ export const confirmNewPassword = createAsyncThunk<
       console.error("Failed to confirm password reset:", error);
       dispatch(setResetPasswordError((error as FirebaseError).message));
       return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+export const linkWithMicrosoft = createAsyncThunk<
+  void,
+  { pendingCred: AuthCredential },
+  { rejectValue: string; dispatch: AppDispatch }
+>(
+  "auth/linkWithMicrosoft",
+  async ({ pendingCred }, { rejectWithValue, dispatch }) => {
+    const user = auth.currentUser;
+    if (!user) {
+      return rejectWithValue("User is not logged in.");
+    }
+
+    try {
+      await linkWithCredential(user, pendingCred);
+      dispatch(setPendingCredential(null));
+    } catch (error) {
+      console.error("Failed to link Microsoft account:", error);
+      return rejectWithValue("Failed to link Microsoft account.");
     }
   }
 );
@@ -397,6 +456,13 @@ const authSlice = createSlice({
     clearResetPasswordError(state) {
       state.resetPasswordError = null;
     },
+    setPendingCredential(
+      state,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      action: PayloadAction<Record<string, any> | null>
+    ) {
+      state.pendingCredential = action.payload;
+    },
   },
 });
 
@@ -410,6 +476,7 @@ export const {
   clearRegisterError,
   setResetPasswordError,
   clearResetPasswordError,
+  setPendingCredential,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

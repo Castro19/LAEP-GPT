@@ -21,3 +21,14 @@ export async function loginUser(
     return null;
   }
 }
+
+export function verifyCalPolyEmail(email: string) {
+  const calPolyEmailRegex = /^[A-Z0-9._%+-]+@calpoly\.edu$/i;
+
+  if (email && email.endsWith("@calpoly.edu")) {
+    if (!calPolyEmailRegex.test(email)) {
+      return false;
+    }
+  }
+  return true;
+}
