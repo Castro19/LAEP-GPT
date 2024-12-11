@@ -14,6 +14,7 @@ import SpecialButton from "@/components/ui/specialButton";
 import { linkWithMicrosoft, setRegisterError } from "@/redux/auth/authSlice";
 import { OAuthProvider } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -44,7 +45,9 @@ export default function LoginForm() {
           // Optionally clear pending credential if not done in the reducer
         })
         .catch((error) => {
-          console.error("Failed to link Microsoft:", error);
+          if (environment === "dev") {
+            console.error("Failed to link Microsoft:", error);
+          }
         });
 
       toast({
@@ -68,7 +71,9 @@ export default function LoginForm() {
       await dispatch(authActions.signInWithEmail({ email, password })).unwrap();
       handleLinkMicrosoft();
     } catch (error) {
-      console.error("Error signing in with email: ", error);
+      if (environment === "dev") {
+        console.error("Error signing in with email: ", error);
+      }
     }
   };
 

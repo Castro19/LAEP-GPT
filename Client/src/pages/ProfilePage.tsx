@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import SpecialButton from "@/components/ui/specialButton";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
+import { environment } from "@/helpers/getEnvironmentVars";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -105,7 +106,9 @@ export function ProfilePage() {
         description: "Your flowchart has been saved successfully.",
       });
     } catch (error) {
-      console.error("Failed to update flowchart:", error);
+      if (environment === "dev") {
+        console.error("Failed to update flowchart:", error);
+      }
     }
   };
 

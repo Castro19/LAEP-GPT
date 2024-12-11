@@ -5,6 +5,7 @@ import { RootState } from "../store"; // Adjust the import path as needed
 import { putUserProfile } from "./crudUser"; // Adjust the import path as needed
 import { auth } from "@/firebase";
 import { UpdateUserData, UserData } from "@polylink/shared/types";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 // Define the initial state for the user
 interface UserState {
@@ -69,7 +70,9 @@ export const updateUserProfile = createAsyncThunk<
       error.response?.data?.message ||
       error.message ||
       "An unknown error occurred.";
-    console.error("Failed to update user data:", errorMessage);
+    if (environment === "dev") {
+      console.error("Failed to update user data:", errorMessage);
+    }
     dispatch(setUserError(errorMessage));
   } finally {
     dispatch(setUserLoading(false));

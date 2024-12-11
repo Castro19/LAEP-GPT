@@ -15,6 +15,7 @@ import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useNavigate } from "react-router-dom";
 import { ErrorMessage } from "@/components/register/ErrorMessage";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const ResetPasswordForm = () => {
   const dispatch = useAppDispatch();
@@ -56,7 +57,9 @@ const ResetPasswordForm = () => {
     const params = new URLSearchParams(window.location.search);
     const oobCode = params.get("oobCode");
     if (!oobCode) {
-      console.error("No oobCode found in the URL");
+      if (environment === "dev") {
+        console.error("No oobCode found in the URL");
+      }
       return;
     }
 

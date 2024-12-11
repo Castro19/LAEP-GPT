@@ -2,6 +2,7 @@ import useIsMobile from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const SplashHeader = () => {
   const navigate = useNavigate();
@@ -9,7 +10,9 @@ const SplashHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLinkClick = (path: string) => {
-    console.log("clicked", path);
+    if (environment === "dev") {
+      console.log("clicked", path);
+    }
     navigate(path);
     setIsMenuOpen(false);
   };

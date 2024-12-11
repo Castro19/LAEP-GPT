@@ -37,12 +37,12 @@ import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
 import ResetPassword from "./pages/register/ResetPassword.tsx";
 import FirebaseAuth from "./pages/register/FirebaseAuth.tsx";
 import ComingSoonPage from "./pages/ComingSoonPage.tsx";
+import { environment } from "./helpers/getEnvironmentVars.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
 let routerChosen: typeof createBrowserRouter = createBrowserRouter;
-if (process.env.NODE_ENV === "production") {
-  console.log("Initializing Sentry");
+if (environment === "production") {
   Sentry.init({
     dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
     integrations: [
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === "production") {
       }),
     ],
     tracesSampleRate: 1.0,
-    enabled: process.env.NODE_ENV === "production",
+    enabled: environment === "production",
     // enabled: true,
   });
   ErrorPageChosen = Sentry.withSentryReactRouterV6Routing(ErrorPage);

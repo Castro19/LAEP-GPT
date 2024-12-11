@@ -1,3 +1,4 @@
+import { environment } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
 
 export async function loginUser(
@@ -17,7 +18,9 @@ export async function loginUser(
       await response.json();
     return responseData;
   } catch (error) {
-    console.error("Failed to send token to server:", error);
+    if (environment === "dev") {
+      console.error("Failed to send token to server:", error);
+    }
     return null;
   }
 }
@@ -33,7 +36,9 @@ export async function verifyCalPolyEmail(email: string) {
           return true;
         }
       } catch (error) {
-        console.error("Failed to check if email is valid:", error);
+        if (environment === "dev") {
+          console.error("Failed to check if email is valid:", error);
+        }
         return false;
       }
     } else {

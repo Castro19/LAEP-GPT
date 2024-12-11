@@ -5,6 +5,7 @@ import {
   LogListType,
 } from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 export default async function createLogTitle(msg: string, modelTitle: string) {
   try {
@@ -22,7 +23,9 @@ export default async function createLogTitle(msg: string, modelTitle: string) {
 
     return data.title;
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
   }
 }
 
@@ -40,7 +43,9 @@ export async function createLogItem(logData: LogData): Promise<void> {
     }
     return;
   } catch (error) {
-    console.error("Failed to create chatlog on server side: ", error);
+    if (environment === "dev") {
+      console.error("Failed to create chatlog on server side: ", error);
+    }
   }
 }
 
@@ -51,13 +56,17 @@ export async function fetchAllLogs(): Promise<LogListType[] | never[]> {
       credentials: "include",
     });
     if (!response.ok) {
-      console.error("Response Error  fetching chat Logs");
+      if (environment === "dev") {
+        console.error("Response Error  fetching chat Logs");
+      }
       return [];
     }
     const logs: LogListType[] = await response.json();
     return logs;
   } catch (error) {
-    console.error("Failed to fetch logs: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch logs: ", error);
+    }
     return []; // serialiazable fallback
   }
 }
@@ -73,7 +82,9 @@ export async function fetchLogById(logId: string): Promise<LogData | never[]> {
     const log: LogData = await response.json();
     return log;
   } catch (error) {
-    console.error("Failed to fetch log by id: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch log by id: ", error);
+    }
     return [];
   }
 }
@@ -99,7 +110,9 @@ export async function updateLogItem(logData: UpdateLogData): Promise<void> {
     }
     return;
   } catch (error) {
-    console.error("Failed to update chatlog on server side: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update chatlog on server side: ", error);
+    }
   }
 }
 
@@ -120,7 +133,9 @@ export async function deleteLogItem({
     }
     return;
   } catch (error) {
-    console.error("Error: ", error);
+    if (environment === "dev") {
+      console.error("Error: ", error);
+    }
   }
 }
 
@@ -146,7 +161,9 @@ export async function updateLogTitleInDB({
     const data = await response.json();
     return data as { message: string; logId: string; title: string };
   } catch (error) {
-    console.error("Failed to update log title: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update log title: ", error);
+    }
     throw error;
   }
 }

@@ -16,6 +16,7 @@ import { Draggable } from "@hello-pangea/dnd";
 import { SidebarMenuSub } from "@/components/ui/sidebar";
 import { Droppable } from "@hello-pangea/dnd";
 import SidebarCourse from "./SidebarCourse";
+import { environment } from "@/helpers/getEnvironmentVars";
 // Debounce function
 // eslint-disable-next-line no-unused-vars
 function debounce(func: (...args: any[]) => void, wait: number) {
@@ -61,7 +62,9 @@ const CourseSearchbar = () => {
 
         setCourses(coursesFetched || []);
       } catch (err) {
-        console.error("Failed to fetch courses:", err);
+        if (environment === "dev") {
+          console.error("Failed to fetch courses:", err);
+        }
       } finally {
         setIsLoading(false);
       }

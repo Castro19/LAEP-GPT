@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { TrashIcon } from "lucide-react";
 import { TooltipTrigger } from "@/components/ui/tooltip";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 interface CourseItemProps {
   termIndex: number;
@@ -50,7 +51,9 @@ const deleteCourseFromTerm = (
       1
     );
   } else {
-    console.error("Invalid course position");
+    if (environment === "dev") {
+      console.error("Invalid course position");
+    }
   }
   // Calculate Units for all terms
   updatedFlowchartData.termData.forEach((term) => {

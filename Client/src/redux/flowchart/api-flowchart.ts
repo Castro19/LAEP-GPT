@@ -2,6 +2,7 @@ import { fetchFlowchartData } from "./flowchartSlice";
 import { AppDispatch } from "../store";
 import { resetFlowchartData } from "./flowchartSlice";
 import { Course, Term } from "@polylink/shared/types";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 /**
  * Helper function to fetch the flowchart data JSON based on user selections.
@@ -67,7 +68,9 @@ export async function fetchFlowchartDataHelper(
     dispatch(fetchFlowchartData.fulfilled(jsonData, "", ""));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error("Error fetching flowchart data:", error);
+    if (environment === "dev") {
+      console.error("Error fetching flowchart data:", error);
+    }
     dispatch(fetchFlowchartData.rejected(error.toString(), "", ""));
   }
 }

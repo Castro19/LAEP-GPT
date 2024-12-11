@@ -1,5 +1,6 @@
 // helpers/apiHelper.js
 
+import { environment } from "@/helpers/getEnvironmentVars";
 import { CourseObject } from "@polylink/shared/types";
 
 export const fetchCoursesAPI = async (
@@ -24,7 +25,9 @@ export const fetchCoursesAPI = async (
     const data: CourseObject[] = await response.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch courses:", err);
+    if (environment === "dev") {
+      console.error("Failed to fetch courses:", err);
+    }
     throw err;
   }
 };
@@ -61,7 +64,9 @@ export const fetchSubjectNamesAPI = async (
     const data: string[] = await response.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch subject names:", err);
+    if (environment === "dev") {
+      console.error("Failed to fetch subject names:", err);
+    }
     throw err;
   }
 };
@@ -105,7 +110,9 @@ export const fetchCoursesBySubjectAPI = async (
     const data: CourseObject[] = await response.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch courses by subject:", err);
+    if (environment === "dev") {
+      console.error("Failed to fetch courses by subject:", err);
+    }
     throw err;
   }
 };

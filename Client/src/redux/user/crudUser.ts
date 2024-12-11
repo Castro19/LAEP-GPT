@@ -1,3 +1,4 @@
+import { environment } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
 
 export async function putUserProfile(userData: UserData): Promise<void> {
@@ -14,6 +15,8 @@ export async function putUserProfile(userData: UserData): Promise<void> {
       throw new Error("Failed to update user profile");
     }
   } catch (error) {
-    console.error("Failed to update user profile:", error);
+    if (environment === "dev") {
+      console.error("Failed to update user profile:", error);
+    }
   }
 }

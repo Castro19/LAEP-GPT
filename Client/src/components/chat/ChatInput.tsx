@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Button } from "../ui/button";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import createLogTitle from "@/redux/log/crudLog";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -85,7 +86,9 @@ const ChatInput = ({
         createdAt,
       });
     } catch (error) {
-      console.error("Failed to track message: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track message: ", error);
+      }
     }
     try {
       setSelectedFile(null);
@@ -103,7 +106,9 @@ const ChatInput = ({
           })
         ).unwrap();
       } catch (error) {
-        console.error("Failed to fetch bot response: ", error);
+        if (environment === "dev") {
+          console.error("Failed to fetch bot response: ", error);
+        }
 
         trackUpdateMessage({
           userMessageId,
@@ -153,7 +158,9 @@ const ChatInput = ({
         errorMessage: null,
       });
     } catch (error: unknown) {
-      console.error("Failed to send message", error);
+      if (environment === "dev") {
+        console.error("Failed to send message", error);
+      }
     }
   };
 

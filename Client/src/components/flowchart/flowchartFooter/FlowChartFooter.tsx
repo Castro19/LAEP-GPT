@@ -5,6 +5,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useSidebar } from "@/components/ui/sidebar";
 import SpecialButton from "@/components/ui/specialButton";
 import { MdSave } from "react-icons/md";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const FlowChartFooter = () => {
   const navigate = useNavigate();
@@ -39,10 +40,14 @@ const FlowChartFooter = () => {
         }
         navigate(`/flowchart/${flowchart.flowchartId}`);
       } else {
-        console.error("Failed to get flowchartId from the response.");
+        if (environment === "dev") {
+          console.error("Failed to get flowchartId from the response.");
+        }
       }
     } catch (error) {
-      console.error("Failed to save flowchart:", error);
+      if (environment === "dev") {
+        console.error("Failed to save flowchart:", error);
+      }
     } finally {
       if ((flowchartList ?? []).length < 1) {
         handleChange("flowchartId", flowchart?.flowchartId ?? "");
@@ -78,7 +83,9 @@ const FlowChartFooter = () => {
         description: "Your flowchart has been updated successfully.",
       });
     } catch (error) {
-      console.error("Failed to update flowchart:", error);
+      if (environment === "dev") {
+        console.error("Failed to update flowchart:", error);
+      }
     }
   };
 

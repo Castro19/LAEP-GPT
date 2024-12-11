@@ -7,6 +7,7 @@ import { useUserData } from "@/hooks/useUserData";
 import { toast } from "@/components/ui/use-toast";
 import { auth } from "@/firebase";
 import { setEmailVerifyError } from "@/redux/auth/authSlice";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 export function EmailVerifiedPage() {
   const navigate = useNavigate();
@@ -31,7 +32,9 @@ export function EmailVerifiedPage() {
           });
         })
         .catch((error) => {
-          console.error("Error sending verification email:", error);
+          if (environment === "dev") {
+            console.error("Error sending verification email:", error);
+          }
 
           if (error.code === "auth/too-many-requests") {
             dispatch(
@@ -78,7 +81,9 @@ export function EmailVerifiedPage() {
         if (emailVerified) {
           setStatus("success");
         } else {
-          console.error("Error verifying email:", error);
+          if (environment === "dev") {
+            console.error("Error verifying email:", error);
+          }
           setStatus("error");
         }
       });

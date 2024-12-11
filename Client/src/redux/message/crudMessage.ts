@@ -1,3 +1,4 @@
+import { environment } from "@/helpers/getEnvironmentVars";
 import { AssistantType } from "@polylink/shared/types";
 export default async function sendMessage(
   currentModel: AssistantType,
@@ -67,8 +68,10 @@ export default async function sendMessage(
         throw new Error(errorData);
       }
       // Remove this after testing
-      const errorData = await response.text();
-      console.error("Error: ", errorData);
+      if (environment === "dev") {
+        const errorData = await response.text();
+        console.error("Error: ", errorData);
+      }
       throw new Error(`An unkown error occured. Please try again.`);
     }
 
@@ -114,7 +117,9 @@ export default async function sendMessage(
         async function processText() {
           const { done, value } = await reader.read();
           if (done) {
-            console.log("Stream complete");
+            if (environment === "dev") {
+              console.log("Stream complete");
+            }
             return;
           }
           const chunk = decoder.decode(value, { stream: true });
@@ -132,7 +137,9 @@ export default async function sendMessage(
       },
     };
   } catch (error: unknown) {
-    console.error("Failed to fetch response:", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch response:", error);
+    }
     if ((error as Error).message.includes("Response took too long")) {
       throw new Error("Response took too long. Please try again.");
     } else if ((error as Error).message.includes("Failed to fetch")) {
@@ -156,7 +163,9 @@ export const cancelRun = async (userMessageId: string) => {
       throw new Error("Failed to cancel bot response");
     }
   } catch (error) {
-    console.error("Error cancelling bot response:", error);
+    if (environment === "dev") {
+      console.error("Error cancelling bot response:", error);
+    }
     throw error;
   }
 };
@@ -179,7 +188,9 @@ export const sendUserReaction = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
   } catch (error) {
-    console.error("Failed to send user reaction:", error);
+    if (environment === "dev") {
+      console.error("Failed to send user reaction:", error);
+    }
     throw error;
   }
 };

@@ -17,6 +17,7 @@ import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
 import { AuthState, UserData, FirebaseError } from "@polylink/shared/types";
 import { setUserData } from "../user/userSlice";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
@@ -63,7 +64,9 @@ export const checkAuthentication = createAsyncThunk<
       dispatch(clearAuthState());
     }
   } catch (error) {
-    console.error("Failed to check authentication:", error);
+    if (environment === "dev") {
+      console.error("Failed to check authentication:", error);
+    }
     dispatch(clearAuthState());
   } finally {
     dispatch(setLoading(false));
@@ -128,7 +131,9 @@ export const signInWithMicrosoft = createAsyncThunk<
             );
           }
         } catch (linkError) {
-          console.error("Error linking accounts:", linkError);
+          if (environment === "dev") {
+            console.error("Error linking accounts:", linkError);
+          }
           dispatch(
             setRegisterError(
               "Failed to link accounts. Please try signing in with your existing method."
@@ -143,7 +148,9 @@ export const signInWithMicrosoft = createAsyncThunk<
     } else {
       dispatch(setRegisterError((error as Error).message));
     }
-    console.error("Authentication error:", error);
+    if (environment === "dev") {
+      console.error("Authentication error:", error);
+    }
   } finally {
     dispatch(setLoading(false));
   }
@@ -210,7 +217,9 @@ export const signInWithEmail = createAsyncThunk<
     } else {
       dispatch(setRegisterError((error as Error).message));
     }
-    console.error("Authentication error:", error);
+    if (environment === "dev") {
+      console.error("Authentication error:", error);
+    }
     throw error;
   } finally {
     dispatch(setLoading(false));
@@ -271,7 +280,9 @@ export const signUpWithEmail = createAsyncThunk<
         } catch (error) {
           // FIX: Handle other errors
           dispatch(setRegisterError("Failed to sign up. Please try again."));
-          console.error("Authentication error:", error);
+          if (environment === "dev") {
+            console.error("Authentication error:", error);
+          }
         } finally {
           dispatch(setLoading(false));
         }
@@ -314,9 +325,10 @@ export const signOutUser = createAsyncThunk<
     });
     // Clear the user data in Redux
     dispatch(clearAuthState());
-    // navigate("/");
   } catch (error) {
-    console.error("Failed to sign out:", error);
+    if (environment === "dev") {
+      console.error("Failed to sign out:", error);
+    }
   }
 });
 
@@ -338,7 +350,9 @@ export const sendResetEmail = createAsyncThunk<
       return rejectWithValue("Invalid email address.");
     }
   } catch (error) {
-    console.error("Error sending password reset email:", error);
+    if (environment === "dev") {
+      console.error("Error sending password reset email:", error);
+    }
     dispatch(setResetPasswordError("Failed to send password reset email."));
     return rejectWithValue("Failed to send password reset email.");
   }
@@ -362,7 +376,9 @@ export const verifyResetCode = createAsyncThunk<
       }
       return email;
     } catch (error) {
-      console.error("Invalid or expired password reset code:", error);
+      if (environment === "dev") {
+        console.error("Invalid or expired password reset code:", error);
+      }
       dispatch(
         setResetPasswordError("Invalid or expired password reset link.")
       );
@@ -382,7 +398,9 @@ export const confirmNewPassword = createAsyncThunk<
     try {
       await confirmPasswordReset(auth, oobCode, newPassword);
     } catch (error: unknown) {
-      console.error("Failed to confirm password reset:", error);
+      if (environment === "dev") {
+        console.error("Failed to confirm password reset:", error);
+      }
       dispatch(setResetPasswordError((error as FirebaseError).message));
       return rejectWithValue((error as Error).message);
     }
@@ -405,7 +423,9 @@ export const linkWithMicrosoft = createAsyncThunk<
       await linkWithCredential(user, pendingCred);
       dispatch(setPendingCredential(null));
     } catch (error) {
-      console.error("Failed to link Microsoft account:", error);
+      if (environment === "dev") {
+        console.error("Failed to link Microsoft account:", error);
+      }
       return rejectWithValue("Failed to link Microsoft account.");
     }
   }

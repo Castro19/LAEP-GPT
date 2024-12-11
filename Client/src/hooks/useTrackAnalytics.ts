@@ -1,3 +1,4 @@
+import { environment } from "@/helpers/getEnvironmentVars";
 import {
   MessageAnalyticsCreate,
   MessageAnalyticsReaction,
@@ -33,7 +34,9 @@ const useTrackAnalytics = () => {
         throw new Error(`Error: ${response.status}`);
       }
     } catch (error) {
-      console.error("Failed to track message: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track message: ", error);
+      }
     }
   };
 
@@ -66,7 +69,9 @@ const useTrackAnalytics = () => {
         }),
       });
     } catch (error) {
-      console.error("Failed to track message: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track message: ", error);
+      }
     }
   };
 
@@ -84,7 +89,9 @@ const useTrackAnalytics = () => {
         body: JSON.stringify({ botMessageId, userReaction }),
       });
     } catch (error) {
-      console.error("Failed to track user reaction: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track user reaction: ", error);
+      }
     }
   };
   return { trackCreateMessage, trackUpdateMessage, trackUserReaction };
