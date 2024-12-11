@@ -92,6 +92,11 @@ const ChatInput = ({
     }
     try {
       setSelectedFile(null);
+      const logId = isNewChat ? newLogId : currentChatId;
+      dispatch(messageActions.setCurrentChatId(logId));
+      if (!logId) {
+        throw new Error("Log ID is required");
+      }
 
       try {
         await dispatch(
@@ -99,8 +104,7 @@ const ChatInput = ({
             currentModel,
             file: selectedFile, //add pdf file
             msg,
-            currentChatId:
-              isNewChat || !currentChatId ? newLogId : currentChatId,
+            currentChatId: logId,
             userId: userId ? userId : "",
             userMessageId,
             botMessageId,
@@ -133,7 +137,7 @@ const ChatInput = ({
             logTitle: logTitle ? logTitle : "New Chat Log",
             id: newLogId,
             assistantMongoId: currentModel.id,
-            chatId: newLogId,
+            chatId: logId,
           })
         )
           .unwrap()

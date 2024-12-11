@@ -24,7 +24,7 @@ const ChatHeader = () => {
   const { toggleSidebar } = useSidebar();
 
   const handleModeSelection = (model: AssistantType) => {
-    if (model && model.id && currentChatId) {
+    if (model && model.id) {
       const modelId = model.id;
       dispatch(assistantActions.setCurrentAssistant(modelId));
       dispatch(layoutActions.toggleDropdown(false));

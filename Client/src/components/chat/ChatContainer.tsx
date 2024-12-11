@@ -19,7 +19,7 @@ const ChatContainer = () => {
     if (currentChatId && messagesByChatId[currentChatId]) {
       setMsgList(messagesByChatId[currentChatId].content);
     }
-  }, [messagesByChatId, currentChatId, msgList]);
+  }, [messagesByChatId, currentChatId]);
 
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;

@@ -44,7 +44,6 @@ export const fetchBotResponse = createAsyncThunk<
     }: fetchBotResponseParams,
     { dispatch, rejectWithValue }
   ) => {
-    console.log("currentChatId", currentChatId);
     try {
       const newUserMessage = {
         id: userMessageId,
@@ -83,8 +82,7 @@ export const fetchBotResponse = createAsyncThunk<
           },
           assistantMongoId: currentModel.id,
         })
-      ); // Dispatching to add bot message to the state
-
+      ); // Dispatching to add bot message to the state)
       const { botMessage, updateStream }: SendMessageReturnType =
         await sendMessage(
           currentModel,
@@ -255,7 +253,6 @@ const messageSlice = createSlice({
       if (!state.messagesByChatId[chatId]) {
         throw new Error("Chat log not found");
       }
-
       state.messagesByChatId[chatId] = {
         content: [...state.messagesByChatId[chatId].content, content],
         assistantMongoId: assistantMongoId,
@@ -314,21 +311,22 @@ const messageSlice = createSlice({
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
     setMsgList: (
       state,
-      action: PayloadAction<{ chatId: string; content: MessageObjType[] }>
+      action: PayloadAction<{
+        chatId: string;
+        content: MessageObjType[];
+        assistantMongoId: string;
+      }>
     ) => {
-      const { chatId, content } = action.payload;
+      const { chatId, content, assistantMongoId } = action.payload;
       state.messagesByChatId[chatId] = {
         content: content,
-        assistantMongoId: "",
+        assistantMongoId: assistantMongoId,
       };
     },
     // Reducer to clear the message list (DELETE)
     resetMsgList: (state, action: PayloadAction<string>) => {
       const chatId = action.payload;
-      state.messagesByChatId[chatId] = {
-        content: [],
-        assistantMongoId: "",
-      };
+      delete state.messagesByChatId[chatId];
     },
     updateError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
@@ -337,7 +335,7 @@ const messageSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setCurrentChatId(state, action: PayloadAction<string>) {
+    setCurrentChatId(state, action: PayloadAction<string | null>) {
       state.currentChatId = action.payload;
     },
     toggleNewChat(state, action: PayloadAction<boolean>) {

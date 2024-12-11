@@ -9,11 +9,15 @@ export const onNewChat = (
   error: string | null
 ) => {
   if (currentChatId) {
-    dispatch(messageActions.resetMsgList(currentChatId)); // Reset the MsgList
+    console.log("currentChatId", currentChatId);
+    dispatch(messageActions.setCurrentChatId(null));
+
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
+    dispatch(messageActions.setCurrentChatId(null));
   }
+
   dispatch(messageActions.toggleNewChat(true)); // Flag indicating it's a new chat
   navigate(`/chat`);
 };
