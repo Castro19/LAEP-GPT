@@ -17,7 +17,11 @@ import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
 import { AuthState, UserData, FirebaseError } from "@polylink/shared/types";
 import { setUserData } from "../user/userSlice";
-import { environment } from "@/helpers/getEnvironmentVars";
+import {
+  environment,
+  redirectUrl,
+  serverUrl,
+} from "@/helpers/getEnvironmentVars";
 
 // Initial state for the auth slice
 const initialState: AuthState = {
@@ -41,7 +45,7 @@ export const checkAuthentication = createAsyncThunk<
 
   try {
     // Make a request to your server to check authentication
-    const response = await fetch("http://localhost:4000/auth/check", {
+    const response = await fetch(`${serverUrl}/auth/check`, {
       method: "GET",
       credentials: "include", // Include cookies in the request
     });
@@ -319,7 +323,7 @@ export const signOutUser = createAsyncThunk<
 
   try {
     // Request the server to clear the cookie
-    await fetch("http://localhost:4000/auth/logout", {
+    await fetch(`${serverUrl}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -340,7 +344,7 @@ export const sendResetEmail = createAsyncThunk<
   try {
     // Set your actionCodeSettings if you want a custom redirect
     const actionCodeSettings = {
-      url: "http://localhost:5173/register/reset-password-form",
+      url: redirectUrl,
       handleCodeInApp: true,
     };
     if (email && (await verifyCalPolyEmail(email))) {

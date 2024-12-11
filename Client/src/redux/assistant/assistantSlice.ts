@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AssistantSliceType, AssistantType } from "@polylink/shared/types";
+import { serverUrl } from "@/helpers/getEnvironmentVars";
 
 // Read
 export const fetchAll = createAsyncThunk<
@@ -8,7 +9,7 @@ export const fetchAll = createAsyncThunk<
   { rejectValue: string }
 >("assistant/fetchAll", async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch("http://localhost:4000/assistants", {
+    const response = await fetch(`${serverUrl}/assistants`, {
       credentials: "include",
     });
     if (!response.ok) {

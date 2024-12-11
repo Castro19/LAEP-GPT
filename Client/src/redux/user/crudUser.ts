@@ -1,9 +1,9 @@
-import { environment } from "@/helpers/getEnvironmentVars";
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
 
 export async function putUserProfile(userData: UserData): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:4000/users/me`, {
+    const response = await fetch(`${serverUrl}/users/me`, {
       method: "PUT",
       credentials: "include", // Important to include credentials
       headers: {

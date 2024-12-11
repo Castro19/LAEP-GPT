@@ -1,4 +1,4 @@
-import { environment } from "@/helpers/getEnvironmentVars";
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { AssistantType } from "@polylink/shared/types";
 export default async function sendMessage(
   currentModel: AssistantType,
@@ -47,14 +47,11 @@ export default async function sendMessage(
       formData.append("chatId", currentChatId);
     }
 
-    const fetchPromise: Promise<Response> = fetch(
-      "http://localhost:4000/llms/respond",
-      {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      }
-    );
+    const fetchPromise: Promise<Response> = fetch(`${serverUrl}/llms/respond`, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
 
     const response: Response = await Promise.race([
       fetchPromise,
@@ -151,7 +148,7 @@ export default async function sendMessage(
 
 export const cancelRun = async (userMessageId: string) => {
   try {
-    const response = await fetch("http://localhost:4000/llms/cancel", {
+    const response = await fetch(`${serverUrl}/llms/cancel`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -176,7 +173,7 @@ export const sendUserReaction = async (
   userReaction: "like" | "dislike"
 ) => {
   try {
-    const response = await fetch(`http://localhost:4000/chatLogs/reaction`, {
+    const response = await fetch(`${serverUrl}/chatLogs/reaction`, {
       headers: {
         "Content-Type": "application/json",
       },

@@ -7,7 +7,7 @@ import { FlowchartData } from "@polylink/shared/types";
 import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import cloneDeep from "lodash-es/cloneDeep";
 import { toast } from "@/components/ui/use-toast";
-
+import { serverUrl } from "@/helpers/getEnvironmentVars";
 const DragDropContextWrapper = ({
   children,
 }: {
@@ -108,7 +108,7 @@ const DragDropContextWrapper = ({
     courseId: string
   ): Promise<CourseObject | null> => {
     const response = await fetch(
-      `http://localhost:4000/courses/course?catalogYear=${catalogYear}&courseId=${courseId}`,
+      `${serverUrl}/courses/course?catalogYear=${catalogYear}&courseId=${courseId}`,
       {
         credentials: "include",
       }

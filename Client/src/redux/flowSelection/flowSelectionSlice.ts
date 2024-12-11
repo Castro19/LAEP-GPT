@@ -28,12 +28,9 @@ export const fetchMajorOptions = createAsyncThunk(
   "flowchart/fetchMajorOptions",
   async (catalog: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `http://localhost:4000/flowInfo?catalog=${catalog}`,
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${serverUrl}/flowInfo?catalog=${catalog}`, {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         return data as string[];
@@ -59,7 +56,7 @@ export const fetchConcentrationOptions = createAsyncThunk(
   ) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/flowInfo?catalog=${catalog}&majorName=${major}`,
+        `${serverUrl}/flowInfo?catalog=${catalog}&majorName=${major}`,
         {
           credentials: "include",
         }
