@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const FlowchartLogOptions = ({
   flowchart,
@@ -63,7 +64,9 @@ const FlowchartLogOptions = ({
         description: "Your flowchart has been updated successfully.",
       });
     } catch (error) {
-      console.error("Failed to update flowchart:", error);
+      if (environment === "dev") {
+        console.error("Failed to update flowchart:", error);
+      }
     }
   };
 

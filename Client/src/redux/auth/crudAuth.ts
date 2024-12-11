@@ -1,3 +1,4 @@
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
 
 export async function loginUser(
@@ -5,7 +6,7 @@ export async function loginUser(
 ): Promise<{ userData: UserData; isNewUser: boolean } | null> {
   // Send the token to the server
   try {
-    const response = await fetch("http://localhost:4000/auth/login", {
+    const response = await fetch(`${serverUrl}/auth/login`, {
       method: "POST",
       credentials: "include", // Include credentials to allow cookies to be set
       headers: {
@@ -17,7 +18,9 @@ export async function loginUser(
       await response.json();
     return responseData;
   } catch (error) {
-    console.error("Failed to send token to server:", error);
+    if (environment === "dev") {
+      console.error("Failed to send token to server:", error);
+    }
     return null;
   }
 }
@@ -33,7 +36,9 @@ export async function verifyCalPolyEmail(email: string) {
           return true;
         }
       } catch (error) {
-        console.error("Failed to check if email is valid:", error);
+        if (environment === "dev") {
+          console.error("Failed to check if email is valid:", error);
+        }
         return false;
       }
     } else {
@@ -46,7 +51,7 @@ export async function verifyCalPolyEmail(email: string) {
 
 export async function byPassCalPolyEmailCheck(email: string) {
   const response = await fetch(
-    "http://localhost:4000/auth/can-bypass-calpoly-email-check",
+    `${serverUrl}/auth/can-bypass-calpoly-email-check`,
     {
       method: "POST",
       body: JSON.stringify({ email }),
@@ -57,7 +62,7 @@ export async function byPassCalPolyEmailCheck(email: string) {
 }
 
 export async function checkUserExistsByEmail(email: string) {
-  const response = await fetch("http://localhost:4000/auth/check-email", {
+  const response = await fetch(`${serverUrl}/auth/check-email`, {
     method: "POST",
     body: JSON.stringify({ email }),
   });

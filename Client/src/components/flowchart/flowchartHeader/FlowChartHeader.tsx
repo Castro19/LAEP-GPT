@@ -5,10 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
 import { toast } from "@/components/ui/use-toast";
 import { BsLayoutSidebar } from "react-icons/bs";
-
 import SpecialButton from "@/components/ui/specialButton";
-
 import { MdSave } from "react-icons/md";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const FlowChartHeader = () => {
   const { toggleSidebar, isMobile } = useSidebar();
@@ -43,10 +42,14 @@ const FlowChartHeader = () => {
         }
         navigate(`/flowchart/${flowchart.flowchartId}`);
       } else {
-        console.error("Failed to get flowchartId from the response.");
+        if (environment === "dev") {
+          console.error("Failed to get flowchartId from the response.");
+        }
       }
     } catch (error) {
-      console.error("Failed to save flowchart:", error);
+      if (environment === "dev") {
+        console.error("Failed to save flowchart:", error);
+      }
     } finally {
       if ((flowchartList ?? []).length < 1) {
         handleChange("flowchartId", flowchart?.flowchartId ?? "");
@@ -82,7 +85,9 @@ const FlowChartHeader = () => {
         description: "Your flowchart has been updated successfully.",
       });
     } catch (error) {
-      console.error("Failed to update flowchart:", error);
+      if (environment === "dev") {
+        console.error("Failed to update flowchart:", error);
+      }
     }
   };
 
@@ -107,14 +112,14 @@ const FlowChartHeader = () => {
                   onClick={handleSaveData}
                   text="Save"
                   icon={<MdSave />}
-                  className="flex-1 w-24"
+                  className="dark:bg-green-700 dark:hover:bg-green-700 flex-1 w-32"
                 />
               ) : (
                 <SpecialButton
                   onClick={handleUpdateData}
                   text="Update"
                   icon={<MdSave />}
-                  className="flex-1 w-24"
+                  className="dark:bg-green-700 dark:hover:bg-green-700 flex-1 w-32"
                 />
               )}
             </span>

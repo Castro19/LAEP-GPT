@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { openai } from "../../index";
+import { environment, openai } from "../../index";
 import {
   addThreadToDB,
   fetchIds,
@@ -44,10 +44,12 @@ export async function addMessageToThread(
     }
     return threadMessages;
   } catch (error) {
-    console.error(
-      `Failed to send message or get response from ${threadId}\nError:`,
-      error
-    );
+    if (environment === "dev") {
+      console.error(
+        `Failed to send message or get response from ${threadId}\nError:`,
+        error
+      );
+    }
     return null;
   }
 }

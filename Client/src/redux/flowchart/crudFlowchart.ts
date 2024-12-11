@@ -1,3 +1,4 @@
+import { serverUrl } from "@/helpers/getEnvironmentVars";
 import {
   CreateFlowchartResponse,
   DeleteFlowchartResponse,
@@ -16,7 +17,7 @@ export async function storeFlowchartInDB(
   name: string,
   primaryOption: boolean
 ): Promise<CreateFlowchartResponse> {
-  const response = await fetch(`http://localhost:4000/flowcharts`, {
+  const response = await fetch(`${serverUrl}/flowcharts`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -43,12 +44,9 @@ export async function storeFlowchartInDB(
 export async function fetchFlowchartFromDB(
   flowchartId: string
 ): Promise<FetchFlowchartResponse> {
-  const response = await fetch(
-    `http://localhost:4000/flowcharts/${flowchartId}`,
-    {
-      credentials: "include",
-    }
-  );
+  const response = await fetch(`${serverUrl}/flowcharts/${flowchartId}`, {
+    credentials: "include",
+  });
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message || "Failed to fetch flowchart");
@@ -64,7 +62,7 @@ export async function fetchFlowchartFromDB(
 export async function fetchAllFlowchartsFromDB(): Promise<
   FetchedFlowchartObject[]
 > {
-  const response = await fetch(`http://localhost:4000/flowcharts`, {
+  const response = await fetch(`${serverUrl}/flowcharts`, {
     credentials: "include",
   });
   if (!response.ok) {
@@ -87,21 +85,18 @@ export async function updateFlowchartInDB(
   name: string,
   primaryOption: boolean
 ): Promise<void> {
-  const response = await fetch(
-    `http://localhost:4000/flowcharts/${flowchartId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        flowchartData: flowchartData,
-        name: name,
-        primaryOption: primaryOption,
-      }),
-      credentials: "include",
-    }
-  );
+  const response = await fetch(`${serverUrl}/flowcharts/${flowchartId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      flowchartData: flowchartData,
+      name: name,
+      primaryOption: primaryOption,
+    }),
+    credentials: "include",
+  });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
@@ -117,13 +112,10 @@ export async function updateFlowchartInDB(
 export async function deleteFlowchartFromDB(
   flowchartId: string
 ): Promise<DeleteFlowchartResponse> {
-  const response = await fetch(
-    `http://localhost:4000/flowcharts/${flowchartId}`,
-    {
-      method: "DELETE",
-      credentials: "include",
-    }
-  );
+  const response = await fetch(`${serverUrl}/flowcharts/${flowchartId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
   if (!response.ok) {
     throw new Error("Failed to delete flowchart");
   }

@@ -10,6 +10,7 @@ import {
 } from "../db/models/chatlog/chatLogServices";
 
 import { ChatLogDocument, CreateLogTitleData } from "@polylink/shared/types";
+import { environment } from "../index";
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.post("/", (async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { assistantMongoId, logId, title, content, timestamp } = req.body;
-
+    console.log("content: ", content);
     const newLog: ChatLogDocument = {
       logId,
       assistantMongoId,
@@ -34,7 +35,9 @@ router.post("/", (async (req, res) => {
     res.status(201).json({ message: "Log created successfully" });
   } catch (error) {
     res.status(500).send("Failed to create log: " + (error as Error).message);
-    console.error("Failed to create log: ", error);
+    if (environment === "dev") {
+      console.error("Failed to create log: ", error);
+    }
   }
 }) as RequestHandler);
 
@@ -48,7 +51,9 @@ router.get("/", (async (req, res) => {
     const logs = await getLogsByUser(userId);
     res.status(200).json(logs);
   } catch (error) {
-    console.error("Failed to fetch logs: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch logs: ", error);
+    }
     res.status(500).send("Failed to fetch logs: " + (error as Error).message);
   }
 }) as RequestHandler);
@@ -68,7 +73,9 @@ router.get("/:logId", (async (req, res) => {
     const log = await getLogById(logId, userId);
     res.status(200).json(log);
   } catch (error) {
-    console.error("Failed to fetch log: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch log: ", error);
+    }
     res.status(500).send((error as Error).message || "Failed to fetch log");
   }
 }) as RequestHandler);
@@ -87,7 +94,9 @@ router.put("/", (async (req, res) => {
     await updateLog(logId, userId, content, timestamp);
     res.status(200).json({ message: "Log updated successfully" });
   } catch (error) {
-    console.error("Failed to update log: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update log: ", error);
+    }
     res
       .status(500)
       .json("Failed to update log in database: " + (error as Error).message);
@@ -113,7 +122,9 @@ router.put("/title", (async (req, res) => {
     };
     res.status(200).json(response);
   } catch (error) {
-    console.error("Failed to update log title: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update log title: ", error);
+    }
     res
       .status(500)
       .json("Failed to update log title: " + (error as Error).message);
@@ -135,7 +146,9 @@ router.delete("/:logId", (async (req, res) => {
     await deleteLog(logId, userId);
     res.status(204).json({ message: "Log deleted successfully" });
   } catch (error) {
-    console.error("Failed to Delete log: ", error);
+    if (environment === "dev") {
+      console.error("Failed to Delete log: ", error);
+    }
     res
       .status(500)
       .send("Failed to Delete log in database: " + (error as Error).message);
@@ -159,7 +172,9 @@ router.put("/reaction", (async (req, res) => {
       res.status(200).json(result);
     }
   } catch (error) {
-    console.error("Failed to update chat message reaction: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update chat message reaction: ", error);
+    }
     res
       .status(500)
       .json(

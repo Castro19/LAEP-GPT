@@ -1,4 +1,4 @@
-import { openai, formatAssistantId } from "../../index";
+import { openai, formatAssistantId, environment } from "../../index";
 import { Response } from "express";
 import {
   runAssistantAndStreamResponse,
@@ -80,7 +80,9 @@ async function handleMultiAgentModel({
     try {
       jsonObject = JSON.parse(helperResponse);
     } catch (error) {
-      console.error("Failed to parse JSON from helper assistant:", error);
+      if (environment === "dev") {
+        console.error("Failed to parse JSON from helper assistant:", error);
+      }
       throw new Error("Failed to parse JSON from helper assistant");
     }
 
@@ -105,7 +107,9 @@ async function handleMultiAgentModel({
           professorIds.push(professorId);
         }
       } catch (error) {
-        console.error("Failed to search professors:", error);
+        if (environment === "dev") {
+          console.error("Failed to search professors:", error);
+        }
       }
       // Query MongoDB for professors & courses
       try {
@@ -117,7 +121,9 @@ async function handleMultiAgentModel({
           professorRatings
         )}`;
       } catch (error) {
-        console.error("Failed to get professors by course IDs:", error);
+        if (environment === "dev") {
+          console.error("Failed to get professors by course IDs:", error);
+        }
       }
     } else if (courseArray.length > 0 && professorArray.length === 0) {
       // Search through vector database for courses
@@ -127,14 +133,18 @@ async function handleMultiAgentModel({
           professorRatings
         )}`;
       } catch (error) {
-        console.error("Failed to search courses:", error);
+        if (environment === "dev") {
+          console.error("Failed to search courses:", error);
+        }
       }
     } else {
       messageToAdd +=
         ".\nNo professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Answer the user's question as best as possible.";
     }
 
-    console.log("messageToAdd: ", messageToAdd);
+    if (environment === "dev") {
+      console.log("messageToAdd: ", messageToAdd);
+    }
 
     // Add user's modified message to the main thread
     await addMessageToThread(

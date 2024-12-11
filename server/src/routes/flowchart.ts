@@ -8,6 +8,7 @@ import {
   updateAllOtherFlowcharts,
 } from "../db/models/flowchart/flowchartServices";
 import { FlowchartData } from "@polylink/shared/types";
+import { environment } from "../index";
 
 const router = express.Router();
 
@@ -26,7 +27,9 @@ router.post("/", (async (req, res) => {
     const result = await createFlowchart(flowchartData, name, userId);
     res.status(201).json(result);
   } catch (error) {
-    console.error("Failed to create flowchart: ", error);
+    if (environment === "dev") {
+      console.error("Failed to create flowchart: ", error);
+    }
     res
       .status(500)
       .send("Failed to create flowchart: " + (error as Error).message);
@@ -44,7 +47,9 @@ router.get("/", (async (req, res) => {
     const result = await fetchAllFlowcharts(userId);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to fetch all flowcharts: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch all flowcharts: ", error);
+    }
     res
       .status(500)
       .send("Failed to fetch all flowcharts: " + (error as Error).message);
@@ -63,7 +68,9 @@ router.get("/:flowchartId", (async (req, res) => {
     const result = await fetchFlowchart(flowchartId, userId);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to fetch flowchart: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch flowchart: ", error);
+    }
     if ((error as Error).message === "Flowchart not found") {
       res.status(404).send("Flowchart not found");
     } else if ((error as Error).message === "Forbidden") {
@@ -99,7 +106,9 @@ router.put("/:flowchartId", (async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to update flowchart: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update flowchart: ", error);
+    }
     if ((error as Error).message === "Flowchart not found") {
       res.status(404).send("Flowchart not found");
     } else if ((error as Error).message === "Forbidden") {
@@ -124,7 +133,9 @@ router.delete("/:flowchartId", (async (req, res) => {
     const result = await deleteFlowchart(flowchartId, userId);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to delete flowchart: ", error);
+    if (environment === "dev") {
+      console.error("Failed to delete flowchart: ", error);
+    }
     if ((error as Error).message === "Flowchart not found") {
       res.status(404).send("Flowchart not found");
     } else if ((error as Error).message === "Forbidden") {

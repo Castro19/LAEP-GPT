@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { LogListType } from "@polylink/shared/types";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const ChatLogOptions = ({
   log,
@@ -51,12 +52,16 @@ const ChatLogOptions = ({
             dispatch(messageActions.resetMsgList());
             dispatch(messageActions.toggleNewChat(true));
           })
-          .catch((error) =>
-            console.error(`Error trying to delete log ${log.logId}: `, error)
-          );
+          .catch((error) => {
+            if (environment === "dev") {
+              console.error(`Error trying to delete log ${log.logId}: `, error);
+            }
+          });
       }
     } catch (error) {
-      console.error(`Error trying to delete log ${log.logId}: `, error);
+      if (environment === "dev") {
+        console.error(`Error trying to delete log ${log.logId}: `, error);
+      }
     }
   };
 
@@ -69,7 +74,9 @@ const ChatLogOptions = ({
         })
       ).unwrap();
     } catch (error) {
-      console.error("Failed to update chat log:", error);
+      if (environment === "dev") {
+        console.error("Failed to update chat log:", error);
+      }
     }
   };
 

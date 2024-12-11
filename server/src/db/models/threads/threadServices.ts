@@ -1,5 +1,6 @@
 import { ThreadData } from "@polylink/shared/types";
 import * as ThreadModel from "./threadCollection";
+import { environment } from "../../../index";
 // Confirming the structure in threadServices.js after adding a thread
 export const addThreadToDB = async (
   chatId: string,
@@ -19,7 +20,9 @@ export const addThreadToDB = async (
       threadId: result.insertedId.toString(), // Ensuring the ID is a string if needed
     };
   } catch (error) {
-    console.error("Service error: ", (error as Error).message);
+    if (environment === "dev") {
+      console.error("Service error: ", (error as Error).message);
+    }
     throw new Error("Service error: " + (error as Error).message);
   }
 };
@@ -35,7 +38,9 @@ export const fetchIds = async (chatId: string): Promise<ThreadData | null> => {
       assistantId: ids.assistantId,
     };
   } catch (error) {
-    console.error("No thread found: ", (error as Error).message);
+    if (environment === "dev") {
+      console.error("No thread found: ", (error as Error).message);
+    }
     return null;
   }
 };
@@ -45,7 +50,9 @@ export const deleteThread = async (threadId: string): Promise<void> => {
   try {
     await ThreadModel.deleteThreadByID(threadId);
   } catch (error) {
-    console.error("Error fetching thread ID: ", (error as Error).message);
+    if (environment === "dev") {
+      console.error("Error fetching thread ID: ", (error as Error).message);
+    }
     return;
   }
 };

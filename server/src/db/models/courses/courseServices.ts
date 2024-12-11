@@ -1,4 +1,5 @@
 // Store the course catalog data in MongoDB
+import { environment } from "../../../index";
 import * as courseCollection from "./courseCollection";
 import {
   CourseQuery,
@@ -152,7 +153,9 @@ export const getCourseInfo = async (
   try {
     return (await courseCollection.findCourseInfo(courseIds)) as CourseObject[];
   } catch (error) {
-    console.error("Error fetching course info: ", error);
+    if (environment === "dev") {
+      console.error("Error fetching course info: ", error);
+    }
     throw error;
   }
 };

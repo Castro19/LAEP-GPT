@@ -1,5 +1,6 @@
 // helpers/apiHelper.js
 
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { CourseObject } from "@polylink/shared/types";
 
 export const fetchCoursesAPI = async (
@@ -10,12 +11,9 @@ export const fetchCoursesAPI = async (
     const params = new URLSearchParams();
     params.append("catalogYear", catalogYear);
     if (inputValue) params.append("searchTerm", inputValue);
-    const response = await fetch(
-      `http://localhost:4000/courses?${params.toString()}`,
-      {
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${serverUrl}/courses?${params.toString()}`, {
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -24,7 +22,9 @@ export const fetchCoursesAPI = async (
     const data: CourseObject[] = await response.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch courses:", err);
+    if (environment === "dev") {
+      console.error("Failed to fetch courses:", err);
+    }
     throw err;
   }
 };
@@ -48,7 +48,7 @@ export const fetchSubjectNamesAPI = async (
     if (query.searchTerm) params.append("searchTerm", query.searchTerm);
 
     const response = await fetch(
-      `http://localhost:4000/courses/subjectNames?${params.toString()}`,
+      `${serverUrl}/courses/subjectNames?${params.toString()}`,
       {
         credentials: "include",
       }
@@ -61,7 +61,9 @@ export const fetchSubjectNamesAPI = async (
     const data: string[] = await response.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch subject names:", err);
+    if (environment === "dev") {
+      console.error("Failed to fetch subject names:", err);
+    }
     throw err;
   }
 };
@@ -92,7 +94,7 @@ export const fetchCoursesBySubjectAPI = async (
     if (query.uscp !== undefined) params.append("USCP", query.uscp);
 
     const response = await fetch(
-      `http://localhost:4000/courses/subject?${params.toString()}`,
+      `${serverUrl}/courses/subject?${params.toString()}`,
       {
         credentials: "include",
       }
@@ -105,7 +107,9 @@ export const fetchCoursesBySubjectAPI = async (
     const data: CourseObject[] = await response.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch courses by subject:", err);
+    if (environment === "dev") {
+      console.error("Failed to fetch courses by subject:", err);
+    }
     throw err;
   }
 };

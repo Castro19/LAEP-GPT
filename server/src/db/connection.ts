@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion, Db } from "mongodb";
 import dotenv from "dotenv";
+import { environment } from "../index";
 
 dotenv.config();
 const URI = process.env.ATLAS_URI || "";
@@ -21,7 +22,9 @@ async function connectToDb(): Promise<Db> {
     db = client.db("laep");
     return db;
   } catch (err) {
-    console.error("Failed to connect to MongoDB", err);
+    if (environment === "dev") {
+      console.error("Failed to connect to MongoDB", err);
+    }
     throw new Error("Failed to connect to MongoDB");
   }
 }

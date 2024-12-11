@@ -2,6 +2,7 @@ import { Hero } from "@/components/splashPage/Hero";
 import { StickyScrollRevealDemo } from "@/components/splashPage/MatchingFeatures";
 import { useNavigate } from "react-router-dom";
 import SplashLayout from "@/components/layout/splashPage/SplashLayout";
+import SpecialButton from "@/components/ui/specialButton";
 
 const SplashPage = () => {
   const navigate = useNavigate();
@@ -37,12 +38,12 @@ const SplashPage = () => {
               Sign in with your Cal Poly account to start exploring resources
               and connections curated for you.
             </p>
-            <button
-              className="bg-green-600 text-white px-4 py-2 mt-6 rounded hover:bg-green-700"
+            <SpecialButton
+              text="Log In"
               onClick={() => navigate("/register/login")}
-            >
-              Log In
-            </button>
+              className="w-[100px] text-white px-4 py-2 mt-6 rounded dark:bg-green-700 dark:hover:bg-green-700"
+              icon={<></>}
+            />
           </div>
           {/* Image Section */}
           <div className="md:w-1/2 mt-6 md:mt-0 flex justify-center items-center">

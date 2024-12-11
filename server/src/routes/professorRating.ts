@@ -3,6 +3,7 @@ import {
   getProfessorRatings,
   getProfessorsByCourseIds,
 } from "../db/models/professorRatings/professorRatingServices";
+import { environment } from "../index";
 
 const router = express.Router();
 
@@ -14,7 +15,9 @@ router.get("/professors/:professorId", async (req, res) => {
     const result = await getProfessorRatings(professorIdsArray);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to get courses by subject:", error);
+    if (environment === "dev") {
+      console.error("Failed to get courses by subject:", error);
+    }
     res.status(404).send("Failed to get courses: " + (error as Error).message);
   }
 });
@@ -27,7 +30,9 @@ router.get("/professors/:professorId/:courseId", async (req, res) => {
     const result = await getProfessorRatings(professorIdsArray, courseIdsArray);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to get courses by subject:", error);
+    if (environment === "dev") {
+      console.error("Failed to get courses by subject:", error);
+    }
     res.status(404).send("Failed to get courses: " + (error as Error).message);
   }
 });
@@ -39,7 +44,9 @@ router.get("/courses/:courseIds", async (req, res) => {
     const result = await getProfessorsByCourseIds(courseIdsArray);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to get professors by course IDs:", error);
+    if (environment === "dev") {
+      console.error("Failed to get professors by course IDs:", error);
+    }
     res
       .status(404)
       .send("Failed to get professors: " + (error as Error).message);

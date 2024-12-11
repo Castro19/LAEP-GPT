@@ -31,8 +31,6 @@ const SplashFooter = () => {
         <div className="space-y-4">
           <h3 className="text-xl font-bold">Contact</h3>
           <div className="flex flex-col space-y-2 text-gray-300">
-            <p>California Polytechnic State University</p>
-            <p>San Luis Obispo, CA 93407</p>
             <a href="mailto:support@polylink.com" className="hover:text-white">
               support@polylink.com
             </a>

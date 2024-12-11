@@ -5,11 +5,12 @@ import {
   LogListType,
 } from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 
 export default async function createLogTitle(msg: string, modelTitle: string) {
   try {
     // Assuming the title is generated based on the last message or another logic
-    const response = await fetch("http://localhost:4000/llms/title", {
+    const response = await fetch(`${serverUrl}/llms/title`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg, AssistantType: modelTitle }),
@@ -22,14 +23,16 @@ export default async function createLogTitle(msg: string, modelTitle: string) {
 
     return data.title;
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
   }
 }
 
 // Creating Log
 export async function createLogItem(logData: LogData): Promise<void> {
   try {
-    const response = await fetch("http://localhost:4000/chatLogs", {
+    const response = await fetch(`${serverUrl}/chatLogs`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -40,31 +43,37 @@ export async function createLogItem(logData: LogData): Promise<void> {
     }
     return;
   } catch (error) {
-    console.error("Failed to create chatlog on server side: ", error);
+    if (environment === "dev") {
+      console.error("Failed to create chatlog on server side: ", error);
+    }
   }
 }
 
 // Reading: Fetch all lofgs by as userID:
 export async function fetchAllLogs(): Promise<LogListType[] | never[]> {
   try {
-    const response = await fetch("http://localhost:4000/chatLogs", {
+    const response = await fetch(`${serverUrl}/chatLogs`, {
       credentials: "include",
     });
     if (!response.ok) {
-      console.error("Response Error  fetching chat Logs");
+      if (environment === "dev") {
+        console.error("Response Error  fetching chat Logs");
+      }
       return [];
     }
     const logs: LogListType[] = await response.json();
     return logs;
   } catch (error) {
-    console.error("Failed to fetch logs: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch logs: ", error);
+    }
     return []; // serialiazable fallback
   }
 }
 
 export async function fetchLogById(logId: string): Promise<LogData | never[]> {
   try {
-    const response = await fetch(`http://localhost:4000/chatLogs/${logId}`, {
+    const response = await fetch(`${serverUrl}/chatLogs/${logId}`, {
       credentials: "include",
     });
     if (!response.ok) {
@@ -73,7 +82,9 @@ export async function fetchLogById(logId: string): Promise<LogData | never[]> {
     const log: LogData = await response.json();
     return log;
   } catch (error) {
-    console.error("Failed to fetch log by id: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch log by id: ", error);
+    }
     return [];
   }
 }
@@ -88,7 +99,7 @@ type UpdateLogData = {
 // Update Log (Message gets added)
 export async function updateLogItem(logData: UpdateLogData): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:4000/chatLogs`, {
+    const response = await fetch(`${serverUrl}/chatLogs`, {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -99,7 +110,9 @@ export async function updateLogItem(logData: UpdateLogData): Promise<void> {
     }
     return;
   } catch (error) {
-    console.error("Failed to update chatlog on server side: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update chatlog on server side: ", error);
+    }
   }
 }
 
@@ -110,7 +123,7 @@ export async function deleteLogItem({
   logId: string;
 }): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:4000/chatLogs/${logId}`, {
+    const response = await fetch(`${serverUrl}/chatLogs/${logId}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -120,7 +133,9 @@ export async function deleteLogItem({
     }
     return;
   } catch (error) {
-    console.error("Error: ", error);
+    if (environment === "dev") {
+      console.error("Error: ", error);
+    }
   }
 }
 
@@ -134,7 +149,7 @@ export async function updateLogTitleInDB({
   title: string;
 }> {
   try {
-    const response = await fetch("http://localhost:4000/chatLogs/title", {
+    const response = await fetch(`${serverUrl}/chatLogs/title`, {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -146,7 +161,9 @@ export async function updateLogTitleInDB({
     const data = await response.json();
     return data as { message: string; logId: string; title: string };
   } catch (error) {
-    console.error("Failed to update log title: ", error);
+    if (environment === "dev") {
+      console.error("Failed to update log title: ", error);
+    }
     throw error;
   }
 }

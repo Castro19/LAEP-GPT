@@ -1,5 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
+import SpecialButton from "../ui/specialButton";
+
 export function Hero() {
+  const navigate = useNavigate();
   const words = [
     {
       text: "Want",
@@ -21,9 +25,14 @@ export function Hero() {
   return (
     <div className="flex flex-col items-center justify-start bg-white dark:bg-slate-900 bg-opacity-50">
       <TypewriterEffectSmooth words={words} />
-      <button className="w-40 h-10 my-4 rounded-xl bg-white text-black border border-black  text-sm">
-        Join the Team!
-      </button>
+      <SpecialButton
+        text="Join the Team!"
+        onClick={() => {
+          navigate("/coming-soon");
+        }}
+        icon={<></>}
+        className="w-40 h-10 my-4 rounded-xl bg-white text-black border border-black  text-sm"
+      />
     </div>
   );
 }

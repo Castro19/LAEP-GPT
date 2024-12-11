@@ -8,6 +8,7 @@ import {
 } from "./crudLog";
 import { LogData, LogSliceType, MessageObjType } from "@polylink/shared/types";
 import { RootState } from "../store";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 export type AddLogParams = {
   msg: string;
@@ -46,7 +47,9 @@ export const addLog = createAsyncThunk(
       });
       return { success: true, logId: id };
     } catch (error) {
-      console.error("Failed to create log title: ", error);
+      if (environment === "dev") {
+        console.error("Failed to create log title: ", error);
+      }
       return rejectWithValue({ message: "Failed to create log title" });
     }
   }
@@ -61,7 +64,9 @@ export const fetchLogs = createAsyncThunk(
 
       return fetchedLogs;
     } catch (error) {
-      console.error("Failed to fetch logs: ", error);
+      if (environment === "dev") {
+        console.error("Failed to fetch logs: ", error);
+      }
       return rejectWithValue({ message: "Failed to fetch logs" });
     }
   }
@@ -104,7 +109,9 @@ export const updateLog = createAsyncThunk(
       }
       return { success: true, logId };
     } catch (error) {
-      console.error("Failed to update log: ", error);
+      if (environment === "dev") {
+        console.error("Failed to update log: ", error);
+      }
       return rejectWithValue({ message: "Failed to update log" });
     }
   }
@@ -121,7 +128,9 @@ export const updateLogTitle = createAsyncThunk(
       const updatedLog = await updateLogTitleInDB({ logId, title });
       return updatedLog;
     } catch (error) {
-      console.error("Failed to update log title: ", error);
+      if (environment === "dev") {
+        console.error("Failed to update log title: ", error);
+      }
       return rejectWithValue({ message: "Failed to update log title" });
     }
   }
@@ -137,7 +146,9 @@ export const deleteLog = createAsyncThunk(
       dispatch(deleteLogListItem({ logId }));
       return deletedLog;
     } catch (error) {
-      console.error("Failed to delete log: ", error);
+      if (environment === "dev") {
+        console.error("Failed to delete log: ", error);
+      }
       return rejectWithValue({ message: "Failed to delete log" });
     }
   }
@@ -189,7 +200,9 @@ const logSlice = createSlice({
       })
       .addCase(fetchLogs.rejected, (_state, action) => {
         // Optionally handle error state
-        console.error("Failed to load logs:", action.payload);
+        if (environment === "dev") {
+          console.error("Failed to load logs:", action.payload);
+        }
       })
       .addCase(updateLog.fulfilled, (state, action) => {
         const { logId } = action.payload;

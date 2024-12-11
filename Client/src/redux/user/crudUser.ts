@@ -1,8 +1,9 @@
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
 
 export async function putUserProfile(userData: UserData): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:4000/users/me`, {
+    const response = await fetch(`${serverUrl}/users/me`, {
       method: "PUT",
       credentials: "include", // Important to include credentials
       headers: {
@@ -14,6 +15,8 @@ export async function putUserProfile(userData: UserData): Promise<void> {
       throw new Error("Failed to update user profile");
     }
   } catch (error) {
-    console.error("Failed to update user profile:", error);
+    if (environment === "dev") {
+      console.error("Failed to update user profile:", error);
+    }
   }
 }

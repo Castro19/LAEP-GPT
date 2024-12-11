@@ -9,6 +9,7 @@ import { authActions, useAppDispatch, useAppSelector } from "@/redux";
 import { toast } from "@/components/ui/use-toast";
 import SpecialButton from "@/components/ui/specialButton";
 import SplashLayout from "@/components/layout/splashPage/SplashLayout";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 export function VerifyEmail() {
   const navigate = useNavigate();
@@ -38,7 +39,9 @@ export function VerifyEmail() {
           });
         })
         .catch((error) => {
-          console.error("Error sending verification email:", error);
+          if (environment === "dev") {
+            console.error("Error sending verification email:", error);
+          }
 
           if (error.code === "auth/too-many-requests") {
             dispatch(

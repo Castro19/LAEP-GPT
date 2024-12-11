@@ -1,5 +1,6 @@
 import { Collection } from "mongodb";
 import { getDb } from "../../connection";
+import { environment } from "../../../index";
 
 let signupAccessCollection: Collection;
 
@@ -20,7 +21,9 @@ export const getSignupAccessByEmail = async (
     const defaultRole = "student";
     return defaultRole;
   } catch (error) {
-    console.error("Error getting signup access by email:", error);
+    if (environment === "dev") {
+      console.error("Error getting signup access by email:", error);
+    }
     return "student";
   }
 };
@@ -38,7 +41,9 @@ export const byPassCalPolyEmailCheck = async (
     }
     return false;
   } catch (error) {
-    console.error("Error getting signup access by email:", error);
+    if (environment === "dev") {
+      console.error("Error getting signup access by email:", error);
+    }
     return false;
   }
 };

@@ -10,6 +10,7 @@ import admin from "firebase-admin";
 import { UserData } from "@polylink/shared/types";
 import { byPassCalPolyEmailCheck } from "../db/models/signupAccess/signupAccessServices";
 import { verifyCalPolyEmail } from "../helpers/auth/verifyValidEmail";
+import { environment } from "../index";
 
 const router = express.Router();
 
@@ -86,17 +87,17 @@ router.post("/login", async (req, res) => {
         flowchartId: "",
         emailVerified,
       };
-      console.log("Adding user to database");
       await addUser(userData);
 
       res.status(200).send({ userData: userData, isNewUser: true });
     } else {
       // Else, user already exists in database
-      console.log("User already exists in database: ", user);
       res.status(200).send({ userData: user, isNewUser: false });
     }
   } catch (error) {
-    console.error("Error creating session cookie:", error);
+    if (environment === "dev") {
+      console.error("Error creating session cookie:", error);
+    }
     res.status(401).send({ error: "Invalid token" });
   }
 });
@@ -113,7 +114,6 @@ router.get("/check", (async (req: Request, res: Response) => {
 
   if (!sessionCookie) {
     // No session cookie, user is not authenticated
-    console.log("No session cookie found, user not authenticated");
     return res.status(401).send({ error: "Unauthorized" });
   }
 
@@ -127,7 +127,6 @@ router.get("/check", (async (req: Request, res: Response) => {
     const user = await getUserByFirebaseId(userId);
 
     if (!user) {
-      console.log("User not found in database");
       return res.status(404).send({ error: "User not found" });
     }
 
@@ -137,7 +136,9 @@ router.get("/check", (async (req: Request, res: Response) => {
 
     res.status(200).send(user);
   } catch (error) {
-    console.error("Failed to verify session cookie:", error);
+    if (environment === "dev") {
+      console.error("Failed to verify session cookie:", error);
+    }
     res.status(401).send({ error: "Unauthorized" });
   }
 }) as RequestHandler);
@@ -149,7 +150,9 @@ router.post("/check-email", async (req: Request, res: Response) => {
     const userExists = await checkUserExistsByEmail(email);
     res.status(200).send({ userExists });
   } catch (error) {
-    console.error("Error checking email: ", error);
+    if (environment === "dev") {
+      console.error("Error checking email: ", error);
+    }
     res.status(500).send({ error: "Internal server error" });
   }
 });
@@ -167,7 +170,9 @@ router.post(
       const byPass = await byPassCalPolyEmailCheck(email);
       res.status(200).send({ byPass });
     } catch (error) {
-      console.error("Error checking email: ", error);
+      if (environment === "dev") {
+        console.error("Error checking email: ", error);
+      }
       res.status(500).send({ error: "Internal server error" });
     }
   }

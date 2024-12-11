@@ -1,3 +1,4 @@
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import {
   MessageAnalyticsCreate,
   MessageAnalyticsReaction,
@@ -13,7 +14,7 @@ const useTrackAnalytics = () => {
     createdAt,
   }: MessageAnalyticsCreate) => {
     try {
-      const response = await fetch("http://localhost:4000/analytics", {
+      const response = await fetch(`${serverUrl}/analytics`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,7 +34,9 @@ const useTrackAnalytics = () => {
         throw new Error(`Error: ${response.status}`);
       }
     } catch (error) {
-      console.error("Failed to track message: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track message: ", error);
+      }
     }
   };
 
@@ -51,7 +54,7 @@ const useTrackAnalytics = () => {
     errorMessage: string | null;
   }) => {
     try {
-      await fetch("http://localhost:4000/analytics", {
+      await fetch(`${serverUrl}/analytics`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +69,9 @@ const useTrackAnalytics = () => {
         }),
       });
     } catch (error) {
-      console.error("Failed to track message: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track message: ", error);
+      }
     }
   };
 
@@ -75,7 +80,7 @@ const useTrackAnalytics = () => {
     userReaction,
   }: MessageAnalyticsReaction) => {
     try {
-      await fetch("http://localhost:4000/analytics/reaction", {
+      await fetch(`${serverUrl}/analytics/reaction`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +89,9 @@ const useTrackAnalytics = () => {
         body: JSON.stringify({ botMessageId, userReaction }),
       });
     } catch (error) {
-      console.error("Failed to track user reaction: ", error);
+      if (environment === "dev") {
+        console.error("Failed to track user reaction: ", error);
+      }
     }
   };
   return { trackCreateMessage, trackUpdateMessage, trackUserReaction };

@@ -12,6 +12,7 @@ import flowchartHelper from "../flowchart/flowchart";
 import { RunningStreamData, UserData } from "@polylink/shared/types";
 import { FileObject } from "openai/resources/index.mjs";
 import { Response } from "express";
+import { environment } from "../../index";
 
 const matchingAssistant = (user: UserData, message: string): string => {
   const availability = formatAvailability(user.availability);
@@ -127,7 +128,9 @@ async function handleSingleAgentModel({
     messageToAdd = calpolyClubsAssistant(user, message);
   }
 
-  console.log("messageToAdd: ", messageToAdd);
+  if (environment === "dev") {
+    console.log("messageToAdd: ", messageToAdd);
+  }
   try {
     // Add user message to thread
     await addMessageToThread(
@@ -147,7 +150,9 @@ async function handleSingleAgentModel({
       runningStreams
     );
   } catch (error) {
-    console.error("Error in single-agent model:", error);
+    if (environment === "dev") {
+      console.error("Error in single-agent model:", error);
+    }
   }
 }
 

@@ -6,6 +6,7 @@ import {
   MessageObjType,
   MessageSliceType,
 } from "@polylink/shared/types";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
@@ -65,6 +66,7 @@ export const fetchBotResponse = createAsyncThunk<
           sender: "bot",
           userReaction: null,
           thinkingState: true,
+          urlPhoto: currentModel.urlPhoto,
         })
       ); // Dispatching to add bot message to the state
 
@@ -118,7 +120,9 @@ export const cancelBotResponse = createAsyncThunk(
     try {
       await cancelRun(userMessageId); // Cancelling the bot response
     } catch (error) {
-      console.error("Error cancelling bot response:", error);
+      if (environment === "dev") {
+        console.error("Error cancelling bot response:", error);
+      }
       if (error instanceof Error) {
         return rejectWithValue({ message: error.message });
       }

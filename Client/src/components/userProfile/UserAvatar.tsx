@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function UserAvatar() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { userLoggedIn, loading } = useAppSelector((state) => state.auth);
-
+  const userData = useAppSelector((state) => state.user.userData);
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
 
@@ -28,7 +28,9 @@ export function UserAvatar() {
     <>
       <div onClick={handleClick} className="cursor-pointer">
         <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110">
-          <AvatarImage src="/imgs/test.png" alt="User Avatar" />
+          <AvatarFallback className="border-2 border-slate-700">
+            {userData?.name?.charAt(0) || "N/A"}
+          </AvatarFallback>
         </Avatar>
       </div>
       {errorMessage && (

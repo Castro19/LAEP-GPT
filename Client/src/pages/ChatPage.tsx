@@ -11,6 +11,7 @@ import { fetchLogById } from "@/redux/log/crudLog";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
 import { LogData } from "@polylink/shared/types";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
@@ -33,7 +34,9 @@ const ChatPage = () => {
         try {
           dispatch(assistantActions.fetchAll());
         } catch (error) {
-          console.error("Error fetching GPT list: ", error);
+          if (environment === "dev") {
+            console.error("Error fetching GPT list: ", error);
+          }
         }
       }
     };
@@ -62,7 +65,9 @@ const ChatPage = () => {
             );
           }
         } catch (error) {
-          console.error("Error fetching log: ", error);
+          if (environment === "dev") {
+            console.error("Error fetching log: ", error);
+          }
         }
       }
     };
