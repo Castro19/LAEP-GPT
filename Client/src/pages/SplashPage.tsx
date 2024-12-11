@@ -41,7 +41,7 @@ const SplashPage = () => {
             <SpecialButton
               text="Log In"
               onClick={() => navigate("/register/login")}
-              className="w-[100px] text-white px-4 py-2 mt-6 rounded dark:bg-green-800 dark:hover:bg-green-800"
+              className="w-[100px] text-white px-4 py-2 mt-6 rounded dark:bg-green-700 dark:hover:bg-green-700"
               icon={<></>}
             />
           </div>

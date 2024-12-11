@@ -112,14 +112,14 @@ const FlowChartHeader = () => {
                   onClick={handleSaveData}
                   text="Save"
                   icon={<MdSave />}
-                  className="dark:bg-green-800 dark:hover:bg-green-800 flex-1 w-28"
+                  className="dark:bg-green-700 dark:hover:bg-green-700 flex-1 w-32"
                 />
               ) : (
                 <SpecialButton
                   onClick={handleUpdateData}
                   text="Update"
                   icon={<MdSave />}
-                  className="dark:bg-green-800 dark:hover:bg-green-800 flex-1 w-28"
+                  className="dark:bg-green-700 dark:hover:bg-green-700 flex-1 w-32"
                 />
               )}
             </span>
