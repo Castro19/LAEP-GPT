@@ -17,12 +17,17 @@ const SplashHeader = () => {
     setIsMenuOpen(false);
   };
 
+  const mobileMenuStyles =
+    "text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-100 font-bold tracking-wide drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.3)] transition-all duration-300 hover:drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.5)]";
+  const menuStyles =
+    "text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-100 font-bold tracking-wide drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.3)] transition-all duration-300 hover:drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.5)]";
+
   return (
     <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2 border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate("/")}
-          className="text-3xl hover:text-gray-300"
+          className="text-3xl hover:text-gray-300 font-bold leading-tight"
         >
           PolyLink
         </button>
@@ -44,22 +49,22 @@ const SplashHeader = () => {
                   : "opacity-0 -translate-y-2 pointer-events-none"
               }`}
             >
-              <div className="flex flex-col p-4 space-y-4">
+              <div className="flex flex-col p-4 space-y-4 ">
                 <button
                   onClick={() => handleLinkClick("/coming-soon")}
-                  className="text-lg hover:text-gray-300 text-left transform transition-transform duration-200 hover:translate-x-2"
+                  className={mobileMenuStyles}
                 >
                   Engineering
                 </button>
                 <button
                   onClick={() => handleLinkClick("/coming-soon")}
-                  className="text-lg hover:text-gray-300 text-left transform transition-transform duration-200 hover:translate-x-2"
+                  className={mobileMenuStyles}
                 >
                   About
                 </button>
                 <button
                   onClick={() => handleLinkClick("/coming-soon")}
-                  className="text-lg hover:text-gray-300 text-left transform transition-transform duration-200 hover:translate-x-2"
+                  className={mobileMenuStyles}
                 >
                   FAQ
                 </button>
@@ -70,17 +75,17 @@ const SplashHeader = () => {
           <div className="flex items-center space-x-12 mr-6">
             <button
               onClick={() => handleLinkClick("/coming-soon")}
-              className="text-lg hover:text-gray-300"
+              className={menuStyles}
             >
               Engineering
             </button>
             <button
               onClick={() => handleLinkClick("/coming-soon")}
-              className="text-lg hover:text-gray-300"
+              className={menuStyles}
             >
               About
             </button>
-            <button className="text-lg hover:text-gray-300">FAQ</button>
+            <button className={menuStyles}>FAQ</button>
           </div>
         )}
       </div>
