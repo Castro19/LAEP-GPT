@@ -61,6 +61,31 @@ jobs:
       - name: Run lint
         run: cd server && npm run lint
 
-    # Placeholder for future server-side testing
-    # - name: Run Server Tests
-    #   run: cd server && npm test
+      # Placeholder for future server-side testing
+      # - name: Run Server Tests
+      #   run: cd server && npm test
+
+  shared-setup:
+    needs: client-build-and-lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install shared dependencies
+        run: cd shared && npm install
+
+      - name: Build shared
+        run: cd shared && npm run build
+
+      # Cache the built shared package for other jobs
+      - name: Cache shared build
+        uses: actions/cache@v3
+        with:
+          path: shared/dist
+          key: ${{ runner.os }}-shared-build-${{ github.sha }}
