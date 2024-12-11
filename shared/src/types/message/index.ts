@@ -13,7 +13,12 @@ export interface MessageSliceType {
   currentChatId: string | null; // The log Id associated with the chat
   msg: string; // The current message being typed
   isNewChat: boolean; // If its a new chat or not
-  msgList: MessageObjType[]; // The entire list of messages associated with a chat log
+  messagesByChatId: {
+    [chatId: string]: {
+      content: MessageObjType[];
+      assistantMongoId: string;
+    } | null;
+  };
   isLoading: boolean; // If the message is currently being streamed out
   error: string | null; // The error for the chat message
 }

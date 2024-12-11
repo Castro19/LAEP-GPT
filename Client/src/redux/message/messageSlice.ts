@@ -13,7 +13,7 @@ interface fetchBotResponseParams {
   currentModel: AssistantType;
   file: File | null;
   msg: string; //replace with formData
-  currentChatId: string | null;
+  currentChatId: string;
   userId: string;
   userMessageId: string;
   botMessageId: string;
@@ -29,7 +29,7 @@ type SendMessageReturnType = {
 export const fetchBotResponse = createAsyncThunk<
   MessageObjType,
   fetchBotResponseParams,
-  { rejectValue: { message: string; botMessageId: string } }
+  { rejectValue: { message: string; botMessageId: string; chatId: string } }
 >(
   "message/fetchBotResponse",
   async (
@@ -44,6 +44,7 @@ export const fetchBotResponse = createAsyncThunk<
     }: fetchBotResponseParams,
     { dispatch, rejectWithValue }
   ) => {
+    console.log("currentChatId", currentChatId);
     try {
       const newUserMessage = {
         id: userMessageId,
@@ -54,19 +55,33 @@ export const fetchBotResponse = createAsyncThunk<
       } as MessageObjType;
 
       if (msg.length === 0) {
-        return rejectWithValue({ message: "Message is empty", botMessageId });
+        return rejectWithValue({
+          message: "Message is empty",
+          botMessageId,
+          chatId: currentChatId,
+        });
       }
-      dispatch(addUserMessage(newUserMessage)); // Dispatching to add user message to the state
+      dispatch(
+        addUserMessage({
+          chatId: currentChatId,
+          content: newUserMessage,
+          assistantMongoId: currentModel.id,
+        })
+      ); // Dispatching to add user message to the state
       dispatch(toggleNewChat(false));
 
       dispatch(
         addBotMessage({
-          id: botMessageId,
-          text: "",
-          sender: "bot",
-          userReaction: null,
-          thinkingState: true,
-          urlPhoto: currentModel.urlPhoto,
+          chatId: currentChatId,
+          content: {
+            id: botMessageId,
+            text: "",
+            sender: "bot",
+            userReaction: null,
+            thinkingState: true,
+            urlPhoto: currentModel.urlPhoto,
+          },
+          assistantMongoId: currentModel.id,
         })
       ); // Dispatching to add bot message to the state
 
@@ -80,17 +95,30 @@ export const fetchBotResponse = createAsyncThunk<
           userMessageId,
           botMessageId
         );
-      dispatch(updateThinkingState({ id: botMessageId, thinkingState: false }));
+      dispatch(
+        updateThinkingState({
+          id: botMessageId,
+          thinkingState: false,
+          chatId: currentChatId,
+        })
+      );
       // Streaming updates for the bot messages
       try {
         if (updateStream) {
           await updateStream((botMessageId: string, text: string) => {
-            dispatch(updateBotMessage({ id: botMessageId, text })); // Updating existing bot message
+            dispatch(
+              updateBotMessage({
+                id: botMessageId,
+                text,
+                chatId: currentChatId,
+              })
+            ); // Updating existing bot message
           });
         } else {
           return rejectWithValue({
             message: "There was a problem streaming the response.",
             botMessageId,
+            chatId: currentChatId,
           });
         }
       } catch (streamError) {
@@ -98,17 +126,23 @@ export const fetchBotResponse = createAsyncThunk<
           message:
             "There was a problem streaming the response. Please try again later.",
           botMessageId,
+          chatId: currentChatId,
         });
       }
 
       return botMessage; // Returning the final state of the bot message
     } catch (error: unknown) {
       if (error instanceof Error) {
-        return rejectWithValue({ message: error.message, botMessageId });
+        return rejectWithValue({
+          message: error.message,
+          botMessageId,
+          chatId: currentChatId,
+        });
       }
       return rejectWithValue({
         message: "An unknown error occurred",
         botMessageId,
+        chatId: currentChatId,
       });
     }
   }
@@ -152,7 +186,13 @@ export const putUserReaction = createAsyncThunk(
           botMessageId,
           userReaction
         );
-        dispatch(updateUserReaction({ id: botMessageId, userReaction }));
+        dispatch(
+          updateUserReaction({
+            id: botMessageId,
+            userReaction,
+            chatId: logId,
+          })
+        );
         return result;
       }
     } catch (error) {
@@ -168,7 +208,7 @@ export const putUserReaction = createAsyncThunk(
 const initialState: MessageSliceType = {
   currentChatId: null,
   isNewChat: true,
-  msgList: [],
+  messagesByChatId: {},
   msg: "",
   isLoading: false,
   error: null,
@@ -183,47 +223,112 @@ const messageSlice = createSlice({
       state.msg = action.payload;
     },
     // Reducer to add user or bot message to the state (CREATE)
-    addUserMessage: (state, action: PayloadAction<MessageObjType>) => {
-      state.msgList.push(action.payload);
+    addUserMessage: (
+      state,
+      action: PayloadAction<{
+        chatId: string;
+        content: MessageObjType;
+        assistantMongoId: string;
+      }>
+    ) => {
+      const { chatId, content, assistantMongoId } = action.payload;
+      if (!state.messagesByChatId[chatId]) {
+        state.messagesByChatId[chatId] = {
+          content: [],
+          assistantMongoId: "",
+        };
+      }
+      state.messagesByChatId[chatId] = {
+        content: [...state.messagesByChatId[chatId].content, content],
+        assistantMongoId: assistantMongoId,
+      };
     },
-    addBotMessage: (state, action: PayloadAction<MessageObjType>) => {
-      state.msgList.push(action.payload);
+    addBotMessage: (
+      state,
+      action: PayloadAction<{
+        chatId: string;
+        content: MessageObjType;
+        assistantMongoId: string;
+      }>
+    ) => {
+      const { chatId, content, assistantMongoId } = action.payload;
+      if (!state.messagesByChatId[chatId]) {
+        throw new Error("Chat log not found");
+      }
+
+      state.messagesByChatId[chatId] = {
+        content: [...state.messagesByChatId[chatId].content, content],
+        assistantMongoId: assistantMongoId,
+      };
     },
     // Reducer to update an existing bot message in the state (UPDATE)
     updateBotMessage: (
       state,
-      action: PayloadAction<{ id: string; text: string }>
+      action: PayloadAction<{
+        id: string;
+        text: string;
+        chatId: string;
+      }>
     ) => {
-      const message = state.msgList.find((msg) => msg.id === action.payload.id);
+      const { id, text, chatId } = action.payload;
+
+      const message = state.messagesByChatId[chatId]?.content.find(
+        (msg) => msg.id === id
+      );
       if (message) {
-        message.text = action.payload.text;
+        message.text = text;
       }
     },
     updateUserReaction: (
       state,
-      action: PayloadAction<{ id: string; userReaction: "like" | "dislike" }>
+      action: PayloadAction<{
+        id: string;
+        userReaction: "like" | "dislike";
+        chatId: string;
+      }>
     ) => {
-      const message = state.msgList.find((msg) => msg.id === action.payload.id);
+      const { id, userReaction, chatId } = action.payload;
+      const message = state.messagesByChatId[chatId]?.content.find(
+        (msg) => msg.id === id
+      );
       if (message) {
-        message.userReaction = action.payload.userReaction;
+        message.userReaction = userReaction;
       }
     },
     updateThinkingState: (
       state,
-      action: PayloadAction<{ id: string; thinkingState: boolean }>
+      action: PayloadAction<{
+        id: string;
+        thinkingState: boolean;
+        chatId: string;
+      }>
     ) => {
-      const message = state.msgList.find((msg) => msg.id === action.payload.id);
+      const { id, thinkingState, chatId } = action.payload;
+      const message = state.messagesByChatId[chatId]?.content.find(
+        (msg) => msg.id === id
+      );
       if (message) {
-        message.thinkingState = action.payload.thinkingState;
+        message.thinkingState = thinkingState;
       }
     },
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
-    setMsgList: (state, action: PayloadAction<MessageObjType[]>) => {
-      state.msgList = action.payload;
+    setMsgList: (
+      state,
+      action: PayloadAction<{ chatId: string; content: MessageObjType[] }>
+    ) => {
+      const { chatId, content } = action.payload;
+      state.messagesByChatId[chatId] = {
+        content: content,
+        assistantMongoId: "",
+      };
     },
     // Reducer to clear the message list (DELETE)
-    resetMsgList: (state) => {
-      state.msgList = [];
+    resetMsgList: (state, action: PayloadAction<string>) => {
+      const chatId = action.payload;
+      state.messagesByChatId[chatId] = {
+        content: [],
+        assistantMongoId: "",
+      };
     },
     updateError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
@@ -250,10 +355,11 @@ const messageSlice = createSlice({
       .addCase(fetchBotResponse.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "Unknown error";
+        const { botMessageId, chatId } = action.payload || {};
         // ensure that the bot message thinking state is reset
-        if (action.payload?.botMessageId) {
-          const message = state.msgList.find(
-            (msg) => msg.id === action.payload?.botMessageId
+        if (botMessageId && chatId) {
+          const message = state.messagesByChatId[chatId]?.content.find(
+            (msg) => msg.id === botMessageId
           );
           if (message) {
             message.thinkingState = false;

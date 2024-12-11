@@ -56,7 +56,9 @@ const ChatPage = () => {
         try {
           const log = (await fetchLogById(chatId)) as LogData;
           if (log.content) {
-            dispatch(messageActions.setMsgList(log.content));
+            dispatch(
+              messageActions.setMsgList({ chatId, content: log.content })
+            );
           }
           dispatch(messageActions.setCurrentChatId(chatId));
           if (log.assistantMongoId) {

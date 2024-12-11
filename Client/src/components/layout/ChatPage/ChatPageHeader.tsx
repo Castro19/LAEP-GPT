@@ -16,18 +16,19 @@ import { useNavigate } from "react-router-dom";
 const ChatHeader = () => {
   // Redux:
   const dispatch = useAppDispatch();
-  const currentMsgList = useAppSelector((state) => state.message.msgList);
+  const { currentChatId } = useAppSelector((state) => state.message);
+
   const error = useAppSelector((state) => state.message.error);
   const navigate = useNavigate();
 
   const { toggleSidebar } = useSidebar();
 
   const handleModeSelection = (model: AssistantType) => {
-    if (model && model.id) {
+    if (model && model.id && currentChatId) {
       const modelId = model.id;
       dispatch(assistantActions.setCurrentAssistant(modelId));
       dispatch(layoutActions.toggleDropdown(false));
-      onNewChat(currentMsgList, dispatch, navigate, error);
+      onNewChat(currentChatId, dispatch, navigate, error);
     }
   };
 

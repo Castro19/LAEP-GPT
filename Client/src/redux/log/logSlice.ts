@@ -15,22 +15,27 @@ export type AddLogParams = {
   logTitle: string;
   id: string;
   assistantMongoId: string;
+  chatId: string;
 };
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { logTitle, id, assistantMongoId }: AddLogParams,
+    { logTitle, id, assistantMongoId, chatId }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
       const timestamp = new Date().toISOString(); // Timestamp for log
-      const content = (getState() as RootState).message.msgList; // Accessing message list from the state
-
+      const chatLog = (getState() as RootState).message.messagesByChatId[
+        chatId
+      ];
+      if (!chatLog) {
+        throw new Error("Chat log not found");
+      }
       if (logTitle) {
         dispatch(
           addLogList({
-            content: content, // Include the actual content
+            content: chatLog.content, // Include the actual content
             logId: id,
             timestamp: timestamp, // Include the timestamp
             title: logTitle,
@@ -39,7 +44,7 @@ export const addLog = createAsyncThunk(
       }
       // Save Log to Database
       await createLogItem({
-        content: content, // Ensure the content is included in the DB save
+        content: chatLog.content, // Ensure the content is included in the DB save
         logId: id,
         timestamp: timestamp, // Ensure the timestamp is included in the DB save
         title: logTitle,
@@ -74,6 +79,7 @@ export const fetchLogs = createAsyncThunk(
 export type UpdateLogData = {
   logId: string;
   firebaseUserId: string | null;
+  chatId: string;
   urlPhoto?: string;
   content?: MessageObjType[];
   timestamp?: string;
@@ -83,12 +89,18 @@ export type UpdateLogData = {
 export const updateLog = createAsyncThunk(
   "log/updateLog",
   async (
-    { logId, firebaseUserId }: UpdateLogData,
+    { logId, firebaseUserId, chatId }: UpdateLogData,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
       const timestamp = new Date().toISOString(); // Timestamp for updating log
-      const content = (getState() as RootState).message.msgList; // Accessing current message list from the state
+      const chatLog = (getState() as RootState).message.messagesByChatId[
+        chatId
+      ];
+      if (!chatLog) {
+        throw new Error("Chat log not found");
+      }
+      const content = chatLog.content; // Accessing current message list from the state
 
       // TO-DO: Handle updating the timestamp on server side and update the state on the return value
       dispatch(

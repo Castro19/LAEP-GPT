@@ -99,7 +99,8 @@ const ChatInput = ({
             currentModel,
             file: selectedFile, //add pdf file
             msg,
-            currentChatId: isNewChat ? newLogId : currentChatId,
+            currentChatId:
+              isNewChat || !currentChatId ? newLogId : currentChatId,
             userId: userId ? userId : "",
             userMessageId,
             botMessageId,
@@ -132,6 +133,7 @@ const ChatInput = ({
             logTitle: logTitle ? logTitle : "New Chat Log",
             id: newLogId,
             assistantMongoId: currentModel.id,
+            chatId: newLogId,
           })
         )
           .unwrap()
@@ -146,6 +148,7 @@ const ChatInput = ({
               logId: currentChatId,
               firebaseUserId: userId ? userId : null,
               urlPhoto: currentModel.urlPhoto,
+              chatId: currentChatId,
             })
           );
         }

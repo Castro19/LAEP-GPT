@@ -1,20 +1,19 @@
 import { messageActions } from "@/redux";
 import { AppDispatch } from "@/redux/store";
-import { MessageObjType } from "@polylink/shared/types";
 import { NavigateFunction } from "react-router-dom";
 
 export const onNewChat = (
-  currentMsgList: MessageObjType[],
+  currentChatId: string | null,
   dispatch: AppDispatch,
   navigate: NavigateFunction,
   error: string | null
 ) => {
-  if (currentMsgList.length > 0) {
-    dispatch(messageActions.resetMsgList()); // Reset the MsgList
-    dispatch(messageActions.toggleNewChat(true)); // Flag indicating it's a new chat
+  if (currentChatId) {
+    dispatch(messageActions.resetMsgList(currentChatId)); // Reset the MsgList
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
   }
+  dispatch(messageActions.toggleNewChat(true)); // Flag indicating it's a new chat
   navigate(`/chat`);
 };

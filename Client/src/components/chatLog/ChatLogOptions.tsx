@@ -49,7 +49,7 @@ const ChatLogOptions = ({
           .unwrap()
           .then(() => {
             navigate(`/chat`);
-            dispatch(messageActions.resetMsgList());
+            dispatch(messageActions.resetMsgList(log.logId));
             dispatch(messageActions.toggleNewChat(true));
           })
           .catch((error) => {
