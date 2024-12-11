@@ -3,9 +3,8 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
-import { readFileSync } from "fs";
-import admin from "firebase-admin";
 import cookieParser from "cookie-parser";
+import { initializeApp, cert } from "firebase-admin/app";
 
 import { connectToDb } from "./db/connection";
 import { authenticate } from "./middlewares/authMiddleware";
@@ -28,9 +27,14 @@ import OpenAI from "openai";
 const app = express();
 const port = process.env.PORT || 4000;
 
-const serviceAccount = JSON.parse(
-  readFileSync("./src/helpers/firebase/laep-firebase.json", "utf8")
-);
+const firebaseConfig = {
+  credential: cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  }),
+};
+initializeApp(firebaseConfig);
 
 // Middleware
 app.use(cookieParser());
@@ -43,10 +47,6 @@ app.use(
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(express.text({ type: "text/plain" }));
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
 // Routes
 app.use("/analytics", authenticate, messageAnalyticRouter);
