@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
+import { ChevronLeft } from "lucide-react";
 
 const ChatHeader = () => {
   const navigate = useNavigate();
@@ -13,9 +13,9 @@ const ChatHeader = () => {
       <div className="flex items-center justify-center">
         <button
           onClick={handleBackToChat}
-          className="absolute left-4 text-lg hover:text-gray-300"
+          className="absolute left-4 text-lg hover:bg-transparent"
         >
-          <IoIosArrowBack />
+          <ChevronLeft className="w-5 h-5 transition-transform duration-200 hover:-translate-x-1 size-10" />
         </button>
         <h1 className="self-center text-lg font-bold">Edit Profile</h1>
       </div>

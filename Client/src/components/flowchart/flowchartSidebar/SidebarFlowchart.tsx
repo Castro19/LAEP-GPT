@@ -80,14 +80,14 @@ export function SidebarFlowchart() {
         <div className="flex items-center justify-start gap-4">
           {/* Back button */}
           <Button
-            className="justify-start"
+            className="justify-start dark:hover:bg-transparent "
             variant="ghost"
             size="icon"
             onClick={() => {
               navigate("/profile/edit");
             }}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5 transition-transform duration-200 hover:-translate-x-1 size-10" />
           </Button>
           <span className="text-lg text-center font-semibold ml-4">
             {userData.catalog}

@@ -52,7 +52,7 @@ export function ChatPageSidebar() {
     <Sidebar className="flex flex-col h-full">
       <SidebarHeader className="mt-4 border-b border-sidebar-border dark:border-slate-700 flex-none">
         <Button
-          className="text-2xl"
+          className="text-2xl font-bold leading-tight"
           variant="link"
           onClick={() => navigate("/")}
         >
