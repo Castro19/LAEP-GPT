@@ -1,3 +1,4 @@
+import { serverUrl } from "@/helpers/getEnvironmentVars";
 import { ConcentrationInfo } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 

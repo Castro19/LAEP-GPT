@@ -98,14 +98,14 @@ const FlowChartFooter = () => {
               onClick={handleSaveData}
               text="Save"
               icon={<MdSave />}
-              className="flex-1 w-[80vw]"
+              className="flex-1 w-[80vw] dark:bg-green-800 dark:hover:bg-green-800"
             />
           ) : (
             <SpecialButton
               onClick={handleUpdateData}
               text="Update"
               icon={<MdSave />}
-              className="flex-1 w-[80vw]"
+              className="flex-1 w-[80vw] dark:bg-green-800 dark:hover:bg-green-800"
             />
           )}
         </div>

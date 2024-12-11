@@ -5,9 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
 import { toast } from "@/components/ui/use-toast";
 import { BsLayoutSidebar } from "react-icons/bs";
-
 import SpecialButton from "@/components/ui/specialButton";
-
 import { MdSave } from "react-icons/md";
 import { environment } from "@/helpers/getEnvironmentVars";
 
@@ -114,14 +112,14 @@ const FlowChartHeader = () => {
                   onClick={handleSaveData}
                   text="Save"
                   icon={<MdSave />}
-                  className="flex-1 w-24"
+                  className="dark:bg-green-800 dark:hover:bg-green-800 flex-1 w-28"
                 />
               ) : (
                 <SpecialButton
                   onClick={handleUpdateData}
                   text="Update"
                   icon={<MdSave />}
-                  className="flex-1 w-24"
+                  className="dark:bg-green-800 dark:hover:bg-green-800 flex-1 w-28"
                 />
               )}
             </span>

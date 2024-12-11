@@ -66,6 +66,7 @@ export const fetchBotResponse = createAsyncThunk<
           sender: "bot",
           userReaction: null,
           thinkingState: true,
+          urlPhoto: currentModel.urlPhoto,
         })
       ); // Dispatching to add bot message to the state
 

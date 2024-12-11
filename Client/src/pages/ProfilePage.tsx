@@ -127,9 +127,14 @@ export function ProfilePage() {
             </h3>
             <p className="text-lg text-center">{userData?.email || "N/A"}</p>
             <p className="text-lg text-center mt-2">
-              {yearMapping(userData?.year || "N/A")}{" "}
-              {userData?.major || "Computer Science"} {userType || "Student"}
+              {yearMapping(userData?.year || "N/A")} {userData?.major || ""}{" "}
+              {userType || "Student"}
             </p>
+            {!userData?.major && (
+              <p className="text-lg text-center mt-2">
+                Please update your major to to create a flowchart
+              </p>
+            )}
           </div>
           <SilverLine />
         </CardContent>
