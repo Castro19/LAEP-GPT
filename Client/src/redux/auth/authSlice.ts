@@ -118,7 +118,7 @@ export const signInWithMicrosoft = createAsyncThunk<
               dispatch(setPendingCredential(credData));
               dispatch(
                 setRegisterError(
-                  "Account already exists with a different credential. Please sign in with your existing account (email/password) and then link Microsoft from your profile."
+                  "Account already exists with a different credential. Please sign in with your existing account (email/password) and we will automatically link your accounts."
                 )
               );
             }
