@@ -9,7 +9,7 @@ import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index.mjs";
-import { llmRequestBody, RunningStreamData } from "@polylink/shared/types";
+import { RunningStreamData } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -26,6 +26,15 @@ const messageRateLimiter = rateLimit({
   keyGenerator: (req) => req.body.userId || "unknown-user",
 });
 
+type LLMRequestBody = {
+  message: string;
+  chatId: string;
+  userId: string;
+  userMessageId: string;
+  currentModel: string;
+  file?: Express.Multer.File;
+};
+
 const MAX_FILE_SIZE_MB = 1;
 // Store running streams: Useful for cancelling a running stream
 const runningStreams: RunningStreamData = {};
@@ -40,7 +49,7 @@ router.post(
     }
 
     const { message, chatId, userId, userMessageId, currentModel } =
-      req.body as llmRequestBody;
+      req.body as LLMRequestBody;
 
     if (!userId) {
       res.status(401).end("Unauthorized");

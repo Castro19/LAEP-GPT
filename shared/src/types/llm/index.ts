@@ -22,12 +22,3 @@ export type RunningStreamData = Record<
     threadId: string | null;
   }
 >;
-
-export type llmRequestBody = {
-  message: string;
-  chatId: string;
-  userId: string;
-  userMessageId: string;
-  currentModel: string;
-  file?: Express.Multer.File;
-};
