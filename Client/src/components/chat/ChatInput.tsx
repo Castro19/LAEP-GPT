@@ -33,7 +33,7 @@ const ChatInput = ({
     string | null
   >(null);
   const currentModel = useAppSelector((state) => state.assistant.currentModel);
-  const { msg, isNewChat, currentChatId, isLoading, error } = useAppSelector(
+  const { msg, isNewChat, currentChatId, loading, error } = useAppSelector(
     (state) => state.message
   );
   const userId = useAppSelector((state) => state.auth.userId);
@@ -92,6 +92,11 @@ const ChatInput = ({
     }
     try {
       setSelectedFile(null);
+      const logId = isNewChat ? newLogId : currentChatId;
+      dispatch(messageActions.setCurrentChatId(logId));
+      if (!logId) {
+        throw new Error("Log ID is required");
+      }
 
       try {
         await dispatch(
@@ -99,7 +104,7 @@ const ChatInput = ({
             currentModel,
             file: selectedFile, //add pdf file
             msg,
-            currentChatId: isNewChat ? newLogId : currentChatId,
+            currentChatId: logId,
             userId: userId ? userId : "",
             userMessageId,
             botMessageId,
@@ -132,6 +137,7 @@ const ChatInput = ({
             logTitle: logTitle ? logTitle : "New Chat Log",
             id: newLogId,
             assistantMongoId: currentModel.id,
+            chatId: logId,
           })
         )
           .unwrap()
@@ -146,6 +152,7 @@ const ChatInput = ({
               logId: currentChatId,
               firebaseUserId: userId ? userId : null,
               urlPhoto: currentModel.urlPhoto,
+              chatId: currentChatId,
             })
           );
         }
@@ -166,9 +173,13 @@ const ChatInput = ({
 
   const handleStop = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
-    if (currentUserMessageId) {
-      dispatch(messageActions.cancelBotResponse(currentUserMessageId));
+    if (currentUserMessageId && currentChatId) {
+      dispatch(
+        messageActions.cancelBotResponse({
+          userMessageId: currentUserMessageId,
+          chatId: currentChatId,
+        })
+      );
     }
   };
 
@@ -186,7 +197,9 @@ const ChatInput = ({
         </div>
       )}
       <form
-        onSubmit={isLoading ? () => {} : handleSubmit}
+        onSubmit={
+          currentChatId && loading[currentChatId] ? () => {} : handleSubmit
+        }
         className="flex items-end gap-2"
       >
         {currentModel.title === "Will NOT Allow File Uploads for right now" && (
@@ -205,7 +218,7 @@ const ChatInput = ({
           maxLength={2000}
           onChange={handleInputChange}
         />
-        {isLoading ? (
+        {currentChatId && loading[currentChatId] ? (
           <Button
             className="dark:bg-transparent hover:bg-gray-800 dark:hover:bg-slate-800 focus:ring-2 focus:ring-red-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base text-white"
             type="submit"
@@ -220,7 +233,9 @@ const ChatInput = ({
             className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
             type="submit"
             variant="outline"
-            disabled={isLoading || msg.length === 0}
+            disabled={
+              currentChatId && loading[currentChatId] ? true : msg.length === 0
+            }
             ref={sendButtonRef}
           >
             <IoSend className="text-2xl" />

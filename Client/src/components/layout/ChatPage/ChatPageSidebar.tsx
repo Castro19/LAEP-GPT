@@ -24,10 +24,30 @@ export function ChatPageSidebar() {
   const dispatch = useAppDispatch();
   const logList = useAppSelector((state) => state.log.logList);
   const userId = useAppSelector((state) => state.auth.userId);
+  const { currentChatId, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
   const hasFetchedLogs = useRef(false);
 
   // Handler for selecting a log to view
   const handleSelectLog = (logId: string) => {
+    if (currentChatId) {
+      if (loading[currentChatId]) {
+        // Get the last user message id. It will be the last or 2nd to last message in the array. it will always be the the last message of the array with the type "user"
+        const lastMessages = messagesByChatId[currentChatId].content.slice(-2);
+        const userMessageId = lastMessages.find(
+          (message) => message.sender === "user"
+        )?.id;
+        if (userMessageId) {
+          dispatch(
+            messageActions.cancelBotResponse({
+              userMessageId: userMessageId,
+              chatId: currentChatId,
+            })
+          );
+        }
+      }
+    }
     const chosenLog = logList.find((item) => item.logId === logId);
     if (chosenLog) {
       // Set the current chat id

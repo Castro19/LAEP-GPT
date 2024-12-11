@@ -19,7 +19,6 @@ const ChatPage = () => {
   const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
-
   const assistantList = useAppSelector(
     (state) => state.assistant.assistantList
   );
@@ -56,7 +55,13 @@ const ChatPage = () => {
         try {
           const log = (await fetchLogById(chatId)) as LogData;
           if (log.content) {
-            dispatch(messageActions.setMsgList(log.content));
+            dispatch(
+              messageActions.setMsgList({
+                chatId,
+                content: log.content,
+                assistantMongoId: log.assistantMongoId || "",
+              })
+            );
           }
           dispatch(messageActions.setCurrentChatId(chatId));
           if (log.assistantMongoId) {

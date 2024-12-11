@@ -3,18 +3,26 @@ import { RiChatNewFill } from "react-icons/ri";
 import { onNewChat } from "./helpers/newChatHandler";
 // Redux:
 import { useAppDispatch, useAppSelector } from "@/redux";
-
 const NewChat = () => {
   const navigate = useNavigate();
   // Redux:
   const dispatch = useAppDispatch();
-  const currentMsgList = useAppSelector((state) => state.message.msgList);
-
-  const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
+  const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
 
   return (
     <button
-      onClick={() => onNewChat(currentMsgList, dispatch, navigate, error)}
+      onClick={() =>
+        onNewChat(
+          currentChatId,
+          dispatch,
+          navigate,
+          error,
+          loading,
+          messagesByChatId
+        )
+      }
       className="text-lg hover:text-gray-300"
     >
       <RiChatNewFill />
