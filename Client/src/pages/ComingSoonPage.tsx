@@ -3,7 +3,7 @@ import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 const ComingSoonPage = () => {
   return (
     <SplashLayout>
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-80 my-20">
+      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-80 my-44">
         <div className="flex flex-col items-center space-y-4">
           <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
             <svg
