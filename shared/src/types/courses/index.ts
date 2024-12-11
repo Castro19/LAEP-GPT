@@ -1,5 +1,3 @@
-import { Filter } from "bson";
-
 // Base interfaces for the raw query parameters
 export interface CourseQuery {
   catalogYear?: string;
@@ -57,6 +55,3 @@ export type PrerequisiteObj = {
   recommended: string[];
   concurrent: string[];
 };
-
-// Type for MongoDB queries
-export type MongoQuery<T> = Filter<T>;
