@@ -9,7 +9,7 @@ import { MessageObjType } from "@polylink/shared/types";
 const ChatContainer = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
-  const { messagesByChatId, isNewChat, isLoading, currentChatId } =
+  const { messagesByChatId, isNewChat, loading, currentChatId } =
     useAppSelector((state) => state.message);
   const [msgList, setMsgList] = useState<MessageObjType[]>([]);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +54,7 @@ const ChatContainer = () => {
 
   return (
     <div className="flex flex-col h-screen justify-between bg-slate-900">
-      {isNewChat && !isLoading ? (
+      {isNewChat && !loading[currentChatId ?? ""] ? (
         <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />
       ) : (
         <ScrollArea ref={messagesContainerRef}>

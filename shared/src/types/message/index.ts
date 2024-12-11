@@ -8,17 +8,20 @@ export type MessageObjType = {
   thinkingState?: boolean;
 };
 
+export type MessageByChatIdType = {
+  [chatId: string]: {
+    content: MessageObjType[];
+    assistantMongoId: string;
+  };
+};
 // Important:
 export interface MessageSliceType {
   currentChatId: string | null; // The log Id associated with the chat
   msg: string; // The current message being typed
   isNewChat: boolean; // If its a new chat or not
-  messagesByChatId: {
-    [chatId: string]: {
-      content: MessageObjType[];
-      assistantMongoId: string;
-    } | null;
+  messagesByChatId: MessageByChatIdType;
+  loading: {
+    [chatId: string]: boolean;
   };
-  isLoading: boolean; // If the message is currently being streamed out
   error: string | null; // The error for the chat message
 }

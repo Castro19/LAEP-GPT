@@ -26,8 +26,9 @@ type SendMessageReturnType = {
   ) => Promise<string>;
 };
 
+// return the currentChatId
 export const fetchBotResponse = createAsyncThunk<
-  MessageObjType,
+  { botMessage: MessageObjType; chatId: string }, // Modified return type
   fetchBotResponseParams,
   { rejectValue: { message: string; botMessageId: string; chatId: string } }
 >(
@@ -128,7 +129,7 @@ export const fetchBotResponse = createAsyncThunk<
         });
       }
 
-      return botMessage; // Returning the final state of the bot message
+      return { botMessage, chatId: currentChatId }; // Modified return
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue({
@@ -148,9 +149,13 @@ export const fetchBotResponse = createAsyncThunk<
 // In your Redux actions file
 export const cancelBotResponse = createAsyncThunk(
   "message/cancelBotResponse",
-  async (userMessageId: string, { rejectWithValue }) => {
+  async (
+    { userMessageId, chatId }: { userMessageId: string; chatId: string },
+    { rejectWithValue }
+  ) => {
     try {
       await cancelRun(userMessageId); // Cancelling the bot response
+      return { chatId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error cancelling bot response:", error);
@@ -208,7 +213,7 @@ const initialState: MessageSliceType = {
   isNewChat: true,
   messagesByChatId: {},
   msg: "",
-  isLoading: false,
+  loading: {},
   error: null,
 };
 
@@ -344,17 +349,22 @@ const messageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBotResponse.pending, (state) => {
-        state.isLoading = true;
+      .addCase(fetchBotResponse.pending, (state, action) => {
+        const { currentChatId } = action.meta.arg; // Access from arg
+        state.loading[currentChatId] = true;
       })
-      .addCase(fetchBotResponse.fulfilled, (state) => {
-        state.isLoading = false;
+      .addCase(fetchBotResponse.fulfilled, (state, action) => {
+        const { chatId } = action.payload;
+        state.loading[chatId] = false;
       })
       .addCase(fetchBotResponse.rejected, (state, action) => {
-        state.isLoading = false;
+        const chatId = action.payload?.chatId || action.meta.arg.currentChatId;
+        state.loading[chatId] = false;
         state.error = action.payload?.message || "Unknown error";
-        const { botMessageId, chatId } = action.payload || {};
-        // ensure that the bot message thinking state is reset
+
+        // Fix the botMessageId reference
+        const botMessageId =
+          action.payload?.botMessageId || action.meta.arg.botMessageId;
         if (botMessageId && chatId) {
           const message = state.messagesByChatId[chatId]?.content.find(
             (msg) => msg.id === botMessageId
@@ -364,8 +374,9 @@ const messageSlice = createSlice({
           }
         }
       })
-      .addCase(cancelBotResponse.fulfilled, (state) => {
-        state.isLoading = false;
+      .addCase(cancelBotResponse.fulfilled, (state, action) => {
+        const { chatId } = action.payload;
+        state.loading[chatId] = false;
       });
   },
 });

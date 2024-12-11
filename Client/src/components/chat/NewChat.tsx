@@ -7,11 +7,22 @@ const NewChat = () => {
   const navigate = useNavigate();
   // Redux:
   const dispatch = useAppDispatch();
-  const { currentChatId, error } = useAppSelector((state) => state.message);
+  const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
 
   return (
     <button
-      onClick={() => onNewChat(currentChatId, dispatch, navigate, error)}
+      onClick={() =>
+        onNewChat(
+          currentChatId,
+          dispatch,
+          navigate,
+          error,
+          loading,
+          messagesByChatId
+        )
+      }
       className="text-lg hover:text-gray-300"
     >
       <RiChatNewFill />
