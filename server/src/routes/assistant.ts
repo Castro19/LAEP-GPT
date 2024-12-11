@@ -1,5 +1,6 @@
 import express, { RequestHandler } from "express";
 import { fetchAssistants } from "../db/models/assistant/assistantServices";
+import { environment } from "../index";
 
 const router = express.Router();
 
@@ -13,7 +14,9 @@ router.get("/", (async (req, res) => {
     const result = await fetchAssistants();
     res.status(200).json(result);
   } catch (error) {
-    console.error("Failed to fetch GPTs: ", error);
+    if (environment === "dev") {
+      console.error("Failed to fetch GPTs: ", error);
+    }
   }
 }) as RequestHandler);
 

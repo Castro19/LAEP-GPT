@@ -69,13 +69,19 @@ export const qdrant = {
   qdrantUrl: process.env.QDRANT_URL,
   qdrantApiKey: process.env.QDRANT_API_KEY,
 };
+
+export const environment = process.env.ENVIRONMENT;
 // Connect to the database and start the server
 connectToDb()
   .then(() => {
     app.listen(port, () => {
-      console.log(`Server listening at http://localhost:${port}`);
+      if (environment === "dev") {
+        console.log(`Server listening at http://localhost:${port}`);
+      }
     });
   })
   .catch((error) => {
-    console.error("Failed to connect to the database:", error);
+    if (environment === "dev") {
+      console.error("Failed to connect to the database:", error);
+    }
   });

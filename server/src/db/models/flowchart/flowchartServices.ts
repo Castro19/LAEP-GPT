@@ -10,6 +10,7 @@ import {
   FlowchartData,
 } from "@polylink/shared/types";
 import { BulkWriteResult } from "mongodb";
+import { environment } from "../../../index";
 // Create
 // Make it so that we have a 1:1 relationship between the user and the flowchart
 // If the user already has a flowchart, we update it, otherwise we create a new one
@@ -128,7 +129,9 @@ export const fetchAllFlowcharts = async (
     // Make sure that the primary flowchart is always at the top
     return flowchartList;
   } catch (error) {
-    console.error("Error fetching all flowcharts:", error);
+    if (environment === "dev") {
+      console.error("Error fetching all flowcharts:", error);
+    }
     return [];
   }
 };

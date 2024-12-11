@@ -5,6 +5,7 @@ import {
   ProfessorRatingDocument,
   ProfessRatingList,
 } from "@polylink/shared/types";
+import { environment } from "../../../index";
 
 let professorRatingCollection: Collection<ProfessorRatingDocument>;
 
@@ -38,7 +39,9 @@ export const viewProfessorRatings = async (
       .toArray();
     return result as ProfessRatingList[];
   } catch (error: unknown) {
-    console.error("Error viewing professor ratings: ", error);
+    if (environment === "dev") {
+      console.error("Error viewing professor ratings: ", error);
+    }
     return [];
   }
 };

@@ -55,17 +55,15 @@ export async function searchCourses(
   });
 
   // Process and return the results
-  const results = searchResult.map((hit) => ({
-    id: hit.id,
-    score: hit.score,
-    courseId: hit.payload?.courseId,
-    subject: hit.payload?.subject,
-    displayName: hit.payload?.displayName,
-    description: hit.payload?.description,
-  }));
+  // const results = searchResult.map((hit) => ({
+  //   id: hit.id,
+  //   score: hit.score,
+  //   courseId: hit.payload?.courseId,
+  //   subject: hit.payload?.subject,
+  //   displayName: hit.payload?.displayName,
+  //   description: hit.payload?.description,
+  // }));
   const courseIds = searchResult.map((result) => result.payload?.courseId);
-  console.log("results: ", results);
-  console.log("courseIds: ", courseIds);
   return courseIds as string[];
 }
 
@@ -88,14 +86,13 @@ export async function searchProfessors(
     limit: top_k,
     with_payload: true,
   });
-  console.log("searchResult: ", searchResult);
-  const results = searchResult.map((result) => ({
-    id: result.id,
-    score: result.score,
-    courses: result.payload?.courses,
-    name: result.payload?.name,
-    professorId: result.payload?.id,
-  }));
-  console.log("results: ", results);
+  // const results = searchResult.map((result) => ({
+  //   id: result.id,
+  //   score: result.score,
+  //   courses: result.payload?.courses,
+  //   name: result.payload?.name,
+  //   professorId: result.payload?.id,
+  // }));
+
   return searchResult[0]?.payload?.id as string;
 }

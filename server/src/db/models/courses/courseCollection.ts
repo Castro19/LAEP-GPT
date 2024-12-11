@@ -5,6 +5,7 @@ import {
 } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
+import { environment } from "../../../index";
 
 let courseCollection: Collection<CourseDocument>;
 
@@ -45,7 +46,9 @@ export const findCourses = async (
       .toArray();
     return courses as CourseObject[];
   } catch (error) {
-    console.error("An error occurred:", error);
+    if (environment === "dev") {
+      console.error("An error occurred:", error);
+    }
     throw error; // Re-throw the error to be handled by the caller
   }
 };
@@ -95,7 +98,9 @@ export const findCoursesGroupedBySubjectNames = async (
 
     return result[0].courses;
   } catch (error) {
-    console.error("An error occurred:", error);
+    if (environment === "dev") {
+      console.error("An error occurred:", error);
+    }
     throw error;
   }
 };
@@ -120,7 +125,9 @@ export const findSubjectNames = async (
 
     return result.map((item) => item._id); // Extract _id from each object
   } catch (error) {
-    console.error("An error occurred:", error);
+    if (environment === "dev") {
+      console.error("An error occurred:", error);
+    }
     throw error;
   }
 };
@@ -146,7 +153,9 @@ export const findCourseInfo = async (
       .toArray(); // Convert the cursor to an array
     return result as CourseObject[];
   } catch (error) {
-    console.error("An error occurred:", error);
+    if (environment === "dev") {
+      console.error("An error occurred:", error);
+    }
     throw error;
   }
 };

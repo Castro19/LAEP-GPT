@@ -5,6 +5,7 @@ import {
   MongoQuery,
 } from "@polylink/shared/types";
 import * as flowInfoModel from "./flowInfoCollection";
+import { environment } from "../../../index";
 
 // First, define the return type using a type predicate function
 function isMajorNameAndCatalog(
@@ -65,7 +66,9 @@ export const searchFlowInfo = async ({
     }
     return null;
   } catch (error) {
-    console.error("Error searching flowinfo:", error);
+    if (environment === "dev") {
+      console.error("Error searching flowinfo:", error);
+    }
     return null;
   }
 };

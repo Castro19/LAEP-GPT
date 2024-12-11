@@ -3,7 +3,7 @@ import {
   RunningStreamData,
 } from "@polylink/shared/types";
 import { Response } from "express";
-import { openai } from "../../index";
+import { environment, openai } from "../../index";
 import { calculateCost } from "../openAI/costFunction";
 import { updateMessageAnalytics } from "../../db/models/analytics/messageAnalytics/messageAnalyticsServices";
 import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs";
@@ -47,7 +47,9 @@ export async function runAssistantAndStreamResponse(
               }
               return;
             } catch (error: unknown) {
-              console.error("Error cancelling run:", error);
+              if (environment === "dev") {
+                console.error("Error cancelling run:", error);
+              }
               if (!res.headersSent) {
                 res.status(500).end("Error cancelling run");
               }
@@ -74,13 +76,17 @@ export async function runAssistantAndStreamResponse(
             updateMessageAnalytics(
               userMessageId,
               tokenAnalytics as MessageAnalyticsTokenAnalytics
-            ).catch((error: unknown) =>
-              console.error("Failed to update message analytics:", error)
-            );
+            ).catch((error: unknown) => {
+              if (environment === "dev") {
+                console.error("Failed to update message analytics:", error);
+              }
+            });
           }
         }
       } catch (error: unknown) {
-        console.error("Error in event handler:", error);
+        if (environment === "dev") {
+          console.error("Error in event handler:", error);
+        }
         // Clean up runningStreams
         if (runningStreams[userMessageId]) {
           delete runningStreams[userMessageId];
@@ -95,7 +101,9 @@ export async function runAssistantAndStreamResponse(
       try {
         res.write(textDelta.value);
       } catch (error: unknown) {
-        console.error("Error writing text delta:", error);
+        if (environment === "dev") {
+          console.error("Error writing text delta:", error);
+        }
       }
     });
 
@@ -103,12 +111,16 @@ export async function runAssistantAndStreamResponse(
       try {
         res.end();
       } catch (error: unknown) {
-        console.error("Error ending response:", error);
+        if (environment === "dev") {
+          console.error("Error ending response:", error);
+        }
       }
     });
 
     run.on("error", (error: unknown) => {
-      console.error("Run error:", error);
+      if (environment === "dev") {
+        console.error("Run error:", error);
+      }
       // Remove this run from runningStreams
       if (runningStreams[userMessageId]) {
         delete runningStreams[userMessageId];
@@ -118,7 +130,9 @@ export async function runAssistantAndStreamResponse(
       }
     });
   } catch (error: unknown) {
-    console.error("Error in runAssistantAndStreamResponse:", error);
+    if (environment === "dev") {
+      console.error("Error in runAssistantAndStreamResponse:", error);
+    }
     if (!res.headersSent) {
       res.status(500).end("Failed to process assistant response.");
     } else {
@@ -191,16 +205,21 @@ export async function runAssistantAndCollectResponse(
                 totalCost: cost.totalCost,
               };
               updateMessageAnalytics(userMessageId, tokenAnalytics).catch(
-                (updateError: unknown) =>
-                  console.error(
-                    "Failed to update message analytics:",
-                    updateError
-                  )
+                (updateError: unknown) => {
+                  if (environment === "dev") {
+                    console.error(
+                      "Failed to update message analytics:",
+                      updateError
+                    );
+                  }
+                }
               );
             }
           }
         } catch (error: unknown) {
-          console.error("Error in run event handler:", error);
+          if (environment === "dev") {
+            console.error("Error in run event handler:", error);
+          }
           if (runningStreams[userMessageId]) {
             delete runningStreams[userMessageId];
           }
@@ -217,14 +236,18 @@ export async function runAssistantAndCollectResponse(
       });
 
       run.on("error", (error: unknown) => {
-        console.error("Run error:", error);
+        if (environment === "dev") {
+          console.error("Run error:", error);
+        }
         if (runningStreams[userMessageId]) {
           delete runningStreams[userMessageId];
         }
         reject(error);
       });
     } catch (error: unknown) {
-      console.error("Error in runAssistantAndCollectResponse:", error);
+      if (environment === "dev") {
+        console.error("Error in runAssistantAndCollectResponse:", error);
+      }
       if (runningStreams[userMessageId]) {
         delete runningStreams[userMessageId];
       }

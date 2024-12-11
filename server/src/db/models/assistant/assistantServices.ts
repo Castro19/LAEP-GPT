@@ -1,5 +1,6 @@
 import { AssistantDocument, AssistantType } from "@polylink/shared/types";
 import * as assistantModel from "./assistantCollection";
+import { environment } from "../../../index";
 
 // Read All
 export const fetchAssistants: () => Promise<AssistantType[]> = async () => {
@@ -18,7 +19,9 @@ export const fetchAssistants: () => Promise<AssistantType[]> = async () => {
 
     return assistantList;
   } catch (error) {
-    console.error("CONSOLE LOG ERROR: ", error);
+    if (environment === "dev") {
+      console.error("CONSOLE LOG ERROR: ", error);
+    }
     throw new Error("Error fetching assistants: " + (error as Error).message);
   }
 };

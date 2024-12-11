@@ -1,6 +1,7 @@
 import { UpdateUserData, UserData } from "@polylink/shared/types";
 import * as UserModel from "./userCollection";
 import { findUserByEmail } from "./userCollection";
+import { environment } from "../../../index";
 
 export const addUser = async (
   userData: UserData
@@ -59,7 +60,9 @@ export const checkUserExistsByEmail = async (
     const user = await findUserByEmail(email);
     return user !== null;
   } catch (error) {
-    console.error("Error checking user existence: ", error);
+    if (environment === "dev") {
+      console.error("Error checking user existence: ", error);
+    }
     return false;
   }
 };

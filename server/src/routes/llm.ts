@@ -3,7 +3,7 @@ dotenv.config();
 import express, { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import multer from "multer";
-import { openai } from "../index";
+import { environment, openai } from "../index";
 import { handleFileUpload } from "../helpers/azure/blobFunctions";
 import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
@@ -76,7 +76,10 @@ router.post(
         try {
           userFile = await handleFileUpload(file);
         } catch (error) {
-          console.error("Error uploading file:", error);
+          if (environment === "dev") {
+            console.error("Error uploading file:", error);
+          }
+          throw error;
         }
       } else {
         res.status(400).send("File uploads are not allowed for this model");
@@ -95,7 +98,9 @@ router.post(
           chatId,
         });
       } catch (error) {
-        console.error("Error in multi-agent model:", error);
+        if (environment === "dev") {
+          console.error("Error in multi-agent model:", error);
+        }
         if (!res.headersSent) {
           res.status(500).send("Failed to process request.");
         } else {
@@ -115,7 +120,9 @@ router.post(
           runningStreams,
         });
       } catch (error) {
-        console.error("Error in single-agent model:", error);
+        if (environment === "dev") {
+          console.error("Error in single-agent model:", error);
+        }
         if (!res.headersSent) {
           res.status(500).send("Failed to process request.");
         } else {
@@ -143,16 +150,19 @@ router.post(
           delete runningStreams[userMessageId];
           res.status(200).send("Run(s) cancelled");
         } catch (error: unknown) {
-          const message = (error as { error: Error | null })?.error?.message;
-          if (message?.includes("Cannot cancel run with status")) {
-            console.log("Run canceled");
-          } else if (message?.includes("already has an active run")) {
-            console.log("Run already canceled: ", message);
-            // TO-DO: Edge case where the run is in the pending state of being created while the user cancels the run which makes it so that the run is not canceled
-          } else {
+          // const message = (error as { error: Error | null })?.error?.message;
+          // if (message?.includes("Cannot cancel run with status")) {
+          //   console.log("Run canceled");
+          // } else
+          // if (message?.includes("already has an active run")) {
+          //   console.log("Run already canceled: ", message);
+          //   // TO-DO: Edge case where the run is in the pending state of being created while the user cancels the run which makes it so that the run is not canceled
+          // } else {
+          if (environment === "dev") {
             console.error("Error cancelling run(s):", error);
-            res.status(500).send("Error cancelling run(s)");
           }
+          res.status(500).send("Error cancelling run(s)");
+          // }
         }
       } else {
         // `runId` not yet available; cancellation flag is set
@@ -186,7 +196,9 @@ router.post(
       const title = chatCompletion.choices[0].message.content;
       res.json({ title: title });
     } catch (error) {
-      console.error("Error calling OpenAI:", error);
+      if (environment === "dev") {
+        console.error("Error calling OpenAI:", error);
+      }
       res
         .status(500)
         .json({ error: "Failed to generate response from OpenAI" });

@@ -6,6 +6,7 @@ import {
 } from "@polylink/shared/types";
 import { getDb } from "../../../connection";
 import { Collection, InsertOneResult, UpdateResult } from "mongodb";
+import { environment } from "../../../../index";
 
 let messageAnalyticsCollection: Collection<
   MessageAnalyticsDocument | MessageAnalyticsCreate
@@ -27,7 +28,9 @@ export const addMessageAnalytics: (
       await messageAnalyticsCollection.insertOne(messageAnalyticsData);
     return result;
   } catch (error) {
-    console.error("Full error:", error);
+    if (environment === "dev") {
+      console.error("Full error:", error);
+    }
     throw new Error(
       `Error creating message analytics: ${(error as Error).message}`
     );
@@ -52,7 +55,9 @@ export const updateMessageAnalytics: (
     );
     return result;
   } catch (error) {
-    console.error("Full error:", error);
+    if (environment === "dev") {
+      console.error("Full error:", error);
+    }
     throw new Error(
       `Error updating message analytics in database: ${(error as Error).message}`
     );
@@ -71,7 +76,9 @@ export const updateMessageAnalyticsReaction: (
     );
     return result;
   } catch (error) {
-    console.error("Full error:", error);
+    if (environment === "dev") {
+      console.error("Full error:", error);
+    }
     throw new Error(
       `Error updating message analytics reaction in database: ${(error as Error).message}`
     );

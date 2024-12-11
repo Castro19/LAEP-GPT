@@ -138,7 +138,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
           <div
             className={`rounded-lg shadow-lg px-2 py-4 ${
               isUserMessage
-                ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white"
+                ? "mr-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white"
                 : "bg-gradient-to-r from-gray-800 to-gray-700 text-white dark:from-gray-700 dark:to-gray-600"
             }`}
           >

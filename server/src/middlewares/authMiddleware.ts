@@ -2,6 +2,7 @@ import admin from "firebase-admin";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import { UserType } from "@polylink/shared/types";
+import { environment } from "../index";
 
 // authMiddleware.ts
 export const authenticate: RequestHandler = async (req, res, next) => {
@@ -17,7 +18,9 @@ export const authenticate: RequestHandler = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    console.error("Authentication error:", error);
+    if (environment === "dev") {
+      console.error("Authentication error:", error);
+    }
     res.status(401).send("Unauthorized");
   }
 };

@@ -2,7 +2,7 @@ import { openai } from "../../index";
 import fs from "fs";
 import { FileObject } from "openai/resources/index.mjs";
 import path from "path";
-
+import { environment } from "../../index";
 /**
  * Temporary function to store the file on the local file system.
  * @param {Object} file - The uploaded file object (e.g., from a form submission via Multer).
@@ -44,7 +44,9 @@ export async function handleFileUpload(
 
     return openAIResponse;
   } catch (error) {
-    console.error("Error handling file upload:", error);
+    if (environment === "dev") {
+      console.error("Error handling file upload:", error);
+    }
     throw error;
   }
 }
@@ -65,7 +67,9 @@ async function uploadFileToOpenAI(filePath: string): Promise<FileObject> {
 
     return userFile;
   } catch (error) {
-    console.error("Error uploading file to OpenAI:", error);
+    if (environment === "dev") {
+      console.error("Error uploading file to OpenAI:", error);
+    }
     throw error;
   }
 }

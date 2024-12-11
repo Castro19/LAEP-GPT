@@ -1,5 +1,5 @@
 import { byPassCalPolyEmailCheck } from "../../db/models/signupAccess/signupAccessServices";
-
+import { environment } from "../../index";
 export async function verifyCalPolyEmail(email: string): Promise<boolean> {
   const calPolyEmailRegex = /^[A-Z0-9._%+-]+@calpoly\.edu$/i;
 
@@ -11,7 +11,9 @@ export async function verifyCalPolyEmail(email: string): Promise<boolean> {
           return true;
         }
       } catch (error) {
-        console.error("Failed to check if email is valid:", error);
+        if (environment === "dev") {
+          console.error("Failed to check if email is valid:", error);
+        }
         return false;
       }
     } else {
