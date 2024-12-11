@@ -2,7 +2,7 @@ import {
   ProfessorRatingDocument,
   ProfessRatingList,
 } from "@polylink/shared/types";
-import { MongoQuery } from "@polylink/shared/types";
+import { MongoQuery } from "../../../types/mongo";
 import * as professorRatingCollection from "./professorRatingCollection";
 import { sortAndLimitReviews } from "./professorRatingUtil";
 

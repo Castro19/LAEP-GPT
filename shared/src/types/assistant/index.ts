@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 export type AssistantType = {
   id: string; // The unique id of the assistant

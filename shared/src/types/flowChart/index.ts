@@ -1,6 +1,6 @@
 // types.ts
 
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 // 1-1 match #FEFD9A --> Major, #FCD09E --> Support, #DCFDD2 --> GE, #F5F5DC --> Other
 type colors = "#FEFD9A" | "#FCD09E" | "#DCFDD2" | "#F5F5DC";

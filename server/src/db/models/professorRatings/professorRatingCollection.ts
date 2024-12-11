@@ -1,10 +1,10 @@
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
 import {
-  MongoQuery,
   ProfessorRatingDocument,
   ProfessRatingList,
 } from "@polylink/shared/types";
+import { MongoQuery } from "../../../types/mongo";
 import { environment } from "../../../index";
 
 let professorRatingCollection: Collection<ProfessorRatingDocument>;

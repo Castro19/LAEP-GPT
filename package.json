@@ -20,7 +20,7 @@
     "dev:server": "cd server && npm run dev",
     "dev": "concurrently \"npm run start:Client\" \"npm run dev:server\"",
     "build:client": "cd Client && npm run build",
-    "postinstall": "npm run build:client",
+    "postinstall": "",
     "format:client": "cd Client && npm run format",
     "format:server": "cd server && npm run format",
     "format:all": "npm run format:client && npm run format:server",
