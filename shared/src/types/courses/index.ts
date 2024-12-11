@@ -1,4 +1,4 @@
-import { Filter } from "mongodb";
+import { Filter } from "bson";
 
 // Base interfaces for the raw query parameters
 export interface CourseQuery {
