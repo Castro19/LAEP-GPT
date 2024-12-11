@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { IoSchoolSharp } from "react-icons/io5";
@@ -11,7 +11,11 @@ import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 // Helper Components
 import { ErrorMessage } from "@/components/register/ErrorMessage";
 import SpecialButton from "@/components/ui/specialButton";
-import { linkWithMicrosoft, setRegisterError } from "@/redux/auth/authSlice";
+import {
+  clearRegisterError,
+  linkWithMicrosoft,
+  setRegisterError,
+} from "@/redux/auth/authSlice";
 import { OAuthProvider } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
@@ -76,6 +80,10 @@ export default function LoginForm() {
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(clearRegisterError());
+  }, [dispatch]);
 
   return (
     <div>

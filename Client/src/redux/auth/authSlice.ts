@@ -42,6 +42,7 @@ export const checkAuthentication = createAsyncThunk<
   { dispatch: AppDispatch }
 >("auth/checkAuthentication", async (_, { dispatch }) => {
   dispatch(setLoading(true));
+  dispatch(clearRegisterError());
 
   try {
     // Make a request to your server to check authentication
@@ -83,6 +84,7 @@ export const signInWithMicrosoft = createAsyncThunk<
   { dispatch: AppDispatch }
 >("auth/signInWithMicrosoft", async (_, { dispatch }) => {
   dispatch(setLoading(true));
+  dispatch(clearRegisterError());
 
   // Send the token to server to set the HTTP-only cookie
   try {
@@ -245,6 +247,8 @@ export const signUpWithEmail = createAsyncThunk<
 >(
   "auth/signUpWithEmail",
   async ({ email, password, firstName, lastName, navigate }, { dispatch }) => {
+    dispatch(clearRegisterError());
+
     if (email && (await verifyCalPolyEmail(email))) {
       dispatch(setLoading(true));
       dispatch(clearRegisterError());
@@ -341,6 +345,8 @@ export const sendResetEmail = createAsyncThunk<
   { email: string },
   { rejectValue: string; dispatch: AppDispatch }
 >("auth/sendResetEmail", async ({ email }, { rejectWithValue, dispatch }) => {
+  dispatch(clearRegisterError());
+
   try {
     // Set your actionCodeSettings if you want a custom redirect
     const actionCodeSettings = {
@@ -370,6 +376,8 @@ export const verifyResetCode = createAsyncThunk<
 >(
   "auth/verifyResetCode",
   async ({ oobCode }, { rejectWithValue, dispatch }) => {
+    dispatch(clearRegisterError());
+
     try {
       const email = await verifyPasswordResetCode(auth, oobCode);
       if (!email) {
@@ -399,6 +407,8 @@ export const confirmNewPassword = createAsyncThunk<
 >(
   "auth/confirmNewPassword",
   async ({ oobCode, newPassword }, { rejectWithValue, dispatch }) => {
+    dispatch(clearRegisterError());
+
     try {
       await confirmPasswordReset(auth, oobCode, newPassword);
     } catch (error: unknown) {
@@ -418,6 +428,8 @@ export const linkWithMicrosoft = createAsyncThunk<
 >(
   "auth/linkWithMicrosoft",
   async ({ pendingCred }, { rejectWithValue, dispatch }) => {
+    dispatch(clearRegisterError());
+
     const user = auth.currentUser;
     if (!user) {
       return rejectWithValue("User is not logged in.");

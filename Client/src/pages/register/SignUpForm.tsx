@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -7,6 +7,7 @@ import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
 import { IoSchoolSharp } from "react-icons/io5";
 import SpecialButton from "@/components/ui/specialButton";
+import { clearRegisterError } from "@/redux/auth/authSlice";
 
 export function SignupFormDemo() {
   const [firstName, setFirstName] = useState("");
@@ -72,6 +73,10 @@ export function SignupFormDemo() {
     e.preventDefault();
     dispatch(authActions.signInWithMicrosoft());
   };
+
+  useEffect(() => {
+    dispatch(clearRegisterError());
+  }, [dispatch]);
 
   const renderInitialState = () => (
     <>
