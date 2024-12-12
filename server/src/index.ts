@@ -26,6 +26,7 @@ import OpenAI from "openai";
 // Initialize express app
 const app = express();
 const port = process.env.PORT || 4000;
+console.log("port: ", port);
 
 const firebaseConfig = {
   credential: cert({

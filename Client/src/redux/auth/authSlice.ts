@@ -108,6 +108,11 @@ export const signInWithMicrosoft = createAsyncThunk<
           setRegisterError("Access restricted to @calpoly.edu email addresses.")
         );
       }
+    } else {
+      dispatch(signOutUser());
+      dispatch(
+        setRegisterError("Access restricted to @calpoly.edu email addresses.")
+      );
     }
   } catch (error) {
     if (error instanceof Error) {
