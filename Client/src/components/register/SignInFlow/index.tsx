@@ -7,6 +7,10 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons
 import { setIsNewUser } from "@/redux/auth/authSlice";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useUserData } from "@/hooks/useUserData";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import useIsMobile from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 
 const signInFlowSteps = [
   "terms",
@@ -19,11 +23,12 @@ const signInFlowSteps = [
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
   const { handleSave, userData } = useUserData();
+  const isMobile = useIsMobile();
   const { selections } = useAppSelector((state) => state.flowSelection);
   const { flowchartData } = useAppSelector((state) => state.flowchart);
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isSkipButton, setIsSkipButton] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,8 +40,9 @@ const SignInFlow = () => {
   useEffect(() => {
     switch (currentStep) {
       case "terms":
-        setTitle("Terms of Agreement");
+        setTitle("Terms of Service");
         setDescription("Please read and accept the terms of agreement");
+        setIsTermsAccepted(userData?.canShareData || false);
         break;
       case "about-me":
         setTitle(`Welcome, ${userData?.name}!`);
@@ -61,8 +67,9 @@ const SignInFlow = () => {
       default:
         setTitle("Welcome!");
         setDescription("");
+        navigate("/sign-in-flow/terms");
     }
-  }, [currentStep, userData]);
+  }, [currentStep, userData, navigate]);
 
   useEffect(() => {
     if (selections.catalog && selections.major && selections.concentration) {
@@ -86,6 +93,14 @@ const SignInFlow = () => {
   };
 
   const handleCompleteProfile = () => {
+    if (!isTermsAccepted) {
+      toast({
+        title: "Terms not accepted",
+        description: "Please accept the terms of service to continue",
+        variant: "destructive",
+      });
+      return;
+    }
     dispatch(setIsNewUser(false));
     handleSave();
     if (selections.catalog && selections.major && selections.concentration) {
@@ -101,25 +116,41 @@ const SignInFlow = () => {
     }
   };
 
+  const handleDisableClick = () => {
+    toast({
+      title: "Terms not accepted",
+      description: "Please accept the terms of service to continue",
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-800">
-      <div className="flex border border-white h-3/4 w-3/4 bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
+      <div
+        className={`flex ${isMobile ? "flex-col" : ""} border border-white ${isMobile ? "w-[95%]" : "w-3/4"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg`}
+      >
         {/* Left Side: Title and Description Component */}
-        <TitleCard title={title} description={description} />
+        {!isMobile && <TitleCard title={title} description={description} />}
 
-        {/* Right Side: Login or Signup Form based on route */}
-        <div className="w-1/2 flex flex-col justify-between text-black dark:text-white">
-          <div className="flex flex-col justify-center p-8">
-            <Outlet />
-          </div>
-
+        {/* Right Side: Sign up flow form based on route */}
+        <div
+          className={`${isMobile ? "w-full" : "w-1/2 min-h-[50vh] max-h-[80vh]"} flex flex-col justify-between text-black dark:text-white`}
+        >
+          {isMobile && <TitleCard title={title} description={description} />}
+          <ScrollArea className={`overflow-y-auto`}>
+            <div className={"flex flex-col justify-between h-full p-4"}>
+              <div className="flex flex-col flex-1 min-h-0">
+                <Outlet />
+              </div>
+            </div>
+          </ScrollArea>
           {/* Navigation Arrows */}
-          <div className="flex justify-between p-4">
+          <div className={`flex justify-between ${isMobile ? "p-2" : "p-4"}`}>
             {/* Previous Arrow */}
             {currentStepIndex > 0 ? (
               <button
                 onClick={handlePrevious}
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${isMobile ? "text-sm" : ""}`}
               >
                 <FaArrowLeft className="mr-2" />
                 Back
@@ -130,20 +161,30 @@ const SignInFlow = () => {
 
             {/* Next Arrow or Complete Profile Button */}
             {currentStepIndex < signInFlowSteps.length - 1 ? (
-              <button
-                onClick={handleNext}
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Next
-                <FaArrowRight className="ml-2" />
-              </button>
-            ) : (
+              isTermsAccepted ? (
+                <button
+                  onClick={handleNext}
+                  className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${isMobile ? "text-sm" : ""}`}
+                >
+                  Next
+                  <FaArrowRight className="ml-2" />
+                </button>
+              ) : (
+                <Button onClick={handleDisableClick} variant="destructive">
+                  Disabled
+                </Button>
+              )
+            ) : isTermsAccepted ? (
               <button
                 onClick={handleCompleteProfile}
-                className={`px-4 py-2 ${isSkipButton ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"} text-white rounded `}
+                className={`px-4 py-2 ${isSkipButton ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"} text-white rounded ${isMobile ? "text-sm" : ""}`}
               >
                 {isSkipButton ? "Skip" : "Create Flowchart"}
               </button>
+            ) : (
+              <Button onClick={handleDisableClick} variant="destructive">
+                Disabled
+              </Button>
             )}
           </div>
         </div>
