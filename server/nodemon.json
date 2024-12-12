@@ -1,8 +1,8 @@
 {
   "watch": ["src"],
   "ignore": ["node_modules"],
-  "ext": "ts,mjs,js,json,graphql",
-  "exec": "npx etsc && node ./dist/index.js",
+  "ext": "ts",
+  "exec": "ts-node ./src/index.ts",
   "env": {
     "DEBUG": "express/*",
     "STATIC": "../proto/public"

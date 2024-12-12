@@ -16,6 +16,13 @@
       "@polylink/shared/*": ["../shared/dist/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/types/**/*.d.ts", "src/index.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/types/middleware/*.d.ts",
+    "src/index.ts",
+    "src/types/index.dts",
+    "src/types/**/*.d.ts"
+  ],
+
   "exclude": ["node_modules"]
 }
