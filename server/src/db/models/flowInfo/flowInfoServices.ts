@@ -5,7 +5,7 @@ import {
 } from "@polylink/shared/types";
 import * as flowInfoModel from "./flowInfoCollection";
 import { environment } from "../../../index";
-import { MongoQuery } from "../../../types";
+import { MongoQuery } from "../../../types/mongo";
 // First, define the return type using a type predicate function
 function isMajorNameAndCatalog(
   majorName: string | undefined,

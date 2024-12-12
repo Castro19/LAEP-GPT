@@ -20,9 +20,7 @@
     "src/**/*.ts",
     "src/types/middleware/*.d.ts",
     "src/index.ts",
-    "src/types/index.dts",
-    "src/types/**/*.d.ts"
+    "src/types/index.dts"
   ],
-
   "exclude": ["node_modules"]
 }
