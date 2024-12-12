@@ -39,12 +39,26 @@ initializeApp(firebaseConfig);
 
 // Middleware
 app.use(cookieParser());
+
+const allowedOrigins = [
+  "http://localhost:5173", // Development
+  "https://polylink.dev", // Production
+];
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow origin
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`)); // Block origin
+      }
+    },
+    credentials: true, // Allow cookies or Authorization headers
   })
-); // Enable CORS
+);
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(express.text({ type: "text/plain" }));
