@@ -7,7 +7,7 @@ import {
   CourseDocument,
   CourseObject,
 } from "@polylink/shared/types";
-import { MongoQuery } from "../../../types/mongo";
+import { MongoQuery } from "../../../types/global";
 export const getCourses = async (
   queryParams: CourseQuery
 ): Promise<CourseObject[]> => {

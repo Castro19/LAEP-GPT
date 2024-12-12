@@ -4,7 +4,7 @@ import {
   ProfessorRatingDocument,
   ProfessRatingList,
 } from "@polylink/shared/types";
-import { MongoQuery } from "../../../types/mongo";
+import { MongoQuery } from "../../../types/global";
 import { environment } from "../../../index";
 
 let professorRatingCollection: Collection<ProfessorRatingDocument>;

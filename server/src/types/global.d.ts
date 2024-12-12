@@ -16,3 +16,5 @@ export type ExpressHandler = (
   res: Response,
   next: NextFunction
 ) => Promise<void> | void;
+
+export type MongoQuery<T> = Filter<T>;

@@ -1,5 +1,5 @@
 import { CourseDocument, CourseObject } from "@polylink/shared/types";
-import { MongoQuery } from "../../../types/mongo";
+import { MongoQuery } from "../../../types/global";
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
 import { environment } from "../../../index";

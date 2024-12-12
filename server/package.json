@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "npm install && npm install --save-dev @types/mongodb @types/express @types/cors @types/cookie-parser @types/firebase-admin @types/multer @types/express-rate-limit && tsc",
+    "build": "tsc",
     "start": "node dist/index.js",
     "prepare": "cd ../shared && npm run build",
     "postinstall": "cd ../shared && npm install && npm run build",
