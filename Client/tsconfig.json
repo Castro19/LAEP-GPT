@@ -25,6 +25,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "utils", "../server/db/models/gpt/matchingAssistant.js"],
+  "include": ["src", "utils", "src/**/*.ts", "src/**/*.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

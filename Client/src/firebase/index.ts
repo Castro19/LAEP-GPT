@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
