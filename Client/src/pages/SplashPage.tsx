@@ -50,7 +50,7 @@ const SplashPage = () => {
             <iframe
               width="560"
               height="315"
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+              src="https://www.youtube.com/embed/Q66-GO8spTs?si=ElcsXhDS3T2K-8C6"
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
