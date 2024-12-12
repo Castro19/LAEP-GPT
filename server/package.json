@@ -4,9 +4,11 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon",
-    "build": "npx etsc",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
     "start": "node dist/index.js",
+    "prepare": "cd ../shared && npm run build",
+    "postinstall": "cd ../shared && npm install && npm run build",
     "check": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{js,ts}' --report-unused-disable-directives",
     "lint:fix": "eslint 'src/**/*.{js,ts}' --fix"
@@ -39,7 +41,6 @@
     "@types/node": "^22.10.1",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
-    "esbuild-node-tsc": "^2.0.5",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.34.1",

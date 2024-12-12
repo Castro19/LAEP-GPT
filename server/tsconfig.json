@@ -1,13 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "baseUrl": "./src",
+    "target": "ES2019",
+    "module": "CommonJS",
+    "declaration": true,
+    "declarationDir": "./dist/types",
     "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "bundler",
-    "forceConsistentCasingInFileNames": true
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@polylink/shared/*": ["../shared/dist/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
@@ -15,6 +22,5 @@
     "src/index.ts",
     "src/types/index.dts"
   ],
-  "exclude": ["node_modules"],
-  "lib": ["esnext"]
+  "exclude": ["node_modules"]
 }

@@ -8,7 +8,7 @@ import { handleFileUpload } from "../helpers/azure/blobFunctions";
 import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
-import { FileObject } from "openai/resources/index.mjs";
+import { FileObject } from "openai/resources/index";
 import { RunningStreamData } from "@polylink/shared/types";
 
 const router = express.Router();

@@ -10,7 +10,7 @@ import { searchCourses } from "../qdrant/qdrantQuery";
 import { getCourseInfo } from "../../db/models/courses/courseServices";
 import flowchartHelper from "../flowchart/flowchart";
 import { RunningStreamData, UserData } from "@polylink/shared/types";
-import { FileObject } from "openai/resources/index.mjs";
+import { FileObject } from "openai/resources/index";
 import { Response } from "express";
 import { environment } from "../../index";
 
