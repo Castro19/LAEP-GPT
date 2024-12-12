@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { auth } from "@/firebase";
 import { sendEmailVerification } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { setEmailVerifyError } from "@/redux/auth/authSlice.ts";
+import {
+  clearRegisterError,
+  setEmailVerifyError,
+} from "@/redux/auth/authSlice.ts";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
 // redux auth:
 import { authActions, useAppDispatch, useAppSelector } from "@/redux";
@@ -18,6 +21,10 @@ export function VerifyEmail() {
   const { userLoggedIn, userId, registerError, emailVerified } = useAppSelector(
     (state) => state.auth
   );
+
+  useEffect(() => {
+    dispatch(clearRegisterError());
+  }, [dispatch]);
 
   useEffect(() => {
     // Redirect to main chat page when email is verified
