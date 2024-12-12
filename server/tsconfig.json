@@ -16,9 +16,6 @@
       "@polylink/shared/*": ["../shared/dist/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "src/types/**/*.d.ts" // Add this line to include type declarations
-  ],
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts", "src/index.ts"],
   "exclude": ["node_modules"]
 }
