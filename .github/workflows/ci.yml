@@ -19,7 +19,14 @@ jobs:
           cd Client
           npm install
         env:
-          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
 
       - name: Run lint
         run: cd Client && npm run lint
@@ -27,7 +34,14 @@ jobs:
       - name: Build Client
         run: cd Client && npm run build
         env:
-          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
 
       # Add this step to cache the build
       - name: Cache build artifacts
@@ -36,33 +50,8 @@ jobs:
           path: Client/dist
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
-  shared-setup:
-    needs: client-build-and-lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install shared dependencies
-        run: cd shared && npm install
-
-      - name: Build shared
-        run: cd shared && npm run build
-
-      # Cache the built shared package for other jobs
-      - name: Cache shared build
-        uses: actions/cache@v3
-        with:
-          path: shared/dist
-          key: ${{ runner.os }}-shared-build-${{ github.sha }}
-
   server-setup:
-    needs: [client-build-and-lint, shared-setup]
+    needs: client-build-and-lint
     runs-on: ubuntu-latest
 
     steps:
@@ -80,19 +69,12 @@ jobs:
           path: Client/dist
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
-      # Restore shared build cache
-      - name: Restore shared build
-        uses: actions/cache@v3
-        with:
-          path: shared/dist
-          key: ${{ runner.os }}-shared-build-${{ github.sha }}
-
       - name: Install Server Dependencies
         run: cd server && npm install --ignore-scripts # Added --ignore-scripts flag
 
       - name: Run lint
         run: cd server && npm run lint
 
-      # Placeholder for future server-side testing
-      # - name: Run Server Tests
-      #   run: cd server && npm test
+    # Placeholder for future server-side testing
+    # - name: Run Server Tests
+    #   run: cd server && npm test
