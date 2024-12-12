@@ -6,8 +6,8 @@ import { Response } from "express";
 import { environment, openai } from "../../index";
 import { calculateCost } from "../openAI/costFunction";
 import { updateMessageAnalytics } from "../../db/models/analytics/messageAnalytics/messageAnalyticsServices";
-import { AssistantStreamEvent } from "openai/resources/beta/assistants.mjs";
-import { Run } from "openai/resources/beta/threads/runs/runs.mjs";
+import { AssistantStreamEvent } from "openai/resources/beta/assistants";
+import { Run } from "openai/resources/beta/threads/runs/runs";
 
 export async function runAssistantAndStreamResponse(
   threadId: string,

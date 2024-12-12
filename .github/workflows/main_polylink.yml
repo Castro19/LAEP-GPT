@@ -12,35 +12,50 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Install and Build
 
     steps:
+      # Step 1: Checkout the code
       - uses: actions/checkout@v4
 
+      # Step 2: Set up Node.js
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: "18.x"
 
-      - name: npm install, build, and test
+      # Step 3: Install dependencies and build shared package
+      - name: Install and Build Shared Package
         run: |
+          cd shared
           npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm run build
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      # Step 4: Install dependencies and build server package
+      - name: Install and Build Server Package
+        run: |
+          cd ../server
+          npm install
+          npm run build
 
-      - name: Upload artifact for deployment job
+      # Step 5: Prepare Deployment Artifact
+      - name: Zip Artifact for Deployment
+        run: |
+          cd ../server
+          zip -r release.zip ./*
+
+      # Step 6: Upload Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: release.zip
+          name: server-app
+          path: server/release.zip
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
+      name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write #This is required for requesting the JWT
@@ -53,7 +68,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -61,11 +76,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'PolyLink'
-          slot-name: 'Production'
+          app-name: "PolyLink"
+          slot-name: "Production"
           package: .
-          

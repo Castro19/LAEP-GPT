@@ -1,6 +1,6 @@
 import { openai } from "../../index";
 import fs from "fs";
-import { FileObject } from "openai/resources/index.mjs";
+import { FileObject } from "openai/resources/index";
 import path from "path";
 import { environment } from "../../index";
 /**

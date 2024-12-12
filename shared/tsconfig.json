@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
+    "target": "ES2019",
+    "module": "CommonJS",
     "declaration": true,
-    "baseUrl": "./src",
+    "declarationDir": "./dist",
     "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts", "src/types/middleware/*.d.ts", "src/index.ts"],
-  "exclude": ["node_modules"],
-  "lib": ["esnext"]
+  "exclude": ["node_modules"]
 }

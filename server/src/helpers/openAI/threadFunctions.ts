@@ -5,7 +5,7 @@ import {
   addThreadToDB,
   fetchIds,
 } from "../../db/models/threads/threadServices";
-import { Message } from "openai/resources/beta/threads/messages.mjs";
+import { Message } from "openai/resources/beta/threads/messages";
 import { ThreadData } from "@polylink/shared/types";
 
 //add fileId. fileId can be null if user does not submit file
