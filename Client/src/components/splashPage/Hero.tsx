@@ -26,9 +26,9 @@ export function Hero() {
     <div className="flex flex-col items-center justify-start bg-white dark:bg-slate-900 bg-opacity-50">
       <TypewriterEffectSmooth words={words} />
       <SpecialButton
-        text="Join the Team!"
+        text="Meet the Team!"
         onClick={() => {
-          navigate("/coming-soon");
+          navigate("/team");
         }}
         icon={<></>}
         className="w-40 h-10 my-4 rounded-xl bg-white text-black border border-black  text-sm"
