@@ -93,6 +93,14 @@ const SignInFlow = () => {
   };
 
   const handleCompleteProfile = () => {
+    if (!isTermsAccepted) {
+      toast({
+        title: "Terms not accepted",
+        description: "Please accept the terms of service to continue",
+        variant: "destructive",
+      });
+      return;
+    }
     dispatch(setIsNewUser(false));
     handleSave();
     if (selections.catalog && selections.major && selections.concentration) {
@@ -119,14 +127,14 @@ const SignInFlow = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-800">
       <div
-        className={`flex ${isMobile ? "flex-col" : ""} border border-white max-h-[80vh] ${isMobile ? "w-[95%]" : "w-3/4"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
+        className={`flex ${isMobile ? "flex-col" : ""} border border-white ${isMobile ? "w-[95%]" : "w-3/4"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg`}
       >
         {/* Left Side: Title and Description Component */}
         {!isMobile && <TitleCard title={title} description={description} />}
 
         {/* Right Side: Sign up flow form based on route */}
         <div
-          className={`${isMobile ? "w-full" : "w-1/2"} flex flex-col justify-between text-black dark:text-white`}
+          className={`${isMobile ? "w-full" : "w-1/2 min-h-[50vh] max-h-[80vh]"} flex flex-col justify-between text-black dark:text-white`}
         >
           {isMobile && <TitleCard title={title} description={description} />}
           <ScrollArea className={`overflow-y-auto`}>
@@ -136,7 +144,6 @@ const SignInFlow = () => {
               </div>
             </div>
           </ScrollArea>
-
           {/* Navigation Arrows */}
           <div className={`flex justify-between ${isMobile ? "p-2" : "p-4"}`}>
             {/* Previous Arrow */}
@@ -167,13 +174,17 @@ const SignInFlow = () => {
                   Disabled
                 </Button>
               )
-            ) : (
+            ) : isTermsAccepted ? (
               <button
                 onClick={handleCompleteProfile}
                 className={`px-4 py-2 ${isSkipButton ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"} text-white rounded ${isMobile ? "text-sm" : ""}`}
               >
                 {isSkipButton ? "Skip" : "Create Flowchart"}
               </button>
+            ) : (
+              <Button onClick={handleDisableClick} variant="destructive">
+                Disabled
+              </Button>
             )}
           </div>
         </div>

@@ -29,9 +29,7 @@ export default function Terms() {
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
       </div>
-      <div
-        className={`sticky bottom-0 border-t p-4 dark:bg-zinc-800 ${isMobile ? "mt-auto" : ""}`}
-      >
+      <div className="sticky bottom-0 border-t p-4 dark:bg-zinc-800 mt-auto">
         <div className="flex items-center justify-center space-x-2">
           <Checkbox
             id="terms"
