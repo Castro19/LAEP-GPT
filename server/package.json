@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
+    "build": "npm install && npm install --save-dev @types/mongodb @types/express @types/cors @types/cookie-parser @types/firebase-admin @types/multer @types/express-rate-limit && tsc",
     "start": "node dist/index.js",
     "prepare": "cd ../shared && npm run build",
     "postinstall": "cd ../shared && npm install && npm run build",
@@ -37,6 +37,7 @@
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/mongodb": "^4.0.7",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.2",
     "@typescript-eslint/eslint-plugin": "^8.17.0",

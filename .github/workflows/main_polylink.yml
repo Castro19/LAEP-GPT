@@ -35,6 +35,7 @@ jobs:
       - name: Install and Build Server Package
         run: |
           cd server
+          npm ci
           npm install
           npm run build
 
