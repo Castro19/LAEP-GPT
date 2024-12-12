@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { Button } from "@/components/ui/button";
+import { FaGithub } from "react-icons/fa";
 
 const SplashHeader = () => {
   const navigate = useNavigate();
@@ -15,6 +17,10 @@ const SplashHeader = () => {
     }
     navigate(path);
     setIsMenuOpen(false);
+  };
+
+  const handleGithubClick = (path: string) => {
+    window.open(path, "_blank");
   };
 
   const mobileMenuStyles =
@@ -51,41 +57,35 @@ const SplashHeader = () => {
             >
               <div className="flex flex-col p-4 space-y-4 ">
                 <button
-                  onClick={() => handleLinkClick("/coming-soon")}
+                  onClick={() => handleLinkClick("/team")}
                   className={mobileMenuStyles}
                 >
-                  Engineering
+                  Our Team
                 </button>
-                <button
-                  onClick={() => handleLinkClick("/coming-soon")}
+                <Button
+                  onClick={() =>
+                    handleGithubClick("https://github.com/Castro19/LAEP-GPT")
+                  }
                   className={mobileMenuStyles}
                 >
-                  About
-                </button>
-                <button
-                  onClick={() => handleLinkClick("/coming-soon")}
-                  className={mobileMenuStyles}
-                >
-                  FAQ
-                </button>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-white">Github</p>
+                    <FaGithub className="size-5 text-white" />
+                  </div>
+                </Button>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex items-center space-x-12 mr-6">
-            <button
-              onClick={() => handleLinkClick("/coming-soon")}
+          <div className="flex items-center space-x-2 mr-2">
+            <Button
+              onClick={() =>
+                handleGithubClick("https://github.com/Castro19/LAEP-GPT")
+              }
               className={menuStyles}
             >
-              Engineering
-            </button>
-            <button
-              onClick={() => handleLinkClick("/coming-soon")}
-              className={menuStyles}
-            >
-              About
-            </button>
-            <button className={menuStyles}>FAQ</button>
+              <FaGithub className="size-8 text-white" />
+            </Button>
           </div>
         )}
       </div>
