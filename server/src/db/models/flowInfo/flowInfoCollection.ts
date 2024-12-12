@@ -5,7 +5,7 @@ import {
 } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection } from "mongodb";
-import { MongoQuery } from "../../../types/mongo";
+import { MongoQuery } from "../../../types";
 
 let flowInfoCollection: Collection<FlowInfoDocument>;
 

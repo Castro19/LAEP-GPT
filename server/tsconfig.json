@@ -18,9 +18,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/types/middleware/*.d.ts",
-    "src/index.ts",
-    "src/types/index.dts"
+    "src/types/**/*.d.ts" // Add this line to include type declarations
   ],
   "exclude": ["node_modules"]
 }

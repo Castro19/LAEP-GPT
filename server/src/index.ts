@@ -19,15 +19,10 @@ import flowInfoRouter from "./routes/flowInfo";
 import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
 import professorRatingRouter from "./routes/professorRating";
 import llmRouter from "./routes/llm";
-
 // LLM API
 import OpenAI from "openai";
 
-// Initialize express app
-const app = express();
 const port = process.env.PORT || 4000;
-console.log("port: ", port);
-
 const firebaseConfig = {
   credential: cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -35,16 +30,31 @@ const firebaseConfig = {
     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
   }),
 };
-initializeApp(firebaseConfig);
+const allowedOrigins = [
+  "http://localhost:5173", // Development
+  "https://polylink.dev", // Production
+];
 
+// Initialize express app
+const app = express();
 // Middleware
-app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow origin
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`)); // Block origin
+      }
+    },
+    credentials: true, // Allow cookies or Authorization headers
   })
-); // Enable CORS
+);
+
+app.use(cookieParser());
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
 app.use(express.text({ type: "text/plain" }));
@@ -60,6 +70,8 @@ app.use("/flowcharts", authenticate, flowchartRouter);
 app.use("/flowInfo", authenticate, flowInfoRouter);
 app.use("/professorRatings", professorRatingRouter);
 app.use("/llms", llmRouter);
+
+initializeApp(firebaseConfig);
 
 // Initialize OpenAI API client
 export const openai = new OpenAI({
