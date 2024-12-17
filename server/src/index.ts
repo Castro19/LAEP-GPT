@@ -19,6 +19,7 @@ import flowInfoRouter from "./routes/flowInfo";
 import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
 import professorRatingRouter from "./routes/professorRating";
 import llmRouter from "./routes/llm";
+import teamRouter from "./routes/team";
 
 // LLM API
 import OpenAI from "openai";
@@ -74,7 +75,7 @@ app.use("/flowcharts", authenticate, flowchartRouter);
 app.use("/flowInfo", authenticate, flowInfoRouter);
 app.use("/professorRatings", professorRatingRouter);
 app.use("/llms", llmRouter);
-
+app.use("/team", teamRouter);
 // Initialize OpenAI API client
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

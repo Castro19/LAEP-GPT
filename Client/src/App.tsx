@@ -39,6 +39,7 @@ import FirebaseAuth from "./pages/register/FirebaseAuth.tsx";
 import ComingSoonPage from "./pages/ComingSoonPage.tsx";
 import { environment } from "./helpers/getEnvironmentVars.ts";
 import TeamPage from "./pages/TeamPage.tsx";
+import { getTeamMembers } from "./helpers/getTeamMembers.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
@@ -133,6 +134,7 @@ const router = routerChosen([
   {
     path: "team",
     element: <TeamPage />,
+    loader: getTeamMembers,
   },
   {
     path: "/auth",

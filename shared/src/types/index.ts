@@ -11,3 +11,4 @@ export * from "./messageAnalytics";
 export * from "./professorRating";
 export * from "./llm";
 export * from "./user";
+export * from "./team";
