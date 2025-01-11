@@ -6,5 +6,5 @@ export type TeamDocument = {
   funFact: string;
   image: string;
   linkedin: string;
-  github: string;
+  github?: string;
 };
