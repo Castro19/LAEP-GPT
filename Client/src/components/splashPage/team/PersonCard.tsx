@@ -11,7 +11,7 @@ type PersonCardProps = {
   image: string;
   funFact: string;
   linkedin: string;
-  github: string;
+  github?: string;
 };
 
 const PersonCard = ({
@@ -43,14 +43,16 @@ const PersonCard = ({
           >
             <FaLinkedin className="size-5" />
           </Button>
-          <Button
-            onClick={() => handleLinkClick(github)}
-            className="dark:bg-transparent"
-            variant="outline"
-            size="icon"
-          >
-            <FaGithub className="size-5" />
-          </Button>
+          {github && (
+            <Button
+              onClick={() => handleLinkClick(github)}
+              className="dark:bg-transparent"
+              variant="outline"
+              size="icon"
+            >
+              <FaGithub className="size-5" />
+            </Button>
+          )}
         </div>
         <CardDescription>{role}</CardDescription>
 
