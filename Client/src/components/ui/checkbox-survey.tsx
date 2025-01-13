@@ -1,50 +1,60 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type CheckboxSurveyProps = {
   items: { id: string; label: string }[];
   label: string;
+  // eslint-disable-next-line no-unused-vars
+  handleChange: (value: string[]) => void;
 };
 
-export function CheckboxSurvey({ items, label }: CheckboxSurveyProps) {
+export function CheckboxSurvey({
+  items,
+  label,
+  handleChange,
+}: CheckboxSurveyProps) {
   const [showTextAreaItem, setShowTextAreaItem] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [otherItem, setOtherItem] = useState("");
 
   const handleItemChange = (checked: boolean, value: string) => {
     if (checked) {
+      // Option is checked
       if (value === "other") {
         setShowTextAreaItem(true);
         if (otherItem) {
-          setSelectedItems((prev) => [...prev, otherItem]);
+          setSelectedItems([...selectedItems, otherItem]);
         }
       }
-
-      setSelectedItems((prev) => [...prev, value]);
+      setSelectedItems([...selectedItems, value]);
+      handleChange([...selectedItems, value]);
     } else {
+      // Option is unchecked
+      let newItems: string[] = [];
       if (value === "other") {
         setShowTextAreaItem(false);
-        setSelectedItems((prev) =>
-          prev.filter((interest) => interest !== otherItem)
+        setOtherItem("");
+        newItems = selectedItems.filter(
+          (interest) => interest !== otherItem && interest !== "other"
         );
+      } else {
+        newItems = selectedItems.filter((interest) => interest !== value);
       }
-      setSelectedItems((prev) => prev.filter((interest) => interest !== value));
+      setSelectedItems(newItems);
+      handleChange(newItems);
     }
   };
 
   const handleOtherItemChange = (value: string) => {
     setOtherItem(value);
-    setSelectedItems((prev) => {
-      const withoutOther = prev.filter((interest) => interest !== otherItem);
-      return [...withoutOther, value];
-    });
+    const newItems = selectedItems
+      .filter((interest) => interest !== otherItem)
+      .concat(value);
+    setSelectedItems(newItems);
+    handleChange(newItems);
   };
-
-  useEffect(() => {
-    console.log(selectedItems.filter((interest) => interest !== "other"));
-  }, [selectedItems]);
 
   return (
     <div>

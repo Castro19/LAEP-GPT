@@ -28,5 +28,17 @@ const goalsItems = [
 ];
 
 export function Goals() {
-  return <CheckboxSurvey items={goalsItems} label="Goals" />;
+  const handleGoalChange = (goals: string[]) => {
+    console.log(
+      "Goals",
+      goals.filter((goal) => goal !== "other")
+    );
+  };
+  return (
+    <CheckboxSurvey
+      items={goalsItems}
+      label="Goals"
+      handleChange={handleGoalChange}
+    />
+  );
 }
