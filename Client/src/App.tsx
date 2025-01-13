@@ -21,13 +21,11 @@ import "./index.css";
 // import SignInFlow from "./components/register/SignInFlow";
 import AboutMe from "./components/register/SignInFlow/AboutMe.tsx";
 import WeeklyCalendar from "./components/register/WeeklyCalendar.tsx";
-import InterestDropdown from "./components/register/SignInFlow/InterestDropdown.tsx";
 import Terms from "./components/register/SignInFlow/Terms.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
 import ProfilePageLayout from "./components/layout/ProfilePage/ProfilePageLayout.tsx";
-import interests from "./calpolyData/interests.json";
 import FlowChatPage from "./pages/FlowChatPage.tsx";
 import FlowChartOptions from "./components/register/SignInFlow/FlowChartOptions.tsx";
 import FlowChart from "./components/flowchart/FlowChart.tsx";
@@ -40,6 +38,10 @@ import ComingSoonPage from "./pages/ComingSoonPage.tsx";
 import { environment } from "./helpers/getEnvironmentVars.ts";
 import TeamPage from "./pages/TeamPage.tsx";
 import { getTeamMembers } from "./helpers/getTeamMembers.ts";
+import { Demographics } from "./components/register/SignInFlow/Demographics.tsx";
+import { Interests } from "./components/register/SignInFlow/Interests.tsx";
+import { ActivityPreferences } from "./components/register/SignInFlow/ActivityPreferences.tsx";
+import { Goals } from "./components/register/SignInFlow/Goals.tsx";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
@@ -146,12 +148,24 @@ const router = routerChosen([
     errorElement: <ErrorPageChosen />,
     children: [
       {
-        path: "about-me",
-        element: <AboutMe />,
+        path: "demographics",
+        element: <Demographics />,
       },
       {
         path: "interests",
-        element: <InterestDropdown name="Interests" items={interests} />,
+        element: <Interests />,
+      },
+      {
+        path: "activities",
+        element: <ActivityPreferences />,
+      },
+      {
+        path: "goals",
+        element: <Goals />,
+      },
+      {
+        path: "about-me",
+        element: <AboutMe />,
       },
       {
         path: "flowchart",

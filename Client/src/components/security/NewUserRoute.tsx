@@ -15,9 +15,9 @@ const NewUserRoute = () => {
     return <Navigate to="/register/login" replace />;
   }
 
-  if (!isNewUser) {
-    return <Navigate to="/chat" replace />;
-  }
+  // if (!isNewUser) {
+  //   return <Navigate to="/chat" replace />;
+  // }
 
   return (
     <>
