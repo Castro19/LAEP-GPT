@@ -14,9 +14,10 @@ import { toast } from "@/components/ui/use-toast";
 
 const signInFlowSteps = [
   "terms",
-  "about-me",
+  "demographics",
   "interests",
-  // "availability", // TO-DO: Not needed for now
+  "activities",
+  "goals",
   "flowchart",
 ];
 
@@ -44,25 +45,29 @@ const SignInFlow = () => {
         setDescription("Please read and accept the terms of agreement");
         setIsTermsAccepted(userData?.canShareData || false);
         break;
-      case "about-me":
-        setTitle(`Welcome, ${userData?.name}!`);
-        setDescription("Tell us a little about yourself");
+      case "demographics":
+        setTitle("Section 1: Demographics");
+        setDescription(
+          "Please select your demographic information (optional)."
+        );
         break;
       case "interests":
-        setTitle("What are you interested in?");
-        setDescription("Tell us what you're interested in");
+        setTitle("Section 2: Interest Areas");
+        setDescription("Select the interest categories that appeal to you.");
         break;
-      case "courses":
-        setTitle("What courses have you taken?");
-        setDescription("Tell us what courses you've taken");
+      case "activities":
+        setTitle("Section 3: Activity Preferences");
+        setDescription("Select the activity categories that appeal to you.");
         break;
-      case "availability":
-        setTitle("When are you available?");
-        setDescription("Tell us when you're available");
+      case "goals":
+        setTitle("Section 4: Goals");
+        setDescription("What do you wish to acheive at Cal Poly?");
         break;
       case "flowchart":
-        setTitle("Setup your flowchart");
-        setDescription("Input the following information");
+        setTitle("Section 5: Flowchart");
+        setDescription(
+          "Generate a flowchart by inputting the following information"
+        );
         break;
       default:
         setTitle("Welcome!");
