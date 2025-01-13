@@ -20,6 +20,7 @@ export function RadioSurvey({
     if (value === "other") {
       setShowTextArea(true);
     } else {
+      setOther("");
       setShowTextArea(false);
       handleChange(value);
     }
