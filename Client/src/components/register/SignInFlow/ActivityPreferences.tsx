@@ -32,5 +32,15 @@ const activityItems = [
 ];
 
 export function ActivityPreferences() {
-  return <CheckboxSurvey items={activityItems} label="Activity Preferences" />;
+  const handleActivityChange = (activities: string[]) => {
+    const newActivities = activities.filter((activity) => activity !== "other");
+    console.log("Activities", newActivities);
+  };
+  return (
+    <CheckboxSurvey
+      items={activityItems}
+      label="Activity Preferences"
+      handleChange={handleActivityChange}
+    />
+  );
 }

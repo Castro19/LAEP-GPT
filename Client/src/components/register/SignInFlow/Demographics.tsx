@@ -62,10 +62,24 @@ const ethnicityItems = [
 ];
 
 export function Demographics() {
+  const handleGenderChange = (gender: string) => {
+    console.log("Gender", gender);
+  };
+  const handleEthnicityChange = (ethnicity: string) => {
+    console.log("Ethnicity", ethnicity);
+  };
   return (
     <div>
-      <RadioSurvey items={genderItems} label="Gender" />
-      <RadioSurvey items={ethnicityItems} label="Ethnicity" />
+      <RadioSurvey
+        items={genderItems}
+        label="Gender"
+        handleChange={handleGenderChange}
+      />
+      <RadioSurvey
+        items={ethnicityItems}
+        label="Ethnicity"
+        handleChange={handleEthnicityChange}
+      />
     </div>
   );
 }

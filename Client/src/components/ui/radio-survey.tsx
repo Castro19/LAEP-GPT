@@ -1,42 +1,39 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function RadioSurvey({
   items,
   label,
+  handleChange,
 }: {
   items: { id: string; label: string }[];
   label: string;
+  // eslint-disable-next-line no-unused-vars
+  handleChange: (value: string) => void;
 }) {
   const [showTextArea, setShowTextArea] = useState(false);
-  const [selected, setSelected] = useState<string>("");
   const [other, setOther] = useState("");
 
-  const handleChange = (value: string) => {
+  const handleOptionChange = (value: string) => {
     if (value === "other") {
       setShowTextArea(true);
-      setSelected(other || "");
     } else {
       setShowTextArea(false);
-      setSelected(value);
+      handleChange(value);
     }
   };
 
   const handleOtherChange = (value: string) => {
     setOther(value);
-    setSelected(value);
+    handleChange(value);
   };
-
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
 
   return (
     <LabelInputContainer>
       <Label className="text-lg align-start mb-4">{label}</Label>
-      <RadioGroup onValueChange={handleChange} className="space-y-2">
+      <RadioGroup onValueChange={handleOptionChange} className="space-y-2">
         {items.map((item) => (
           <div key={item.id} className="flex items-center space-x-2">
             {item.id === "other" ? (
