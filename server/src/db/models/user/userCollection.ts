@@ -32,7 +32,7 @@ export const createUser = async (
       },
       interestAreas: userData.interestAreas,
       preferredActivities: userData.preferredActivities,
-
+      goals: userData.goals,
       flowchartInformation: {
         flowchartId: userData.flowchartInformation.flowchartId,
         startingYear: userData.flowchartInformation.startingYear,

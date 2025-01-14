@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
         },
         interestAreas: [],
         preferredActivities: [],
-
+        goals: [],
         flowchartInformation: {
           flowchartId: "",
           startingYear: "",

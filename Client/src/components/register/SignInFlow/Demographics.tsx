@@ -1,4 +1,5 @@
 import { RadioSurvey } from "@/components/ui/radio-survey";
+import { useUserData } from "@/hooks/useUserData";
 
 const genderItems = [
   {
@@ -62,11 +63,27 @@ const ethnicityItems = [
 ];
 
 export function Demographics() {
+  const { handleChangeDemographic } = useUserData();
   const handleGenderChange = (gender: string) => {
-    console.log("Gender", gender);
+    handleChangeDemographic(
+      "gender",
+      gender as "male" | "female" | "nonBinary" | "preferNotToSay" | "other"
+    );
   };
   const handleEthnicityChange = (ethnicity: string) => {
-    console.log("Ethnicity", ethnicity);
+    handleChangeDemographic(
+      "ethnicity",
+      ethnicity as
+        | "white"
+        | "hispanic"
+        | "black"
+        | "asian"
+        | "native"
+        | "pacific"
+        | "multiracial"
+        | "preferNotToSay"
+        | "other"
+    );
   };
   return (
     <div>

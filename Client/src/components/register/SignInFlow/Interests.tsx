@@ -1,6 +1,5 @@
 import { CheckboxSurvey } from "@/components/ui/checkbox-survey";
-import { useAppDispatch, useAppSelector, userActions } from "@/redux";
-import { RootState } from "@/redux/store";
+import { useUserData } from "@/hooks/useUserData";
 
 const interestItems = [
   {
@@ -34,12 +33,11 @@ const interestItems = [
 ];
 
 export function Interests() {
-  const dispatch = useAppDispatch();
-  const { userData } = useAppSelector((state: RootState) => state.user);
+  const { handleChange } = useUserData();
 
   const handleInterestChange = (interests: string[]) => {
     const newInterests = interests.filter((interest) => interest !== "other");
-    console.log("Interests", newInterests);
+    handleChange("interestAreas", newInterests);
   };
 
   return (

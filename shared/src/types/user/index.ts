@@ -43,7 +43,7 @@ export type UserData = {
   };
   interestAreas: string[];
   preferredActivities: string[];
-
+  goals: string[];
   flowchartInformation: {
     // TODO
     flowchartId: string; // id of primary flowchart

@@ -40,6 +40,7 @@ const initialState: UserState = {
     },
     interestAreas: [],
     preferredActivities: [],
+    goals: [],
     flowchartInformation: {
       flowchartId: "",
       startingYear: "",
