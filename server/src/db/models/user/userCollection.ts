@@ -6,7 +6,7 @@ let userCollection: Collection<UserDocument>;
 
 // Function to initialize the collection
 const initializeCollection = (): void => {
-  userCollection = getDb().collection("users");
+  userCollection = getDb().collection("newUsers");
 };
 
 export const createUser = async (
@@ -20,18 +20,26 @@ export const createUser = async (
       name: userData.name,
       userType: userData.userType,
       email: userData.email,
+      emailVerified: userData.emailVerified,
+      canShareData: userData.canShareData,
+
+      availability: userData.availability,
       bio: userData.bio,
       year: userData.year,
-      interests: userData.interests,
-      courses: userData.courses,
-      availability: userData.availability,
-      canShareData: userData.canShareData,
-      startingYear: userData.startingYear,
-      catalog: userData.catalog,
-      major: userData.major,
-      concentration: userData.concentration,
-      flowchartId: userData.flowchartId,
-      emailVerified: userData.emailVerified,
+      demographic: {
+        gender: userData.demographic.gender,
+        ethnicity: userData.demographic.ethnicity,
+      },
+      interestAreas: userData.interestAreas,
+      preferredActivities: userData.preferredActivities,
+
+      flowchartInformation: {
+        flowchartId: userData.flowchartInformation.flowchartId,
+        startingYear: userData.flowchartInformation.startingYear,
+        catalog: userData.flowchartInformation.catalog,
+        major: userData.flowchartInformation.major,
+        concentration: userData.flowchartInformation.concentration,
+      },
     };
     const result = await userCollection.insertOne(newUser as UserDocument);
     return {

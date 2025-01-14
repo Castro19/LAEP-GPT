@@ -1,6 +1,6 @@
-import interests from "../calpolyData/interests.json";
+import interestAreas from "../calpolyData/interestAreas.json";
 const useCalpolyData = () => {
-  return { interests };
+  return { interestAreas };
 };
 
 export default useCalpolyData;

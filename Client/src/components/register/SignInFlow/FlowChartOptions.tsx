@@ -17,15 +17,24 @@ const FlowChartOptions = ({
   const { catalogOptions, majorOptions, concentrationOptions, selections } =
     useAppSelector((state) => state.flowSelection);
 
-  const { handleChange, userData } = useUserData();
+  const { handleChangeFlowchartInformation, userData } = useUserData();
 
   useEffect(() => {
     if ((type === "profile" || type === "signup") && selections.catalog) {
       dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
-    } else if (type === "flowchart" && userData.catalog) {
-      dispatch(flowSelectionActions.fetchMajorOptions(userData.catalog));
+    } else if (type === "flowchart" && userData.flowchartInformation.catalog) {
+      dispatch(
+        flowSelectionActions.fetchMajorOptions(
+          userData.flowchartInformation.catalog
+        )
+      );
     }
-  }, [selections.catalog, dispatch, userData.catalog, type]);
+  }, [
+    selections.catalog,
+    dispatch,
+    userData.flowchartInformation.catalog,
+    type,
+  ]);
 
   useEffect(() => {
     if (
@@ -39,11 +48,14 @@ const FlowChartOptions = ({
           major: selections.major || "",
         })
       );
-    } else if (type === "flowchart" && userData?.catalog) {
+    } else if (
+      type === "flowchart" &&
+      userData?.flowchartInformation?.catalog
+    ) {
       dispatch(
         flowSelectionActions.fetchConcentrationOptions({
-          catalog: userData.catalog || "",
-          major: userData.major || "",
+          catalog: userData.flowchartInformation.catalog || "",
+          major: userData.flowchartInformation.major || "",
         })
       );
     }
@@ -51,19 +63,19 @@ const FlowChartOptions = ({
     selections.major,
     selections.catalog,
     dispatch,
-    userData.catalog,
+    userData.flowchartInformation.catalog,
     type,
-    userData.major,
+    userData.flowchartInformation.major,
   ]);
 
   const handleChangeOption = (key: string, value: string) => {
     if (type !== "flowchart") {
       if (key === "startingYear") {
-        handleChange("startingYear", value);
+        handleChangeFlowchartInformation("startingYear", value);
       } else if (key === "catalog") {
-        handleChange("catalog", value);
+        handleChangeFlowchartInformation("catalog", value);
       } else if (key === "major") {
-        handleChange("major", value);
+        handleChangeFlowchartInformation("major", value);
       }
     }
     dispatch(
@@ -80,7 +92,10 @@ const FlowChartOptions = ({
     );
 
     if (type !== "flowchart") {
-      handleChange("concentration", concentration?.code || "");
+      handleChangeFlowchartInformation(
+        "concentration",
+        concentration?.code || ""
+      );
     }
     dispatch(
       setSelection({

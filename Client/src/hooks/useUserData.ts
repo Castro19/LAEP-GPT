@@ -22,6 +22,23 @@ export function useUserData() {
     dispatch(updateUserData({ [name]: value } as Partial<UserData>));
   };
 
+  const handleChangeFlowchartInformation = <
+    K extends keyof UserData["flowchartInformation"],
+    V extends UserData["flowchartInformation"][K],
+  >(
+    name: K,
+    value: V
+  ) => {
+    dispatch(
+      updateUserData({
+        flowchartInformation: {
+          ...userData.flowchartInformation,
+          [name]: value,
+        },
+      })
+    );
+  };
+
   const handleAddItem = (field: keyof UserData, value: string) => {
     const currentArray = userData[field] as string[];
     if (!currentArray.includes(value)) {
@@ -46,6 +63,7 @@ export function useUserData() {
     handleAddItem,
     handleRemoveItem,
     handleChange,
+    handleChangeFlowchartInformation,
     handleTextChange,
     handleSave,
     userData, // Expose userData if needed

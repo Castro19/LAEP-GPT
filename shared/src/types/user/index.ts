@@ -4,7 +4,7 @@ export type Availability = {
 
 export type UserType = "student" | "admin";
 // All information stored in the database
-export type UserData = {
+export type oldUserData = {
   userId: string;
   name: string;
   userType: "student" | "admin";
@@ -26,16 +26,17 @@ export type UserData = {
 export type UserDocument = UserData & { _id: string };
 export type UpdateUserData = Partial<UserData>;
 
-export type NewUserData = {
+export type UserData = {
   userId: string;
   name: string;
   userType: "student" | "admin";
   email: string;
   emailVerified: boolean;
+  canShareData: boolean;
 
   availability: Availability;
   bio: string;
-  year: "freshman" | "sophomore" | "junior" | "senior" | "graduate";
+  year: "freshman" | "sophomore" | "junior" | "senior" | "graduate"; // TODO
   demographic: {
     gender: string;
     ethnicity: string;
@@ -44,6 +45,7 @@ export type NewUserData = {
   preferredActivities: string[];
 
   flowchartInformation: {
+    // TODO
     flowchartId: string; // id of primary flowchart
     startingYear: string;
     catalog: string;
