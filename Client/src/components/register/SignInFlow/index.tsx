@@ -12,14 +12,7 @@ import useIsMobile from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 
-const signInFlowSteps = [
-  "terms",
-  "demographics",
-  "interests",
-  "activities",
-  "goals",
-  "flowchart",
-];
+const signInFlowSteps = ["terms", "demographics", "interests", "flowchart"];
 
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
@@ -52,19 +45,13 @@ const SignInFlow = () => {
         );
         break;
       case "interests":
-        setTitle("Section 2: Interest Areas");
-        setDescription("Select the interest categories that appeal to you.");
-        break;
-      case "activities":
-        setTitle("Section 3: Activity Preferences");
-        setDescription("Select the activity categories that appeal to you.");
-        break;
-      case "goals":
-        setTitle("Section 4: Goals");
-        setDescription("What do you wish to acheive at Cal Poly?");
+        setTitle("Section 2: Personal Insights");
+        setDescription(
+          `This information will be used to match you with clubs, events, and more!`
+        );
         break;
       case "flowchart":
-        setTitle("Section 5: Flowchart");
+        setTitle("Section 3: Flowchart");
         setDescription(
           "Generate a flowchart by inputting the following information"
         );

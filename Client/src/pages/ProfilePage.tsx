@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WeeklyCalendar from "../components/register/WeeklyCalendar";
 import { useUserData } from "@/hooks/useUserData";
-import InterestDropdown from "@/components/register/SignInFlow/InterestDropdown";
 // import Terms from "@/components/register/SignInFlow/Terms";
 import { toast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,7 +11,6 @@ import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
 import FlowChart from "@/components/flowchart/FlowChart";
 import { useEffect, useRef } from "react";
-import useCalpolyData from "@/hooks/useCalpolyData";
 import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
 import { useNavigate } from "react-router-dom";
 
@@ -20,6 +18,7 @@ import SpecialButton from "@/components/ui/specialButton";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { Interests } from "@/components/register/SignInFlow/Interests";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -55,7 +54,6 @@ export function ProfilePage() {
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
 
   const { handleSave } = useUserData();
-  const { interestAreas } = useCalpolyData();
 
   useEffect(() => {
     if (initialLoadRef.current) return;
@@ -185,7 +183,31 @@ export function ProfilePage() {
           <Label className="text-2xl font-bold underline justify-self-center p-2">
             Interests
           </Label>
-          <Interest interestAreas={userData.interestAreas ?? []} />
+          <Interest
+            interestAreas={
+              userData.interestAreas.filter(
+                (interest) => interest !== "Other"
+              ) ?? []
+            }
+          />
+          <Label className="text-2xl font-bold underline justify-self-center p-2">
+            Preferred Activities
+          </Label>
+          <Interest
+            interestAreas={
+              userData.preferredActivities.filter(
+                (activity) => activity !== "Other"
+              ) ?? []
+            }
+          />
+          <Label className="text-2xl font-bold underline justify-self-center p-2">
+            Goals
+          </Label>
+          <Interest
+            interestAreas={
+              userData.goals.filter((goal) => goal !== "Other") ?? []
+            }
+          />
         </div>
         <div className="flex justify-center items-center mt-8">
           <AnimatedModalDemo
@@ -195,11 +217,7 @@ export function ProfilePage() {
             disableOutsideClick={true}
             className="w-3/4"
           >
-            <InterestDropdown
-              name="Interests"
-              items={interestAreas}
-              dropdownRef={interestDropdownRef}
-            />
+            <Interests />
           </AnimatedModalDemo>
         </div>
       </GridItemContainer>
