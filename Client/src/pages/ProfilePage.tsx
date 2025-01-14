@@ -162,8 +162,8 @@ export function ProfilePage() {
         </div>
       </GridItemContainer>
       <GridItemContainer>
-        <div className="flex flex-col justify-center items-center">
-          <Label className="text-2xl font-bold underline justify-self-center p-2">
+        <div className="flex flex-col justify-center items-center w-full">
+          <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center w-full">
             Bio
           </Label>
           <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
@@ -179,43 +179,62 @@ export function ProfilePage() {
         </div>
       </GridItemContainer>
       <GridItemContainer>
-        <div className="flex flex-col justify-center items-center">
-          <Label className="text-2xl font-bold underline justify-self-center p-2">
-            Interests
-          </Label>
-          <Interest
-            interestAreas={
-              userData.interestAreas.filter(
-                (interest) => interest !== "Other"
-              ) ?? []
-            }
-          />
-          <Label className="text-2xl font-bold underline justify-self-center p-2">
-            Preferred Activities
-          </Label>
-          <Interest
-            interestAreas={
-              userData.preferredActivities.filter(
-                (activity) => activity !== "Other"
-              ) ?? []
-            }
-          />
-          <Label className="text-2xl font-bold underline justify-self-center p-2">
-            Goals
-          </Label>
-          <Interest
-            interestAreas={
-              userData.goals.filter((goal) => goal !== "Other") ?? []
-            }
-          />
+        <div className="flex flex-col justify-center items-center gap-8">
+          {/* Interest Areas Section */}
+          {userData.interestAreas.length > 0 && (
+            <div className="w-full max-w-2xl hadow-sm">
+              <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
+                Interests
+              </Label>
+              <Interest
+                interestAreas={
+                  userData.interestAreas.filter(
+                    (interest) => interest !== "Other"
+                  ) ?? []
+                }
+              />
+            </div>
+          )}
+
+          {/* Preferred Activities Section */}
+          {userData.preferredActivities.length > 0 && (
+            <div className="w-full max-w-2xl p-6 shadow-sm">
+              <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
+                Preferred Activities
+              </Label>
+              <Interest
+                interestAreas={
+                  userData.preferredActivities.filter(
+                    (activity) => activity !== "Other"
+                  ) ?? []
+                }
+              />
+            </div>
+          )}
+
+          {/* Goals Section */}
+          {userData.goals.length > 0 && (
+            <div className="w-full max-w-2xl p-6  shadow-sm">
+              <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
+                Goals
+              </Label>
+              <Interest
+                interestAreas={
+                  userData.goals.filter((goal) => goal !== "Other") ?? []
+                }
+              />
+            </div>
+          )}
         </div>
+
+        {/* Edit Button Section */}
         <div className="flex justify-center items-center mt-8">
           <AnimatedModalDemo
             onSave={handleSaveToast}
             title="Modify Interests"
             excludeRefs={[interestDropdownRef]}
             disableOutsideClick={true}
-            className="w-3/4"
+            className="w-3/4 max-w-2xl"
           >
             <Interests />
           </AnimatedModalDemo>
