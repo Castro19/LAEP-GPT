@@ -30,7 +30,7 @@ const FlowchartLogOptions = ({
   // eslint-disable-next-line no-unused-vars
   onPrimaryChange: (primaryOption: boolean) => void;
 }) => {
-  const { handleSave, handleChange } = useUserData();
+  const { handleSave, handleChangeFlowchartInformation } = useUserData();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -56,7 +56,7 @@ const FlowchartLogOptions = ({
       ).unwrap();
       navigate(`/flowchart/${flowchart.flowchartId}`);
       if (primaryOption) {
-        handleChange("flowchartId", flowchart.flowchartId);
+        handleChangeFlowchartInformation("flowchartId", flowchart.flowchartId);
         handleSave();
       }
       toast({
@@ -76,7 +76,10 @@ const FlowchartLogOptions = ({
       flowchartActions.deleteFlowchart({
         flowchartId,
         handleChange: (name, value) =>
-          handleChange(name as keyof UserData, value),
+          handleChangeFlowchartInformation(
+            name as keyof UserData["flowchartInformation"],
+            value
+          ),
       })
     ).unwrap();
     // Step 2: Reset the flowchart data
@@ -94,7 +97,7 @@ const FlowchartLogOptions = ({
       dispatch(
         flowchartActions.setCurrentFlowchart({} as FetchedFlowchartObject)
       );
-      handleChange("flowchartId", "");
+      handleChangeFlowchartInformation("flowchartId", "");
       // Step 5: Navigate to the flowchart list
       navigate("/flowchart");
     }

@@ -37,23 +37,24 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
     useState("");
 
   useEffect(() => {
-    const { availability, interests } = userData;
+    const { availability, interestAreas } = userData;
 
     const userHasNoAvailability = Object.values(availability).every(
       (timeSlots) => timeSlots.length === 0
     );
-    const userHasNoPrimaryFlowchart = !userData.flowchartId;
+    const userHasNoPrimaryFlowchart =
+      !userData.flowchartInformation.flowchartId;
 
     const matchingAssistantLocked =
-      interests.length === 0 || userHasNoAvailability;
+      interestAreas.length === 0 || userHasNoAvailability;
 
-    if (interests.length === 0 && !userHasNoAvailability) {
-      setToastMatchingDescription("Please update your profile's interests");
-    } else if (userHasNoAvailability && interests.length > 0) {
+    if (interestAreas.length === 0 && !userHasNoAvailability) {
+      setToastMatchingDescription("Please update your profile's interestAreas");
+    } else if (userHasNoAvailability && interestAreas.length > 0) {
       setToastMatchingDescription("Please update your profile's availability");
     } else {
       setToastMatchingDescription(
-        "Please update your profile's interests and availability"
+        "Please update your profile's interestAreas and availability"
       );
     }
     if (userHasNoPrimaryFlowchart) {

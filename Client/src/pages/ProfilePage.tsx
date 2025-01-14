@@ -55,16 +55,18 @@ export function ProfilePage() {
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
 
   const { handleSave } = useUserData();
-  const { interests } = useCalpolyData();
+  const { interestAreas } = useCalpolyData();
 
   useEffect(() => {
     if (initialLoadRef.current) return;
     initialLoadRef.current = true;
 
-    if (userData.flowchartId) {
-      dispatch(flowchartActions.setFlowchart(userData.flowchartId));
+    if (userData.flowchartInformation.flowchartId) {
+      dispatch(
+        flowchartActions.setFlowchart(userData.flowchartInformation.flowchartId)
+      );
     }
-  }, [dispatch, userData.flowchartId]);
+  }, [dispatch, userData.flowchartInformation.flowchartId]);
 
   const handleSaveToast = () => {
     handleSave();
@@ -95,7 +97,7 @@ export function ProfilePage() {
     try {
       await dispatch(
         flowchartActions.updateFlowchart({
-          flowchartId: userData.flowchartId ?? "",
+          flowchartId: userData.flowchartInformation.flowchartId ?? "",
           flowchartData,
           name: currentFlowchart?.name ?? "",
           primaryOption: true,
@@ -127,10 +129,11 @@ export function ProfilePage() {
             </h3>
             <p className="text-lg text-center">{userData?.email || "N/A"}</p>
             <p className="text-lg text-center mt-2">
-              {yearMapping(userData?.year || "N/A")} {userData?.major || ""}{" "}
+              {yearMapping(userData?.year || "N/A")}{" "}
+              {userData?.flowchartInformation.major || ""}{" "}
               {userType || "Student"}
             </p>
-            {!userData?.major && (
+            {!userData?.flowchartInformation.major && (
               <p className="text-lg text-center mt-2">
                 Please update your major to to create a flowchart
               </p>
@@ -153,7 +156,9 @@ export function ProfilePage() {
           <SpecialButton
             text="Modify Flowcharts"
             onClick={() => {
-              navigate(`/flowchart/${userData.flowchartId}`);
+              navigate(
+                `/flowchart/${userData.flowchartInformation.flowchartId}`
+              );
             }}
           />
         </div>
@@ -180,7 +185,7 @@ export function ProfilePage() {
           <Label className="text-2xl font-bold underline justify-self-center p-2">
             Interests
           </Label>
-          <Interest interests={userData.interests ?? []} />
+          <Interest interestAreas={userData.interestAreas ?? []} />
         </div>
         <div className="flex justify-center items-center mt-8">
           <AnimatedModalDemo
@@ -192,7 +197,7 @@ export function ProfilePage() {
           >
             <InterestDropdown
               name="Interests"
-              items={interests}
+              items={interestAreas}
               dropdownRef={interestDropdownRef}
             />
           </AnimatedModalDemo>

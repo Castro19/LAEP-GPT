@@ -66,10 +66,9 @@ router.post("/login", async (req, res) => {
         name,
         userType: userType as "student" | "admin",
         email,
-        bio: "",
-        year: "",
-        interests: [],
-        courses: [],
+        emailVerified,
+        canShareData: false,
+
         availability: {
           Monday: [],
           Tuesday: [],
@@ -79,13 +78,22 @@ router.post("/login", async (req, res) => {
           Saturday: [],
           Sunday: [],
         },
-        canShareData: false,
-        startingYear: "",
-        catalog: "",
-        major: "",
-        concentration: "",
-        flowchartId: "",
-        emailVerified,
+        bio: "",
+        year: "freshman",
+        demographic: {
+          gender: "",
+          ethnicity: "",
+        },
+        interestAreas: [],
+        preferredActivities: [],
+
+        flowchartInformation: {
+          flowchartId: "",
+          startingYear: "",
+          catalog: "",
+          major: "",
+          concentration: "",
+        },
       };
       await addUser(userData);
 

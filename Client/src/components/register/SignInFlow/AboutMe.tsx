@@ -2,7 +2,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "../../../components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserData } from "@/hooks/useUserData";
-import { userActions, useAppDispatch, useAppSelector } from "@/redux";
+import { useAppSelector } from "@/redux";
 import { RootState } from "@/redux/store";
 
 const years = [
@@ -17,9 +17,8 @@ const years = [
 export const labelStyle = "underline text-lg self-center";
 
 const AboutMe = () => {
-  const { handleTextChange } = useUserData();
+  const { handleTextChange, handleChange } = useUserData();
   const { userData } = useAppSelector((state: RootState) => state.user);
-  const dispatch = useAppDispatch();
 
   return (
     <div className="flex flex-col justify-center align-middle">
@@ -39,19 +38,14 @@ const AboutMe = () => {
         <RadioGroup
           value={userData?.year || ""}
           onValueChange={(value) =>
-            dispatch(
-              userActions.updateUserData({
-                ...userData,
-                year: value,
-                canShareData: userData?.canShareData ?? false,
-                availability: userData?.availability ?? null,
-                bio: userData?.bio ?? null,
-                interests: userData?.interests ?? null,
-                name: userData?.name ?? null,
-                email: userData?.email ?? null,
-                major: userData?.major ?? null,
-                userId: userData?.userId ?? "",
-              })
+            handleChange(
+              "year",
+              value as
+                | "freshman"
+                | "sophomore"
+                | "junior"
+                | "senior"
+                | "graduate"
             )
           }
         >

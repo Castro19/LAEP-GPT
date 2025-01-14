@@ -45,11 +45,15 @@ export function SidebarFlowchart() {
   };
 
   const handleSaveFlowchart = () => {
-    if (userData.catalog && userData.major && selections.concentration) {
+    if (
+      userData.flowchartInformation.catalog &&
+      userData.flowchartInformation.major &&
+      selections.concentration
+    ) {
       fetchFlowchartDataHelper(
         dispatch,
-        userData.catalog,
-        userData.major,
+        userData.flowchartInformation.catalog,
+        userData.flowchartInformation.major,
         selections.concentration.code
       );
       navigate("/flowchart");
@@ -57,11 +61,14 @@ export function SidebarFlowchart() {
   };
 
   useEffect(() => {
-    if (userData.catalog && userData.major) {
+    if (
+      userData.flowchartInformation.catalog &&
+      userData.flowchartInformation.major
+    ) {
       dispatch(
         flowSelectionActions.fetchConcentrationOptions({
-          catalog: userData.catalog,
-          major: userData.major,
+          catalog: userData.flowchartInformation.catalog,
+          major: userData.flowchartInformation.major,
         })
       );
     } else {
@@ -72,7 +79,11 @@ export function SidebarFlowchart() {
         variant: "destructive",
       });
     }
-  }, [userData.catalog, userData.major, dispatch]);
+  }, [
+    userData.flowchartInformation.catalog,
+    userData.flowchartInformation.major,
+    dispatch,
+  ]);
 
   return (
     <Sidebar variant="sidebar" className="flex flex-col h-full">
@@ -90,7 +101,7 @@ export function SidebarFlowchart() {
             <ChevronLeft className="w-5 h-5 transition-transform duration-200 hover:-translate-x-1 size-10" />
           </Button>
           <span className="text-lg text-center font-semibold ml-4">
-            {userData.catalog}
+            {userData.flowchartInformation.catalog}
           </span>
         </div>
       </SidebarHeader>

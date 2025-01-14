@@ -15,7 +15,7 @@ const FlowChartFooter = () => {
     (state) => state.flowchart
   );
   const { flowchartId } = useParams();
-  const { handleSave, handleChange } = useUserData();
+  const { handleSave, handleChangeFlowchartInformation } = useUserData();
 
   const handleSaveData = async () => {
     if (!flowchartData) {
@@ -35,7 +35,10 @@ const FlowChartFooter = () => {
 
       if (flowchart && flowchart.flowchartId) {
         if (flowchart.primaryOption) {
-          handleChange("flowchartId", flowchart.flowchartId);
+          handleChangeFlowchartInformation(
+            "flowchartId",
+            flowchart.flowchartId
+          );
           handleSave();
         }
         navigate(`/flowchart/${flowchart.flowchartId}`);
@@ -50,7 +53,10 @@ const FlowChartFooter = () => {
       }
     } finally {
       if ((flowchartList ?? []).length < 1) {
-        handleChange("flowchartId", flowchart?.flowchartId ?? "");
+        handleChangeFlowchartInformation(
+          "flowchartId",
+          flowchart?.flowchartId ?? ""
+        );
         handleSave();
         navigate("/chat");
       }

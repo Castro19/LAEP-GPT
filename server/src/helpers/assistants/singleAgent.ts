@@ -16,21 +16,18 @@ import { environment } from "../../index";
 
 const matchingAssistant = (user: UserData, message: string): string => {
   const availability = formatAvailability(user.availability);
-  const interests = user.interests.join(", ");
+  const interests = user.interestAreas.join(", ");
   return `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
-};
-
-const csciClassesAssistant = (user: UserData, message: string): string => {
-  const year = user.year;
-  const interests = user.interests.join(", ");
-  return `Year: ${year}\nClasses taken: ${user.courses}\nInterests: ${interests}\n${message}`;
 };
 
 const flowchartAssistant = async (
   user: UserData,
   message: string
 ): Promise<string> => {
-  const flowchart = await fetchFlowchart(user.flowchartId, user.userId);
+  const flowchart = await fetchFlowchart(
+    user.flowchartInformation.flowchartId,
+    user.userId
+  );
   // const courseIds = await searchCourses(message, null, 5);
   // const courseObjects = await getCourseInfo(courseIds);
   // const courseDescriptions = JSON.stringify(courseObjects);
@@ -40,9 +37,12 @@ const flowchartAssistant = async (
     techElectivesLeft,
     generalWritingMet,
     uscpMet,
-  } = await flowchartHelper(flowchart.flowchartData.termData, user.catalog);
+  } = await flowchartHelper(
+    flowchart.flowchartData.termData,
+    user.flowchartInformation.catalog
+  );
 
-  const interests = user.interests.join(", ");
+  const interests = user.interestAreas.join(", ");
   const year = user.year;
   return `Required Courses: ${formattedRequiredCourses}\nTech Electives Left: ${techElectivesLeft}\nGeneral Writing Met: ${generalWritingMet}\nUSCP Met: ${uscpMet}\nYear: ${year}\nInterests: ${interests}\n${message}`;
 };
@@ -58,8 +58,8 @@ const courseCatalogAssistant = async (
 };
 
 const calpolyClubsAssistant = (user: UserData, message: string): string => {
-  const interests = user.interests.join(", ");
-  const major = user.major;
+  const interests = user.interestAreas.join(", ");
+  const major = user.flowchartInformation.major;
   return `Interests: ${interests}\nMajor: ${major}\n${message}`;
 };
 
@@ -118,8 +118,6 @@ async function handleSingleAgentModel({
 
   if (model.title === "Matching Assistant") {
     messageToAdd = matchingAssistant(user, message);
-  } else if (model.title === "CSCI Classes Assistant") {
-    messageToAdd = csciClassesAssistant(user, message);
   } else if (model.title === "Flowchart Assistant") {
     messageToAdd = await flowchartAssistant(user, message);
   } else if (model.title === "Course Catalog") {

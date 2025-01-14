@@ -27,21 +27,8 @@ const InterestDropdown = ({
   const { handleAddItem, handleRemoveItem } = useUserData();
   let dropdownItems: string[] = [];
   let selectedItems: string[] = [];
-  if (name === "Courses") {
-    selectedItems = userData.courses;
-    dropdownItems =
-      userData.courses
-        .map((course) => course.split(": ")[0])
-        .sort((a, b) => {
-          const numA = parseInt(a.replace(/[^\d]/g, ""));
-          const numB = parseInt(b.replace(/[^\d]/g, ""));
-          return numA - numB;
-        }) ?? [];
-    dropdownItems = items.filter(
-      (item) => !selectedItems.includes(item.split(": ")[0])
-    );
-  } else if (name === "Interests") {
-    selectedItems = userData.interests;
+  if (name === "Interests") {
+    selectedItems = userData.interestAreas;
     dropdownItems = items.filter((item) => !selectedItems.includes(item));
     // Sort dropdown items by alphabetical order
     dropdownItems.sort();

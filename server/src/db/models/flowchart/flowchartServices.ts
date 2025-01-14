@@ -1,6 +1,6 @@
 import * as flowchartModel from "./flowchartCollection";
 import { searchFlowInfo } from "../flowInfo/flowInfoServices";
-import { updateUser } from "../user/userServices";
+import { getUserByFirebaseId, updateUser } from "../user/userServices";
 import {
   ConcentrationInfo,
   CreateFlowchartResponse,
@@ -200,8 +200,15 @@ export const deleteFlowchart = async (
         );
       }
     }
+    const user = await getUserByFirebaseId(userId);
     await updateUser(userId, {
-      flowchartId: newPrimaryFlowchartId || "",
+      flowchartInformation: {
+        flowchartId: newPrimaryFlowchartId || "",
+        startingYear: user?.flowchartInformation?.startingYear || "",
+        catalog: user?.flowchartInformation?.catalog || "",
+        major: user?.flowchartInformation?.major || "",
+        concentration: user?.flowchartInformation?.concentration || "",
+      },
     });
 
     return {
