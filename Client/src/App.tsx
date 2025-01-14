@@ -19,8 +19,6 @@ import ErrorPage from "./pages/ErrorPage/ErrorPage.tsx";
 import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
 import "./index.css";
 // import SignInFlow from "./components/register/SignInFlow";
-import AboutMe from "./components/register/SignInFlow/AboutMe.tsx";
-import WeeklyCalendar from "./components/register/WeeklyCalendar.tsx";
 import Terms from "./components/register/SignInFlow/Terms.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import NewUserRoute from "./components/security/NewUserRoute.tsx";
@@ -40,9 +38,6 @@ import TeamPage from "./pages/TeamPage.tsx";
 import { getTeamMembers } from "./helpers/getTeamMembers.ts";
 import { Demographics } from "./components/register/SignInFlow/Demographics.tsx";
 import { Interests } from "./components/register/SignInFlow/Interests.tsx";
-import { ActivityPreferences } from "./components/register/SignInFlow/ActivityPreferences.tsx";
-import { Goals } from "./components/register/SignInFlow/Goals.tsx";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
 let routerChosen: typeof createBrowserRouter = createBrowserRouter;
@@ -148,6 +143,10 @@ const router = routerChosen([
     errorElement: <ErrorPageChosen />,
     children: [
       {
+        path: "terms",
+        element: <Terms />,
+      },
+      {
         path: "demographics",
         element: <Demographics />,
       },
@@ -156,28 +155,8 @@ const router = routerChosen([
         element: <Interests />,
       },
       {
-        path: "activities",
-        element: <ActivityPreferences />,
-      },
-      {
-        path: "goals",
-        element: <Goals />,
-      },
-      {
-        path: "about-me",
-        element: <AboutMe />,
-      },
-      {
         path: "flowchart",
         element: <FlowChartOptions type="signup" />,
-      },
-      {
-        path: "availability",
-        element: <WeeklyCalendar />,
-      },
-      {
-        path: "terms",
-        element: <Terms />,
       },
     ],
   },

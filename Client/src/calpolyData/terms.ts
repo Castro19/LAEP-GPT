@@ -75,7 +75,6 @@ These Terms are governed by and construed in accordance with the laws of the Sta
 8. Contact Information
 
 For questions about these Terms of Service, please contact us at: PolyLink Development Team  
-California Polytechnic State University  
 Email: support@polylink.com
 
 PRIVACY POLICY
@@ -143,7 +142,6 @@ We may use your information to:
 
 - Provide and Improve the Services: Create and manage your account, facilitate group formation, and match you with others based on shared interests.
 - Facilitate Communication: Send notifications about group matches, event updates, or messages from other users.
-- Marketing and Advertising: Send promotional materials or tailored recommendations.
 - Security and Fraud Prevention: Protect against unauthorized activity, investigate misuse, and ensure a safe experience for all users.
 
 ---
@@ -164,16 +162,10 @@ You may control or disable cookies through your browser settings. Note, however,
 
 We may share your personal information with:
 
-- Service Providers: For tasks such as hosting, payment processing, or technical support.
+- Service Providers: For tasks such as hosting or technical support.
 - Group Participants: With other users who are matched with you for activities or events.
 - Marketing Partners: For advertising campaigns (with your consent).
 - Legal Entities: If required to comply with legal obligations, enforce our terms, or protect our rights.
-
-In the past 12 months, we have disclosed the following categories of information for business purposes:
-
-- Identifiers: Name, email, or phone number.
-- Profile Details: Interests and preferences shared for group matching.
-- Usage Data: Information collected through cookies and analytics tools.
 
 We do not sell personal information.
 
@@ -215,7 +207,6 @@ To exercise these rights, please contact us using the information below.
 If you have any questions or concerns about this Privacy Policy or our data practices, you may reach out to us at:
 
 PolyLink Development Team  
-California Polytechnic State University  
 Email: support@polylink.com
 `;
 
