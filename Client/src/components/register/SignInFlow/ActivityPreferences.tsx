@@ -1,4 +1,5 @@
 import { CheckboxSurvey } from "@/components/ui/checkbox-survey";
+import { useUserData } from "@/hooks/useUserData";
 
 const activityItems = [
   {
@@ -32,9 +33,10 @@ const activityItems = [
 ];
 
 export function ActivityPreferences() {
+  const { handleChange } = useUserData();
   const handleActivityChange = (activities: string[]) => {
     const newActivities = activities.filter((activity) => activity !== "other");
-    console.log("Activities", newActivities);
+    handleChange("preferredActivities", newActivities);
   };
   return (
     <CheckboxSurvey

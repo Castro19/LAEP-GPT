@@ -22,6 +22,20 @@ export function useUserData() {
     dispatch(updateUserData({ [name]: value } as Partial<UserData>));
   };
 
+  const handleChangeDemographic = <
+    K extends keyof UserData["demographic"],
+    V extends UserData["demographic"][K],
+  >(
+    name: K,
+    value: V
+  ) => {
+    dispatch(
+      updateUserData({
+        demographic: { ...userData.demographic, [name]: value },
+      })
+    );
+  };
+
   const handleChangeFlowchartInformation = <
     K extends keyof UserData["flowchartInformation"],
     V extends UserData["flowchartInformation"][K],
@@ -63,6 +77,7 @@ export function useUserData() {
     handleAddItem,
     handleRemoveItem,
     handleChange,
+    handleChangeDemographic,
     handleChangeFlowchartInformation,
     handleTextChange,
     handleSave,

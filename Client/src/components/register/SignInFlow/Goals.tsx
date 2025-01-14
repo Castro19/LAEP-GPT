@@ -1,4 +1,5 @@
 import { CheckboxSurvey } from "@/components/ui/checkbox-survey";
+import { useUserData } from "@/hooks/useUserData";
 
 const goalsItems = [
   {
@@ -28,11 +29,10 @@ const goalsItems = [
 ];
 
 export function Goals() {
+  const { handleChange } = useUserData();
   const handleGoalChange = (goals: string[]) => {
-    console.log(
-      "Goals",
-      goals.filter((goal) => goal !== "other")
-    );
+    const newGoals = goals.filter((goal) => goal !== "other");
+    handleChange("goals", newGoals);
   };
   return (
     <CheckboxSurvey
