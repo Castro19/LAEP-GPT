@@ -24,20 +24,18 @@ export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
   switch (year) {
-    case "1":
-      return "1st Year";
-    case "2":
-      return "2nd Year";
-    case "3":
-      return "3rd Year";
-    case "4":
-      return "4th Year";
-    case "5":
-      return "5th Year";
-    case "6":
-      return "6th Year";
+    case "freshman":
+      return "Freshman";
+    case "sophomore":
+      return "Sophomore";
+    case "junior":
+      return "Junior";
+    case "senior":
+      return "Senior";
+    case "graduate":
+      return "Graduate";
     default:
-      return "N/A";
+      return "";
   }
 };
 export function ProfilePage() {
