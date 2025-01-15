@@ -111,24 +111,6 @@ export function ProfilePage() {
     }
   };
 
-  const handleGenerateBio = async () => {
-    try {
-      // const response = await fetch(
-      //   `${import.meta.env.VITE_API_URL}/generate-bio`,
-      //   {
-      //     method: "POST",
-      //     body: JSON.stringify(userData),
-      //   }
-      // );
-      // const data = await response.json();
-      // console.log(data);
-      console.log("BIO GENERATION NOT IMPLEMENTED YET");
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to generate bio:", error);
-      }
-    }
-  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
       <GridItemContainer>
@@ -176,12 +158,7 @@ export function ProfilePage() {
             </Label>
             <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
           </div>
-          <div className="flex flex-col gap-4 w-3/4">
-            <SpecialButton
-              onClick={handleGenerateBio}
-              text="Generate Bio"
-              className="w-full"
-            />
+          <div className="w-3/4">
             <AnimatedModalDemo onSave={handleSave} title="Modify Bio">
               <AboutMe />
             </AnimatedModalDemo>
