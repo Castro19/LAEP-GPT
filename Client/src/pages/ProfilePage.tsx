@@ -11,7 +11,7 @@ import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
 import FlowChart from "@/components/flowchart/FlowChart";
 import { useEffect, useRef } from "react";
-import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
+
 import { useNavigate } from "react-router-dom";
 
 import SpecialButton from "@/components/ui/specialButton";
@@ -19,6 +19,7 @@ import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { Interests } from "@/components/register/SignInFlow/Interests";
+import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -75,7 +76,7 @@ export function ProfilePage() {
   };
 
   const handleSaveDegreeInfo = () => {
-    if (selections.startingYear && selections.catalog && selections.major) {
+    if (selections.major) {
       // Change User information in database
       handleSave();
       toast({
@@ -157,26 +158,16 @@ export function ProfilePage() {
           </div>
           <SilverLine />
         </CardContent>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col justify-center items-center">
-            <AnimatedModalDemo
-              onSave={handleSaveDegreeInfo}
-              title="Change Major"
-              excludeRefs={[flowchartOptionsRef]}
-              disableOutsideClick={true}
-              className="w-3/4"
-            >
-              <FlowChartOptions type="profile" />
-            </AnimatedModalDemo>
-          </div>
-          <SpecialButton
-            text="Modify Flowcharts"
-            onClick={() => {
-              navigate(
-                `/flowchart/${userData.flowchartInformation.flowchartId}`
-              );
-            }}
-          />
+        <div className="flex flex-col items-center ">
+          <AnimatedModalDemo
+            onSave={handleSaveDegreeInfo}
+            title="Change Major"
+            excludeRefs={[flowchartOptionsRef]}
+            disableOutsideClick={true}
+            className="w-3/4"
+          >
+            <BasicInformation />
+          </AnimatedModalDemo>
         </div>
       </GridItemContainer>
       <GridItemContainer>
@@ -270,10 +261,20 @@ export function ProfilePage() {
           <TabsContent value="flowchart">
             <Card className="h-full">
               <FlowChart flowchartData={flowchartData} />
-              <SpecialButton
-                onClick={handleUpdateFlowchart}
-                text="Save Flowchart"
-              />
+              <div className="flex flex-col w-full gap-4 mb-2">
+                <SpecialButton
+                  onClick={handleUpdateFlowchart}
+                  text="Save Flowchart"
+                />
+                <SpecialButton
+                  text="Modify Flowcharts"
+                  onClick={() => {
+                    navigate(
+                      `/flowchart/${userData.flowchartInformation.flowchartId}`
+                    );
+                  }}
+                />
+              </div>
             </Card>
           </TabsContent>
           <TabsContent value="availability">

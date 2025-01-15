@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import ReusableDropdown from "../../ui/reusable-dropdown";
 import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
-import { setSelection } from "@/redux/flowSelection/flowSelectionSlice";
+import {
+  setSelection,
+  resetConcentrationOptions,
+} from "@/redux/flowSelection/flowSelectionSlice";
 import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@polylink/shared/types";
 
@@ -9,67 +12,39 @@ import { ConcentrationInfo } from "@polylink/shared/types";
 const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
 
 const FlowChartOptions = ({
-  type = "profile",
+  type = "flowchart",
 }: {
-  type: "profile" | "flowchart" | "signup";
+  type: "flowchart" | "signup";
 }) => {
   const dispatch = useAppDispatch();
-  const { catalogOptions, majorOptions, concentrationOptions, selections } =
+  const { selections, catalogOptions, majorOptions, concentrationOptions } =
     useAppSelector((state) => state.flowSelection);
 
-  const { handleChangeFlowchartInformation, userData } = useUserData();
+  const { handleChangeFlowchartInformation } = useUserData();
 
   useEffect(() => {
-    if ((type === "profile" || type === "signup") && selections.catalog) {
+    if (type === "signup" && selections.catalog) {
       dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
-    } else if (type === "flowchart" && userData.flowchartInformation.catalog) {
-      dispatch(
-        flowSelectionActions.fetchMajorOptions(
-          userData.flowchartInformation.catalog
-        )
-      );
     }
-  }, [
-    selections.catalog,
-    dispatch,
-    userData.flowchartInformation.catalog,
-    type,
-  ]);
+  }, [selections.catalog, dispatch, type]);
 
   useEffect(() => {
-    if (
-      (type === "profile" || type === "signup") &&
-      selections.major &&
-      selections.catalog
-    ) {
+    console.log("MAJOR:", selections.major);
+    console.log("CATALOG:", selections.catalog);
+    if (selections.major && selections.catalog) {
       dispatch(
         flowSelectionActions.fetchConcentrationOptions({
-          catalog: selections.catalog || "",
-          major: selections.major || "",
+          catalog: selections.catalog,
+          major: selections.major,
         })
       );
-    } else if (
-      type === "flowchart" &&
-      userData?.flowchartInformation?.catalog
-    ) {
-      dispatch(
-        flowSelectionActions.fetchConcentrationOptions({
-          catalog: userData.flowchartInformation.catalog || "",
-          major: userData.flowchartInformation.major || "",
-        })
-      );
+    } else {
+      dispatch(resetConcentrationOptions());
     }
-  }, [
-    selections.major,
-    selections.catalog,
-    dispatch,
-    userData.flowchartInformation.catalog,
-    type,
-    userData.flowchartInformation.major,
-  ]);
+  }, [selections.major, selections.catalog, dispatch]);
 
   const handleChangeOption = (key: string, value: string) => {
-    if (type !== "flowchart") {
+    if (type === "signup") {
       if (key === "startingYear") {
         handleChangeFlowchartInformation("startingYear", value);
       } else if (key === "catalog") {
@@ -113,40 +88,34 @@ const FlowChartOptions = ({
 
   return (
     <div className="space-y-4">
-      {type !== "flowchart" && (
-        <>
-          <ReusableDropdown
-            name="Starting Year"
-            dropdownItems={YEAR_OPTIONS}
-            handleChangeItem={(_, value) =>
-              handleChangeOption("startingYear", value)
-            }
-            selectedItem={selections.startingYear || ""}
-          />
-          <ReusableDropdown
-            name="Catalog"
-            dropdownItems={catalogOptions}
-            handleChangeItem={(_, value) =>
-              handleChangeOption("catalog", value)
-            }
-            selectedItem={selections.catalog || ""}
-          />
-          <ReusableDropdown
-            name="Major"
-            dropdownItems={majorOptions}
-            handleChangeItem={(_, value) => handleChangeOption("major", value)}
-            selectedItem={selections.major || ""}
-          />
-        </>
-      )}
-      {type !== "profile" && (
+      {type === "signup" && (
         <ReusableDropdown
-          name="Concentration"
-          dropdownItems={concentrationOptions.map((item) => item.concName)}
-          handleChangeItem={(_, value) => handleChangeConcentration(value)}
-          selectedItem={selections.concentration?.concName || ""}
+          name="Starting Year"
+          dropdownItems={YEAR_OPTIONS}
+          handleChangeItem={(_, value) =>
+            handleChangeOption("startingYear", value)
+          }
+          selectedItem={selections.startingYear || ""}
         />
       )}
+      <ReusableDropdown
+        name="Catalog"
+        dropdownItems={catalogOptions}
+        handleChangeItem={(_, value) => handleChangeOption("catalog", value)}
+        selectedItem={selections.catalog || ""}
+      />
+      <ReusableDropdown
+        name="Major"
+        dropdownItems={majorOptions}
+        handleChangeItem={(_, value) => handleChangeOption("major", value)}
+        selectedItem={selections.major || ""}
+      />
+      <ReusableDropdown
+        name="Concentration"
+        dropdownItems={concentrationOptions.map((item) => item.concName)}
+        handleChangeItem={(_, value) => handleChangeConcentration(value)}
+        selectedItem={selections.concentration?.concName || ""}
+      />
     </div>
   );
 };

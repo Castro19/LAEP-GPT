@@ -1,23 +1,13 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "../../../components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
 import { RootState } from "@/redux/store";
 
-const years = [
-  { value: "1", label: "Year 1" },
-  { value: "2", label: "Year 2" },
-  { value: "3", label: "Year 3" },
-  { value: "4", label: "Year 4" },
-  { value: "5", label: "Year 5" },
-  { value: "6", label: "Year 6" },
-];
-
 export const labelStyle = "underline text-lg self-center";
 
 const AboutMe = () => {
-  const { handleTextChange, handleChange } = useUserData();
+  const { handleTextChange } = useUserData();
   const { userData } = useAppSelector((state: RootState) => state.user);
 
   return (
@@ -32,32 +22,6 @@ const AboutMe = () => {
           onChange={(e) => handleTextChange(e)}
           style={{ height: "150px" }}
         />
-      </LabelInputContainer>
-      <LabelInputContainer>
-        <Label className={labelStyle}>Year</Label>
-        <RadioGroup
-          value={userData?.year || ""}
-          onValueChange={(value) =>
-            handleChange(
-              "year",
-              value as
-                | "freshman"
-                | "sophomore"
-                | "junior"
-                | "senior"
-                | "graduate"
-            )
-          }
-        >
-          <div className="flex flex-row space-x-4 flex-wrap justify-center gap-y-2">
-            {years.map((year) => (
-              <div key={year.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={year.value} id={`year${year.value}`} />
-                <Label htmlFor={`year${year.value}`}>{year.label}</Label>
-              </div>
-            ))}
-          </div>
-        </RadioGroup>
       </LabelInputContainer>
     </div>
   );
