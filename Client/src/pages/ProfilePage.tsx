@@ -112,6 +112,24 @@ export function ProfilePage() {
     }
   };
 
+  const handleGenerateBio = async () => {
+    try {
+      // const response = await fetch(
+      //   `${import.meta.env.VITE_API_URL}/generate-bio`,
+      //   {
+      //     method: "POST",
+      //     body: JSON.stringify(userData),
+      //   }
+      // );
+      // const data = await response.json();
+      // console.log(data);
+      console.log("BIO GENERATION NOT IMPLEMENTED YET");
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Failed to generate bio:", error);
+      }
+    }
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
       <GridItemContainer>
@@ -162,20 +180,23 @@ export function ProfilePage() {
         </div>
       </GridItemContainer>
       <GridItemContainer>
-        <div className="flex flex-col justify-center items-center w-full">
-          <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center w-full">
-            Bio
-          </Label>
-          <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
-        </div>
-        <div className="flex justify-center items-center mt-8">
-          <AnimatedModalDemo
-            className="w-3/4"
-            onSave={handleSave}
-            title="Modify Bio"
-          >
-            <AboutMe />
-          </AnimatedModalDemo>
+        <div className="flex flex-col items-center justify-between h-full">
+          <div className="flex flex-col  w-full">
+            <Label className="text-2xl font-bold mb-4 block text-center w-full">
+              Bio
+            </Label>
+            <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
+          </div>
+          <div className="flex flex-col gap-4 w-3/4">
+            <SpecialButton
+              onClick={handleGenerateBio}
+              text="Generate Bio"
+              className="w-full"
+            />
+            <AnimatedModalDemo onSave={handleSave} title="Modify Bio">
+              <AboutMe />
+            </AnimatedModalDemo>
+          </div>
         </div>
       </GridItemContainer>
       <GridItemContainer>
