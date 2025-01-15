@@ -38,6 +38,7 @@ import TeamPage from "./pages/TeamPage.tsx";
 import { getTeamMembers } from "./helpers/getTeamMembers.ts";
 import { Demographics } from "./components/register/SignInFlow/Demographics.tsx";
 import { Interests } from "./components/register/SignInFlow/Interests.tsx";
+import BasicInformation from "./components/register/SignInFlow/BasicInformation.tsx";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
 let routerChosen: typeof createBrowserRouter = createBrowserRouter;
@@ -145,6 +146,10 @@ const router = routerChosen([
       {
         path: "terms",
         element: <Terms />,
+      },
+      {
+        path: "basic-information",
+        element: <BasicInformation />,
       },
       {
         path: "demographics",

@@ -12,7 +12,13 @@ import useIsMobile from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 
-const signInFlowSteps = ["terms", "demographics", "interests", "flowchart"];
+const signInFlowSteps = [
+  "terms",
+  "basic-information",
+  "demographics",
+  "interests",
+  "flowchart",
+];
 
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
@@ -38,20 +44,24 @@ const SignInFlow = () => {
         setDescription("Please read and accept the terms of agreement");
         setIsTermsAccepted(userData?.canShareData || false);
         break;
+      case "basic-information":
+        setTitle("Section 1: Basic Information");
+        setDescription("Please select your major and year");
+        break;
       case "demographics":
-        setTitle("Section 1: Demographics");
+        setTitle("Section 2: Demographics");
         setDescription(
           "Please select your demographic information (optional)."
         );
         break;
       case "interests":
-        setTitle("Section 2: Personal Insights");
+        setTitle("Section 3: Personal Insights");
         setDescription(
           `This information will be used to match you with clubs, events, and more!`
         );
         break;
       case "flowchart":
-        setTitle("Section 3: Flowchart");
+        setTitle("Section 4: Flowchart");
         setDescription(
           "Generate a flowchart by inputting the following information"
         );
