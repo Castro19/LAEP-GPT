@@ -45,15 +45,11 @@ export function SidebarFlowchart() {
   };
 
   const handleSaveFlowchart = () => {
-    if (
-      userData.flowchartInformation.catalog &&
-      userData.flowchartInformation.major &&
-      selections.concentration
-    ) {
+    if (selections.catalog && selections.major && selections.concentration) {
       fetchFlowchartDataHelper(
         dispatch,
-        userData.flowchartInformation.catalog,
-        userData.flowchartInformation.major,
+        selections.catalog,
+        selections.major,
         selections.concentration.code
       );
       navigate("/flowchart");
@@ -84,6 +80,12 @@ export function SidebarFlowchart() {
     userData.flowchartInformation.major,
     dispatch,
   ]);
+
+  useEffect(() => {
+    if (selections.catalog) {
+      dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
+    }
+  }, [selections.catalog, dispatch]);
 
   return (
     <Sidebar variant="sidebar" className="flex flex-col h-full">

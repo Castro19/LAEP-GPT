@@ -111,6 +111,10 @@ const flowSelectionSlice = createSlice({
         state.selections[action.payload.key] = action.payload.value as string;
       }
     },
+    resetConcentrationOptions: (state) => {
+      state.concentrationOptions = [];
+      state.selections.concentration = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -141,6 +145,7 @@ const flowSelectionSlice = createSlice({
   },
 });
 
-export const { setSelection } = flowSelectionSlice.actions;
+export const { setSelection, resetConcentrationOptions } =
+  flowSelectionSlice.actions;
 
 export const flowSelectionReducer = flowSelectionSlice.reducer;
