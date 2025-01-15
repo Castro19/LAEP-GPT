@@ -29,8 +29,6 @@ const FlowChartOptions = ({
   }, [selections.catalog, dispatch, type]);
 
   useEffect(() => {
-    console.log("MAJOR:", selections.major);
-    console.log("CATALOG:", selections.catalog);
     if (selections.major && selections.catalog) {
       dispatch(
         flowSelectionActions.fetchConcentrationOptions({

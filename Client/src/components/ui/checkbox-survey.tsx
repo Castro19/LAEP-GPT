@@ -76,7 +76,6 @@ export function CheckboxSurvey({ label, handleChange }: CheckboxSurveyProps) {
 
   const isChecked = (item: string) => {
     if (label === "What areas do you find interesting?") {
-      console.log(userData.interestAreas);
       return userData.interestAreas.includes(item);
     } else if (label === "What activities do you like to do?") {
       return userData.preferredActivities.includes(item);

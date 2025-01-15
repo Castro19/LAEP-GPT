@@ -34,7 +34,9 @@ const FlowChart = ({
 
   const flowchartRef = useRef<HTMLDivElement>(null);
   const startYear = useMemo(() => {
-    return userData.startingYear ? parseInt(userData.startingYear, 10) : 0;
+    return userData.flowchartInformation.startingYear
+      ? parseInt(userData.flowchartInformation.startingYear, 10)
+      : 0;
   }, [userData]);
 
   const termsPerYear = 3; // Fall, Winter, Spring
