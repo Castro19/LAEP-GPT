@@ -7,7 +7,7 @@ import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { RiFileTextLine, RiCheckboxCircleLine } from "react-icons/ri";
+import { RiFileTextLine } from "react-icons/ri";
 
 const md = new MarkdownIt();
 
