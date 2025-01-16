@@ -6,6 +6,7 @@ const NewUserRoute = () => {
   const { userLoggedIn, loading, isNewUser } = useAppSelector(
     (state) => state.auth
   );
+  const { userData } = useAppSelector((state) => state.user);
 
   if (loading) {
     return <div>Loading...</div>; // Display a loading indicator instead of returning null
@@ -16,7 +17,7 @@ const NewUserRoute = () => {
   }
 
   if (!isNewUser) {
-    return <Navigate to="/chat" replace />;
+    if (userData.userType !== "admin") return <Navigate to="/chat" replace />;
   }
 
   return (
