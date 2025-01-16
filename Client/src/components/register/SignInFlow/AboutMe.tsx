@@ -12,29 +12,32 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+import { serverUrl } from "@/helpers/getEnvironmentVars";
+import { useState } from "react";
 export const labelStyle = "underline text-lg self-center";
 
 const AboutMe = () => {
-  const { handleTextChange } = useUserData();
+  const { handleTextChange, handleChange } = useUserData();
   const { userData } = useAppSelector((state: RootState) => state.user);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerateBio = async () => {
+    if (isGenerating) return;
+    setIsGenerating(true);
     try {
-      // const response = await fetch(
-      //   `${import.meta.env.VITE_API_URL}/generate-bio`,
-      //   {
-      //     method: "POST",
-      //     body: JSON.stringify(userData),
-      //   }
-      // );
-      // const data = await response.json();
-      // console.log(data);
-      console.log("BIO GENERATION NOT IMPLEMENTED YET");
+      const response = await fetch(`${serverUrl}/llms/generate-bio`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userData?.userId }),
+      });
+      const data = await response.json();
+      handleChange("bio", data.bio);
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to generate bio:", error);
       }
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -59,8 +62,9 @@ const AboutMe = () => {
                   className="align-self-end justify-self-end dark:bg-transparent dark:text-white hover:dark:bg-transparent hover:text-gray-500 transition-transform hover:scale-110"
                   size="icon"
                   onClick={handleGenerateBio}
+                  disabled={isGenerating}
                 >
-                  <GiFairyWand />
+                  <GiFairyWand className={isGenerating ? "animate-spin" : ""} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

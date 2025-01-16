@@ -10,6 +10,7 @@ import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
 import { RunningStreamData } from "@polylink/shared/types";
+import { createBio } from "../helpers/assistants/createBio";
 
 const router = express.Router();
 
@@ -213,6 +214,21 @@ router.post(
       res
         .status(500)
         .json({ error: "Failed to generate response from OpenAI" });
+    }
+  })
+);
+
+router.post(
+  "/generate-bio",
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.body;
+      const bio = await createBio(userId);
+      res.json({ bio: bio });
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error generating bio:", error);
+      }
     }
   })
 );
