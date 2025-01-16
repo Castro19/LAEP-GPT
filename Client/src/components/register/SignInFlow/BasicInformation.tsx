@@ -16,17 +16,27 @@ const years = [
   { value: "graduate", label: "Graduate" },
 ];
 
-const BasicInformation = () => {
+const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
+
+const BasicInformation = ({
+  showStartingYear = true,
+}: {
+  showStartingYear?: boolean;
+}) => {
   const { handleChange, handleChangeFlowchartInformation } = useUserData();
   const { userData } = useAppSelector((state: RootState) => state.user);
   const { selections } = useAppSelector((state) => state.flowSelection);
+
   const dispatch = useAppDispatch();
 
-  const handleChangeOption = (value: string) => {
-    handleChangeFlowchartInformation("major", value);
+  const handleChangeOption = (key: string, value: string) => {
+    handleChangeFlowchartInformation(
+      key as "startingYear" | "catalog" | "major" | "concentration",
+      value
+    );
     dispatch(
       setSelection({
-        key: "major",
+        key: key as "startingYear" | "catalog" | "major" | "concentration",
         value: value,
       })
     );
@@ -37,9 +47,25 @@ const BasicInformation = () => {
       <ReusableDropdown
         name="Major"
         dropdownItems={MAJORS}
-        handleChangeItem={(_, value) => handleChangeOption(value)}
-        selectedItem={selections.major || ""}
+        handleChangeItem={(_, value) => handleChangeOption("major", value)}
+        selectedItem={
+          selections.major || userData.flowchartInformation.major || ""
+        }
       />
+      {showStartingYear && (
+        <ReusableDropdown
+          name="Starting Year"
+          dropdownItems={YEAR_OPTIONS}
+          handleChangeItem={(_, value) =>
+            handleChangeOption("startingYear", value)
+          }
+          selectedItem={
+            selections.startingYear ||
+            userData.flowchartInformation.startingYear ||
+            ""
+          }
+        />
+      )}
       <LabelInputContainer>
         <Label className={labelStyle}>Year</Label>
         <RadioGroup

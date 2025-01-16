@@ -27,8 +27,8 @@ import { useEffect } from "react";
 import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
-import { toast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/components/ui/use-toast";
 
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
@@ -53,20 +53,6 @@ export function SidebarFlowchart() {
         selections.concentration.code
       );
       navigate("/flowchart");
-    }
-  };
-
-  useEffect(() => {
-    if (
-      userData.flowchartInformation.catalog &&
-      userData.flowchartInformation.major
-    ) {
-      dispatch(
-        flowSelectionActions.fetchConcentrationOptions({
-          catalog: userData.flowchartInformation.catalog,
-          major: userData.flowchartInformation.major,
-        })
-      );
     } else {
       toast({
         title: "Please select a catalog and major",
@@ -75,11 +61,18 @@ export function SidebarFlowchart() {
         variant: "destructive",
       });
     }
-  }, [
-    userData.flowchartInformation.catalog,
-    userData.flowchartInformation.major,
-    dispatch,
-  ]);
+  };
+
+  useEffect(() => {
+    if (selections.catalog && selections.major) {
+      dispatch(
+        flowSelectionActions.fetchConcentrationOptions({
+          catalog: selections.catalog,
+          major: selections.major,
+        })
+      );
+    }
+  }, [selections.catalog, selections.major, dispatch]);
 
   useEffect(() => {
     if (selections.catalog) {

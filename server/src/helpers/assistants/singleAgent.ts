@@ -59,8 +59,11 @@ const courseCatalogAssistant = async (
 
 const calpolyClubsAssistant = (user: UserData, message: string): string => {
   const interests = user.interestAreas.join(", ");
+  const preferredActivities = user.preferredActivities.join(", ");
+  const goals = user.goals.join(", ");
   const major = user.flowchartInformation.major;
-  return `Interests: ${interests}\nMajor: ${major}\n${message}`;
+  const demographic = JSON.stringify(user.demographic);
+  return `Interests: ${interests}\nPreferred Activities: ${preferredActivities}\nMajor: ${major}\nGoals: ${goals}\nDemographic: ${demographic}\n${message}`;
 };
 
 type SingleAgentRequestBody = {
