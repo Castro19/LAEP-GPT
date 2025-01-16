@@ -8,14 +8,17 @@ type TitleCardProps = {
 
 const TitleCard = ({ title, description }: TitleCardProps) => {
   const isMobile = useIsMobile();
+
   return (
     <div
-      className={`${isMobile ? "w-full" : "w-1/2"} p-8 flex flex-col justify-center items-start bg-gradient-to-b from-indigo-500 to-indigo-700 text-white ${
-        isMobile ? "p-4" : ""
-      }`}
+      className={`${
+        isMobile ? "w-full" : "w-full h-full"
+      } flex flex-col justify-center items-start bg-gradient-to-b from-indigo-500 to-indigo-700 text-white p-8`}
     >
-      <h1 className="text-4xl font-bold mb-3">{title}</h1>
-      <p className="mb-5">{description}</p>
+      <div className="max-w-md">
+        <h1 className="text-4xl font-bold mb-4">{title}</h1>
+        <p className="text-lg opacity-90">{description}</p>
+      </div>
     </div>
   );
 };

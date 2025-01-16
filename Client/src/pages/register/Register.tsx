@@ -14,15 +14,15 @@ const Register = () => {
         <div className="flex w-11/12 max-w-4xl bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden border border-slate-500">
           {/* Left Side: Title and Description Component */}
           {!isMobile && (
-            <TitleCard
-              title="Welcome!"
-              description="Sign in & get access to PolyLink"
-            />
+            <div className="w-1/2">
+              <TitleCard
+                title="Welcome!"
+                description="Sign in & get access to PolyLink"
+              />
+            </div>
           )}
           {/* Right Side: Login or Signup Form based on route */}
-          <div
-            className={`${isMobile ? "w-full" : "w-1/2"} flex flex-col justify-center`}
-          >
+          <div className={`${isMobile ? "w-full" : "w-1/2"} p-8`}>
             <Outlet />
           </div>
         </div>
