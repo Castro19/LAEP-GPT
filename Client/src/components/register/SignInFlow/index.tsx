@@ -1,7 +1,5 @@
-// SignInFlow.tsx
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, Variants } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import TitleCard from "../TitleCard";
 import { useAppDispatch, useAppSelector } from "@/redux";
@@ -89,64 +87,19 @@ const SignInFlow = () => {
     ) {
       setIsSkipButton(false);
     }
-  }, [flowchartData, selections, navigate]);
+  }, [flowchartData, selections]);
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? "100%" : "-100%",
-      opacity: 0,
-      position: "absolute",
-      width: "100%",
-      height: "100%",
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      position: "absolute",
-      width: "100%",
-      height: "100%",
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? "100%" : "-100%",
-      opacity: 0,
-      position: "absolute",
-      width: "100%",
-      height: "100%",
-    }),
-  };
-
-  const slideTransition = {
-    type: "tween",
-    duration: 0.3,
-    ease: [0.645, 0.045, 0.355, 1.0],
-  };
-
-  // Keep track of the swipe direction
-  const [[page, direction], setPage] = useState([0, 0]);
-
-  // Update page and direction when navigating
   const handleNext = () => {
     if (currentStep === "terms") {
-      setPage([page + 1, 1]); // Moving forward
       navigate("/sign-in-flow/input-information");
     } else if (currentStep === "input-information") {
       if (choice === "now") {
-        setPage([page + 1, 1]); // Moving forward
         navigate("/sign-in-flow/basic-information");
       } else {
-        if (!isTermsAccepted) {
-          toast({
-            title: "Terms not accepted",
-            description: "Please accept the terms of service to continue",
-            variant: "destructive",
-          });
-          return;
-        }
-        dispatch(setIsNewUser(false));
+        // Skip further steps
         navigate("/chat");
       }
     } else if (currentStepIndex < signInFlowSteps.length - 1) {
-      setPage([page + 1, 1]); // Moving forward
       const nextStep = signInFlowSteps[currentStepIndex + 1];
       navigate(`/sign-in-flow/${nextStep}`);
     }
@@ -154,7 +107,6 @@ const SignInFlow = () => {
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
-      setPage([page - 1, -1]); // Moving backward
       const prevStep = signInFlowSteps[currentStepIndex - 1];
       navigate(`/sign-in-flow/${prevStep}`);
     }
@@ -193,101 +145,119 @@ const SignInFlow = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-800">
-      <div
-        className={`flex ${isMobile ? "flex-col" : ""} border border-white 
-        ${isMobile ? "w-[95%]" : "w-3/4 h-[80vh]"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
-      >
-        {/* Left Side: Title Card (No Animation) */}
-        {!isMobile && (
-          <div className="w-1/2 h-full">
-            <TitleCard title={title} description={description} />
-          </div>
-        )}
-
-        {/* Right Side: Animated Content */}
-        <div
-          className={`${isMobile ? "w-full" : "w-1/2"} h-full flex flex-col justify-between text-black dark:text-white relative overflow-hidden`}
-        >
-          {isMobile && <TitleCard title={title} description={description} />}
-
-          <ScrollArea className="flex-1 relative">
-            <div className="relative" style={{ minHeight: "100%" }}>
-              <AnimatePresence initial={false} mode="wait" custom={direction}>
-                <motion.div
-                  key={currentStep}
-                  custom={direction}
-                  variants={slideVariants as Variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={slideTransition}
-                  className="p-4"
-                >
-                  <div className="flex flex-col">
-                    <Outlet context={{ choice, handleChoice: setChoice }} />
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </ScrollArea>
-
-          {/* Navigation Buttons */}
-          <div
-            className={`flex justify-between p-4 border-t bg-white dark:bg-zinc-800 z-10`}
+    <>
+      {/* Outer container using bg-slate-900 to match your splash page */}
+      <div className="relative flex items-center justify-center min-h-screen w-full bg-slate-900 px-4">
+        {/* SVG decorations (dark, subtle) */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none select-none overflow-hidden">
+          {/* Slightly visible shape in the top-left */}
+          <svg
+            className="absolute w-[380px] h-[380px] text-slate-600 opacity-10 top-[-120px] left-[-120px]"
+            fill="currentColor"
+            viewBox="0 0 512 512"
           >
-            {/* Previous Button */}
-            <div>
-              {currentStepIndex > 0 && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handlePrevious}
-                  className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded 
-                    hover:bg-blue-600 ${isMobile ? "text-sm" : ""}`}
-                >
-                  <FaArrowLeft className="mr-2" />
-                  Back
-                </motion.button>
-              )}
-            </div>
+            <polygon points="0,0 512,0 0,512" />
+          </svg>
 
-            {/* Next Button */}
-            <div>
-              {currentStepIndex < signInFlowSteps.length - 1 ? (
-                isTermsAccepted ? (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleNext}
-                    className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded 
-                      hover:bg-blue-600 ${isMobile ? "text-sm" : ""}`}
+          {/* Another shape in the bottom-right */}
+          <svg
+            className="absolute w-[540px] h-[540px] text-slate-700 opacity-10 bottom-[-200px] right-[-180px] rotate-45"
+            fill="currentColor"
+            viewBox="0 0 512 512"
+          >
+            <rect width="512" height="512" rx="80" ry="80" />
+          </svg>
+        </div>
+
+        {/* Main content container */}
+        <div
+          className={`relative z-10 flex ${isMobile ? "flex-col h-auto" : ""} border border-slate-500 
+          ${isMobile ? "w-[95%]" : "w-3/4"} ${isMobile ? "min-h-[80vh]" : "h-[80vh]"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
+        >
+          {/* Left Side: Title Card */}
+          {!isMobile && (
+            <div className="w-1/2 h-full">
+              <TitleCard title={title} description={description} />
+            </div>
+          )}
+
+          {/* Right Side: Content */}
+          <div
+            className={`${
+              isMobile ? "w-full flex-1" : "w-1/2"
+            } h-full flex flex-col justify-between bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white`}
+          >
+            {isMobile && <TitleCard title={title} description={description} />}
+
+            <ScrollArea className="flex-1 relative p-6">
+              <Outlet context={{ choice, handleChoice: setChoice }} />
+            </ScrollArea>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between p-4 border-t border-slate-600/50 bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+              {/* Previous Button */}
+              <div>
+                {currentStepIndex > 0 && (
+                  <button
+                    onClick={handlePrevious}
+                    className={`flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
+                      isMobile ? "text-sm" : ""
+                    }`}
                   >
-                    Next
-                    <FaArrowRight className="ml-2" />
-                  </motion.button>
+                    <FaArrowLeft className="mr-2" />
+                    Back
+                  </button>
+                )}
+              </div>
+
+              {/* Next or Complete Profile */}
+              <div>
+                {currentStepIndex < signInFlowSteps.length - 1 ? (
+                  isTermsAccepted ? (
+                    <button
+                      onClick={handleNext}
+                      className={`flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
+                        isMobile ? "text-sm" : ""
+                      }`}
+                    >
+                      Next
+                      <FaArrowRight className="ml-2" />
+                    </button>
+                  ) : (
+                    <Button
+                      onClick={handleDisableClick}
+                      variant="destructive"
+                      className="bg-red-900/80 hover:bg-red-900 text-white border border-red-800/50"
+                    >
+                      Disabled
+                    </Button>
+                  )
+                ) : isTermsAccepted ? (
+                  <button
+                    onClick={handleCompleteProfile}
+                    className={`px-4 py-2 rounded-md border transition-all duration-200 ${
+                      isSkipButton
+                        ? "bg-slate-700 hover:bg-slate-600 border-slate-600/50"
+                        : "bg-green-900/80 hover:bg-green-900 border-green-800/50"
+                    } text-white ${isMobile ? "text-sm" : ""}`}
+                  >
+                    {isSkipButton ? "Skip" : "Create Flowchart"}
+                  </button>
                 ) : (
-                  <Button onClick={handleDisableClick} variant="destructive">
+                  <Button
+                    onClick={handleDisableClick}
+                    variant="destructive"
+                    className="bg-red-900/80 hover:bg-red-900 text-white border border-red-800/50"
+                  >
                     Disabled
                   </Button>
-                )
-              ) : isTermsAccepted ? (
-                <button
-                  onClick={handleCompleteProfile}
-                  className={`px-4 py-2 ${isSkipButton ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"} text-white rounded ${isMobile ? "text-sm" : ""}`}
-                >
-                  {isSkipButton ? "Skip" : "Create Flowchart"}
-                </button>
-              ) : (
-                <Button onClick={handleDisableClick} variant="destructive">
-                  Disabled
-                </Button>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
