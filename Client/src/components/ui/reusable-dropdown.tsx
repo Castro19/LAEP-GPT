@@ -1,4 +1,3 @@
-import { Label } from "./label";
 import { Select } from "./select";
 import { SelectContent } from "./select";
 import { SelectItem } from "./select";
@@ -27,7 +26,6 @@ const ReusableDropdown = ({
 }: ReusableDropdownProps) => {
   return (
     <LabelInputContainer>
-      <Label className="underline">{name}</Label>
       <Select
         onValueChange={(value) => handleChangeItem(name, value)}
         value={selectedItem}

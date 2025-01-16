@@ -7,11 +7,13 @@ export function RadioSurvey({
   items,
   label,
   handleChange,
+  className,
 }: {
   items: { id: string; label: string }[];
   label: string;
   // eslint-disable-next-line no-unused-vars
   handleChange: (value: string) => void;
+  className?: string;
 }) {
   const [showTextArea, setShowTextArea] = useState(false);
   const [other, setOther] = useState("");
@@ -32,7 +34,7 @@ export function RadioSurvey({
   };
 
   return (
-    <LabelInputContainer>
+    <LabelInputContainer className={className}>
       <Label className="text-lg align-start mb-4">{label}</Label>
       <RadioGroup onValueChange={handleOptionChange} className="space-y-2">
         {items.map((item) => (
@@ -67,6 +69,12 @@ export function RadioSurvey({
   );
 }
 
-const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col space-y-2 mb-4">{children}</div>
+const LabelInputContainer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={`flex flex-col space-y-2 mb-4 ${className}`}>{children}</div>
 );

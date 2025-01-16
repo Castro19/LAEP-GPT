@@ -5,11 +5,13 @@ import { useUserData } from "@/hooks/useUserData";
 import { UserData } from "@polylink/shared/types";
 import { useState } from "react";
 import { ITEMS } from "@/calpolyData/items";
+import { motion } from "framer-motion";
 
 type CheckboxSurveyProps = {
   label: string;
   // eslint-disable-next-line no-unused-vars
   handleChange: (value: string[]) => void;
+  className?: string;
 };
 
 const chooseSelectedItems = (label: string, userData: UserData) => {
@@ -22,7 +24,11 @@ const chooseSelectedItems = (label: string, userData: UserData) => {
   }
   return [];
 };
-export function CheckboxSurvey({ label, handleChange }: CheckboxSurveyProps) {
+export function CheckboxSurvey({
+  label,
+  handleChange,
+  className,
+}: CheckboxSurveyProps) {
   const { userData } = useUserData();
   const [selectedItems, setSelectedItems] = useState<string[]>(
     chooseSelectedItems(label, userData)
@@ -85,53 +91,68 @@ export function CheckboxSurvey({ label, handleChange }: CheckboxSurveyProps) {
     return false;
   };
   return (
-    <div>
+    <div className={className}>
       <LabelInputContainer>
-        <Label className="text-lg align-start mb-4">{label}</Label>
-        {ITEMS[label].map((item) => (
-          <div key={item.id} className="flex items-center space-x-2">
-            {item.id === "other" ? (
-              <div className="flex flex-col space-y-2 w-full">
-                <div className="flex flex-row space-x-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {ITEMS[label].map((item) => (
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              key={item.id}
+              className="flex items-start space-x-2 p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            >
+              {item.id === "other" ? (
+                <div className="flex flex-col space-y-2 w-full">
+                  <div className="flex flex-row space-x-2 items-center">
+                    <Checkbox
+                      id={item.id}
+                      checked={isChecked(item.label)}
+                      onCheckedChange={(checked) =>
+                        handleItemChange(checked as boolean, item.label)
+                      }
+                      className="text-blue-500"
+                    />
+                    <Label htmlFor={item.id} className="font-medium">
+                      {item.label}
+                    </Label>
+                  </div>
+                  {showTextAreaItem && (
+                    <Textarea
+                      className="w-full animate-in fade-in-0 slide-in-from-top-10 duration-300 text-sm"
+                      placeholder="Please specify"
+                      id="message"
+                      maxLength={25}
+                      value={otherItem}
+                      onChange={(e) => handleOtherItemChange(e.target.value)}
+                    />
+                  )}
+                </div>
+              ) : (
+                <>
                   <Checkbox
                     id={item.id}
                     checked={isChecked(item.label)}
                     onCheckedChange={(checked) =>
                       handleItemChange(checked as boolean, item.label)
                     }
+                    className="mt-0.5 text-blue-500"
                   />
-                  <Label htmlFor={item.id}>{item.label}</Label>
-                </div>
-                {showTextAreaItem && (
-                  <Textarea
-                    className="w-full animate-in fade-in-0 slide-in-from-top-10 duration-300"
-                    placeholder="Please specify"
-                    id="message"
-                    maxLength={25}
-                    value={otherItem}
-                    onChange={(e) => handleOtherItemChange(e.target.value)}
-                  />
-                )}
-              </div>
-            ) : (
-              <>
-                <Checkbox
-                  id={item.id}
-                  checked={isChecked(item.label)}
-                  onCheckedChange={(checked) =>
-                    handleItemChange(checked as boolean, item.label)
-                  }
-                />
-                <Label htmlFor={item.id}>{item.label}</Label>
-              </>
-            )}
-          </div>
-        ))}
+                  <Label
+                    htmlFor={item.id}
+                    className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {item.label}
+                  </Label>
+                </>
+              )}
+            </motion.div>
+          ))}
+        </div>
       </LabelInputContainer>
     </div>
   );
 }
 
 const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col space-y-2 mb-4">{children}</div>
+  <div className="flex flex-col space-y-2">{children}</div>
 );

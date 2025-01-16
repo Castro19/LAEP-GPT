@@ -5,14 +5,15 @@ import { useAppSelector } from "@/redux";
 import terms from "@/calpolyData/terms";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
-import useIsMobile from "@/hooks/use-mobile";
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { RiFileTextLine, RiCheckboxCircleLine } from "react-icons/ri";
 
 const md = new MarkdownIt();
 
 export default function Terms() {
   const { handleChange } = useUserData();
   const userData = useAppSelector((state) => state.user.userData);
-  const isMobile = useIsMobile();
 
   const onCheckedChange = (checked: boolean) => {
     handleChange("canShareData", checked);
@@ -22,34 +23,64 @@ export default function Terms() {
   const safeHtml = DOMPurify.sanitize(messageHtml);
 
   return (
-    <LabelInputContainer>
-      <div className={`flex-1 overflow-y-auto ${isMobile ? "pb-24" : "pb-20"}`}>
-        <div
-          className="prose prose-invert"
-          dangerouslySetInnerHTML={{ __html: safeHtml }}
-        />
-      </div>
-      <div className="sticky bottom-0 border-t p-4 dark:bg-zinc-800 mt-auto">
-        <div className="flex items-center justify-center space-x-2">
-          <Checkbox
-            id="terms"
-            checked={userData?.canShareData}
-            onCheckedChange={onCheckedChange}
-          />
-          <Label htmlFor="terms">Accept terms and conditions</Label>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full"
+    >
+      <Card className="p-6">
+        {/* Header */}
+        <div className="text-center space-y-2 mb-6">
+          <div className="flex items-center justify-center space-x-2">
+            <RiFileTextLine className="w-6 h-6 text-blue-500" />
+            <h2 className="text-2xl font-semibold">Terms & Conditions</h2>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Please review our terms and conditions
+          </p>
         </div>
-      </div>
-    </LabelInputContainer>
+
+        {/* Terms Content */}
+        <div className="relative rounded-lg border border-gray-200 dark:border-gray-700 mb-24">
+          <div className="max-h-[60vh] overflow-y-auto p-6">
+            <div
+              className="prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: safeHtml }}
+            />
+          </div>
+
+          {/* Gradient Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none" />
+        </div>
+
+        {/* Sticky Checkbox Section */}
+        <div className="sticky bottom-0 bg-white dark:bg-gray-900 pt-4">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center justify-center space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 transition-colors bg-white dark:bg-gray-900"
+          >
+            <Checkbox
+              id="terms"
+              checked={userData?.canShareData}
+              onCheckedChange={onCheckedChange}
+              className="text-blue-500"
+            />
+            <Label
+              htmlFor="terms"
+              className="font-medium cursor-pointer select-none"
+            >
+              I accept the terms and conditions
+            </Label>
+          </motion.div>
+
+          {/* Info Note */}
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
+            By accepting, you agree to our terms of service and data sharing
+            policies
+          </p>
+        </div>
+      </Card>
+    </motion.div>
   );
 }
-
-const LabelInputContainer = ({ children }: { children: React.ReactNode }) => {
-  const isMobile = useIsMobile();
-  return (
-    <div
-      className={`flex flex-col relative ${isMobile ? "h-[60vh]" : "h-full"}`}
-    >
-      {children}
-    </div>
-  );
-};
