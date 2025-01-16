@@ -149,7 +149,7 @@ const router = routerChosen([
       },
       {
         path: "basic-information",
-        element: <BasicInformation />,
+        element: <BasicInformation showStartingYear={false} />,
       },
       {
         path: "demographics",

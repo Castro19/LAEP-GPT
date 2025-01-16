@@ -74,7 +74,12 @@ const SignInFlow = () => {
   }, [currentStep, userData, navigate]);
 
   useEffect(() => {
-    if (selections.catalog && selections.major && selections.concentration) {
+    if (
+      selections.startingYear &&
+      selections.catalog &&
+      selections.major &&
+      selections.concentration
+    ) {
       setIsSkipButton(false);
     }
   }, [flowchartData, selections, navigate]);

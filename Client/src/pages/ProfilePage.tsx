@@ -74,18 +74,12 @@ export function ProfilePage() {
   };
 
   const handleSaveDegreeInfo = () => {
-    if (selections.major) {
+    if (selections.major || selections.startingYear) {
       // Change User information in database
       handleSave();
       toast({
         title: "Degree Information Updated",
         description: "Your degree information has been updated successfully.",
-      });
-    } else {
-      toast({
-        title: "Please select all fields",
-        description: "Select a starting year, catalog, and major",
-        variant: "destructive",
       });
     }
   };

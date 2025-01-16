@@ -20,7 +20,7 @@ export const createBio = async (userId: string): Promise<string> => {
       {
         role: "system",
         content: `
-        Create a descriptive and engaging profile for a student's page using the provided information. The profile should reflect the student's interests, goals, and personal background, without focusing on being a greeting. 
+        Create a descriptive and engaging profile for a student's page using the provided information. The profile should reflect the student's interests, goals, and personal background, without focusing on being a greeting. It should also be written as first person as if the student wrote it themselves.
 
         - **Limit**: Ensure the profile description is under 300 characters.
         - **Tone**: Use a friendly and relatable tone suitable for college students.
