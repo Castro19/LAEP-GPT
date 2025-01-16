@@ -3,12 +3,9 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { IoSchoolSharp } from "react-icons/io5";
 import { Navigate, Link } from "react-router-dom";
-// Importing component
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
-// redux auth:
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
-// Helper Components
 import { ErrorMessage } from "@/components/register/ErrorMessage";
 import SpecialButton from "@/components/ui/specialButton";
 import {
@@ -19,6 +16,7 @@ import {
 import { OAuthProvider } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { motion } from "framer-motion";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -26,7 +24,6 @@ export default function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  // Maybe add
   const { userLoggedIn, registerError, loading, pendingCredential } =
     useAppSelector((state) => state.auth);
 
@@ -88,98 +85,110 @@ export default function LoginForm() {
   return (
     <div>
       {userLoggedIn && <Navigate to={`/chat`} replace={true} />}
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800">
-        <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full mx-auto"
+      >
+        <h2 className="font-bold text-2xl text-neutral-200 mb-2">
           Welcome Back!
         </h2>
-        <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+        <p className="text-neutral-400 text-sm max-w-sm mb-8">
           Log in with your school email
         </p>
 
-        <form className="my-8" onSubmit={handleSubmit}>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="email">Email Address</Label>
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <LabelInputContainer>
+            <Label htmlFor="email" className="text-neutral-200">
+              Email Address
+            </Label>
             <Input
               id="email"
-              placeholder="example@calpoly.edu" // while calpoly.edu is required
+              placeholder="example@calpoly.edu"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="bg-neutral-800/50 border-neutral-700 text-neutral-200 placeholder:text-neutral-500 focus:border-blue-500"
             />
           </LabelInputContainer>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="password">Password</Label>
+
+          <LabelInputContainer>
+            <Label htmlFor="password" className="text-neutral-200">
+              Password
+            </Label>
             <div className="relative">
               <Input
                 id="password"
-                placeholder=""
+                placeholder="Enter your password"
                 type={passwordVisible ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="bg-neutral-800/50 border-neutral-700 text-neutral-200 placeholder:text-neutral-500 focus:border-blue-500"
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="text-white absolute right-3 top-1/2 transform -translate-y-1/2"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-300 transition-colors"
                 style={{ background: "none", border: "none" }}
               >
-                {passwordVisible ? <FiEyeOff /> : <FiEye />}
+                {passwordVisible ? <FiEyeOff size={18} /> : <FiEye size={18} />}
               </button>
             </div>
           </LabelInputContainer>
-          <p className="text-center text-sm dark:text-gray-400">
-            Forgot your password?
+
+          <div className="flex justify-end">
             <Link
               to={"/register/reset-password"}
-              className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
             >
-              Reset Password
+              Forgot your password?
             </Link>
-          </p>
-          <button
-            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full my-8 text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg py-2.5 font-medium shadow-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
             type="submit"
           >
             {loading ? "Signing In..." : "Sign In"}
-            <BottomGradient />
-          </button>
-          <div className="flex flex-row text-center w-full my-4 dark:text-gray-400">
-            <div className="border-b-2 border-gray-500 mb-2.5 mr-2 w-full"></div>
-            <div className="text-sm font-bold w-fit">OR</div>
-            <div className="border-b-2 border-gray-500 mb-2.5 ml-2 w-full"></div>
+          </motion.button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-neutral-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-neutral-900 text-neutral-400">OR</span>
+            </div>
           </div>
-          <p className="text-center text-sm dark:text-gray-400">
-            Don&apos;t have an account?
-            <Link
-              to={"/register/sign-up"}
-              className="hover:underline font-bold dark:text-white text-blue-500 ml-3"
-            >
-              Sign up
-            </Link>
-          </p>
-          <div className="w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-800 ">
-            <SpecialButton
-              onClick={handleOutlookSignIn}
-              text="Login in through Cal Poly Account"
-              icon={<IoSchoolSharp />}
-              className="w-full"
-            />
+
+          <SpecialButton
+            onClick={handleOutlookSignIn}
+            text="Login with Cal Poly Account"
+            icon={<IoSchoolSharp className="text-xl" />}
+            className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700"
+          />
+
+          <div className="text-center">
+            <p className="text-neutral-400 text-sm">
+              Don&apos;t have an account?{" "}
+              <Link
+                to={"/register/sign-up"}
+                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+              >
+                Sign up
+              </Link>
+            </p>
           </div>
-          {registerError ? <ErrorMessage text={registerError} /> : <></>}
+
+          {registerError && <ErrorMessage text={registerError} />}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
-
-export const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
 
 const LabelInputContainer = ({
   children,
@@ -189,8 +198,6 @@ const LabelInputContainer = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
+    <div className={cn("flex flex-col space-y-2", className)}>{children}</div>
   );
 };
