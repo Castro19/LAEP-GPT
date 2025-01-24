@@ -96,7 +96,7 @@ const SignInFlow = () => {
       if (choice === "now") {
         navigate("/sign-in-flow/basic-information");
       } else {
-        // Skip further steps
+        dispatch(setIsNewUser(false));
         navigate("/chat");
       }
     } else if (currentStepIndex < signInFlowSteps.length - 1) {
