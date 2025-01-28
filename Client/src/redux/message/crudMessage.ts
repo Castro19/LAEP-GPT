@@ -10,9 +10,9 @@ export default async function sendMessage(
   botMessageId: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
-  if (msg.length >= 2000) {
-    throw new Error("Message is over 2000 characters, please shorten it.");
-  }
+  // if (msg.length >= 2000) {
+  //   throw new Error("Message is over 2000 characters, please shorten it.");
+  // }
 
   let timeoutDuration = 300000; // 30 seconds default timeout
 

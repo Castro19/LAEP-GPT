@@ -26,6 +26,29 @@ export const fetchAssistants: () => Promise<AssistantType[]> = async () => {
   }
 };
 
+export const getTestModeAssistants: () => Promise<
+  AssistantType[]
+> = async () => {
+  try {
+    const result = await assistantModel.getTestModeAssistants();
+
+    if (!result) throw new Error("No assistants found");
+    const assistantList = result.map((assistant: AssistantDocument) => ({
+      id: assistant._id.toString(),
+      title: assistant.title,
+      desc: assistant.desc,
+      urlPhoto: assistant.urlPhoto,
+      suggestedQuestions: assistant.suggestedQuestions,
+    })) as AssistantType[];
+
+    return assistantList;
+  } catch (error) {
+    throw new Error(
+      "Error fetching test mode assistants: " + (error as Error).message
+    );
+  }
+};
+
 export const getAssistantById: (
   gptId: string
 ) => Promise<AssistantDocument | null> = async (gptId: string) => {
