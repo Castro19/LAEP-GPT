@@ -97,7 +97,10 @@ router.post(
       }
     }
 
-    if (model.title === "Professor Ratings") {
+    if (
+      model.title === "Professor Ratings" ||
+      model.title === "Spring Planner Assistant"
+    ) {
       try {
         await handleMultiAgentModel({
           model,
