@@ -1,9 +1,4 @@
-import {
-  openai,
-  formatAssistantId,
-  courseQueryAssistantId,
-  environment,
-} from "../../index";
+import { openai, courseQueryAssistantId, environment } from "../../index";
 import { Response } from "express";
 import {
   runAssistantAndStreamResponse,

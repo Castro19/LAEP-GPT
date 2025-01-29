@@ -20,7 +20,6 @@ import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
 import professorRatingRouter from "./routes/professorRating";
 import llmRouter from "./routes/llm";
 import teamRouter from "./routes/team";
-import deepseekRouter from "./routes/deepseek";
 
 // LLM API
 import OpenAI from "openai";
@@ -77,7 +76,6 @@ app.use("/flowInfo", authenticate, flowInfoRouter);
 app.use("/professorRatings", professorRatingRouter);
 app.use("/llms", llmRouter);
 app.use("/team", teamRouter);
-app.use("/deepseek", deepseekRouter);
 
 // Initialize OpenAI API client
 export const deepseek = new OpenAI({
@@ -90,6 +88,7 @@ export const openai = new OpenAI({
 });
 
 export const formatAssistantId = process.env.FORMAT_ASST_ID;
+export const courseQueryAssistantId = process.env.COURSE_QUERY_ASST_ID;
 export const qdrant = {
   qdrantUrl: process.env.QDRANT_URL,
   qdrantApiKey: process.env.QDRANT_API_KEY,
