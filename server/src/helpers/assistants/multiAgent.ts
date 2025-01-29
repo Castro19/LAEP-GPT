@@ -153,7 +153,9 @@ async function handleMultiAgentModel({
       runningStreams
     );
 
-    console.log("Helper Response: ", helperResponse);
+    if (environment === "dev") {
+      console.log("Helper Response: ", helperResponse);
+    }
 
     // Delete the helper thread
     await openai.beta.threads.del(helperThread.id);
@@ -184,8 +186,9 @@ async function handleMultiAgentModel({
         messageToAdd +=
           "No professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in.";
       }
-
-      console.log("JSON OBJECT: ", jsonObject);
+      if (environment === "dev") {
+        console.log("JSON OBJECT: ", jsonObject);
+      }
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to parse JSON from helper assistant:", error);
