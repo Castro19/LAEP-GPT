@@ -134,7 +134,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
         </div>
       )}
       {!msg?.thinkingState && (
-        <div className="flex flex-col max-w-[75%]">
+        <div className="flex flex-col">
           <div
             className={`rounded-lg shadow-lg px-2 py-4 ${
               isUserMessage
@@ -143,10 +143,9 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
             }`}
           >
             <div
-              className="prose prose-invert weekly-planner-tables"
-              style={{ maxWidth: "100%" }}
+              className="prose prose-invert"
               dangerouslySetInnerHTML={{ __html: safeHtml }}
-            ></div>
+            />
           </div>
           {!isUserMessage && renderLikeButtons()}
         </div>

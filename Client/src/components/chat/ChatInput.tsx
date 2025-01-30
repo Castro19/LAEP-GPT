@@ -215,6 +215,7 @@ const ChatInput = ({
           placeholder="Type your message here..."
           rows={1}
           value={msg}
+          maxLength={2000}
           onChange={handleInputChange}
         />
         {currentChatId && loading[currentChatId] ? (

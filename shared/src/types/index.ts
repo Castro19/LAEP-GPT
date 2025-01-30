@@ -12,4 +12,3 @@ export * from "./professorRating";
 export * from "./llm";
 export * from "./user";
 export * from "./team";
-export * from "./liveClasses";
