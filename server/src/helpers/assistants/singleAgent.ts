@@ -133,15 +133,6 @@ async function handleSingleAgentModel({
     console.log("messageToAdd: ", messageToAdd);
   }
   try {
-    // Add user message to thread
-    await addMessageToThread(
-      threadId,
-      "user",
-      messageToAdd,
-      userFile ? userFile.id : null,
-      model.title
-    );
-
     // Stream assistant's response
     await runAssistantAndStreamResponse(
       threadId,
@@ -149,6 +140,15 @@ async function handleSingleAgentModel({
       res,
       userMessageId,
       runningStreams
+    );
+
+    // Add user message to thread
+    await addMessageToThread(
+      threadId,
+      "user",
+      messageToAdd,
+      userFile ? userFile.id : null,
+      model.title
     );
   } catch (error) {
     if (environment === "dev") {

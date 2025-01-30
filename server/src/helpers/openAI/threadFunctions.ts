@@ -21,7 +21,7 @@ export async function addMessageToThread(
     // null check fileId
     if (fileId !== null) {
       threadMessages = await openai.beta.threads.messages.create(threadId, {
-        role: role as "user",
+        role: role as "user" | "assistant",
         content: message,
         attachments: [{ file_id: fileId, tools: [{ type: "file_search" }] }],
       });

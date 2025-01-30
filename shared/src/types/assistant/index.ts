@@ -8,6 +8,7 @@ export type AssistantType = {
   desc: string; // the displayed description of the assistant
   urlPhoto?: string; // The avatar image of the assistant
   suggestedQuestions?: string[]; // The suggested questions for the assistant
+  inTestMode?: boolean;
 };
 
 export type AssistantSliceType = {

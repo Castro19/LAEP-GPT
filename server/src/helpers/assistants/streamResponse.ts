@@ -145,113 +145,131 @@ export async function runAssistantAndCollectResponse(
   assistantId: string,
   userMessageId: string,
   runningStreams: RunningStreamData
-): Promise<string> {
+): Promise<{ assistantResponse: string; runId: string }> {
   let runId: string | null = null;
 
-  return new Promise<string>((resolve, reject) => {
-    try {
-      // Check if the request was canceled before starting the run
-      if (
-        runningStreams[userMessageId]?.canceled ||
-        !runningStreams[userMessageId]
-      ) {
-        if (runningStreams[userMessageId]) {
-          delete runningStreams[userMessageId];
-        }
-        return reject(new Error("Response canceled"));
-      }
-
-      const run = openai.beta.threads.runs.stream(threadId, {
-        assistant_id: assistantId,
-      });
-
-      let assistantResponse = "";
-
-      run.on("event", async (event: AssistantStreamEvent) => {
-        try {
-          const runData = event.data as Run;
-
-          if (runId === null) {
-            runId = runData.id;
-            runningStreams[userMessageId].runId = runId;
+  return new Promise<{ assistantResponse: string; runId: string }>(
+    (resolve, reject) => {
+      try {
+        // Check if the request was canceled before starting the run
+        if (
+          runningStreams[userMessageId]?.canceled ||
+          !runningStreams[userMessageId]
+        ) {
+          if (runningStreams[userMessageId]) {
+            delete runningStreams[userMessageId];
           }
+          return reject(new Error("Response canceled"));
+        }
 
-          // Check if canceled again after receiving event
-          if (
-            runningStreams[userMessageId]?.canceled ||
-            !runningStreams[userMessageId]
-          ) {
+        const run = openai.beta.threads.runs.stream(threadId, {
+          assistant_id: assistantId,
+        });
+
+        let assistantResponse = "";
+
+        run.on("event", async (event: AssistantStreamEvent) => {
+          try {
+            const runData = event.data as Run;
+
+            if (runId === null) {
+              runId = runData.id;
+              runningStreams[userMessageId].runId = runId;
+            }
+
+            // Check if canceled again after receiving event
+            if (
+              runningStreams[userMessageId]?.canceled ||
+              !runningStreams[userMessageId]
+            ) {
+              if (runningStreams[userMessageId]) {
+                delete runningStreams[userMessageId];
+              }
+              return reject(new Error("Response canceled"));
+            }
+
+            if (event.event === "thread.run.completed") {
+              // Cleanup the run and thread from runningStreams
+              runningStreams[userMessageId].runId = null;
+              runningStreams[userMessageId].threadId = null;
+
+              // Handle usage and update analytics if needed
+              if (runData.usage && runData.model) {
+                const cost = calculateCost(runData.usage, runData.model);
+                const tokenAnalytics: MessageAnalyticsTokenAnalytics = {
+                  modelType: runData.model,
+                  promptTokens: runData.usage.prompt_tokens,
+                  completionTokens: runData.usage.completion_tokens,
+                  totalTokens: runData.usage.total_tokens,
+                  promptCost: cost.promptCost,
+                  completionCost: cost.completionCost,
+                  totalCost: cost.totalCost,
+                };
+                updateMessageAnalytics(userMessageId, tokenAnalytics).catch(
+                  (updateError: unknown) => {
+                    if (environment === "dev") {
+                      console.error(
+                        "Failed to update message analytics:",
+                        updateError
+                      );
+                    }
+                  }
+                );
+              }
+            }
+          } catch (error: unknown) {
+            if (environment === "dev") {
+              console.error("Error in run event handler:", error);
+            }
             if (runningStreams[userMessageId]) {
               delete runningStreams[userMessageId];
             }
-            return reject(new Error("Response canceled"));
+            reject(error);
           }
+        });
 
-          if (event.event === "thread.run.completed") {
-            // Cleanup the run and thread from runningStreams
-            runningStreams[userMessageId].runId = null;
-            runningStreams[userMessageId].threadId = null;
+        run.on("textDelta", (textDelta) => {
+          assistantResponse += textDelta.value;
+        });
 
-            // Handle usage and update analytics if needed
-            if (runData.usage && runData.model) {
-              const cost = calculateCost(runData.usage, runData.model);
-              const tokenAnalytics: MessageAnalyticsTokenAnalytics = {
-                modelType: runData.model,
-                promptTokens: runData.usage.prompt_tokens,
-                completionTokens: runData.usage.completion_tokens,
-                totalTokens: runData.usage.total_tokens,
-                promptCost: cost.promptCost,
-                completionCost: cost.completionCost,
-                totalCost: cost.totalCost,
-              };
-              updateMessageAnalytics(userMessageId, tokenAnalytics).catch(
-                (updateError: unknown) => {
-                  if (environment === "dev") {
-                    console.error(
-                      "Failed to update message analytics:",
-                      updateError
-                    );
-                  }
-                }
-              );
-            }
-          }
-        } catch (error: unknown) {
+        run.on("end", () => {
+          resolve({
+            assistantResponse: assistantResponse,
+            runId: runId as string,
+          });
+        });
+
+        run.on("error", (error: unknown) => {
           if (environment === "dev") {
-            console.error("Error in run event handler:", error);
+            console.error("Run error:", error);
           }
           if (runningStreams[userMessageId]) {
             delete runningStreams[userMessageId];
           }
           reject(error);
-        }
-      });
-
-      run.on("textDelta", (textDelta) => {
-        assistantResponse += textDelta.value;
-      });
-
-      run.on("end", () => {
-        resolve(assistantResponse);
-      });
-
-      run.on("error", (error: unknown) => {
+        });
+      } catch (error: unknown) {
         if (environment === "dev") {
-          console.error("Run error:", error);
+          console.error("Error in runAssistantAndCollectResponse:", error);
         }
         if (runningStreams[userMessageId]) {
           delete runningStreams[userMessageId];
         }
         reject(error);
-      });
-    } catch (error: unknown) {
-      if (environment === "dev") {
-        console.error("Error in runAssistantAndCollectResponse:", error);
       }
-      if (runningStreams[userMessageId]) {
-        delete runningStreams[userMessageId];
-      }
-      reject(error);
     }
-  });
+  );
+}
+
+async function verifyRunCompletion(threadId: string, runId: string) {
+  let status = "";
+  while (!["completed", "failed", "cancelled", "expired"].includes(status)) {
+    const run = await openai.beta.threads.runs.retrieve(threadId, runId);
+    status = run.status;
+    if (status === "requires_action") {
+      throw new Error("Run requires action");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  return status;
 }

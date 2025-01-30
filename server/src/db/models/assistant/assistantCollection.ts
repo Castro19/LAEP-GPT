@@ -24,6 +24,24 @@ export const viewGPTs: () => Promise<AssistantDocument[]> = async () => {
   }
 };
 
+export const getTestModeAssistants: () => Promise<
+  AssistantDocument[]
+> = async () => {
+  if (!assistantCollection) initializeCollection();
+  try {
+    const result = await assistantCollection
+      .find({
+        $or: [{ hidden: { $ne: true } }, { inTestMode: true }],
+      })
+      .toArray();
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error fetching Assistants from database: " + (error as Error).message
+    );
+  }
+};
+
 export const findAssistantById: (
   gptId: string
 ) => Promise<AssistantDocument | null> = async (gptId: string) => {
