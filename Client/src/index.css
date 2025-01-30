@@ -59,3 +59,40 @@ body {
 [data-radix-scroll-area-viewport] > div {
   display: block !important;
 }
+
+.weekly-planner-tables table {
+  @apply w-full table-auto border-collapse dark:bg-gray-700 text-sm dark:border-gray-500;
+
+  /* Updated dark background to bg-gray-700 */
+}
+
+.weekly-planner-tables thead {
+  @apply bg-gray-200 dark:bg-zinc-500 dark:border-gray-900;
+  /* Updated dark background to bg-gray-600 for contrast */
+}
+
+.weekly-planner-tables thead th {
+  @apply px-4 py-2 border dark:border-gray-500 font-semibold text-center uppercase;
+  /* Updated dark border to gray-500 */
+}
+
+.weekly-planner-tables tbody tr:not(:last-child) {
+  @apply border-b dark:border-gray-500;
+  /* Updated dark border to gray-500 */
+}
+
+.weekly-planner-tables tbody td {
+  @apply px-4 py-2 border dark:border-gray-500 align-top text-center font-bold;
+
+  /* Updated dark border to gray-500 */
+}
+
+/* 
+  Optionally, highlight the first column or first row 
+  if you want day/time headings to stand out:
+*/
+
+.weekly-planner-tables tbody td:first-child {
+  @apply bg-gray-100 dark:bg-zinc-600 dark:border-r-gray-500;
+  /* Updated dark background to bg-gray-600 for first column */
+}
