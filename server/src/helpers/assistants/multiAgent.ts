@@ -1,4 +1,4 @@
-import { openai, courseQueryAssistantId, environment } from "../../index";
+import { ASST_MAP, environment, openai } from "../../index";
 import { Response } from "express";
 import {
   runAssistantAndStreamResponse,
@@ -16,15 +16,6 @@ import { initializeOrFetchIds } from "../openAI/threadFunctions";
 import { getAssistantById } from "../../db/models/assistant/assistantServices";
 import { RunningStreamData } from "@polylink/shared/types";
 import { getLiveClasses } from "../../db/models/liveClasses/liveClassServices";
-
-type MultiAgentRequest = {
-  model: { id: string; title: string };
-  message: string;
-  res: Response;
-  userMessageId: string;
-  runningStreams: RunningStreamData;
-  chatId: string;
-};
 
 async function professorRatings(
   messageToAdd: string,
@@ -65,9 +56,7 @@ async function professorRatings(
         professorIds,
         courseArray.length > 0 ? courseArray : undefined
       );
-      messageToAdd += `\nProfessor Ratings: ${JSON.stringify(
-        professorRatings
-      )}`;
+      messageToAdd += `Professor Ratings: ${JSON.stringify(professorRatings)}`;
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to get professors by course IDs:", error);
@@ -77,7 +66,7 @@ async function professorRatings(
     // Search through vector database for courses
     try {
       const professorRatings = await getProfessorsByCourseIds(courseArray);
-      messageToAdd += `\nCourse Descriptions: ${JSON.stringify(
+      messageToAdd += `Course Descriptions: ${JSON.stringify(
         professorRatings
       )}`;
     } catch (error) {
@@ -87,7 +76,7 @@ async function professorRatings(
     }
   } else {
     messageToAdd +=
-      ".\nNo professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Answer the user's question as best as possible.";
+      "No professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Answer the user's question as best as possible.";
   }
   return messageToAdd;
 }
@@ -108,7 +97,7 @@ async function planSpringSchedule(
   try {
     const liveClasses = await getLiveClasses(courses);
     const liveClassString = JSON.stringify(liveClasses);
-    messageToAdd += `\n Options: ${liveClassString}\n`;
+    messageToAdd = `Options: ${liveClassString}\n`;
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to plan spring schedule:", error);
@@ -116,6 +105,15 @@ async function planSpringSchedule(
   }
   return messageToAdd;
 }
+
+type MultiAgentRequest = {
+  model: { id: string; title: string };
+  message: string;
+  res: Response;
+  userMessageId: string;
+  runningStreams: RunningStreamData;
+  chatId: string;
+};
 
 async function handleMultiAgentModel({
   model,
@@ -125,49 +123,44 @@ async function handleMultiAgentModel({
   runningStreams,
   chatId,
 }: MultiAgentRequest): Promise<void> {
-  let messageToAdd = message;
+  let messageToAdd = "";
 
   try {
     // First assistant: process the user's message and return JSON object
-    const helperAssistantId = courseQueryAssistantId;
-    const helperThread = await openai.beta.threads.create();
-    runningStreams[userMessageId].threadId = helperThread.id;
-
+    const helperAssistantId = ASST_MAP["course_helper"];
     if (!helperAssistantId) {
       throw new Error("Helper assistant ID not found");
     }
-    // Add user's message to helper thread
-    await addMessageToThread(
-      helperThread.id,
-      "user",
-      messageToAdd,
+    // Creates from OpenAI API & Stores in DB if not already created
+    const { threadId } = await initializeOrFetchIds(
+      chatId,
       null,
-      model.title
+      helperAssistantId
     );
 
+    runningStreams[userMessageId].threadId = threadId;
+
+    // Add user's message to helper thread
+    await addMessageToThread(threadId, "user", message, null, model.title);
+
     // Run the helper assistant and collect response
-    const helperResponse = await runAssistantAndCollectResponse(
-      helperThread.id,
-      helperAssistantId,
-      userMessageId,
-      runningStreams
-    );
+    const { assistantResponse: helperResponse, runId } =
+      await runAssistantAndCollectResponse(
+        threadId,
+        helperAssistantId,
+        userMessageId,
+        runningStreams
+      );
 
     if (environment === "dev") {
       console.log("Helper Response: ", helperResponse);
     }
-
-    // Delete the helper thread
-    await openai.beta.threads.del(helperThread.id);
-    // Set the main thread ID
-    // Create thread and vector store if not already created
-    const { threadId } = await initializeOrFetchIds(chatId, null, model.id);
     // Setup assistant
     const assistant = await getAssistantById(model.id);
     if (!assistant) {
       throw new Error("Assistant not found");
     }
-    const assistantId = assistant.assistantId;
+    const assistantId = assistant?.assistantId;
     if (!assistantId) {
       throw new Error("Assistant ID not found");
     }
@@ -177,14 +170,78 @@ async function handleMultiAgentModel({
 
     // TO-DO: How to always ensure that the response is a JSON object?
     try {
-      jsonObject = JSON.parse(helperResponse);
-      if (jsonObject.assistant === "professor_reviews") {
-        messageToAdd = await professorRatings(messageToAdd, jsonObject);
-      } else if (jsonObject.assistant === "spring") {
-        messageToAdd = await planSpringSchedule(messageToAdd, jsonObject);
+      const completedRun = await openai.beta.threads.runs.retrieve(
+        threadId,
+        runId
+      );
+      if (completedRun.status !== "completed") {
+        throw new Error(
+          `Helper run failed with status: ${completedRun.status}`
+        );
+      }
+
+      if (helperResponse) {
+        jsonObject = JSON.parse(helperResponse);
       } else {
-        messageToAdd +=
-          "No professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in.";
+        jsonObject = {
+          assistant: "fallback",
+        };
+      }
+      if (jsonObject.assistant === "professor_reviews") {
+        console.log("Professor Reviews Assistant");
+        messageToAdd = await professorRatings(messageToAdd, jsonObject);
+        // Add user's modified message to the main thread
+        await addMessageToThread(
+          threadId,
+          "assistant",
+          messageToAdd,
+          null,
+          model.title
+        );
+        // Run the assistant and stream response
+        await runAssistantAndStreamResponse(
+          threadId,
+          ASST_MAP["professor_reviews"] as string,
+          res,
+          userMessageId,
+          runningStreams
+        );
+      } else if (jsonObject.assistant === "spring") {
+        console.log("Spring Schedule Assistant");
+        messageToAdd = await planSpringSchedule(messageToAdd, jsonObject);
+        // Add user's modified message to the main thread
+        await addMessageToThread(
+          threadId,
+          "user",
+          messageToAdd,
+          null,
+          model.title
+        );
+        await runAssistantAndStreamResponse(
+          threadId,
+          assistantId,
+          res,
+          userMessageId,
+          runningStreams
+        );
+      } else {
+        console.log("Fallback Assistant");
+        // Add user's modified message to the main thread
+        await addMessageToThread(
+          threadId,
+          "user",
+          messageToAdd,
+          null,
+          model.title
+        );
+
+        await runAssistantAndStreamResponse(
+          threadId,
+          ASST_MAP["fallback"] as string,
+          res,
+          userMessageId,
+          runningStreams
+        );
       }
       if (environment === "dev") {
         console.log("JSON OBJECT: ", jsonObject);
@@ -199,24 +256,6 @@ async function handleMultiAgentModel({
     if (environment === "dev") {
       console.log("messageToAdd: ", messageToAdd);
     }
-
-    // Run the assistant and stream response
-    await runAssistantAndStreamResponse(
-      threadId,
-      assistantId,
-      res,
-      userMessageId,
-      runningStreams
-    );
-
-    // Add user's modified message to the main thread
-    await addMessageToThread(
-      threadId,
-      "user",
-      messageToAdd,
-      null, // no file
-      model.title
-    );
   } catch (error) {
     if (error instanceof Error && error.message === "Response canceled") {
       if (!res.headersSent) {
