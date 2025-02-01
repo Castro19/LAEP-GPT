@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Store the course catalog data in MongoDB
 
-import { SectionDocument, SectionsFilterParams } from "@polylink/shared/types";
+import { Section, SectionsFilterParams } from "@polylink/shared/types";
 import { findSectionsByFilter } from "./sectionCollection";
 /**
  * Build a filter object that can be passed to the collection query.
@@ -119,7 +119,7 @@ function buildSectionsQuery(filter: SectionsFilterParams): any {
  */
 export async function getSectionsByFilter(
   filter: SectionsFilterParams
-): Promise<SectionDocument[]> {
+): Promise<Section[]> {
   try {
     const query = buildSectionsQuery(filter);
     return await findSectionsByFilter(query);

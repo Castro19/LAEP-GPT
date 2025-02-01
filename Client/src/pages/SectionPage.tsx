@@ -1,17 +1,14 @@
 import SectionPageLayout from "@/components/layout/SectionPage/SectionPageLayout";
-import SectionFilters from "@/components/section/SectionFilters";
+import { SectionFilters } from "@/components/section/SectionFilters";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { SectionsFilterParams } from "@polylink/shared/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { assistantActions, useAppDispatch } from "@/redux";
 import { useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 const SectionPage = () => {
-  const [selectedFilters, setSelectedFilters] = useState<SectionsFilterParams>(
-    {} as SectionsFilterParams
-  );
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
   const assistantList = useAppSelector(
@@ -43,46 +40,16 @@ const SectionPage = () => {
     }
   }, [assistantList, dispatch]);
 
-  const handleSetSelectedFilters = (
-    filter: keyof SectionsFilterParams,
-    value: string
-  ) => {
-    if (filter === "days") {
-      const currentDays = selectedFilters.days
-        ? selectedFilters.days.split(",")
-        : [];
-      const updatedDays = currentDays.includes(value)
-        ? currentDays.filter((d) => d !== value)
-        : [...currentDays, value];
-      setSelectedFilters((prevFilters) => ({
-        ...prevFilters,
-        days: updatedDays.join(","),
-      }));
-    } else {
-      setSelectedFilters((prevFilters) => ({
-        ...prevFilters,
-        [filter]: value,
-      }));
-    }
-  };
-  // You could lift this function up to a parent or call a custom hook
-  const handleApplyFilters = () => {
-    console.log(selectedFilters);
-  };
-
   return (
     <SidebarProvider>
       <SectionPageLayout>
-        <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 min-h-screen">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 min-h-screen overflow-y-hidden">
           {/* Filter Section */}
           <div className="border border-slate-500 md:col-span-1 row-span-full p-4">
             <Card className="h-full">
               <div className="flex flex-col justify-between h-full py-6">
                 {/* Placeholder for SectionFilters */}
-                <SectionFilters
-                  filters={selectedFilters}
-                  handleSetSelectedFilters={handleSetSelectedFilters}
-                />
+                <SectionFilters />
               </div>
             </Card>
           </div>
