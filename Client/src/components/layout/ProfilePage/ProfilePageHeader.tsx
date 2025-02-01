@@ -1,11 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
+import { useAppSelector } from "@/redux";
 
 const ChatHeader = () => {
   const navigate = useNavigate();
+  const { currentChatId } = useAppSelector((state) => state.message);
   const handleBackToChat = () => {
     // Map back to the previous page
-    navigate("/chat");
+    if (currentChatId) {
+      navigate(`/chat/${currentChatId}`);
+    } else {
+      navigate("/chat");
+    }
   };
 
   return (
