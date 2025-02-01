@@ -19,6 +19,7 @@ import {
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
+const SIDEBAR_WIDTH_FLOATING = "36rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
@@ -138,6 +139,7 @@ const SidebarProvider = React.forwardRef<
               {
                 "--sidebar-width": SIDEBAR_WIDTH,
                 "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+                "--sidebar-width-floating": SIDEBAR_WIDTH_FLOATING,
                 ...style,
               } as React.CSSProperties
             }
@@ -163,6 +165,7 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right";
     variant?: "sidebar" | "floating" | "inset";
     collapsible?: "offcanvas" | "icon" | "none";
+    resizable?: boolean;
   }
 >(
   (
@@ -170,6 +173,7 @@ const Sidebar = React.forwardRef<
       side = "left",
       variant = "sidebar",
       collapsible = "offcanvas",
+      resizable = false,
       className,
       children,
       ...props
@@ -221,6 +225,13 @@ const Sidebar = React.forwardRef<
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
+        style={
+          {
+            "--sidebar-width": resizable
+              ? SIDEBAR_WIDTH_FLOATING
+              : SIDEBAR_WIDTH,
+          } as React.CSSProperties
+        }
       >
         {/* This is what handles the sidebar gap on desktop */}
         <div

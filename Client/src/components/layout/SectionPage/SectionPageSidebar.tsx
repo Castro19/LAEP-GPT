@@ -5,7 +5,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import ModeDropDown from "@/components/chat/ModeDropDown";
 import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
@@ -40,7 +39,12 @@ const SectionPageSidebar = () => {
   };
 
   return (
-    <Sidebar className="flex flex-col h-full" side="right">
+    <Sidebar
+      resizable={true}
+      className="flex flex-col h-full"
+      side="right"
+      variant="inset"
+    >
       <SidebarHeader className="mt-4 border-b border-sidebar-border dark:border-slate-700 flex justify-center items-center">
         <ModeDropDown onSelect={handleModeSelection} />
       </SidebarHeader>
@@ -49,8 +53,7 @@ const SectionPageSidebar = () => {
           <ChatContainer />
         </ScrollArea>
       </SidebarContent>
-      <SidebarFooter></SidebarFooter>
-      <SidebarRail />
+      <SidebarFooter />
     </Sidebar>
   );
 };
