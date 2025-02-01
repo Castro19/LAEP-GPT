@@ -38,6 +38,7 @@ import TeamPage from "./pages/TeamPage.tsx";
 import { getTeamMembers } from "./helpers/getTeamMembers.ts";
 import { Demographics } from "./components/register/SignInFlow/Demographics.tsx";
 import { Interests } from "./components/register/SignInFlow/Interests.tsx";
+import SectionPage from "./pages/SectionPage.tsx";
 import BasicInformation from "./components/register/SignInFlow/BasicInformation.tsx";
 import InputInformation from "./components/register/SignInFlow/InputInformation.tsx";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,6 +103,10 @@ const router = routerChosen([
         ],
       },
     ],
+  },
+  {
+    path: "section",
+    element: <SectionPage />,
   },
   {
     path: "/register",

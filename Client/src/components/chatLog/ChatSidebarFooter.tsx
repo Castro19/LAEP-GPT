@@ -26,11 +26,15 @@ const ChatSidebarFooter = () => {
   };
 
   const handleNavigateToFlowcharts = () => {
-    if (userId && userData.flowchartId) {
-      navigate(`/flowchart/${userData.flowchartId}`);
+    if (userId && userData.flowchartInformation.flowchartId) {
+      navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else {
       navigate("/flowchart");
     }
+  };
+
+  const handleNavigateToSections = () => {
+    navigate("/section");
   };
 
   return (
@@ -50,6 +54,9 @@ const ChatSidebarFooter = () => {
             >
               <DropdownMenuItem onClick={() => navigate("/profile/edit")}>
                 <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleNavigateToSections}>
+                <span>Search Sections</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleNavigateToFlowcharts}>
                 <span>Manage Flowcharts</span>
