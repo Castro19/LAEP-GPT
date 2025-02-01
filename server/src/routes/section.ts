@@ -1,7 +1,7 @@
 import express from "express";
 import { getSectionsByFilter } from "../db/models/section/sectionServices"; // new function
 import { CustomRequest as Request } from "../types/express";
-import { SectionDocument, SectionsFilterParams } from "@polylink/shared/types";
+import { Section, SectionsFilterParams } from "@polylink/shared/types";
 const router = express.Router();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,7 +21,7 @@ router.get("/", async (req: Request, res: any) => {
     } = req.query;
 
     // Call the service with the parsed query object
-    const sections: SectionDocument[] = await getSectionsByFilter({
+    const sections: Section[] = await getSectionsByFilter({
       subject,
       courseId,
       status,
