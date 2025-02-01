@@ -44,6 +44,8 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
     ADD_ATTR: ["target", "rel"],
   });
 
+  const isScreenWidthSmall = isMobile || location.pathname.includes("/section");
+
   const handleLike = (id: string) => {
     if (currentChatId) {
       dispatch(
@@ -122,7 +124,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
               </div>
             </div>
           ) : (
-            !isMobile && (
+            !isScreenWidthSmall && (
               <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110 mr-2">
                 <AvatarImage
                   src={msg.urlPhoto || "/imgs/test.png"}
@@ -134,7 +136,11 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
         </div>
       )}
       {!msg?.thinkingState && (
-        <div className="flex flex-col max-w-[75%]">
+        <div
+          className={`flex flex-col ${
+            isScreenWidthSmall ? "max-w-[100%]" : "max-w-[75%]"
+          }`}
+        >
           <div
             className={`rounded-lg shadow-lg px-2 py-4 ${
               isUserMessage

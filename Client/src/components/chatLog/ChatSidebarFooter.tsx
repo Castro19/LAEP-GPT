@@ -15,12 +15,17 @@ import { ChevronUp } from "lucide-react";
 import { signOutUser } from "@/redux/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
+import { onNewChat } from "../chat/helpers/newChatHandler";
 
 const ChatSidebarFooter = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { userId } = useAppSelector((state) => state.auth);
   const userData = useAppSelector((state) => state.user.userData);
+  const { currentChatId, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
+  const error = useAppSelector((state) => state.message.error);
   const handleSignOut = () => {
     dispatch(signOutUser()); // Trigger the thunk to sign out the user
   };
@@ -35,6 +40,15 @@ const ChatSidebarFooter = () => {
 
   const handleNavigateToSections = () => {
     navigate("/section");
+    onNewChat(
+      currentChatId,
+      dispatch,
+      navigate,
+      error,
+      loading,
+      messagesByChatId,
+      true
+    );
   };
 
   return (

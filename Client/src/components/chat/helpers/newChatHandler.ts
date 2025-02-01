@@ -9,7 +9,8 @@ export const onNewChat = (
   navigate: NavigateFunction,
   error: string | null,
   loading: { [chatId: string]: boolean },
-  messagesByChatId: MessageByChatIdType
+  messagesByChatId: MessageByChatIdType,
+  copilotMode: boolean = false
 ) => {
   if (currentChatId) {
     if (loading[currentChatId]) {
@@ -36,5 +37,7 @@ export const onNewChat = (
   }
 
   dispatch(messageActions.toggleNewChat(true)); // Flag indicating it's a new chat
-  navigate(`/chat`);
+  if (!copilotMode) {
+    navigate(`/chat`);
+  }
 };

@@ -143,7 +143,10 @@ const ChatInput = ({
           .unwrap()
           .then(({ logId }) => {
             dispatch(messageActions.setCurrentChatId(logId));
-            navigate(`/chat/${logId}`);
+            // Check if the current path is not '/chat' before navigating
+            if (location.pathname === "/chat") {
+              navigate(`/chat/${logId}`);
+            }
           });
       } else {
         if (currentChatId) {
