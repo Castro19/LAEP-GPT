@@ -8,3 +8,17 @@ declare module "express-serve-static-core" {
     file?: Express.Multer.File;
   }
 }
+interface CustomRequest extends Request {
+  query: {
+    subject?: string;
+    courseId?: string;
+    status?: string;
+    days?: string;
+    timeRange?: string;
+    instructorRating?: string;
+    units?: string;
+    courseAttribute?: string;
+    instructionMode?: string;
+    instructor?: string;
+  };
+}

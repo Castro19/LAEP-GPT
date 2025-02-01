@@ -13,3 +13,4 @@ export * from "./llm";
 export * from "./user";
 export * from "./team";
 export * from "./liveClasses";
+export * from "./section";

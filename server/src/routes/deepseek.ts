@@ -1,9 +1,8 @@
-// import express, { Request, Response } from "express";
+import express from "express";
 // import { deepseek } from "../index";
 // import { PassThrough } from "stream";
-// import { getLiveClass } from "../db/models/liveClasses/liveClassServices";
 
-// const router = express.Router();
+const router = express.Router();
 
 // router.post("/", async (req: Request, res: Response) => {
 //   if (!res.headersSent) {
@@ -45,16 +44,4 @@
 //   }
 // });
 
-// Testing route
-// router.get("/liveClass", async (req, res) => {
-//   const { courseId } = req.query;
-//   if (!courseId) {
-//     res.status(400).send("Course ID is required");
-//     return;
-//   }
-//   const liveClass = await getLiveClass(courseId as string);
-//   console.log(liveClass);
-//   res.json(liveClass);
-// });
-
-// export default router;
+export default router;

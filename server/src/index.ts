@@ -20,6 +20,8 @@ import messageAnalyticRouter from "./routes/analytics/messageAnalytics";
 import professorRatingRouter from "./routes/professorRating";
 import llmRouter from "./routes/llm";
 import teamRouter from "./routes/team";
+import deepseekRouter from "./routes/deepseek";
+import sectionRouter from "./routes/section";
 
 // LLM API
 import OpenAI from "openai";
@@ -76,6 +78,8 @@ app.use("/flowInfo", authenticate, flowInfoRouter);
 app.use("/professorRatings", professorRatingRouter);
 app.use("/llms", llmRouter);
 app.use("/team", teamRouter);
+app.use("/deepseek", deepseekRouter);
+app.use("/sections", sectionRouter);
 
 // Initialize OpenAI API client
 export const deepseek = new OpenAI({
