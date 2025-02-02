@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  FourPanelLayout,
   OnePanelLayout,
-  ThreePanelLayout,
   TwoPanelLayout,
+  ThreePanelLayout,
+  FourPanelLayout,
 } from "./PanelLayouts";
 import { Droppable } from "@hello-pangea/dnd";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,13 +35,16 @@ const ResizableSectionLayout: React.FC = () => {
       </div>
     );
   } else if (panels.length === 1) {
-    layout = <OnePanelLayout panel={panels[0]} onDelete={handleDelete} />;
+    layout = (
+      <OnePanelLayout panel={panels[0]} onDelete={handleDelete} index={0} />
+    );
   } else if (panels.length === 2) {
     layout = (
       <TwoPanelLayout
         panels={[panels[0], panels[1]]}
         onDelete={handleDelete}
         direction="horizontal"
+        startIndex={0}
       />
     );
   } else if (panels.length === 3) {
@@ -49,7 +52,8 @@ const ResizableSectionLayout: React.FC = () => {
       <ThreePanelLayout
         panels={[panels[0], panels[1], panels[2]]}
         onDelete={handleDelete}
-        outerDirection={outerDirection}
+        direction={outerDirection}
+        startIndex={0}
       />
     );
   } else {
@@ -57,11 +61,12 @@ const ResizableSectionLayout: React.FC = () => {
       <FourPanelLayout
         panels={[panels[0], panels[1], panels[2], panels[3]]}
         onDelete={handleDelete}
-        outerDirection={outerDirection}
+        direction={outerDirection}
+        startIndex={0}
       />
     );
   }
-  console.log("layout", layout);
+
   return (
     <div className="h-full w-full">
       <div className="mb-2 flex gap-2">
@@ -74,11 +79,16 @@ const ResizableSectionLayout: React.FC = () => {
           </button>
         )}
       </div>
-      {layout}
 
-      <Droppable droppableId="panels-droppable" direction="horizontal">
+      {/* If you need Droppable to wrap the layout: */}
+      <Droppable droppableId="panels-droppable">
         {(provided) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className="h-full w-full"
+          >
+            {layout}
             {provided.placeholder}
           </div>
         )}

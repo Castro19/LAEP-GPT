@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { assistantActions, useAppDispatch } from "@/redux";
 import { useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
-import ResizableSectionLayout from "@/components/section/ResizableSectionLayout";
+import ResizableSectionLayout from "@/components/section/sidebar/ResizableSectionLayout";
 const SectionPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
