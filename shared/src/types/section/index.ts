@@ -77,3 +77,79 @@ export type SectionsFilterParams = {
   instructionMode?: string;
   instructor?: string;
 };
+
+// ------------------------------------------------------------
+
+export type CourseInfo = {
+  courseId: string;
+  subject: string;
+  catalogNumber: string;
+  courseName: string;
+  description: string;
+  prerequisites: string[];
+  units: string;
+  courseAttributes: Array<
+    "GE D" | "USCP" | "GE C" | "GWR" | "GE E" | "GE B" | "GE F" | "GE A"
+  >;
+  professorGroups: ProfessorGroup[]; // New subgrouping by professor
+};
+
+// New type for professor-based grouping
+export type ProfessorGroup = {
+  instructor: InstructorWithRatings;
+  sections: SectionDetail[];
+  overallRating: number;
+  courseRating: number;
+  componentOrder: string[];
+};
+
+// Modified SectionGroup to handle visual pairing
+export type SectionGroup = {
+  pairedWith: number | null;
+  section: SectionDetail;
+};
+
+// Updated SectionDetail to support standalone display
+export type SectionDetail = {
+  classNumber: number;
+  component: string;
+  enrollmentStatus: "O" | "C";
+  enrollment: EnrollmentInfo;
+  instructionMode: string;
+  meetings: Meeting[];
+  instructors: Instructor[];
+  instructorsWithRatings: InstructorWithRatings[] | null;
+  pairedSections: number[]; // Array of class numbers this section is paired with
+};
+
+// Supporting types remain the same
+export type EnrollmentInfo = {
+  waitTotal: number;
+  waitCap: number;
+  classCapacity: number;
+  enrollmentTotal: number;
+  enrollmentAvailable: number;
+  enrollmentStatusDescription: string;
+};
+
+export type Meeting = {
+  days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su">;
+  start_time: string | null;
+  end_time: string | null;
+  location: string;
+};
+
+export type Instructor = {
+  name: string;
+  email: string;
+};
+
+export type InstructorWithRatings = {
+  name: string;
+  id: string;
+  courseId: string;
+  overallRating: number;
+  numEvals: number;
+  courseRating: number | null;
+  studentDifficulties: number | null;
+};
