@@ -12,7 +12,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@/components/ui/context-menu";
-import { PanelItem } from "./sidebar/PanelItem";
+import { PanelItem } from "./PanelItem";
 
 // ─── TYPES AND HELPER COMPONENT ────────────────────────────────
 
@@ -135,7 +135,12 @@ export const ThreePanelLayout: React.FC<MultiplePanelLayoutProps> = ({
       >
         {/* Top Panel */}
         <ResizablePanel defaultSize={50}>
-          <PanelItem panel={panels[0]} index={startIndex} onDelete={onDelete} />
+          <PanelItem
+            panel={panels[0]}
+            index={startIndex}
+            onDelete={onDelete}
+            className="h-full w-full"
+          />
         </ResizablePanel>
 
         <ResizableHandle />
