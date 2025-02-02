@@ -10,7 +10,7 @@ interface StarProps {
 }
 
 // A Star component that renders an SVG star with a filled overlay.
-const Star: React.FC<StarProps> = ({ fillPercentage }) => {
+export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
   return (
     <div
       style={{

@@ -8,6 +8,8 @@ import { userReducer } from "./user/userSlice";
 import { flowchartReducer } from "./flowchart/flowchartSlice";
 import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 import { sectionReducer } from "./section/sectionSlice";
+import { panelLayoutReducer } from "./panelLayout/panelLayoutSlice";
+
 const store = configureStore({
   reducer: {
     message: messageReducer,
@@ -19,6 +21,7 @@ const store = configureStore({
     flowchart: flowchartReducer,
     flowSelection: flowSelectionReducer,
     section: sectionReducer,
+    panelLayout: panelLayoutReducer,
   },
 });
 

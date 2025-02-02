@@ -8,6 +8,7 @@ import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import cloneDeep from "lodash-es/cloneDeep";
 import { toast } from "@/components/ui/use-toast";
 import { serverUrl } from "@/helpers/getEnvironmentVars";
+
 const DragDropContextWrapper = ({
   children,
 }: {
@@ -17,7 +18,9 @@ const DragDropContextWrapper = ({
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
-  const { catalog } = useAppSelector((state) => state.user.userData);
+  const { catalog } = useAppSelector(
+    (state) => state.user.userData.flowchartInformation
+  );
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
     if (!destination) return;
