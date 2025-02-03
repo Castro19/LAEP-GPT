@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-// FlowChatLayout.jsx
 import React from "react";
 import SectionPageSidebar from "./SectionPageSidebar";
 import SectionPageHeader from "./SectionPageHeader";

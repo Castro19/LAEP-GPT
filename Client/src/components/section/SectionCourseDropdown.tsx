@@ -26,6 +26,7 @@ function debounce(func: (...args: any[]) => void, wait: number) {
 const CourseSearchbar = ({
   onSelect,
 }: {
+  // eslint-disable-next-line no-unused-vars
   onSelect: (courseId: string) => void;
 }) => {
   const { userData } = useUserData();

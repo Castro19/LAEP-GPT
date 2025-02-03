@@ -1,6 +1,6 @@
 import { Section, SectionDocument } from "@polylink/shared/types";
 import { getDb } from "../../connection";
-import { Collection } from "mongodb";
+import { Collection, Filter } from "mongodb";
 
 let sectionCollection: Collection<SectionDocument>;
 
@@ -8,7 +8,9 @@ const initializeCollection = (): Collection<SectionDocument> => {
   return getDb().collection("sections");
 };
 
-export const findSectionsByFilter = async (query: any): Promise<Section[]> => {
+export const findSectionsByFilter = async (
+  query: Filter<SectionDocument>
+): Promise<Section[]> => {
   if (!sectionCollection) {
     sectionCollection = initializeCollection();
   }

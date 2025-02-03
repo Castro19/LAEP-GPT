@@ -167,7 +167,7 @@ export function SectionFilters() {
                 <FormField
                   control={form.control}
                   name="courseId"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
                         Course
