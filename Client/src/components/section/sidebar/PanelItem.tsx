@@ -4,6 +4,9 @@ import {
   DeletablePanel,
   PanelData,
 } from "@/components/section/sidebar/PanelLayouts";
+import { SectionFilters } from "../SectionFilters";
+import SectionContainer from "../SectionContainer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PanelItemProps {
   panel: PanelData;
@@ -22,7 +25,20 @@ interface PanelItemProps {
  * - A Draggable (for react-beautiful-dnd)
  * - A DeletablePanel (for context-menu deletion).
  */
-export const PanelItem: React.FC<PanelItemProps> = ({
+
+const renderComponent = (panel: PanelData) => {
+  const { label } = panel;
+
+  if (label === "Filters") {
+    return <SectionFilters />;
+  } else if (label === "Sections") {
+    return <SectionContainer />;
+  } else {
+    return <span className="font-semibold">{label}</span>;
+  }
+};
+
+export const DraggablePanelItem: React.FC<PanelItemProps> = ({
   panel,
   index,
   onDelete,
@@ -38,13 +54,20 @@ export const PanelItem: React.FC<PanelItemProps> = ({
           className={className}
         >
           <DeletablePanel panel={panel} onDelete={onDelete}>
-            {/* Inner content styling: */}
-            <div className="flex h-full w-full items-center justify-center p-6 border border-slate-500">
-              <span className="font-semibold">{panel.label}</span>
-            </div>
+            {renderComponent(panel)}
           </DeletablePanel>
         </div>
       )}
     </Draggable>
+  );
+};
+
+export const PanelItem: React.FC<PanelItemProps> = ({ panel, onDelete }) => {
+  return (
+    <div className="border border-slate-500 rounded-lg h-full w-full">
+      <DeletablePanel panel={panel} onDelete={onDelete}>
+        {renderComponent(panel)}
+      </DeletablePanel>
+    </div>
   );
 };

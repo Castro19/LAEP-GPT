@@ -150,17 +150,17 @@ export function SectionFilters() {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full h-full overflow-auto"
+      className="w-full min-h-full overflow-hidden no-scroll"
     >
-      <Card className="flex flex-col h-full border-0 shadow-lg">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col h-full"
-          >
-            <ScrollArea className="h-full min-w-full mb-4">
-              <div className="p-6">
-                <div className="space-y-2">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col h-full"
+        >
+          <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[83%]">
+            <div className="overflow-auto flex-1 no-scroll">
+              <ScrollArea className="h-full min-w-full mb-4">
+                <div className="p-6 space-y-6">
                   <div className="flex items-center justify-center space-x-2">
                     <RiFilterLine className="w-5 h-5 text-blue-600" />
                     <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -168,310 +168,313 @@ export function SectionFilters() {
                     </h2>
                   </div>
                 </div>
-              </div>
 
-              <div className="px-6 space-y-6 pb-4">
-                {/* Course Search */}
-                <FormField
-                  control={form.control}
-                  name="courseId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Course
-                      </FormLabel>
-                      <FormControl>
-                        <SectionCourseDropdown
-                          onSelect={(courseId) =>
-                            form.setValue("courseId", courseId)
-                          }
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                <div className="px-6 space-y-6 pb-4">
+                  {/* Course Search */}
+                  <FormField
+                    control={form.control}
+                    name="courseId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Course
+                        </FormLabel>
+                        <FormControl>
+                          <SectionCourseDropdown
+                            onSelect={(courseId) =>
+                              form.setValue("courseId", courseId)
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Status Toggle */}
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Status
-                      </FormLabel>
-                      <FormControl>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant={
-                              field.value === "open" ? "default" : "outline"
-                            }
-                            onClick={() => form.setValue("status", "open")}
-                            className="px-4 py-2"
-                          >
-                            Open
-                          </Button>
-                          <Button
-                            type="button"
-                            variant={
-                              field.value === "closed" ? "default" : "outline"
-                            }
-                            onClick={() => form.setValue("status", "closed")}
-                            className="px-4 py-2"
-                          >
-                            Closed
-                          </Button>
+                  {/* Status Toggle */}
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Status
+                        </FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant={
+                                field.value === "open" ? "default" : "outline"
+                              }
+                              onClick={() => form.setValue("status", "open")}
+                              className="px-4 py-2"
+                            >
+                              Open
+                            </Button>
+                            <Button
+                              type="button"
+                              variant={
+                                field.value === "closed" ? "default" : "outline"
+                              }
+                              onClick={() => form.setValue("status", "closed")}
+                              className="px-4 py-2"
+                            >
+                              Closed
+                            </Button>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Days Selector */}
+                  <FormField
+                    control={form.control}
+                    name="days"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Days
+                        </FormLabel>
+                        <FormControl>
+                          <div className="grid grid-cols-3 gap-2">
+                            {days.map((day) => {
+                              const isSelected = field.value?.includes(day);
+                              return (
+                                <Button
+                                  key={day}
+                                  type="button"
+                                  variant={isSelected ? "default" : "outline"}
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      // remove from array
+                                      form.setValue(
+                                        "days",
+                                        field.value?.filter((d) => d !== day) ||
+                                          []
+                                      );
+                                    } else {
+                                      // add to array
+                                      form.setValue("days", [
+                                        ...(field.value || []),
+                                        day,
+                                      ]);
+                                    }
+                                  }}
+                                  className="h-8"
+                                >
+                                  {day}
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Time Range Slider */}
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      Time Range
+                    </FormLabel>
+                    <div className="flex gap-3 items-center">
+                      <FormField
+                        control={form.control}
+                        name="startTime"
+                        render={({ field }) => (
+                          <FormControl>
+                            <Input
+                              type="time"
+                              {...field}
+                              className="w-full p-2 border rounded-lg"
+                            />
+                          </FormControl>
+                        )}
+                      />
+                      <span className="text-gray-500">to</span>
+                      <FormField
+                        control={form.control}
+                        name="endTime"
+                        render={({ field }) => (
+                          <FormControl>
+                            <Input
+                              type="time"
+                              {...field}
+                              className="w-full p-2 border rounded-lg"
+                            />
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                  </FormItem>
+
+                  {/* Instructor Rating */}
+                  <FormField
+                    control={form.control}
+                    name="instructorRating"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel className="text-sm font-medium text-gray-700 flex items-center">
+                            Instructor Rating ≥ {field.value || 0}
+                            <RiStarFill className="inline-block w-4 h-4 ml-1 text-yellow-500" />
+                          </FormLabel>
+                          <FormControl className="flex-1 ml-4">
+                            <InstructorRatingFilter
+                              initialRating={
+                                field.value
+                                  ? parseFloat(field.value)
+                                  : undefined
+                              }
+                              onRatingChange={(rating) =>
+                                form.setValue(
+                                  "instructorRating",
+                                  rating.toString()
+                                )
+                              }
+                            />
+                          </FormControl>
                         </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Days Selector */}
-                <FormField
-                  control={form.control}
-                  name="days"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Days
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-3 gap-2">
-                          {days.map((day) => {
-                            const isSelected = field.value?.includes(day);
-                            return (
+                  {/* Units Selector */}
+                  <FormField
+                    control={form.control}
+                    name="units"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Units
+                        </FormLabel>
+                        <FormControl>
+                          <div className="grid grid-cols-2 gap-2">
+                            {["1-3", "4+"].map((unit) => (
                               <Button
-                                key={day}
+                                key={unit}
                                 type="button"
-                                variant={isSelected ? "default" : "outline"}
-                                onClick={() => {
-                                  if (isSelected) {
-                                    // remove from array
-                                    form.setValue(
-                                      "days",
-                                      field.value?.filter((d) => d !== day) ||
-                                        []
-                                    );
-                                  } else {
-                                    // add to array
-                                    form.setValue("days", [
-                                      ...(field.value || []),
-                                      day,
-                                    ]);
-                                  }
-                                }}
+                                variant={
+                                  field.value === unit ? "default" : "outline"
+                                }
+                                onClick={() => form.setValue("units", unit)}
                                 className="h-8"
                               >
-                                {day}
+                                {unit}
                               </Button>
-                            );
-                          })}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Time Range Slider */}
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Time Range
-                  </FormLabel>
-                  <div className="flex gap-3 items-center">
-                    <FormField
-                      control={form.control}
-                      name="startTime"
-                      render={({ field }) => (
-                        <FormControl>
-                          <Input
-                            type="time"
-                            {...field}
-                            className="w-full p-2 border rounded-lg"
-                          />
+                            ))}
+                          </div>
                         </FormControl>
-                      )}
-                    />
-                    <span className="text-gray-500">to</span>
-                    <FormField
-                      control={form.control}
-                      name="endTime"
-                      render={({ field }) => (
-                        <FormControl>
-                          <Input
-                            type="time"
-                            {...field}
-                            className="w-full p-2 border rounded-lg"
-                          />
-                        </FormControl>
-                      )}
-                    />
-                  </div>
-                </FormItem>
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Instructor Rating */}
-                <FormField
-                  control={form.control}
-                  name="instructorRating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="text-sm font-medium text-gray-700 flex items-center">
-                          Instructor Rating ≥ {field.value || 0}
-                          <RiStarFill className="inline-block w-4 h-4 ml-1 text-yellow-500" />
+                  {/* Course Attributes - Multiple Toggles */}
+                  <FormField
+                    control={form.control}
+                    name="courseAttributes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Course Attributes
                         </FormLabel>
-                        <FormControl className="flex-1 ml-4">
-                          <InstructorRatingFilter
-                            initialRating={
-                              field.value ? parseFloat(field.value) : undefined
-                            }
-                            onRatingChange={(rating) =>
-                              form.setValue(
-                                "instructorRating",
-                                rating.toString()
-                              )
-                            }
-                          />
+                        <FormControl>
+                          <div className="grid grid-cols-2 gap-2">
+                            {courseAttributes.map((attr) => {
+                              const isSelected = field.value?.includes(attr);
+                              return (
+                                <Button
+                                  key={attr}
+                                  type="button"
+                                  variant={isSelected ? "default" : "outline"}
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      // remove from array
+                                      form.setValue(
+                                        "courseAttributes",
+                                        field.value?.filter(
+                                          (a) => a !== attr
+                                        ) || []
+                                      );
+                                    } else {
+                                      // add to array
+                                      form.setValue("courseAttributes", [
+                                        ...(field.value || []),
+                                        attr,
+                                      ]);
+                                    }
+                                  }}
+                                  className="h-8 text-sm"
+                                >
+                                  {attr}
+                                </Button>
+                              );
+                            })}
+                          </div>
                         </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Units Selector */}
-                <FormField
-                  control={form.control}
-                  name="units"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Units
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2 gap-2">
-                          {["1-3", "4+"].map((unit) => (
-                            <Button
-                              key={unit}
-                              type="button"
-                              variant={
-                                field.value === unit ? "default" : "outline"
-                              }
-                              onClick={() => form.setValue("units", unit)}
-                              className="h-8"
-                            >
-                              {unit}
-                            </Button>
-                          ))}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Course Attributes - Multiple Toggles */}
-                <FormField
-                  control={form.control}
-                  name="courseAttributes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Course Attributes
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2 gap-2">
-                          {courseAttributes.map((attr) => {
-                            const isSelected = field.value?.includes(attr);
-                            return (
+                  {/* Instruction Mode */}
+                  <FormField
+                    control={form.control}
+                    name="instructionMode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Instruction Mode
+                        </FormLabel>
+                        <FormControl>
+                          <div className="grid grid-cols-2 gap-2">
+                            {["In-Person", "Hybrid", "Online"].map((mode) => (
                               <Button
-                                key={attr}
+                                key={mode}
                                 type="button"
-                                variant={isSelected ? "default" : "outline"}
-                                onClick={() => {
-                                  if (isSelected) {
-                                    // remove from array
-                                    form.setValue(
-                                      "courseAttributes",
-                                      field.value?.filter((a) => a !== attr) ||
-                                        []
-                                    );
-                                  } else {
-                                    // add to array
-                                    form.setValue("courseAttributes", [
-                                      ...(field.value || []),
-                                      attr,
-                                    ]);
-                                  }
-                                }}
+                                variant={
+                                  field.value === mode ? "default" : "outline"
+                                }
+                                onClick={() =>
+                                  form.setValue("instructionMode", mode)
+                                }
                                 className="h-8 text-sm"
                               >
-                                {attr}
+                                {mode}
                               </Button>
-                            );
-                          })}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Instruction Mode */}
-                <FormField
-                  control={form.control}
-                  name="instructionMode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Instruction Mode
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2 gap-2">
-                          {["In-Person", "Hybrid", "Online"].map((mode) => (
-                            <Button
-                              key={mode}
-                              type="button"
-                              variant={
-                                field.value === mode ? "default" : "outline"
-                              }
-                              onClick={() =>
-                                form.setValue("instructionMode", mode)
-                              }
-                              className="h-8 text-sm"
-                            >
-                              {mode}
-                            </Button>
-                          ))}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </ScrollArea>
-
-            {/* Sticky footer with Reset and Apply */}
-            <div className="border-t border-gray-200" />
-            <div className="sticky bottom-12 m-6 p-4 bg-background/95 backdrop-blur flex gap-2">
-              {/* Reset Filters button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  // Resets the entire form to its initial defaultValues.
-                  form.reset();
-                }}
-                className="w-full shadow-lg"
-              >
-                Reset Filters
-              </Button>
-              {/* Apply Filters button */}
-              <Button type="submit" className="w-full shadow-lg">
-                Apply Filters
-              </Button>
+                            ))}
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </ScrollArea>
             </div>
-          </form>
-        </Form>
-      </Card>
+          </Card>
+          {/* Divider */}
+          <div className="border-t border-gray-200 p-4" />
+          {/* Sticky footer with Reset and Apply */}
+          <div className="sticky bottom-0 mx-6 bg-background/95 backdrop-blur flex gap-2 shadow-lg">
+            {/* Reset Filters button */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                // Resets the entire form to its initial defaultValues.
+                form.reset();
+              }}
+              className="w-full shadow-lg"
+            >
+              Reset Filters
+            </Button>
+            {/* Apply Filters button */}
+            <Button type="submit" className="w-full shadow-lg">
+              Apply Filters
+            </Button>
+          </div>
+        </form>
+      </Form>
     </motion.div>
   );
 }

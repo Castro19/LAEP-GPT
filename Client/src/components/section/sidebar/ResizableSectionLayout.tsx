@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   OnePanelLayout,
   TwoPanelLayout,
@@ -67,9 +67,12 @@ const ResizableSectionLayout: React.FC = () => {
     );
   }
 
+  useEffect(() => {
+    console.log("Panels: ", panels);
+  }, [panels]);
   return (
-    <div className="h-full w-full">
-      <div className="mb-2 flex gap-2">
+    <div className="flex-1">
+      <div className="mb-2 flex gap-2 ">
         {panels.length < 4 && (
           <button
             onClick={handleAdd}
@@ -79,22 +82,24 @@ const ResizableSectionLayout: React.FC = () => {
           </button>
         )}
       </div>
-
-      {/* If you need Droppable to wrap the layout: */}
-      <Droppable droppableId="panels-droppable">
-        {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className="h-full w-full"
-          >
-            {layout}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      {layout}
     </div>
   );
 };
 
 export default ResizableSectionLayout;
+
+const draggableSectionLayout = (children: React.ReactNode) => {
+  <Droppable droppableId="panels-droppable">
+    {(provided) => (
+      <div
+        ref={provided.innerRef}
+        {...provided.droppableProps}
+        className="h-full w-full"
+      >
+        {children}
+        {provided.placeholder}
+      </div>
+    )}
+  </Droppable>;
+};
