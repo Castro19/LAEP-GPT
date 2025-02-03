@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Store the course catalog data in MongoDB
 
-import { Section, SectionsFilterParams } from "@polylink/shared/types";
+import {
+  Section,
+  SectionDocument,
+  SectionsFilterParams,
+} from "@polylink/shared/types";
 import { findSectionsByFilter } from "./sectionCollection";
+import { Filter } from "mongodb";
 /**
  * Build a filter object that can be passed to the collection query.
  */
-function buildSectionsQuery(filter: SectionsFilterParams): any {
+function buildSectionsQuery(
+  filter: SectionsFilterParams
+): Filter<SectionDocument> {
   const query: any = {};
 
   // 1) subject
@@ -15,8 +22,8 @@ function buildSectionsQuery(filter: SectionsFilterParams): any {
   }
 
   // 2) courseId
-  if (filter.courseId) {
-    query.courseId = filter.courseId; // exact match
+  if (filter.courseIds) {
+    query.courseId = { $in: filter.courseIds }; // exact match
   }
 
   // 3) status (open/closed → O/C)
