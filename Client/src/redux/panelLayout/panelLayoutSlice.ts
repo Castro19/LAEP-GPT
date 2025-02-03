@@ -3,6 +3,7 @@ import { PanelData } from "@/components/section/sidebar/PanelLayouts";
 interface PanelLayoutState {
   panels: PanelData[];
   outerDirection: "vertical" | "horizontal";
+  currentChoice: "chat" | "reviews" | "filters" | "calendar";
 }
 
 const initialState: PanelLayoutState = {
@@ -11,12 +12,19 @@ const initialState: PanelLayoutState = {
     { id: "2", label: "Sections" },
   ],
   outerDirection: "vertical",
+  currentChoice: "filters",
 };
 
 const panelLayoutSlice = createSlice({
   name: "panelLayout",
   initialState,
   reducers: {
+    setCurrentChoice: (
+      state,
+      action: PayloadAction<PanelLayoutState["currentChoice"]>
+    ) => {
+      state.currentChoice = action.payload;
+    },
     setPanels: (state, action: PayloadAction<PanelData[]>) => {
       state.panels = action.payload;
     },
@@ -55,6 +63,7 @@ const panelLayoutSlice = createSlice({
 });
 
 export const {
+  setCurrentChoice,
   setPanels,
   addPanel,
   deletePanel,
