@@ -66,7 +66,7 @@ export type SectionDocument = Section & {
 
 export type SectionsFilterParams = {
   subject?: string;
-  courseId?: string;
+  courseIds?: string[];
   status?: string;
   days?: string;
   timeRange?: string;

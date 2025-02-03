@@ -11,7 +11,7 @@ declare module "express-serve-static-core" {
 interface CustomRequest extends Request {
   query: {
     subject?: string;
-    courseId?: string;
+    courseIds?: string[];
     status?: string;
     days?: string;
     timeRange?: string;

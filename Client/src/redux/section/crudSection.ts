@@ -5,7 +5,11 @@ const buildQueryString = (filter: SectionsFilterParams) => {
   const queryParams = new URLSearchParams();
   Object.entries(filter).forEach(([key, value]) => {
     if (value) {
-      queryParams.append(key, value);
+      if (Array.isArray(value)) {
+        value.forEach((v) => queryParams.append(key, v));
+      } else {
+        queryParams.append(key, value);
+      }
     }
   });
   console.log("QUERY STRING", queryParams.toString());

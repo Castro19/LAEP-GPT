@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFilters, fetchSectionsAsync } from "@/redux/section/sectionSlice";
 import { SectionsFilterParams } from "@polylink/shared/types";
 import InstructorRatingFilter from "./InstructorRatingFilter";
+import Interest from "@/components/userProfile/Interest";
 
 // Days allowed (used in the Zod enum)
 const days = ["Mo", "Tu", "We", "Th", "Fr"] as const;
@@ -39,7 +40,7 @@ const courseAttributes = [
 
 // Define a Zod schema for the filter form.
 const sectionFiltersSchema = z.object({
-  courseId: z.string().optional(),
+  courseIds: z.array(z.string()).optional(),
   status: z.string().optional(),
   subject: z.string().optional(),
   // The "days" field is an array of allowed day strings.
@@ -64,7 +65,7 @@ export function SectionFilters() {
   const form = useForm<SectionFiltersForm>({
     resolver: zodResolver(sectionFiltersSchema),
     defaultValues: {
-      courseId: reduxFilters.courseId || "",
+      courseIds: reduxFilters.courseIds || [],
       status: reduxFilters.status || "",
       subject: reduxFilters.subject || "",
       days: reduxFilters.days
@@ -100,7 +101,7 @@ export function SectionFilters() {
 
     // Create a filters object matching your API's expected shape.
     const updatedFilters: SectionsFilterParams = {
-      courseId: watchedValues.courseId || "",
+      courseIds: watchedValues.courseIds || [],
       status: watchedValues.status || "",
       subject: watchedValues.subject || "",
       days: watchedValues.days ? watchedValues.days.join(",") : "",
@@ -127,7 +128,7 @@ export function SectionFilters() {
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
 
     const updatedFilters: SectionsFilterParams = {
-      courseId: data.courseId || "",
+      courseIds: data.courseIds || [],
       status: data.status || "",
       subject: data.subject || "",
       days: data.days ? data.days.join(",") : "",
@@ -166,7 +167,7 @@ export function SectionFilters() {
                 {/* Course Search */}
                 <FormField
                   control={form.control}
-                  name="courseId"
+                  name="courseIds"
                   render={() => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
@@ -174,14 +175,18 @@ export function SectionFilters() {
                       </FormLabel>
                       <FormControl>
                         <SectionCourseDropdown
-                          onSelect={(courseId) =>
-                            form.setValue("courseId", courseId)
-                          }
+                          onSelect={(courseId) => {
+                            form.setValue("courseIds", [
+                              ...(form.getValues("courseIds") || []),
+                              courseId,
+                            ]);
+                          }}
                         />
                       </FormControl>
                     </FormItem>
                   )}
                 />
+                <Interest interestAreas={form.getValues("courseIds") || []} />
 
                 {/* Status Toggle */}
                 <FormField

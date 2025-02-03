@@ -14,7 +14,7 @@ const initialState: SectionState = {
   loading: false,
   error: null,
   filters: {
-    courseId: "",
+    courseIds: [],
     status: "",
     subject: "",
     days: "",

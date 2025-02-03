@@ -9,7 +9,7 @@ router.get("/", async (req: Request, res: any) => {
   try {
     const {
       subject,
-      courseId,
+      courseIds, // array of courseIds
       status, // "open" or "closed"
       days, // e.g., "Mo,Tu,We"
       timeRange, // e.g., "08:00:00-10:00:00"
@@ -23,7 +23,7 @@ router.get("/", async (req: Request, res: any) => {
     // Call the service with the parsed query object
     const sections: Section[] = await getSectionsByFilter({
       subject,
-      courseId,
+      courseIds,
       status,
       days,
       timeRange,
