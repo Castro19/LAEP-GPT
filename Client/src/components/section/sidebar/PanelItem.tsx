@@ -6,7 +6,6 @@ import {
 } from "@/components/section/sidebar/PanelLayouts";
 import { SectionFilters } from "../SectionFilters";
 import SectionContainer from "../SectionContainer";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PanelItemProps {
   panel: PanelData;

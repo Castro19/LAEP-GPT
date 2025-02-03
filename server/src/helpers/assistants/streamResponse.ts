@@ -260,16 +260,3 @@ export async function runAssistantAndCollectResponse(
     }
   );
 }
-
-async function verifyRunCompletion(threadId: string, runId: string) {
-  let status = "";
-  while (!["completed", "failed", "cancelled", "expired"].includes(status)) {
-    const run = await openai.beta.threads.runs.retrieve(threadId, runId);
-    status = run.status;
-    if (status === "requires_action") {
-      throw new Error("Run requires action");
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  }
-  return status;
-}

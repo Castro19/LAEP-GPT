@@ -87,19 +87,22 @@ const ResizableSectionLayout: React.FC = () => {
   );
 };
 
-export default ResizableSectionLayout;
-
-const draggableSectionLayout = (children: React.ReactNode) => {
-  <Droppable droppableId="panels-droppable">
-    {(provided) => (
-      <div
-        ref={provided.innerRef}
-        {...provided.droppableProps}
-        className="h-full w-full"
-      >
-        {children}
-        {provided.placeholder}
-      </div>
-    )}
-  </Droppable>;
+// eslint-disable-next-line react-refresh/only-export-components
+export const draggableSectionLayout = (children: React.ReactNode) => {
+  return (
+    <Droppable droppableId="panels-droppable">
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          className="h-full w-full"
+        >
+          {children}
+          {provided.placeholder}
+        </div>
+      )}
+    </Droppable>
+  );
 };
+
+export default ResizableSectionLayout;
