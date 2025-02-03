@@ -7,10 +7,8 @@ interface PanelLayoutState {
 
 const initialState: PanelLayoutState = {
   panels: [
-    { id: "1", label: "Panel 1" },
-    { id: "2", label: "Panel 2" },
-    { id: "3", label: "Panel 3" },
-    { id: "4", label: "Panel 4" },
+    { id: "1", label: "Filters" },
+    { id: "2", label: "Sections" },
   ],
   outerDirection: "vertical",
 };

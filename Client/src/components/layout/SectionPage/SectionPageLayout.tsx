@@ -32,7 +32,7 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       <SectionPageSidebar />
-      <div className="bg-slate-800 text-white flex flex-col w-full h-full no-scroll overflow-y-hidden">
+      <div className="bg-slate-800 text-white flex flex-col max-h-screen w-full no-scroll overflow-hidden">
         <SectionPageHeader />
         <div className="flex-1">{children}</div>
       </div>

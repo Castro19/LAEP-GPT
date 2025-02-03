@@ -6,6 +6,8 @@ import { assistantActions, useAppDispatch } from "@/redux";
 import { useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
 import ResizableSectionLayout from "@/components/section/sidebar/ResizableSectionLayout";
+import SectionFilters from "@/components/section/SectionFilters";
+import SectionContainer from "@/components/section/SectionContainer";
 const SectionPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
@@ -41,7 +43,14 @@ const SectionPage = () => {
   return (
     <SidebarProvider>
       <SectionPageLayout>
-        <ResizableSectionLayout />
+        <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
+          <div className="col-span-1">
+            <SectionFilters />
+          </div>
+          <div className="col-span-2">
+            <SectionContainer />
+          </div>
+        </div>
       </SectionPageLayout>
     </SidebarProvider>
   );
