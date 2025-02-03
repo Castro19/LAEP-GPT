@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   Sidebar,
   SidebarContent,
@@ -15,26 +16,39 @@ import { Calendar, Search, Star, MessageSquare } from "lucide-react";
 
 import { Droppable } from "@hello-pangea/dnd";
 import DraggableComponent from "@/components/section/sidebar/DraggableComponent";
+import { useDispatch } from "react-redux";
+import { setCurrentChoice } from "@/redux/panelLayout/panelLayoutSlice";
+
+enum Choice {
+  Filters = "filters",
+  Calendar = "calendar",
+  Reviews = "reviews",
+  Chat = "chat",
+}
 
 // Menu items.
 const ITEMS = [
   {
-    title: "Class Search",
+    title: "Class Filters",
+    choice: Choice.Filters,
     url: "#",
     icon: Search,
   },
   {
     title: "Weekly Calendar",
+    choice: Choice.Calendar,
     url: "#",
     icon: Calendar,
   },
   {
     title: "Ratings",
+    choice: Choice.Reviews,
     url: "#",
     icon: Star,
   },
   {
     title: "AI Chat",
+    choice: Choice.Chat,
     url: "#",
     icon: MessageSquare,
   },
@@ -42,6 +56,8 @@ const ITEMS = [
 
 const SectionPageSidebar = () => {
   const { open } = useSidebar();
+  const dispatch = useDispatch();
+
   return (
     <Sidebar
       className="flex flex-col h-full"
@@ -57,7 +73,10 @@ const SectionPageSidebar = () => {
               {ITEMS.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a
+                      href={item.url}
+                      onClick={() => dispatch(setCurrentChoice(item.choice))}
+                    >
                       <item.icon />
                       <span>{item.title}</span>
                     </a>

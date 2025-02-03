@@ -9,7 +9,7 @@ const SectionContainer = () => {
 
   console.log(courses);
   return (
-    <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll">
+    <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll pb-12">
       <div className="overflow-auto flex-1 no-scroll">
         <ScrollArea className="h-full min-w-full mb-4">
           <CourseCatalog courses={courses} />
