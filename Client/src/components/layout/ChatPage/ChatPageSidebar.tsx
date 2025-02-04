@@ -5,6 +5,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,7 @@ export function ChatPageSidebar() {
     (state) => state.message
   );
   const hasFetchedLogs = useRef(false);
-
+  const { open } = useSidebar();
   // Handler for selecting a log to view
   const handleSelectLog = (logId: string) => {
     if (currentChatId) {
@@ -69,37 +70,45 @@ export function ChatPageSidebar() {
 
   const navigate = useNavigate();
   return (
-    <Sidebar className="flex flex-col h-full">
-      <SidebarHeader className="mt-4 border-b border-sidebar-border dark:border-slate-700 flex-none">
-        <Button
-          className="text-2xl font-bold leading-tight"
-          variant="link"
-          onClick={() => navigate("/")}
+    <>
+      {/* Return null if the sidebar is not open */}
+      {open && (
+        <Sidebar
+          collapsible="icon-offcanvas"
+          className="flex flex-col h-full ml-16"
         >
-          PolyLink
-        </Button>
-      </SidebarHeader>
-      <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
-        <ScrollArea className="h-full">
-          <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
-          <SidebarGroup>
-            <SidebarMenu>
-              {logList.length > 0 ? (
-                logList.map((log) => (
-                  <ChatLog
-                    key={log.logId}
-                    log={log}
-                    onSelectLog={handleSelectLog}
-                  />
-                ))
-              ) : (
-                <div>No chat logs available</div>
-              )}
-            </SidebarMenu>
-          </SidebarGroup>
-        </ScrollArea>
-      </SidebarContent>
-      <ChatSidebarFooter />
-    </Sidebar>
+          <SidebarHeader className="mt-4 border-b border-sidebar-border dark:border-slate-700 flex-none">
+            <Button
+              className="text-2xl font-bold leading-tight"
+              variant="link"
+              onClick={() => navigate("/")}
+            >
+              PolyLink
+            </Button>
+          </SidebarHeader>
+          <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
+            <ScrollArea className="h-full">
+              <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
+              <SidebarGroup>
+                <SidebarMenu>
+                  {logList.length > 0 ? (
+                    logList.map((log) => (
+                      <ChatLog
+                        key={log.logId}
+                        log={log}
+                        onSelectLog={handleSelectLog}
+                      />
+                    ))
+                  ) : (
+                    <div>No chat logs available</div>
+                  )}
+                </SidebarMenu>
+              </SidebarGroup>
+            </ScrollArea>
+          </SidebarContent>
+          <ChatSidebarFooter />
+        </Sidebar>
+      )}
+    </>
   );
 }
