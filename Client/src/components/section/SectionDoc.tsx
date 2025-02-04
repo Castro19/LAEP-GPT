@@ -12,6 +12,12 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import StarRating from "./StarRating";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "../ui/collapsible";
+import { ChevronDownIcon } from "lucide-react";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
@@ -23,9 +29,12 @@ type CourseCatalogProps = {
 
 export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
   return (
-    <div className="space-y-8 p-4">
+    <div className="space-y-8 p-4 bg-gradient-to-br from-slate-900 to-gray-900 min-h-screen">
       {courses.map((course) => (
-        <CourseSection key={course.courseId} course={course} />
+        <React.Fragment key={course.courseId}>
+          <CourseSection key={course.courseId} course={course} />
+          <div className="border-t border-gray-700 my-2" />
+        </React.Fragment>
       ))}
     </div>
   );
@@ -41,25 +50,52 @@ type CourseSectionProps = {
 
 const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
   return (
-    <section className="border border-gray-300 dark:border-slate-600 rounded-lg p-6 bg-white dark:bg-slate-700">
-      <header className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-          {course.subject} {course.catalogNumber} - {course.courseName}
-        </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          {course.description}
-        </p>
-      </header>
-      <div className="space-y-6">
-        {course.professorGroups.map((group) => (
-          <ProfessorGroupComponent
-            key={group.instructor.id}
-            group={group}
-            courseId={course.courseId}
-          />
-        ))}
+    <Collapsible>
+      <div className="rounded-xl bg-gradient-to-br from-gray-800 to-slate-800 p-[2px] shadow-2xl hover:shadow-indigo-500/20 transition-shadow">
+        <section className="rounded-xl bg-slate-900 p-6">
+          <header className="group">
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-full flex justify-between items-center p-4 hover:bg-slate-800 transition-colors rounded-xl"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600">
+                    <ChevronDownIcon className="w-6 h-6 text-white transition-transform group-data-[state=open]:rotate-180" />
+                  </div>
+                  <div className="flex gap-2">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                      {course.subject} {course.catalogNumber}:
+                    </h2>
+                    <span className="text-2xl font-medium text-gray-400 text-wrap">
+                      {course.courseName}
+                    </span>
+                  </div>
+                </div>
+                <span className="px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-300 text-sm">
+                  {course.units} Units
+                </span>
+              </Button>
+            </CollapsibleTrigger>
+          </header>
+
+          <CollapsibleContent className="overflow-hidden transition-all duration-300 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
+            <p className="text-gray-300 my-6 px-2">{course.description}</p>
+            <div className="space-y-6">
+              {course.professorGroups.map((group) => (
+                <React.Fragment key={group.instructor.id}>
+                  <ProfessorGroupComponent
+                    group={group}
+                    courseId={course.courseId}
+                  />
+                  <div className="border-t border-gray-700 my-4" />
+                </React.Fragment>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </section>
       </div>
-    </section>
+    </Collapsible>
   );
 };
 
@@ -115,87 +151,93 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
   });
 
   return (
-    <div className="border border-gray-300 dark:border-slate-600 rounded-lg p-4 bg-gray-50 dark:bg-slate-600">
-      {/* Professor Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-            {group.instructor.name}
-          </h3>
-
-          {group.instructor.id !== "none" && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => {
-                      window.open(
-                        `https://polyratings.dev/professor/${group.instructor.id}`,
-                        "_blank"
-                      );
-                    }}
-                    variant="link"
-                    className="p-0 m-0"
-                  >
-                    {/* Insert favicon here */}
-                    <img
-                      src={"polyratings-favicon.ico"}
-                      alt="PolyRatings Favicon"
-                      className="w-4 h-4"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View Ratings</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+    <Collapsible>
+      <CollapsibleTrigger asChild>
+        <div className="rounded-lg bg-slate-800 p-4 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                {group.instructor.id !== "none" && (
+                  <TooltipProvider>
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(
+                                `https://polyratings.dev/professor/${group.instructor.id}`,
+                                "_blank"
+                              );
+                            }}
+                            variant="link"
+                            className="p-0 m-0"
+                          >
+                            <img
+                              src={"polyratings-favicon.ico"}
+                              alt="PolyRatings Favicon"
+                              className="w-4 h-4"
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>View Ratings</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TooltipProvider>
+                )}
+              </div>
+              <h3 className="text-xl font-semibold text-cyan-300">
+                {group.instructor.name}
+              </h3>
+            </div>
+            {group.instructor.id !== "none" && <StarRating group={group} />}
+          </div>
         </div>
-        {group.instructor.id !== "none" && <StarRating group={group} />}
-      </div>
+      </CollapsibleTrigger>
 
-      {/* Render paired sections side-by-side in a grid */}
-      {pairedCards.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {pairedCards.map((pair, index) => (
-            <React.Fragment key={index}>
-              {pair.lecture && (
-                <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
-                  <LectureSectionCard
-                    section={pair.lecture}
-                    courseId={courseId}
-                  />
-                </div>
+      <CollapsibleContent>
+        {pairedCards.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {pairedCards.map((pair, index) => (
+              <React.Fragment key={index}>
+                {pair.lecture && (
+                  <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
+                    <LectureSectionCard
+                      section={pair.lecture}
+                      courseId={courseId}
+                    />
+                  </div>
+                )}
+                {pair.lab && (
+                  <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
+                    <LabSectionCard section={pair.lab} courseId={courseId} />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4">
+          {singleSections.map((section) => (
+            <div
+              key={section.classNumber}
+              className="border border-gray-300 dark:border-slate-600 rounded-lg"
+            >
+              {section.component.toLowerCase().includes("lec") ? (
+                <LectureSectionCard section={section} courseId={courseId} />
+              ) : section.component.toLowerCase().includes("lab") ? (
+                <LabSectionCard section={section} courseId={courseId} />
+              ) : (
+                <SectionCard section={section} courseId={courseId} />
               )}
-              {pair.lab && (
-                <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
-                  <LabSectionCard section={pair.lab} courseId={courseId} />
-                </div>
-              )}
-            </React.Fragment>
+            </div>
           ))}
         </div>
-      )}
-
-      {/* Render standalone sections */}
-      <div className="grid grid-cols-1 gap-4">
-        {singleSections.map((section) => (
-          <div
-            key={section.classNumber}
-            className="border border-gray-300 dark:border-slate-600 rounded-lg"
-          >
-            {section.component.toLowerCase().includes("lec") ? (
-              <LectureSectionCard section={section} courseId={courseId} />
-            ) : section.component.toLowerCase().includes("lab") ? (
-              <LabSectionCard section={section} courseId={courseId} />
-            ) : (
-              <SectionCard section={section} courseId={courseId} />
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
@@ -228,7 +270,9 @@ const LectureSectionCard: React.FC<SectionCardProps> = ({
       <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
       <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
-      <SectionSchedule section={section} />
+      <div className="flex flex-row gap-2">
+        <SectionSchedule section={section} />
+      </div>
     </div>
   );
 };
@@ -344,22 +388,55 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
     return `${adjustedHour}:${minute.toString().padStart(2, "0")} ${period}`;
   };
 
+  // Handler for the Add button
+  const handleAdd = (section: SectionDetail) => {
+    // Implement your add functionality here
+    console.log("Add button clicked for meeting:", section);
+  };
+
   return (
-    <div className="mt-2 text-sm">
+    <div className="mt-2 text-sm w-full">
       {section.meetings.map((meeting, index) => (
-        <div key={index} className="text-sm text-gray-600 dark:text-gray-300">
-          <div>Days: {meeting.days.map((day) => dayMap[day]).join(", ")}</div>
+        <div
+          key={index}
+          className="text-sm text-gray-600 dark:text-gray-300 mb-1"
+        >
           <div>
-            Start Time:{" "}
+            <span className="font-semibold text-gray-800 dark:text-gray-100">
+              Days:{" "}
+            </span>
+            {meeting.days.map((day) => dayMap[day]).join(", ")}
+          </div>
+          <div>
+            <span className="font-semibold text-gray-800 dark:text-gray-100">
+              Start Time:{" "}
+            </span>
             {meeting.start_time
               ? convertTo12HourFormat(meeting.start_time)
               : "N/A"}
           </div>
           <div>
-            End Time:{" "}
+            <span className="font-semibold text-gray-800 dark:text-gray-100">
+              End Time:{" "}
+            </span>
             {meeting.end_time ? convertTo12HourFormat(meeting.end_time) : "N/A"}
           </div>
-          <div>Location: {meeting.location || "N/A"}</div>
+          {/* Footer with Location and Add Button */}
+          <div className="flex justify-between items-center mt-4 py-2 border-t border-gray-300 dark:border-slate-600">
+            <div>
+              <span className="font-semibold text-gray-800 dark:text-gray-100">
+                Location:{" "}
+              </span>
+              {meeting.location || "N/A"}
+            </div>
+            <Button
+              onClick={() => handleAdd(section)}
+              variant="default"
+              className="ml-4"
+            >
+              Add
+            </Button>
+          </div>
         </div>
       ))}
     </div>
