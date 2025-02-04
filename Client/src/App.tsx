@@ -102,11 +102,11 @@ const router = routerChosen([
           },
         ],
       },
+      {
+        path: "section",
+        element: <SectionPage />,
+      },
     ],
-  },
-  {
-    path: "section",
-    element: <SectionPage />,
   },
   {
     path: "/register",
