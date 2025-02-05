@@ -2,13 +2,10 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import ChatLog from "@/components/chatLog/ChatLog";
 import {
   messageActions,
@@ -18,7 +15,6 @@ import {
   useAppSelector,
 } from "@/redux";
 import { useEffect, useRef } from "react";
-import ChatSidebarFooter from "@/components/chatLog/ChatSidebarFooter";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ChatPageSidebar() {
@@ -68,26 +64,23 @@ export function ChatPageSidebar() {
     }
   }, [dispatch, userId, logList.length]);
 
-  const navigate = useNavigate();
   return (
     <>
-      {/* Return null if the sidebar is not open */}
       <Sidebar
         collapsible="icon-offcanvas"
-        className={`flex flex-col h-full ml-16 ${!open && "opacity-0"}`}
+        className={`
+          flex flex-col h-full ml-16 dark:bg-gray-800
+          transition-all duration-300
+          ${open ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-16"}
+        `}
       >
-        <SidebarHeader className="mt-4 border-b border-sidebar-border dark:border-slate-700 flex-none">
-          <Button
-            className="text-2xl font-bold leading-tight"
-            variant="link"
-            onClick={() => navigate("/")}
-          >
-            PolyLink
-          </Button>
+        <SidebarHeader className="mt-8 border-b-2 border-sidebar-border dark:border-slate-700 flex-none">
+          <div className="flex items-center justify-center">
+            <h1 className="text-xl font-bold leading-tight">Chat Logs</h1>
+          </div>
         </SidebarHeader>
         <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
           <ScrollArea className="h-full">
-            <SidebarGroupLabel>Chatlogs</SidebarGroupLabel>
             <SidebarGroup>
               <SidebarMenu>
                 {logList.length > 0 ? (
@@ -105,7 +98,6 @@ export function ChatPageSidebar() {
             </SidebarGroup>
           </ScrollArea>
         </SidebarContent>
-        <ChatSidebarFooter />
       </Sidebar>
     </>
   );
