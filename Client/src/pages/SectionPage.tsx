@@ -9,6 +9,7 @@ import SectionContainer from "@/components/section/SectionContainer";
 import { ChatContainer } from "@/components/chat";
 import AnimateWrapper from "@/components/section/AnimateWrapper";
 import AdminViewOnly from "@/components/security/AdminViewOnly";
+import OuterSidebar from "@/components/layout/OuterIconSidebar";
 
 const SectionPage = () => {
   const dispatch = useAppDispatch();
@@ -82,19 +83,22 @@ const SectionPage = () => {
 
   return (
     <AdminViewOnly>
-      <SidebarProvider>
-        <SectionPageLayout>
-          <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
-            <div className="col-span-1">
-              {/* <SectionFilters /> */}
-              {currentPanel}
+      <div className="flex">
+        <OuterSidebar />
+        <SidebarProvider className="dark:bg-slate-900">
+          <SectionPageLayout>
+            <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
+              <div className="col-span-1">
+                {/* <SectionFilters /> */}
+                {currentPanel}
+              </div>
+              <div className="col-span-2">
+                <SectionContainer />
+              </div>
             </div>
-            <div className="col-span-2">
-              <SectionContainer />
-            </div>
-          </div>
-        </SectionPageLayout>
-      </SidebarProvider>
+          </SectionPageLayout>
+        </SidebarProvider>
+      </div>
     </AdminViewOnly>
   );
 };
