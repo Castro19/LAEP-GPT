@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
 import FlowchartLog from "../flowchartLog/FlowchartLog";
@@ -17,10 +18,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronLeft } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import CourseSearchbar from "./courses/CourseSearchbar";
 import { SidebarMenuSub } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import CourseDropdown from "./courses/CourseDropdown";
 import { useEffect } from "react";
@@ -33,6 +33,8 @@ import { toast } from "@/components/ui/use-toast";
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { open } = useSidebar();
+
   const flowchartList = useAppSelector(
     (state) => state.flowchart.flowchartList
   );
@@ -81,20 +83,16 @@ export function SidebarFlowchart() {
   }, [selections.catalog, dispatch]);
 
   return (
-    <Sidebar variant="sidebar" className="flex flex-col h-full">
+    <Sidebar
+      collapsible="icon-offcanvas"
+      className={`
+      flex flex-col h-full ml-16 dark:bg-gray-800
+      transition-all duration-300
+      ${open ? "opacity-100" : "opacity-0 -translate-x-16"}
+    `}
+    >
       <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none mt-4">
-        <div className="flex items-center justify-start gap-4">
-          {/* Back button */}
-          <Button
-            className="justify-start dark:hover:bg-transparent "
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              navigate("/profile/edit");
-            }}
-          >
-            <ChevronLeft className="w-5 h-5 transition-transform duration-200 hover:-translate-x-1 size-10" />
-          </Button>
+        <div className="flex items-center justify-center">
           <span className="text-lg text-center font-semibold ml-4">
             {userData.flowchartInformation.catalog}
           </span>
