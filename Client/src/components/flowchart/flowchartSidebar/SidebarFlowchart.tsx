@@ -86,7 +86,7 @@ export function SidebarFlowchart() {
     <Sidebar
       collapsible="icon-offcanvas"
       className={`
-      flex flex-col h-full ml-16 dark:bg-gray-800
+      flex flex-col h-full ml-16 pl-2 dark:bg-slate-900
       transition-all duration-300
       ${open ? "opacity-100" : "opacity-0 -translate-x-16"}
     `}

@@ -3,48 +3,123 @@ import {
   Sidebar,
   SidebarContent,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarHeader,
 } from "@/components/ui/sidebar";
 
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 // (Use your icons or lucide-react icons, e.g. Home, User, etc.)
 
 import { IoMdChatboxes } from "react-icons/io";
 import { IoHomeSharp } from "react-icons/io5";
-import ChatSidebarFooter from "../chatLog/ChatSidebarFooter";
 
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { UserAvatar } from "../userProfile/UserAvatar";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
+import { useAppSelector } from "@/redux";
 function OuterSidebar() {
-  return (
-    <div className="min-h-screen w-16 dark:border-r-slate-400 border-r-2">
-      <SidebarProvider className="h-full">
-        <Sidebar collapsible="none" variant="sidebar" side="left">
-          <SidebarHeader className="mt-6 border-b-2 border-sidebar-border dark:border-slate-700 flex-none">
-            <SidebarMenuButton tooltip="Profile" asChild>
-              <a href="/">
-                <IoHomeSharp className="m-auto w-16 h-16" />
-              </a>
-            </SidebarMenuButton>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              <SidebarMenuButton className="my-2" tooltip="Flowchart" asChild>
-                <a href="/flowchart">
-                  <FaCalendarAlt className="m-auto" size={18} />
-                </a>
-              </SidebarMenuButton>
+  const { userData } = useAppSelector((state) => state.user);
 
-              <SidebarMenuItem>
-                <SidebarMenuButton className="my-2" tooltip="Chat" asChild>
-                  <a href="/chat">
-                    <IoMdChatboxes className="m-auto" size={20} />
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+  const navigate = useNavigate();
+
+  const handleNaviation = (path: string) => {
+    if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
+      navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
+    } else {
+      navigate(path);
+    }
+  };
+
+  return (
+    <div className="min-h-screen w-16 z-50 ">
+      <SidebarProvider className="h-full">
+        <Sidebar
+          collapsible="none"
+          variant="sidebar"
+          side="left"
+          className="border-r-2 dark:border-slate-700"
+        >
+          <SidebarHeader className="mt-4 flex-none">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" onClick={() => handleNaviation("/")}>
+                    <IoHomeSharp className="m-auto w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Home Page</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </SidebarHeader>
+          <SidebarContent className="flex flex-col mt-4">
+            <div className="flex-grow flex flex-col gap-8">
+              <SidebarMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleNaviation("/chat")}
+                      >
+                        <IoMdChatboxes className="m-auto w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>AI Chat</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </SidebarMenu>
+              <SidebarMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleNaviation("/section")}
+                      >
+                        <FaSearch className="m-auto w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Course Search</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </SidebarMenu>
+              <SidebarMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleNaviation("/flowchart")}
+                      >
+                        <FaCalendarAlt className="m-auto w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Flowchart</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </SidebarMenu>
+            </div>
+            <SidebarMenu className="mb-6 pt-4 justify-center items-center border-t-2 border-sidebar-border dark:border-slate-800">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleNaviation("/profile/edit")}
+                    >
+                      <UserAvatar />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>View Profile</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </SidebarMenu>
           </SidebarContent>
-          <ChatSidebarFooter />
         </Sidebar>
       </SidebarProvider>
     </div>

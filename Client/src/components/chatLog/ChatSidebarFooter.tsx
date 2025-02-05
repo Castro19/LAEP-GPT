@@ -8,6 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { IoPerson } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
 import { signOutUser } from "@/redux/auth/authSlice";
+import { Tooltip } from "@radix-ui/react-tooltip";
+import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const ChatSidebarFooter = () => {
   const navigate = useNavigate();
@@ -19,13 +23,29 @@ const ChatSidebarFooter = () => {
   return (
     <SidebarFooter className="border-t dark:border-slate-700">
       <SidebarMenu>
-        <SidebarMenuButton onClick={() => navigate("/profile/edit")}>
-          <IoPerson />
-        </SidebarMenuButton>
-        <SidebarMenuButton onClick={handleSignOut} className="text-red-500">
-          <CiLogout />
-        </SidebarMenuButton>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SidebarMenuButton tooltip="Flowchart" asChild>
+                <a href="/flowchart">
+                  <FaCalendarAlt className="m-auto" size={18} />
+                </a>
+              </SidebarMenuButton>
+            </TooltipTrigger>
+            <TooltipContent>Flowchart</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </SidebarMenu>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <SidebarMenuButton onClick={handleSignOut} className="text-red-500">
+              <CiLogout />
+            </SidebarMenuButton>
+          </TooltipTrigger>
+          <TooltipContent>Logout</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </SidebarFooter>
   );
 };

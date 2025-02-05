@@ -10,7 +10,7 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <DragDropContextWrapper>
       <SidebarFlowchart />
-      <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full">
+      <div className="bg-slate-900 text-white min-h-screen flex flex-col no-scroll w-full">
         <FlowChartHeader />
         <div className="flex-1 overflow-y-auto">{children}</div>
         <FlowChartFooter />

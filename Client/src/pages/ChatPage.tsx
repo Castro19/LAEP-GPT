@@ -83,7 +83,7 @@ const ChatPage = () => {
     <>
       <div className="flex">
         <OuterSidebar />
-        <SidebarProvider>
+        <SidebarProvider className="dark:bg-slate-900">
           <ChatPageLayout>
             <ChatContainer />
           </ChatPageLayout>
