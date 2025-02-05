@@ -12,7 +12,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
 import { LogData } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
-
+import OuterSidebar from "@/components/layout/OuterIconSidebar";
 const ChatPage = () => {
   const dispatch = useAppDispatch();
 
@@ -80,11 +80,16 @@ const ChatPage = () => {
   }, [chatId, dispatch]);
 
   return (
-    <SidebarProvider>
-      <ChatPageLayout>
-        <ChatContainer />
-      </ChatPageLayout>
-    </SidebarProvider>
+    <>
+      <div className="flex">
+        <OuterSidebar />
+        <SidebarProvider className="dark:bg-slate-900">
+          <ChatPageLayout>
+            <ChatContainer />
+          </ChatPageLayout>
+        </SidebarProvider>
+      </div>
+    </>
   );
 };
 

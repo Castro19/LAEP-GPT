@@ -112,7 +112,7 @@ const FlowChartHeader = () => {
 
         {!isMobile && (
           <div className="flex items-center">
-            <span className="mr-2">
+            <span className="mr-16">
               {flowchartId === "" || flowchartId === undefined ? (
                 <SpecialButton
                   onClick={handleSaveData}

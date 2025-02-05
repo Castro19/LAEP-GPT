@@ -2,88 +2,50 @@ import {
   SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import UserMenu from "@/components/userProfile/UserMenu";
-import { ChevronUp } from "lucide-react";
-import { signOutUser } from "@/redux/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { useAppDispatch } from "@/redux";
 import { useNavigate } from "react-router-dom";
-import { onNewChat } from "../chat/helpers/newChatHandler";
+import { IoPerson } from "react-icons/io5";
+import { CiLogout } from "react-icons/ci";
+import { signOutUser } from "@/redux/auth/authSlice";
+import { Tooltip } from "@radix-ui/react-tooltip";
+import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const ChatSidebarFooter = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { userId } = useAppSelector((state) => state.auth);
-  const userData = useAppSelector((state) => state.user.userData);
-  const { currentChatId, loading, messagesByChatId } = useAppSelector(
-    (state) => state.message
-  );
-  const error = useAppSelector((state) => state.message.error);
   const handleSignOut = () => {
     dispatch(signOutUser()); // Trigger the thunk to sign out the user
   };
 
-  const handleNavigateToFlowcharts = () => {
-    if (userId && userData.flowchartInformation.flowchartId) {
-      navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
-    } else {
-      navigate("/flowchart");
-    }
-  };
-
-  const handleNavigateToSections = () => {
-    navigate("/section");
-    onNewChat(
-      currentChatId,
-      dispatch,
-      navigate,
-      error,
-      loading,
-      messagesByChatId,
-      true
-    );
-  };
-
   return (
-    <SidebarFooter className="h-20 border-t dark:border-slate-700">
+    <SidebarFooter className="border-t dark:border-slate-700">
       <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className="h-full">
-                <UserMenu />
-                <ChevronUp className="ml-auto" />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SidebarMenuButton tooltip="Flowchart" asChild>
+                <a href="/flowchart">
+                  <FaCalendarAlt className="m-auto" size={18} />
+                </a>
               </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="top"
-              className="w-[--radix-popper-anchor-width]"
-            >
-              <DropdownMenuItem onClick={() => navigate("/profile/edit")}>
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleNavigateToSections}>
-                <span>Search Sections</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleNavigateToFlowcharts}>
-                <span>Manage Flowcharts</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut}>
-                <span className="text-white rounded-md whitespace-nowrap">
-                  Sign Out
-                </span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
+            </TooltipTrigger>
+            <TooltipContent>Flowchart</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </SidebarMenu>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <SidebarMenuButton onClick={handleSignOut} className="text-red-500">
+              <CiLogout />
+            </SidebarMenuButton>
+          </TooltipTrigger>
+          <TooltipContent>Logout</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </SidebarFooter>
   );
 };

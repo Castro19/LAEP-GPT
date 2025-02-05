@@ -10,6 +10,7 @@ import {
 import FlowChartLayout from "@/components/layout/flowchart/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useParams } from "react-router-dom";
+import OuterSidebar from "@/components/layout/OuterIconSidebar";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
@@ -33,11 +34,16 @@ const FlowChatPage = () => {
   }, [flowchartId, flowchartData, dispatch, loading.deleteFlowchart]);
 
   return (
-    <SidebarProvider>
-      <FlowChartLayout>
-        <FlowChart flowchartData={flowchartData} />
-      </FlowChartLayout>
-    </SidebarProvider>
+    <>
+      <div className="flex overflow-hidden">
+        <OuterSidebar />
+        <SidebarProvider className="dark:bg-slate-900">
+          <FlowChartLayout>
+            <FlowChart flowchartData={flowchartData} />
+          </FlowChartLayout>
+        </SidebarProvider>
+      </div>
+    </>
   );
 };
 

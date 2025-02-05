@@ -106,7 +106,7 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen">
+    <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen overflow-auto">
       <GridItemContainer>
         <CardContent>
           <div className="flex flex-col justify-around items-center my-2">

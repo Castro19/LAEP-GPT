@@ -1,5 +1,4 @@
 import React from "react";
-import SectionPageSidebar from "./SectionPageSidebar";
 import SectionPageHeader from "./SectionPageHeader";
 import { DragDropContext, DragStart, DropResult } from "@hello-pangea/dnd";
 
@@ -29,8 +28,8 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      <SectionPageSidebar />
-      <div className="bg-slate-800 text-white flex flex-col max-h-screen w-full no-scroll overflow-hidden">
+      {/* <SectionPageSidebar /> */}
+      <div className="bg-slate-900 text-white min-h-screen flex flex-col no-scroll w-full">
         <SectionPageHeader />
         <div className="flex-1">{children}</div>
       </div>

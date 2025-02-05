@@ -2,7 +2,7 @@ import ModeDropDown from "../../chat/ModeDropDown";
 import { useSidebar } from "@/components/ui/sidebar";
 import NewChat from "../../chat/NewChat";
 import { AssistantType } from "@polylink/shared/types";
-import { BiChat } from "react-icons/bi";
+
 // Redux:
 import {
   useAppDispatch,
@@ -12,6 +12,8 @@ import {
 } from "@/redux";
 import { onNewChat } from "@/components/chat/helpers/newChatHandler";
 import { useNavigate } from "react-router-dom";
+import { FiSidebar } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 
 const ChatHeader = () => {
   // Redux:
@@ -42,11 +44,11 @@ const ChatHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
+    <header className="sticky top-0 bg-slate-900 text-white p-4 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
       <div className="flex items-center justify-between">
-        <button onClick={toggleSidebar} className="text-lg hover:text-gray-300">
-          <BiChat />
-        </button>
+        <Button variant="ghost" onClick={toggleSidebar}>
+          <FiSidebar className="m-auto w-5 h-5" />
+        </Button>
         <ModeDropDown onSelect={handleModeSelection} />
         <NewChat />
       </div>
