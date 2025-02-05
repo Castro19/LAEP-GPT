@@ -14,7 +14,7 @@ router.get("/", async (req: Request, res: any) => {
       days, // e.g., "Mo,Tu,We"
       timeRange, // e.g., "08:00:00-10:00:00"
       instructorRating, // e.g., "3.5"
-      units, // e.g., "1-3" or "4+"
+      units, // Max number of units  e.g., 1, 2, 3, 4, 5, 6
       courseAttribute, // e.g., "GWR"
       instructionMode, // e.g., "P" or "PS" or "PA", etc.
       instructor, // e.g., "John Doe"
@@ -23,13 +23,17 @@ router.get("/", async (req: Request, res: any) => {
     // Call the service with the parsed query object
     const sections: Section[] = await getSectionsByFilter({
       subject,
-      courseIds,
+      courseIds:
+        typeof courseIds === "string" ? courseIds.split(",") : courseIds,
       status,
       days,
       timeRange,
       instructorRating,
-      units,
-      courseAttribute,
+      units: units ? Number(units) : undefined,
+      courseAttribute:
+        typeof courseAttribute === "string"
+          ? courseAttribute.split(",")
+          : courseAttribute,
       instructionMode,
       instructor,
     } as SectionsFilterParams);

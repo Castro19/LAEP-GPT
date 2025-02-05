@@ -21,7 +21,7 @@ const initialState: SectionState = {
     timeRange: "",
     instructorRating: "",
     units: "",
-    courseAttribute: "",
+    courseAttribute: [],
     instructionMode: "",
   },
 };

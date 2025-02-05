@@ -24,6 +24,7 @@ import { setFilters, fetchSectionsAsync } from "@/redux/section/sectionSlice";
 import { SectionsFilterParams } from "@polylink/shared/types";
 import InstructorRatingFilter from "./InstructorRatingFilter";
 import Interest from "@/components/userProfile/Interest";
+import { Slider } from "@/components/ui/slider";
 
 // Days allowed (used in the Zod enum)
 const days = ["Mo", "Tu", "We", "Th", "Fr"] as const;
@@ -49,7 +50,7 @@ const sectionFiltersSchema = z.object({
   startTime: z.string().optional(),
   endTime: z.string().optional(),
   instructorRating: z.string().optional(),
-  units: z.string().optional(),
+  units: z.number().min(1).max(6).optional(),
   // Allow multiple course attributes
   courseAttributes: z.array(z.enum(courseAttributes)).optional(),
   instructionMode: z.string().optional(),
@@ -61,7 +62,7 @@ export function SectionFilters() {
   const dispatch = useAppDispatch();
   const reduxFilters = useAppSelector((state) => state.section.filters);
 
-  // Initialize the form with default values from Redux, splitting comma-separated lists into arrays.
+  // Initialize the form with default values from Redux, converting as necessary.
   const form = useForm<SectionFiltersForm>({
     resolver: zodResolver(sectionFiltersSchema),
     defaultValues: {
@@ -78,13 +79,11 @@ export function SectionFilters() {
         ? reduxFilters.timeRange.split("-")[1]
         : "",
       instructorRating: reduxFilters.instructorRating || "",
-      units: reduxFilters.units || "",
+      units: reduxFilters.units ? Number(reduxFilters.units) : 1,
       // Convert the stored string of attributes into an array
-      courseAttributes: reduxFilters.courseAttribute
-        ? (reduxFilters.courseAttribute.split(
-            ","
-          ) as (typeof courseAttributes)[number][])
-        : [],
+      courseAttributes:
+        (reduxFilters.courseAttribute as (typeof courseAttributes)[number][]) ||
+        [],
       instructionMode: reduxFilters.instructionMode || "",
     },
   });
@@ -99,7 +98,7 @@ export function SectionFilters() {
         ? `${watchedValues.startTime}-${watchedValues.endTime}`
         : "";
 
-    // Create a filters object matching your API's expected shape.
+    // Create a filters object matching API's expected shape.
     const updatedFilters: SectionsFilterParams = {
       courseIds: watchedValues.courseIds || [],
       status: watchedValues.status || "",
@@ -107,11 +106,9 @@ export function SectionFilters() {
       days: watchedValues.days ? watchedValues.days.join(",") : "",
       timeRange,
       instructorRating: watchedValues.instructorRating || "",
-      units: watchedValues.units || "",
+      units: watchedValues.units || 1,
       // Join the array of attributes into a comma-separated string.
-      courseAttribute: watchedValues.courseAttributes
-        ? watchedValues.courseAttributes.join(",")
-        : "",
+      courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
     };
 
@@ -134,10 +131,8 @@ export function SectionFilters() {
       days: data.days ? data.days.join(",") : "",
       timeRange,
       instructorRating: data.instructorRating || "",
-      units: data.units || "",
-      courseAttribute: data.courseAttributes
-        ? data.courseAttributes.join(",")
-        : "",
+      units: data.units || 1,
+      courseAttribute: data.courseAttributes || [],
       instructionMode: data.instructionMode || "",
     };
 
@@ -336,30 +331,34 @@ export function SectionFilters() {
                   )}
                 />
 
-                {/* Units Selector */}
+                {/* Minimum Units Slider */}
                 <FormField
                   control={form.control}
                   name="units"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        Units
+                        Max Units
                       </FormLabel>
                       <FormControl>
-                        <div className="grid grid-cols-2 gap-2">
-                          {["1-3", "4+"].map((unit) => (
-                            <Button
-                              key={unit}
-                              type="button"
-                              variant={
-                                field.value === unit ? "default" : "outline"
-                              }
-                              onClick={() => form.setValue("units", unit)}
-                              className="h-8"
-                            >
-                              {unit}
-                            </Button>
-                          ))}
+                        <div className="flex flex-col items-center space-y-2">
+                          <span className="text-sm text-gray-700">
+                            {field.value} Units
+                          </span>
+                          <Slider
+                            value={[field.value || 0]}
+                            onValueChange={(value) =>
+                              form.setValue("units", value[0] as number)
+                            }
+                            max={6}
+                            step={1}
+                            className="w-full h-2 bg-gray-300 rounded-full"
+                            aria-label="Minimum Units"
+                          />
+                          <div className="flex justify-between w-full text-xs text-gray-600">
+                            <span>0</span>
+                            <span>6</span>
+                          </div>
                         </div>
                       </FormControl>
                     </FormItem>

@@ -72,8 +72,10 @@ export type SectionsFilterParams = {
   timeRange?: string;
   enrollmentStatus?: string;
   instructorRating?: string;
-  units?: string;
-  courseAttribute?: string;
+  units?: number;
+  courseAttribute?: Array<
+    "GE D" | "USCP" | "GE C" | "GWR" | "GE E" | "GE B" | "GE F" | "GE A"
+  >;
   instructionMode?: string;
   instructor?: string;
 };
