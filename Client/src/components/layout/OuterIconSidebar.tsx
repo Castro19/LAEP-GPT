@@ -19,19 +19,31 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { UserAvatar } from "../userProfile/UserAvatar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useAppSelector } from "@/redux";
+
 function OuterSidebar() {
   const { userData } = useAppSelector((state) => state.user);
-
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNaviation = (path: string) => {
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else {
       navigate(path);
+    }
+  };
+
+  const isActive = (path: string) => {
+    if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
+      return (
+        location.pathname ===
+        `/flowchart/${userData.flowchartInformation.flowchartId}`
+      );
+    } else {
+      return location.pathname === path;
     }
   };
 
@@ -48,7 +60,15 @@ function OuterSidebar() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" onClick={() => handleNaviation("/")}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleNaviation("/")}
+                    className={`${
+                      isActive("/")
+                        ? "text-slate-500 hover:text-slate-600"
+                        : "hover:text-slate-600"
+                    }`}
+                  >
                     <IoHomeSharp className="m-auto w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
@@ -65,6 +85,11 @@ function OuterSidebar() {
                       <Button
                         variant="ghost"
                         onClick={() => handleNaviation("/chat")}
+                        className={`${
+                          isActive("/chat")
+                            ? "text-slate-500 hover:text-slate-600"
+                            : "hover:text-slate-600"
+                        }`}
                       >
                         <IoMdChatboxes className="m-auto w-5 h-5" />
                       </Button>
@@ -80,6 +105,11 @@ function OuterSidebar() {
                       <Button
                         variant="ghost"
                         onClick={() => handleNaviation("/section")}
+                        className={`${
+                          isActive("/section")
+                            ? "text-slate-500 hover:text-slate-600"
+                            : "hover:text-slate-600"
+                        }`}
                       >
                         <FaSearch className="m-auto w-5 h-5" />
                       </Button>
@@ -95,6 +125,11 @@ function OuterSidebar() {
                       <Button
                         variant="ghost"
                         onClick={() => handleNaviation("/flowchart")}
+                        className={`${
+                          isActive("/flowchart")
+                            ? "text-slate-500 hover:text-slate-600"
+                            : "hover:text-slate-600"
+                        }`}
                       >
                         <FaCalendarAlt className="m-auto w-5 h-5" />
                       </Button>
@@ -111,6 +146,11 @@ function OuterSidebar() {
                     <Button
                       variant="ghost"
                       onClick={() => handleNaviation("/profile/edit")}
+                      className={`${
+                        isActive("/profile/edit")
+                          ? "text-slate-500 hover:text-slate-600"
+                          : "hover:text-slate-600"
+                      }`}
                     >
                       <UserAvatar />
                     </Button>
