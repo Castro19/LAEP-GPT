@@ -36,13 +36,17 @@ function buildSectionsQuery(
   }
 
   // 4) days (e.g. "Mo,Tu,We")
-  //    If we want sections meeting *all* these days, we'd build a $all query.
-  //    If we want sections meeting *any* of these days, we'd use $in.
   if (filter.days) {
     const dayList = filter.days.split(",").map((day) => day.trim());
-    // "meetings.days": { $in: ["Mo", "Tu", "We"] }
-    // This matches any section that has at least one meeting containing any of those days.
-    query["meetings.days"] = { $in: dayList };
+
+    // Ensure that meetings.days does not contain any days not in dayList and is not empty
+    query["meetings.days"] = {
+      $not: {
+        $elemMatch: { $nin: dayList },
+      },
+      $exists: true,
+      $ne: [],
+    };
   }
 
   // 5) timeRange (e.g. "08:00:00-10:00:00")
@@ -64,7 +68,7 @@ function buildSectionsQuery(
   //    e.g. ">=3.5" or "3.5"? For simplicity, let's assume it's always "3.5" meaning ">= 3.5".
   if (filter.instructorRating) {
     const rating = parseFloat(filter.instructorRating);
-    if (!isNaN(rating)) {
+    if (!isNaN(rating) && rating > 0) {
       // We want at least one instructorWithRatings whose overallRating >= rating
       query["instructorsWithRatings"] = {
         $elemMatch: { overallRating: { $gte: rating } },
@@ -72,37 +76,45 @@ function buildSectionsQuery(
     }
   }
 
-  // 7) units (e.g., "1-3" or "4+")
-  //    Because `units` in the schema is a string, you'll have to decide how it’s stored.
-  //    Example approach:
+  // 7) units (e.g., 1, 2, 3, 4, 5, 6)
+  //    Because `units` in the schema is a string, you'll have to decide how it's stored.
   if (filter.units) {
-    if (filter.units.includes("-")) {
-      // e.g. "1-3"
-      const [min, max] = filter.units.split("-").map(Number);
-      if (!isNaN(min) && !isNaN(max)) {
-        // units is stored as a string, so we do: parseInt(units) >= min && parseInt(units) <= max
-        query.$expr = {
-          $and: [
-            { $gte: [{ $toInt: "$units" }, min] },
-            { $lte: [{ $toInt: "$units" }, max] },
-          ],
-        };
-      }
-    } else if (filter.units.endsWith("+")) {
-      // e.g. "4+"
-      const min = parseInt(filter.units.replace("+", ""));
-      if (!isNaN(min)) {
-        query.$expr = {
-          $gte: [{ $toInt: "$units" }, min],
-        };
-      }
+    console.log("filter.units", filter.units);
+    console.log("filter.units type", typeof filter.units);
+    if (!isNaN(filter.units)) {
+      query.$expr = {
+        $gte: [
+          {
+            $cond: [
+              // Check if the units string contains " - " (with spaces)
+              { $regexMatch: { input: "$units", regex: / - / } },
+              {
+                // For ranges like "1 - 4", split using " - ", trim the second element, and convert to an int.
+                $toInt: {
+                  $trim: {
+                    input: {
+                      $arrayElemAt: [{ $split: ["$units", " - "] }, 1],
+                    },
+                  },
+                },
+              },
+              {
+                // Otherwise, assume it's a single number and convert directly.
+                $toInt: "$units",
+              },
+            ],
+          },
+          filter.units, // Only match courses whose max units is <= filterUnits.
+        ],
+      };
     }
   }
 
   // 8) courseAttribute
   //    "courseAttributes" is an array. If we want a doc that has the given attribute in its array:
   if (filter.courseAttribute) {
-    query.courseAttributes = filter.courseAttribute;
+    // Ensure every item in filter.courseAttribute is present in courseAttributes
+    query.courseAttributes = { $all: filter.courseAttribute };
   }
 
   // 9) instructionMode

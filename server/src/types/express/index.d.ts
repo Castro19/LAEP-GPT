@@ -11,12 +11,12 @@ declare module "express-serve-static-core" {
 interface CustomRequest extends Request {
   query: {
     subject?: string;
-    courseIds?: string[];
+    courseIds: string;
     status?: string;
     days?: string;
     timeRange?: string;
     instructorRating?: string;
-    units?: string;
+    units?: number;
     courseAttribute?: string;
     instructionMode?: string;
     instructor?: string;

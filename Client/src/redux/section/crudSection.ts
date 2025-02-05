@@ -6,7 +6,7 @@ const buildQueryString = (filter: SectionsFilterParams) => {
   Object.entries(filter).forEach(([key, value]) => {
     if (value) {
       if (Array.isArray(value)) {
-        value.forEach((v) => queryParams.append(key, v));
+        value.forEach((v) => queryParams.append(key, v.toString()));
       } else {
         queryParams.append(key, value);
       }
