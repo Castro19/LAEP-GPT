@@ -4,7 +4,7 @@ import { ReactElement, useEffect, useRef, useState } from "react";
 import { assistantActions, useAppDispatch } from "@/redux";
 import { useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
-import SectionFilters from "@/components/section/SectionFilters";
+import SectionFilters from "@/components/section/filterForm/SectionFilters";
 import SectionContainer from "@/components/section/SectionContainer";
 import { ChatContainer } from "@/components/chat";
 import AnimateWrapper from "@/components/section/AnimateWrapper";

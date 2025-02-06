@@ -15,48 +15,19 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import SectionCourseDropdown from "./SectionCourseDropdown";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Redux hooks and actions
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFilters, fetchSectionsAsync } from "@/redux/section/sectionSlice";
 import { SectionsFilterParams } from "@polylink/shared/types";
-import InstructorRatingFilter from "./InstructorRatingFilter";
-import Interest from "@/components/userProfile/Interest";
-import { Slider } from "@/components/ui/slider";
-
-// Days allowed (used in the Zod enum)
-const days = ["Mo", "Tu", "We", "Th", "Fr"] as const;
-
-// Potential Course Attributes
-const courseAttributes = [
-  "GE A",
-  "GE B",
-  "GE C",
-  "GE D",
-  "GWR",
-  "USCP",
-] as const;
-
+import InstructorRatingFilter from "../InstructorRatingFilter";
+import CourseInformation from "./CourseInformation";
+import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
 // Define a Zod schema for the filter form.
-const sectionFiltersSchema = z.object({
-  courseIds: z.array(z.string()).optional(),
-  status: z.string().optional(),
-  subject: z.string().optional(),
-  // The "days" field is an array of allowed day strings.
-  days: z.array(z.enum(days)).optional(),
-  // Capture start and end times separately.
-  startTime: z.string().optional(),
-  endTime: z.string().optional(),
-  instructorRating: z.string().optional(),
-  units: z.number().min(1).max(6).optional(),
-  // Allow multiple course attributes
-  courseAttributes: z.array(z.enum(courseAttributes)).optional(),
-  instructionMode: z.string(z.enum(["P", "A"])).optional(),
-});
 
-export type SectionFiltersForm = z.infer<typeof sectionFiltersSchema>;
+export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 
 export function SectionFilters() {
   const dispatch = useAppDispatch();
@@ -64,13 +35,13 @@ export function SectionFilters() {
 
   // Initialize the form with default values from Redux, converting as necessary.
   const form = useForm<SectionFiltersForm>({
-    resolver: zodResolver(sectionFiltersSchema),
+    resolver: zodResolver(SECTION_FILTERS_SCHEMA),
     defaultValues: {
       courseIds: reduxFilters.courseIds || [],
       status: reduxFilters.status || "",
       subject: reduxFilters.subject || "",
       days: reduxFilters.days
-        ? (reduxFilters.days.split(",") as (typeof days)[number][])
+        ? (reduxFilters.days.split(",") as (typeof DAYS)[number][])
         : [],
       startTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[0]
@@ -79,10 +50,10 @@ export function SectionFilters() {
         ? reduxFilters.timeRange.split("-")[1]
         : "",
       instructorRating: reduxFilters.instructorRating || "",
-      units: reduxFilters.units ? Number(reduxFilters.units) : 1,
+      units: reduxFilters.units ? Number(reduxFilters.units) : 6,
       // Convert the stored string of attributes into an array
       courseAttributes:
-        (reduxFilters.courseAttribute as (typeof courseAttributes)[number][]) ||
+        (reduxFilters.courseAttribute as (typeof COURSE_ATTRIBUTES)[number][]) ||
         [],
       instructionMode: reduxFilters.instructionMode || "",
     },
@@ -158,32 +129,7 @@ export function SectionFilters() {
               </div>
 
               <div className="px-6 space-y-6 pb-4">
-                {/* Course Search */}
-                <FormField
-                  control={form.control}
-                  name="courseIds"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Course
-                      </FormLabel>
-                      <FormControl>
-                        <SectionCourseDropdown
-                          onSelect={(courseId) => {
-                            form.setValue("courseIds", [
-                              ...(form.getValues("courseIds") || []),
-                              courseId,
-                            ]);
-                          }}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <Interest
-                  interestAreas={form.getValues("courseIds") || []}
-                  placeholder={false}
-                />
+                <CourseInformation form={form} />
 
                 {/* Status Toggle */}
                 <FormField
@@ -233,7 +179,7 @@ export function SectionFilters() {
                       </FormLabel>
                       <FormControl>
                         <div className="grid grid-cols-3 gap-2">
-                          {days.map((day) => {
+                          {DAYS.map((day) => {
                             const isSelected = field.value?.includes(day);
                             return (
                               <Button
@@ -332,87 +278,6 @@ export function SectionFilters() {
                     </FormItem>
                   )}
                 />
-
-                {/* Minimum Units Slider */}
-                <FormField
-                  control={form.control}
-                  name="units"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Max Units
-                      </FormLabel>
-                      <FormControl>
-                        <div className="flex flex-col items-center space-y-2">
-                          <span className="text-sm text-gray-700">
-                            {field.value} Units
-                          </span>
-                          <Slider
-                            value={[field.value || 0]}
-                            onValueChange={(value) =>
-                              form.setValue("units", value[0] as number)
-                            }
-                            max={6}
-                            step={1}
-                            className="w-full h-2 bg-gray-300 rounded-full"
-                            aria-label="Minimum Units"
-                          />
-                          <div className="flex justify-between w-full text-xs text-gray-600">
-                            <span>0</span>
-                            <span>6</span>
-                          </div>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Course Attributes - Multiple Toggles */}
-                <FormField
-                  control={form.control}
-                  name="courseAttributes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Course Attributes
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2 gap-2">
-                          {courseAttributes.map((attr) => {
-                            const isSelected = field.value?.includes(attr);
-                            return (
-                              <Button
-                                key={attr}
-                                type="button"
-                                variant={isSelected ? "default" : "outline"}
-                                onClick={() => {
-                                  if (isSelected) {
-                                    // remove from array
-                                    form.setValue(
-                                      "courseAttributes",
-                                      field.value?.filter((a) => a !== attr) ||
-                                        []
-                                    );
-                                  } else {
-                                    // add to array
-                                    form.setValue("courseAttributes", [
-                                      ...(field.value || []),
-                                      attr,
-                                    ]);
-                                  }
-                                }}
-                                className="h-8 text-sm"
-                              >
-                                {attr}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
                 {/* Instruction Mode */}
                 <FormField
                   control={form.control}
