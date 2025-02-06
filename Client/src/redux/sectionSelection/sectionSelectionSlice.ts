@@ -7,10 +7,12 @@ import {
 } from "./crudSelectionSection";
 interface SectionSelectionState {
   selectedSections: SelectedSection[];
+  message: string;
 }
 
 const initialState: SectionSelectionState = {
   selectedSections: [],
+  message: "",
 };
 
 // When calling fetchSections, pass page and pageSize too.
@@ -34,7 +36,7 @@ export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
     try {
       const selectedSection = transformSectionToSelectedSection(section);
       const response = await createOrUpdateSection(selectedSection);
-      return response.selectedSections;
+      return response;
     } catch (error) {
       console.error("Error creating or updating section:", error);
       throw error;
@@ -53,7 +55,8 @@ const sectionSelectionSlice = createSlice({
     builder.addCase(
       createOrUpdateSelectedSectionAsync.fulfilled,
       (state, action) => {
-        state.selectedSections = action.payload;
+        state.selectedSections = action.payload.selectedSections;
+        state.message = action.payload.message;
       }
     );
   },

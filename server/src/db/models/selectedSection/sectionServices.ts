@@ -17,21 +17,46 @@ export const getSelectedSectionsByUserId = async (
   }
 };
 
+// Creates a new section or updates an existing section
 export const postSelectedSection = async (
   userId: string,
   section: SelectedSection
-): Promise<SelectedSection[]> => {
+): Promise<{
+  selectedSections: SelectedSection[];
+  message: string;
+}> => {
   try {
-    const result = await selectedSelectionModel.createOrUpdateSelectedSection(
-      userId,
-      section
-    );
-    if (result.upsertedId) {
-      // If a new document was created, fetch and return it
-      return (await getSelectedSectionsByUserId(userId)) as SelectedSection[];
+    const existingSection =
+      await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+    if (existingSection) {
+      if (
+        existingSection.selectedSections.some(
+          (s) => s.classNumber === section.classNumber
+        )
+      ) {
+        return {
+          selectedSections: existingSection.selectedSections,
+          message: `Try adding a different section for course ${section.courseId}`,
+        };
+      } else {
+        await selectedSelectionModel.createOrUpdateSelectedSection(
+          userId,
+          section
+        );
+        return {
+          selectedSections: await getSelectedSectionsByUserId(userId),
+          message: `Section ${section.classNumber} added to your schedule`,
+        };
+      }
     } else {
-      // If the document was updated, return the updated document
-      return (await getSelectedSectionsByUserId(userId)) as SelectedSection[];
+      await selectedSelectionModel.createOrUpdateSelectedSection(
+        userId,
+        section
+      );
+      return {
+        selectedSections: await getSelectedSectionsByUserId(userId),
+        message: `Section ${section.classNumber} added to your schedule`,
+      };
     }
   } catch (error) {
     console.error(error);

@@ -33,9 +33,12 @@ router.post("/", async (req, res: any) => {
     }
 
     const { section } = req.body;
-    const selectedSections = await postSelectedSection(userId, section);
+    const { selectedSections, message } = await postSelectedSection(
+      userId,
+      section
+    );
     return res.status(200).json({
-      message: "Selected section created or updated successfully",
+      message,
       selectedSections,
     });
   } catch (error) {

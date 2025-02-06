@@ -393,14 +393,28 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
   };
 
   // Handler for the Add button
-  const handleAdd = (section: SectionDetail) => {
+  const handleAdd = async (section: SectionDetail) => {
     // Implement your add functionality here
     console.log("Add button clicked for meeting:", section);
-    dispatch(createOrUpdateSelectedSectionAsync(section));
-    toast({
-      title: `${section}Added`,
-      description: "Section added to your schedule",
-    });
+    const { payload } = await dispatch(
+      createOrUpdateSelectedSectionAsync(section)
+    );
+    const { message } = payload as { message: string };
+    if (
+      message ===
+      `Try adding a different section for course ${section.courseId}`
+    ) {
+      toast({
+        title: `Section ${section.classNumber} Already Exists in schedule`,
+        description: message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: `${section.classNumber} Added`,
+        description: message,
+      });
+    }
   };
 
   return (

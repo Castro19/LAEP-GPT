@@ -1,6 +1,6 @@
 import { serverUrl } from "@/helpers/getEnvironmentVars";
 import { SectionDetail, SelectedSection } from "@polylink/shared/types";
-import { v4 as uuidv4 } from "uuid";
+
 export async function fetchSections(): Promise<{
   selectedSections: SelectedSection[];
   message: string;
@@ -52,7 +52,6 @@ export function transformSectionToSelectedSection(
   section: SectionDetail
 ): SelectedSection {
   return {
-    sectionId: uuidv4(),
     courseId: section.courseId,
     classNumber: section.classNumber,
     component: section.component,

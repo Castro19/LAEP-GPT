@@ -1,5 +1,4 @@
 export type SelectedSection = {
-  sectionId: string;
   courseId: string;
   classNumber: number;
   component: string;

@@ -25,7 +25,7 @@ const SectionsChosen = () => {
         selectedSections.map((section: SelectedSection) => (
           <Card
             className="flex flex-col border-0 shadow-lg"
-            key={section.sectionId}
+            key={section.classNumber}
           >
             <div>
               <div>{section.courseId}</div>
