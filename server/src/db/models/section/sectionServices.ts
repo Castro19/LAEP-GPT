@@ -54,11 +54,20 @@ function buildSectionsQuery(
   if (filter.timeRange) {
     const [start, end] = filter.timeRange.split("-");
     if (start && end) {
-      // We want at least one meeting whose start_time >= start and end_time <= end
+      // Convert filter times to match database format (appending ":00")
+      const startTime = `${start}:00`;
+      const endTime = `${end}:00`;
+
       query["meetings"] = {
-        $elemMatch: {
-          start_time: { $gte: start },
-          end_time: { $lte: end },
+        $exists: true, // Ensures sections without meetings are excluded
+        $ne: [], // Excludes sections with an empty 'meetings' array
+        $not: {
+          $elemMatch: {
+            $or: [
+              { start_time: { $lt: startTime } }, // If any meeting starts before the range
+              { end_time: { $gt: endTime } }, // If any meeting ends after the range
+            ],
+          },
         },
       };
     }
