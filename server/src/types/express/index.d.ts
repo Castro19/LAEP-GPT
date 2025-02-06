@@ -16,9 +16,10 @@ interface CustomRequest extends Request {
     days?: string;
     timeRange?: string;
     instructorRating?: string;
-    units?: number;
+    units?: string;
     courseAttribute?: string;
     instructionMode?: string;
     instructor?: string;
+    page?: number;
   };
 }

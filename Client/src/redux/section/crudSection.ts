@@ -8,11 +8,10 @@ const buildQueryString = (filter: SectionsFilterParams) => {
       if (Array.isArray(value)) {
         value.forEach((v) => queryParams.append(key, v.toString()));
       } else {
-        queryParams.append(key, value);
+        queryParams.append(key, value.toString());
       }
     }
   });
-  console.log("QUERY STRING", queryParams.toString());
   return queryParams.toString();
 };
 /**
@@ -21,21 +20,29 @@ const buildQueryString = (filter: SectionsFilterParams) => {
  * @returns The sections.
  */
 export async function fetchSections(
-  filter: SectionsFilterParams
-): Promise<Section[]> {
+  filter: SectionsFilterParams,
+  pageNumber: number
+): Promise<{
+  data: Section[];
+  page: number;
+  totalPages: number;
+}> {
   const queryString = buildQueryString(filter);
-  const response = await fetch(`${serverUrl}/sections?${queryString}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  });
+  const response = await fetch(
+    `${serverUrl}/sections?${queryString}&page=${pageNumber}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message || "Failed to create flowchart");
   }
-  const data = await response.json();
-  return data as Promise<Section[]>;
+  const { data, page, totalPages } = await response.json();
+  return { data, page, totalPages };
 }
