@@ -188,7 +188,6 @@ async function handleMultiAgentModel({
         };
       }
       if (jsonObject.assistant === "professor_reviews") {
-        console.log("Professor Reviews Assistant");
         messageToAdd = await professorRatings(messageToAdd, jsonObject);
         // Add user's modified message to the main thread
         await addMessageToThread(
@@ -207,7 +206,6 @@ async function handleMultiAgentModel({
           runningStreams
         );
       } else if (jsonObject.assistant === "spring") {
-        console.log("Spring Schedule Assistant");
         messageToAdd = await planSpringSchedule(messageToAdd, jsonObject);
         // Add user's modified message to the main thread
         await addMessageToThread(
@@ -225,7 +223,6 @@ async function handleMultiAgentModel({
           runningStreams
         );
       } else {
-        console.log("Fallback Assistant");
         // Add user's modified message to the main thread
         await addMessageToThread(
           threadId,

@@ -4,8 +4,6 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { useAppDispatch } from "@/redux";
-import { useNavigate } from "react-router-dom";
-import { IoPerson } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
 import { signOutUser } from "@/redux/auth/authSlice";
 import { Tooltip } from "@radix-ui/react-tooltip";
@@ -14,7 +12,6 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { FaCalendarAlt } from "react-icons/fa";
 
 const ChatSidebarFooter = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const handleSignOut = () => {
     dispatch(signOutUser()); // Trigger the thunk to sign out the user

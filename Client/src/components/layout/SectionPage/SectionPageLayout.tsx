@@ -1,6 +1,6 @@
 import React from "react";
 import SectionPageHeader from "./SectionPageHeader";
-import { DragDropContext, DragStart, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 
 import { handleDragEnd } from "@/redux/panelLayout/panelLayoutSlice";
 import { useAppDispatch } from "@/redux";
@@ -14,7 +14,6 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
   // Handle drag end: update the order of panels and (for now)
   // assign a placeholder outerDirection value.
   const onDragEnd = (result: DropResult) => {
-    console.log("Drag end", result);
     dispatch(
       handleDragEnd({
         sourceIndex: result.source.index,
@@ -22,9 +21,8 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
       })
     );
   };
-  const onDragStart = (start: DragStart) => {
-    console.log("Drag start", start);
-  };
+
+  const onDragStart = () => {};
 
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
