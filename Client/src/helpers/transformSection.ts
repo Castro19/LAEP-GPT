@@ -22,6 +22,9 @@ const INSTRUCTION_MODE_MAP = {
  */
 export function transformSectionsToCatalog(sections: Section[]): CourseInfo[] {
   // Group sections by courseId.
+  if (!sections) {
+    return [];
+  }
   const courseMap = sections.reduce((acc, section) => {
     const key = section.courseId;
     if (!acc.has(key)) {
@@ -169,6 +172,7 @@ export function transformSectionsToCatalog(sections: Section[]): CourseInfo[] {
  */
 function transformToSectionDetail(section: Section): SectionDetail {
   return {
+    courseId: section.courseId,
     classNumber: section.classNumber,
     component: section.component,
     enrollmentStatus: section.enrollmentStatus,

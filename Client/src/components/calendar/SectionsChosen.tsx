@@ -5,6 +5,7 @@ import {
 } from "@/redux";
 import { SelectedSection } from "@polylink/shared/types";
 import { useEffect } from "react";
+import { Card } from "../ui/card";
 
 const SectionsChosen = () => {
   const { selectedSections } = useAppSelector(
@@ -17,18 +18,25 @@ const SectionsChosen = () => {
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
   }, [dispatch]);
 
+  console.log("MAPPING FROM SELECTED SECTIONS", selectedSections);
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       {selectedSections &&
         selectedSections.map((section: SelectedSection) => (
-          <div key={section.sectionId}>
-            <div>{section.classNumber}</div>
-            <div>{section.component}</div>
-            <div>{section.enrollmentStatus}</div>
+          <Card
+            className="flex flex-col border-0 shadow-lg"
+            key={section.sectionId}
+          >
             <div>
-              {section.meetings.map((meeting) => meeting.days.join(", "))}
+              <div>{section.courseId}</div>
+              <div>{section.classNumber}</div>
+              <div>{section.component}</div>
+              <div>{section.enrollmentStatus}</div>
+              <div>
+                {section.meetings.map((meeting) => meeting.days.join(", "))}
+              </div>
             </div>
-          </div>
+          </Card>
         ))}
     </div>
   );

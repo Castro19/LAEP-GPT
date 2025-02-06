@@ -53,6 +53,7 @@ export function transformSectionToSelectedSection(
 ): SelectedSection {
   return {
     sectionId: uuidv4(),
+    courseId: section.courseId,
     classNumber: section.classNumber,
     component: section.component,
     enrollmentStatus: section.enrollmentStatus,

@@ -398,7 +398,7 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
     console.log("Add button clicked for meeting:", section);
     dispatch(createOrUpdateSelectedSectionAsync(section));
     toast({
-      title: `${section.classNumber} Added`,
+      title: `${section}Added`,
       description: "Section added to your schedule",
     });
   };
