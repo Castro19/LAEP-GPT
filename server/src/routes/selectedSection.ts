@@ -14,7 +14,7 @@ router.get("/", async (req: CustomRequest, res: any) => {
     }
 
     const selectedSections = await getSelectedSectionsByUserId(userId);
-    console.log("SELECTED SECTIONS", selectedSections);
+
     return res.status(200).json({
       message: "Selected sections fetched successfully",
       selectedSections,

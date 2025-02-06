@@ -23,6 +23,7 @@ import InstructorRatingFilter from "../InstructorRatingFilter";
 import CourseInformation from "./CourseInformation";
 import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
 import Scheduling from "./Scheduling";
+import { environment } from "@/helpers/getEnvironmentVars";
 // Define a Zod schema for the filter form.
 
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
@@ -84,7 +85,6 @@ export function SectionFilters() {
     // Only dispatch if something actually changed.
     if (JSON.stringify(updatedFilters) !== JSON.stringify(reduxFilters)) {
       dispatch(setFilters(updatedFilters));
-      console.log(updatedFilters);
     }
   }, [watchedValues, dispatch, reduxFilters]);
 
@@ -92,7 +92,9 @@ export function SectionFilters() {
   const onSubmit = (data: SectionFiltersForm) => {
     const timeRange =
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
-    console.log(data);
+    if (environment === "dev") {
+      console.log("Filtering Query", data);
+    }
     const updatedFilters: SectionsFilterParams = {
       courseIds: data.courseIds || [],
       status: data.status || "",
