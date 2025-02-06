@@ -18,6 +18,9 @@ import {
   CollapsibleContent,
 } from "../ui/collapsible";
 import { ChevronDownIcon } from "lucide-react";
+import { createOrUpdateSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
+import { useAppDispatch } from "@/redux";
+import { toast } from "../ui/use-toast";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
@@ -371,6 +374,7 @@ type SectionScheduleProps = {
 };
 
 const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
+  const dispatch = useAppDispatch();
   const dayMap: { [key: string]: string } = {
     Mo: "Monday",
     Tu: "Tuesday",
@@ -389,9 +393,28 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
   };
 
   // Handler for the Add button
-  const handleAdd = (section: SectionDetail) => {
+  const handleAdd = async (section: SectionDetail) => {
     // Implement your add functionality here
     console.log("Add button clicked for meeting:", section);
+    const { payload } = await dispatch(
+      createOrUpdateSelectedSectionAsync(section)
+    );
+    const { message } = payload as { message: string };
+    if (
+      message ===
+      `Try adding a different section for course ${section.courseId}`
+    ) {
+      toast({
+        title: `Section ${section.classNumber} Already Exists in schedule`,
+        description: message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: `${section.classNumber} Added`,
+        description: message,
+      });
+    }
   };
 
   return (

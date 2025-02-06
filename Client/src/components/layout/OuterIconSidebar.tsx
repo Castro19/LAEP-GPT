@@ -5,7 +5,7 @@ import {
   SidebarMenu,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-
+import { HiOutlineAcademicCap } from "react-icons/hi2";
 import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 // (Use your icons or lucide-react icons, e.g. Home, User, etc.)
 
@@ -65,7 +65,7 @@ function OuterSidebar() {
                     onClick={() => handleNaviation("/")}
                     className={`${
                       isActive("/")
-                        ? "text-slate-500 hover:text-slate-600"
+                        ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                         : "hover:text-slate-600"
                     }`}
                   >
@@ -87,7 +87,7 @@ function OuterSidebar() {
                         onClick={() => handleNaviation("/chat")}
                         className={`${
                           isActive("/chat")
-                            ? "text-slate-500 hover:text-slate-600"
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
@@ -107,7 +107,7 @@ function OuterSidebar() {
                         onClick={() => handleNaviation("/section")}
                         className={`${
                           isActive("/section")
-                            ? "text-slate-500 hover:text-slate-600"
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
@@ -124,14 +124,34 @@ function OuterSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNaviation("/flowchart")}
+                        onClick={() => handleNaviation("/calendar")}
                         className={`${
-                          isActive("/flowchart")
-                            ? "text-slate-500 hover:text-slate-600"
+                          isActive("/calendar")
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
                         <FaCalendarAlt className="m-auto w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Weekly Calendar</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </SidebarMenu>
+              <SidebarMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleNaviation("/flowchart")}
+                        className={`${
+                          isActive("/flowchart")
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
+                            : "hover:text-slate-600"
+                        }`}
+                      >
+                        <HiOutlineAcademicCap className="m-auto w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Flowchart</TooltipContent>
@@ -148,7 +168,7 @@ function OuterSidebar() {
                       onClick={() => handleNaviation("/profile/edit")}
                       className={`${
                         isActive("/profile/edit")
-                          ? "text-slate-500 hover:text-slate-600"
+                          ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                           : "hover:text-slate-600"
                       }`}
                     >

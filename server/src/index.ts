@@ -22,6 +22,7 @@ import llmRouter from "./routes/llm";
 import teamRouter from "./routes/team";
 import deepseekRouter from "./routes/deepseek";
 import sectionRouter from "./routes/section";
+import selectedSectionRouter from "./routes/selectedSection";
 
 // LLM API
 import OpenAI from "openai";
@@ -79,7 +80,8 @@ app.use("/professorRatings", professorRatingRouter);
 app.use("/llms", llmRouter);
 app.use("/team", teamRouter);
 app.use("/deepseek", deepseekRouter);
-app.use("/sections", sectionRouter);
+app.use("/sections", authenticate, sectionRouter);
+app.use("/selectedSections", authenticate, selectedSectionRouter);
 
 // Initialize OpenAI API client
 export const deepseek = new OpenAI({
