@@ -1,18 +1,14 @@
-import CollapsibleContentWrapper from "./CollapsibleContentWrapper";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from "@/components/ui/form";
+import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
+import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import SectionCourseDropdown from "../SectionCourseDropdown";
 import { Slider } from "@/components/ui/slider";
 import { FaBook } from "react-icons/fa";
 import { COURSE_ATTRIBUTES, SECTION_FILTERS_SCHEMA } from "./constants";
 import { z } from "zod";
-import { DeletableTags } from "./DeletableTags";
+import { DeletableTags } from "./reusable/DeletableTags";
 import ReusableDropdown from "@/components/ui/reusable-dropdown";
+import TitleLabel from "./reusable/TitleLabel";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CourseInformation = ({
   form,
@@ -26,9 +22,7 @@ const CourseInformation = ({
         name="courseIds"
         render={() => (
           <FormItem>
-            <FormLabel className="text-md font-medium dark:text-slate-200">
-              Course
-            </FormLabel>
+            <TitleLabel title="Course" />
             <FormControl>
               <div>
                 <SectionCourseDropdown
@@ -62,9 +56,7 @@ const CourseInformation = ({
         name="units"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-md font-medium dark:text-slate-200">
-              Units
-            </FormLabel>
+            <TitleLabel title="Units" />
             <FormControl>
               <div className="flex flex-col items-center space-y-2">
                 <span className="text-sm text-gray-700">
@@ -94,9 +86,7 @@ const CourseInformation = ({
         name="courseAttributes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium text-gray-700">
-              Course Attributes
-            </FormLabel>
+            <TitleLabel title="Course Attributes" />
             <FormControl>
               <div className="flex justify-between items-center w-full">
                 {/* 

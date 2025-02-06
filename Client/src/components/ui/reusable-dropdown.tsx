@@ -57,7 +57,7 @@ const ReusableDropdown = ({
 };
 
 const LabelInputContainer = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col justify-center items-center space-y-2 mb-4">
+  <div className="flex flex-col justify-center items-center space-y-2 mb-4 w-full">
     {children}
   </div>
 );

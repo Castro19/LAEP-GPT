@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { RiFilterLine, RiStarFill } from "react-icons/ri";
 
-// UI Components from your design system
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +13,6 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Redux hooks and actions
@@ -25,6 +22,7 @@ import { SectionsFilterParams } from "@polylink/shared/types";
 import InstructorRatingFilter from "../InstructorRatingFilter";
 import CourseInformation from "./CourseInformation";
 import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
+import Scheduling from "./Scheduling";
 // Define a Zod schema for the filter form.
 
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
@@ -45,10 +43,10 @@ export function SectionFilters() {
         : [],
       startTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[0]
-        : "",
+        : "07:00",
       endTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[1]
-        : "",
+        : "20:00",
       instructorRating: reduxFilters.instructorRating || "",
       units: reduxFilters.units ? Number(reduxFilters.units) : 6,
       // Convert the stored string of attributes into an array
@@ -94,7 +92,7 @@ export function SectionFilters() {
   const onSubmit = (data: SectionFiltersForm) => {
     const timeRange =
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
-
+    console.log(data);
     const updatedFilters: SectionsFilterParams = {
       courseIds: data.courseIds || [],
       status: data.status || "",
@@ -130,126 +128,7 @@ export function SectionFilters() {
 
               <div className="px-6 space-y-6 pb-4">
                 <CourseInformation form={form} />
-
-                {/* Status Toggle */}
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Status
-                      </FormLabel>
-                      <FormControl>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant={
-                              field.value === "open" ? "default" : "outline"
-                            }
-                            onClick={() => form.setValue("status", "open")}
-                            className="px-4 py-2"
-                          >
-                            Open
-                          </Button>
-                          <Button
-                            type="button"
-                            variant={
-                              field.value === "closed" ? "default" : "outline"
-                            }
-                            onClick={() => form.setValue("status", "closed")}
-                            className="px-4 py-2"
-                          >
-                            Closed
-                          </Button>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Days Selector */}
-                <FormField
-                  control={form.control}
-                  name="days"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Days
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-3 gap-2">
-                          {DAYS.map((day) => {
-                            const isSelected = field.value?.includes(day);
-                            return (
-                              <Button
-                                key={day}
-                                type="button"
-                                variant={isSelected ? "default" : "outline"}
-                                onClick={() => {
-                                  if (isSelected) {
-                                    // remove from array
-                                    form.setValue(
-                                      "days",
-                                      field.value?.filter((d) => d !== day) ||
-                                        []
-                                    );
-                                  } else {
-                                    // add to array
-                                    form.setValue("days", [
-                                      ...(field.value || []),
-                                      day,
-                                    ]);
-                                  }
-                                }}
-                                className="h-8"
-                              >
-                                {day}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Time Range Slider */}
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Time Range
-                  </FormLabel>
-                  <div className="flex gap-3 items-center">
-                    <FormField
-                      control={form.control}
-                      name="startTime"
-                      render={({ field }) => (
-                        <FormControl>
-                          <Input
-                            type="time"
-                            {...field}
-                            className="w-full p-2 border rounded-lg"
-                          />
-                        </FormControl>
-                      )}
-                    />
-                    <span className="text-gray-500">to</span>
-                    <FormField
-                      control={form.control}
-                      name="endTime"
-                      render={({ field }) => (
-                        <FormControl>
-                          <Input
-                            type="time"
-                            {...field}
-                            className="w-full p-2 border rounded-lg"
-                          />
-                        </FormControl>
-                      )}
-                    />
-                  </div>
-                </FormItem>
-
+                <Scheduling form={form} />
                 {/* Instructor Rating */}
                 <FormField
                   control={form.control}
@@ -275,40 +154,6 @@ export function SectionFilters() {
                           />
                         </FormControl>
                       </div>
-                    </FormItem>
-                  )}
-                />
-                {/* Instruction Mode */}
-                <FormField
-                  control={form.control}
-                  name="instructionMode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Instruction Mode
-                      </FormLabel>
-                      <FormControl>
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            ["In-Person", "P"],
-                            ["Online", "A"],
-                          ].map(([mode, code]) => (
-                            <Button
-                              key={mode}
-                              type="button"
-                              variant={
-                                field.value === code ? "default" : "outline"
-                              }
-                              onClick={() =>
-                                form.setValue("instructionMode", code)
-                              }
-                              className="h-8 text-sm"
-                            >
-                              {mode}
-                            </Button>
-                          ))}
-                        </div>
-                      </FormControl>
                     </FormItem>
                   )}
                 />
