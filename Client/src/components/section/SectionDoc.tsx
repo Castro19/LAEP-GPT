@@ -18,6 +18,9 @@ import {
   CollapsibleContent,
 } from "../ui/collapsible";
 import { ChevronDownIcon } from "lucide-react";
+import { createOrUpdateSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
+import { useAppDispatch } from "@/redux";
+import { toast } from "../ui/use-toast";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
@@ -371,6 +374,7 @@ type SectionScheduleProps = {
 };
 
 const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
+  const dispatch = useAppDispatch();
   const dayMap: { [key: string]: string } = {
     Mo: "Monday",
     Tu: "Tuesday",
@@ -392,6 +396,11 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
   const handleAdd = (section: SectionDetail) => {
     // Implement your add functionality here
     console.log("Add button clicked for meeting:", section);
+    dispatch(createOrUpdateSelectedSectionAsync(section));
+    toast({
+      title: `${section.classNumber} Added`,
+      description: "Section added to your schedule",
+    });
   };
 
   return (

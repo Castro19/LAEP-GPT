@@ -9,6 +9,7 @@ import { flowchartReducer } from "./flowchart/flowchartSlice";
 import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 import { sectionReducer } from "./section/sectionSlice";
 import { panelLayoutReducer } from "./panelLayout/panelLayoutSlice";
+import { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     flowSelection: flowSelectionReducer,
     section: sectionReducer,
     panelLayout: panelLayoutReducer,
+    sectionSelection: sectionSelectionReducer,
   },
 });
 
