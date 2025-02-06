@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Star } from "./StarRating"; // Assuming Star is exported from StarRating
+
+interface InstructorRatingFilterProps {
+  initialRating?: number;
+  // eslint-disable-next-line no-unused-vars
+  onRatingChange: (rating: number) => void;
+}
 
 interface InstructorRatingFilterProps {
   initialRating?: number;
@@ -13,6 +19,11 @@ const InstructorRatingFilter: React.FC<InstructorRatingFilterProps> = ({
   onRatingChange,
 }) => {
   const [rating, setRating] = useState(initialRating);
+
+  // Synchronize the internal state with any changes to initialRating (e.g., after a form reset)
+  useEffect(() => {
+    setRating(initialRating);
+  }, [initialRating]);
 
   const handleSliderChange = (value: number[]) => {
     const newRating = value[0];

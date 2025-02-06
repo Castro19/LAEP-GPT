@@ -181,7 +181,10 @@ export function SectionFilters() {
                     </FormItem>
                   )}
                 />
-                <Interest interestAreas={form.getValues("courseIds") || []} />
+                <Interest
+                  interestAreas={form.getValues("courseIds") || []}
+                  placeholder={false}
+                />
 
                 {/* Status Toggle */}
                 <FormField
