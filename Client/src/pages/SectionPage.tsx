@@ -10,7 +10,6 @@ import { ChatContainer } from "@/components/chat";
 import AnimateWrapper from "@/components/section/AnimateWrapper";
 import AdminViewOnly from "@/components/security/AdminViewOnly";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
-import CalendarContainer from "@/components/section/CalendarContainer";
 
 const SectionPage = () => {
   const dispatch = useAppDispatch();
@@ -87,8 +86,7 @@ const SectionPage = () => {
                 {currentPanel}
               </div>
               <div className="col-span-2">
-                {/* <SectionContainer /> */}
-                <CalendarContainer />
+                <SectionContainer />
               </div>
             </div>
           </SectionPageLayout>

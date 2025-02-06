@@ -5,7 +5,7 @@ import {
   SidebarMenu,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-
+import { HiOutlineAcademicCap } from "react-icons/hi2";
 import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 // (Use your icons or lucide-react icons, e.g. Home, User, etc.)
 
@@ -124,6 +124,26 @@ function OuterSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
+                        onClick={() => handleNaviation("/calendar")}
+                        className={`${
+                          isActive("/calendar")
+                            ? "text-slate-500 hover:text-slate-600"
+                            : "hover:text-slate-600"
+                        }`}
+                      >
+                        <FaCalendarAlt className="m-auto w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Weekly Calendar</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </SidebarMenu>
+              <SidebarMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
                         onClick={() => handleNaviation("/flowchart")}
                         className={`${
                           isActive("/flowchart")
@@ -131,7 +151,7 @@ function OuterSidebar() {
                             : "hover:text-slate-600"
                         }`}
                       >
-                        <FaCalendarAlt className="m-auto w-5 h-5" />
+                        <HiOutlineAcademicCap className="m-auto w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Flowchart</TooltipContent>
