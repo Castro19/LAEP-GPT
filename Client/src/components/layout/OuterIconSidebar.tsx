@@ -65,7 +65,7 @@ function OuterSidebar() {
                     onClick={() => handleNaviation("/")}
                     className={`${
                       isActive("/")
-                        ? "text-slate-500 hover:text-slate-600"
+                        ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                         : "hover:text-slate-600"
                     }`}
                   >
@@ -87,7 +87,7 @@ function OuterSidebar() {
                         onClick={() => handleNaviation("/chat")}
                         className={`${
                           isActive("/chat")
-                            ? "text-slate-500 hover:text-slate-600"
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
@@ -107,7 +107,7 @@ function OuterSidebar() {
                         onClick={() => handleNaviation("/section")}
                         className={`${
                           isActive("/section")
-                            ? "text-slate-500 hover:text-slate-600"
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
@@ -127,7 +127,7 @@ function OuterSidebar() {
                         onClick={() => handleNaviation("/calendar")}
                         className={`${
                           isActive("/calendar")
-                            ? "text-slate-500 hover:text-slate-600"
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
@@ -147,7 +147,7 @@ function OuterSidebar() {
                         onClick={() => handleNaviation("/flowchart")}
                         className={`${
                           isActive("/flowchart")
-                            ? "text-slate-500 hover:text-slate-600"
+                            ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
                       >
@@ -168,7 +168,7 @@ function OuterSidebar() {
                       onClick={() => handleNaviation("/profile/edit")}
                       className={`${
                         isActive("/profile/edit")
-                          ? "text-slate-500 hover:text-slate-600"
+                          ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                           : "hover:text-slate-600"
                       }`}
                     >
