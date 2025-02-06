@@ -47,13 +47,6 @@ const SectionPage = () => {
   }, [assistantList.length, dispatch, userId]);
 
   useEffect(() => {
-    if (assistantList.length > 0) {
-      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
-    }
-    console.log(assistantList);
-  }, [assistantList, dispatch]);
-
-  useEffect(() => {
     if (currentChoice === "chat") {
       setCurrentPanel(<ChatContainer />);
     } else if (currentChoice === "reviews") {

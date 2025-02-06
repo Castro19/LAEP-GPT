@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   OnePanelLayout,
   TwoPanelLayout,
@@ -67,9 +67,6 @@ const ResizableSectionLayout: React.FC = () => {
     );
   }
 
-  useEffect(() => {
-    console.log("Panels: ", panels);
-  }, [panels]);
   return (
     <div className="flex-1">
       <div className="mb-2 flex gap-2 ">
