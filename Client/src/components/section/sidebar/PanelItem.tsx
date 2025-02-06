@@ -4,7 +4,7 @@ import {
   DeletablePanel,
   PanelData,
 } from "@/components/section/sidebar/PanelLayouts";
-import { SectionFilters } from "../SectionFilters";
+import { SectionFilters } from "../filterForm/SectionFilters";
 import SectionContainer from "../SectionContainer";
 
 interface PanelItemProps {
