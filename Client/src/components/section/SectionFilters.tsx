@@ -53,7 +53,7 @@ const sectionFiltersSchema = z.object({
   units: z.number().min(1).max(6).optional(),
   // Allow multiple course attributes
   courseAttributes: z.array(z.enum(courseAttributes)).optional(),
-  instructionMode: z.string().optional(),
+  instructionMode: z.string(z.enum(["P", "A"])).optional(),
 });
 
 export type SectionFiltersForm = z.infer<typeof sectionFiltersSchema>;
@@ -422,15 +422,18 @@ export function SectionFilters() {
                       </FormLabel>
                       <FormControl>
                         <div className="grid grid-cols-2 gap-2">
-                          {["In-Person", "Hybrid", "Online"].map((mode) => (
+                          {[
+                            ["In-Person", "P"],
+                            ["Online", "A"],
+                          ].map(([mode, code]) => (
                             <Button
                               key={mode}
                               type="button"
                               variant={
-                                field.value === mode ? "default" : "outline"
+                                field.value === code ? "default" : "outline"
                               }
                               onClick={() =>
-                                form.setValue("instructionMode", mode)
+                                form.setValue("instructionMode", code)
                               }
                               className="h-8 text-sm"
                             >

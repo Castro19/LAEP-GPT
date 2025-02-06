@@ -117,10 +117,20 @@ function buildSectionsQuery(
     query.courseAttributes = { $all: filter.courseAttribute };
   }
 
-  // 9) instructionMode
-  //    If you store "P", "PS", "PA", etc., just do an equality match:
   if (filter.instructionMode) {
-    query.instructionMode = filter.instructionMode;
+    let allowedCodes: string[] = [];
+
+    if (filter.instructionMode.includes("P")) {
+      allowedCodes = allowedCodes.concat(["P", "PS", "AM"]);
+    }
+    if (filter.instructionMode.includes("A")) {
+      allowedCodes = allowedCodes.concat(["PA", "SM", "SA"]);
+    }
+
+    // Ensure there are no duplicates (if that matters)
+    allowedCodes = Array.from(new Set(allowedCodes));
+
+    query.instructionMode = { $in: allowedCodes };
   }
 
   // 10) instructor
