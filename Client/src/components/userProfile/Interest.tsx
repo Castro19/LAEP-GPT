@@ -1,4 +1,10 @@
-const Interest = ({ interestAreas }: { interestAreas: string[] }) => {
+const Interest = ({
+  interestAreas,
+  placeholder = true,
+}: {
+  interestAreas: string[];
+  placeholder?: boolean;
+}) => {
   return (
     <div>
       {interestAreas.length > 0 ? (
@@ -13,7 +19,7 @@ const Interest = ({ interestAreas }: { interestAreas: string[] }) => {
           ))}
         </div>
       ) : (
-        <p className="text-lg text-center">N/A</p>
+        placeholder && <p className="text-lg text-center">N/A</p>
       )}
     </div>
   );
