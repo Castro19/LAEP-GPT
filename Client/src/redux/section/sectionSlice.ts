@@ -4,6 +4,9 @@ import { fetchSections } from "./crudSection";
 
 interface SectionState {
   sections: Section[];
+  total: number;
+  page: number;
+  totalPages: number;
   loading: boolean;
   error: string | null;
   filters: SectionsFilterParams;
@@ -11,6 +14,9 @@ interface SectionState {
 
 const initialState: SectionState = {
   sections: [],
+  total: 0,
+  page: 1,
+  totalPages: 0,
   loading: false,
   error: null,
   filters: {
@@ -26,13 +32,16 @@ const initialState: SectionState = {
   },
 };
 
+// When calling fetchSections, pass page and pageSize too.
 export const fetchSectionsAsync = createAsyncThunk(
   "sections/fetchSections",
-  async (filter: SectionsFilterParams) => {
+  async (_, { getState }) => {
     try {
-      const response = await fetchSections(filter);
-      console.log("FETCHED SECTIONS", response);
-      return response;
+      // Destructure from Redux store
+      const state = getState() as { section: SectionState };
+      const { filters, page } = state.section;
+      const response = await fetchSections(filters, page);
+      return response; // { data, total, page, pageSize, totalPages }
     } catch (error) {
       console.error("Error fetching sections:", error);
       throw error;
@@ -44,9 +53,13 @@ const sectionSlice = createSlice({
   name: "sections",
   initialState,
   reducers: {
-    // Replace the entire filters object.
+    // Example: let user set the entire filters object
     setFilters: (state, action: PayloadAction<SectionsFilterParams>) => {
       state.filters = action.payload;
+    },
+    // Let user directly change the page
+    setPage: (state, action: PayloadAction<number>) => {
+      state.page = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -56,7 +69,9 @@ const sectionSlice = createSlice({
       })
       .addCase(fetchSectionsAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.sections = action.payload;
+        state.sections = action.payload.data;
+        state.page = action.payload.page;
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchSectionsAsync.rejected, (state, action) => {
         state.loading = false;
@@ -65,5 +80,5 @@ const sectionSlice = createSlice({
   },
 });
 
-export const { setFilters } = sectionSlice.actions;
+export const { setFilters, setPage } = sectionSlice.actions;
 export const sectionReducer = sectionSlice.reducer;

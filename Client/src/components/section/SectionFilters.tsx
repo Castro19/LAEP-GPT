@@ -106,7 +106,7 @@ export function SectionFilters() {
       days: watchedValues.days ? watchedValues.days.join(",") : "",
       timeRange,
       instructorRating: watchedValues.instructorRating || "",
-      units: watchedValues.units || 1,
+      units: watchedValues.units?.toString() || "",
       // Join the array of attributes into a comma-separated string.
       courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
@@ -131,13 +131,12 @@ export function SectionFilters() {
       days: data.days ? data.days.join(",") : "",
       timeRange,
       instructorRating: data.instructorRating || "",
-      units: data.units || 1,
+      units: data.units?.toString() || "",
       courseAttribute: data.courseAttributes || [],
       instructionMode: data.instructionMode || "",
     };
-
-    console.log("FETCHING FILTERS", updatedFilters);
-    dispatch(fetchSectionsAsync(updatedFilters));
+    dispatch(setFilters(updatedFilters));
+    dispatch(fetchSectionsAsync());
   };
 
   return (

@@ -50,7 +50,7 @@ type CourseSectionProps = {
 
 const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
   return (
-    <Collapsible>
+    <Collapsible defaultOpen={true}>
       <div className="rounded-xl bg-gradient-to-br from-gray-800 to-slate-800 p-[2px] shadow-2xl hover:shadow-indigo-500/20 transition-shadow">
         <section className="rounded-xl bg-slate-900 p-6">
           <header className="group">
@@ -151,7 +151,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
   });
 
   return (
-    <Collapsible>
+    <Collapsible defaultOpen={true}>
       <CollapsibleTrigger asChild>
         <div className="rounded-lg bg-slate-800 p-4 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer">
           <div className="flex items-center justify-between mb-4">

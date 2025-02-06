@@ -79,11 +79,11 @@ function buildSectionsQuery(
   // 7) units (e.g., 1, 2, 3, 4, 5, 6)
   //    Because `units` in the schema is a string, you'll have to decide how it's stored.
   if (filter.units) {
-    console.log("filter.units", filter.units);
-    console.log("filter.units type", typeof filter.units);
-    if (!isNaN(filter.units)) {
+    const filterUnits = parseInt(filter.units, 10);
+
+    if (!isNaN(filterUnits)) {
       query.$expr = {
-        $gte: [
+        $lte: [
           {
             $cond: [
               // Check if the units string contains " - " (with spaces)
@@ -104,7 +104,7 @@ function buildSectionsQuery(
               },
             ],
           },
-          filter.units, // Only match courses whose max units is <= filterUnits.
+          filterUnits, // Only match courses whose max units is <= filterUnits.
         ],
       };
     }
@@ -147,13 +147,17 @@ function buildSectionsQuery(
  * Get sections by arbitrary filters.
  */
 export async function getSectionsByFilter(
-  filter: SectionsFilterParams
-): Promise<Section[]> {
+  filter: SectionsFilterParams,
+  skip = 0,
+  limit = 25
+): Promise<{ sections: Section[]; total: number }> {
   try {
     const query = buildSectionsQuery(filter);
-    return await findSectionsByFilter(query);
+    // Perform the find operation with skip & limit
+    // and also get a total count so you can return that in the response
+    return await findSectionsByFilter(query, skip, limit);
   } catch (error) {
     console.error("Error searching sections by filter:", error);
-    return [];
+    return { sections: [], total: 0 };
   }
 }
