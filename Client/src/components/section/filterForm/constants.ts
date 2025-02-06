@@ -13,6 +13,8 @@ export const COURSE_ATTRIBUTES = [
   "USCP",
 ] as const;
 
+export const HOURS = Array.from({ length: 14 }, (_, i) => i + 7);
+
 export const SECTION_FILTERS_SCHEMA = z.object({
   courseIds: z.array(z.string()).optional(),
   status: z.string().optional(),
