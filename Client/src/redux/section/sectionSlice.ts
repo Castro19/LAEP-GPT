@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Section, SectionsFilterParams } from "@polylink/shared/types";
-import { fetchSections } from "./crudSection";
+import { fetchSections, queryAI } from "./crudSection";
 import { environment } from "@/helpers/getEnvironmentVars";
 interface SectionState {
   sections: Section[];
@@ -9,6 +9,8 @@ interface SectionState {
   totalPages: number;
   loading: boolean;
   error: string | null;
+  queryError: string | null;
+  queryExplanation: string | null;
   filters: SectionsFilterParams;
   isInitialState: boolean;
 }
@@ -20,6 +22,8 @@ const initialState: SectionState = {
   totalPages: 0,
   loading: false,
   error: null,
+  queryError: null,
+  queryExplanation: null,
   isInitialState: true,
   filters: {
     courseIds: [],
@@ -46,7 +50,7 @@ export const fetchSectionsAsync = createAsyncThunk(
       const state = getState() as { section: SectionState };
       const { filters, page } = state.section;
       const response = await fetchSections(filters, page);
-      return response; // { data, total, page, pageSize, totalPages }
+      return response; //
     } catch (error) {
       if (environment === "dev") {
         console.error("Error fetching sections:", error);
@@ -56,6 +60,20 @@ export const fetchSectionsAsync = createAsyncThunk(
   }
 );
 
+export const queryAIAsync = createAsyncThunk(
+  "sections/queryAI",
+  async (query: string) => {
+    try {
+      const response = await queryAI(query);
+      return response;
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error querying AI:", error);
+      }
+      throw error;
+    }
+  }
+);
 const sectionSlice = createSlice({
   name: "sections",
   initialState,
@@ -71,10 +89,15 @@ const sectionSlice = createSlice({
     setIsInitialState: (state, action: PayloadAction<boolean>) => {
       state.isInitialState = action.payload;
     },
+    setSections: (state, action: PayloadAction<Section[]>) => {
+      state.sections = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSectionsAsync.pending, (state) => {
+        state.queryError = null;
+        state.queryExplanation = null;
         state.loading = true;
       })
       .addCase(fetchSectionsAsync.fulfilled, (state, action) => {
@@ -86,9 +109,27 @@ const sectionSlice = createSlice({
       .addCase(fetchSectionsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "An unknown error occurred";
+      })
+      .addCase(queryAIAsync.pending, (state) => {
+        state.loading = true;
+        state.queryError = null;
+        state.queryExplanation = null;
+      })
+      .addCase(queryAIAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.sections = action.payload.results;
+        state.total = action.payload.total;
+        state.queryError = null;
+        state.queryExplanation = action.payload.explanation;
+      })
+      .addCase(queryAIAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.queryError = action.error.message || "An unknown error occurred";
+        state.queryExplanation = null;
       });
   },
 });
 
-export const { setFilters, setPage, setIsInitialState } = sectionSlice.actions;
+export const { setFilters, setPage, setIsInitialState, setSections } =
+  sectionSlice.actions;
 export const sectionReducer = sectionSlice.reducer;

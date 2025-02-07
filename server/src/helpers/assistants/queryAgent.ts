@@ -1,34 +1,68 @@
 import { Run } from "openai/resources/beta/threads/runs/runs";
-import { SectionsFilterParams } from "@polylink/shared/types";
 import { openai, queryAssistantId } from "../../index";
 import { z } from "zod";
-
-// Zod schema for validation
-const SectionsFilterSchema = z
+// Updated Zod Schema for validation
+const SectionQueryResponseSchema = z
   .object({
-    $and: z.array(z.record(z.any())).optional(),
-    $or: z.array(z.record(z.any())).optional(),
-    units: z.string().optional(),
-    courseAttributes: z.array(z.string()).optional(),
-    "enrollment.enrollmentTotal": z
+    query: z
       .object({
-        $gte: z.number().optional(),
-        $lte: z.number().optional(),
+        $and: z.array(z.record(z.any())).optional(),
+        $or: z.array(z.record(z.any())).optional(),
+        subject: z
+          .string()
+          .regex(/^[A-Z]{3,4}$/)
+          .optional(),
+        courseId: z
+          .union([
+            z.string(),
+            z.object({
+              $regex: z.string().regex(/^[A-Z]{3,4}\d+/),
+            }),
+          ])
+          .optional(),
+        units: z
+          .union([z.string(), z.object({ $in: z.array(z.string()) })])
+          .optional(),
+        meetings: z
+          .object({
+            $elemMatch: z.object({
+              days: z.object({
+                $in: z.array(
+                  z.enum(["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
+                ),
+              }),
+              start_time: z.object({
+                $gte: z.string().regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/),
+                $lte: z
+                  .string()
+                  .regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)
+                  .optional(),
+              }),
+            }),
+          })
+          .optional(),
+        instructorsWithRatings: z
+          .object({
+            $elemMatch: z.object({
+              overallRating: z.object({
+                $gte: z.number().min(0).max(4.0),
+              }),
+            }),
+          })
+          .optional(),
       })
-      .optional(),
-    "meetings.start_time": z.string().optional(),
-    "meetings.end_time": z.string().optional(),
-    "instructorsWithRatings.overallRating": z
-      .object({
-        $gte: z.number().optional(),
-      })
-      .optional(),
+      .passthrough()
+      .refine((data) => Object.keys(data).length > 0, {
+        message: "Query cannot be empty",
+      }),
+    explanation: z.string(),
   })
   .passthrough();
 
+// Updated queryAgent function
 export const queryAgent = async (
   text: string
-): Promise<SectionsFilterParams | null> => {
+): Promise<z.infer<typeof SectionQueryResponseSchema> | null> => {
   try {
     const run = await openai.beta.threads.createAndRun({
       assistant_id: queryAssistantId as string,
@@ -37,7 +71,7 @@ export const queryAgent = async (
 
     let currentRun = run;
     let attempts = 0;
-    const maxAttempts = 10; // Increased attempts for complex workflows
+    const maxAttempts = 10;
 
     while (attempts < maxAttempts) {
       if (currentRun.status === "requires_action") {
@@ -54,7 +88,7 @@ export const queryAgent = async (
       if (["completed", "failed", "cancelled"].includes(currentRun.status))
         break;
 
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Longer delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       currentRun = await openai.beta.threads.runs.retrieve(
         run.thread_id,
         currentRun.id
@@ -72,20 +106,28 @@ export const queryAgent = async (
     const messages = await openai.beta.threads.messages.list(run.thread_id);
 
     for (const message of messages.data.reverse()) {
-      // Check most recent first
       if (message.role === "assistant" && message.content[0].type === "text") {
         const content = message.content[0].text.value;
-        const cleanedJson = content
-          .replace(/```json/g, "")
-          .replace(/```/g, "")
-          .trim();
+        console.log("Raw assistant response:", content); // Add logging
 
         try {
+          const cleanedJson = content
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim();
+
           const parsed = JSON.parse(cleanedJson);
-          const validated = SectionsFilterSchema.parse(parsed);
-          return validated as SectionsFilterParams;
+          const validated = SectionQueryResponseSchema.safeParse(parsed);
+
+          if (!validated.success) {
+            console.error("Validation errors:", validated.error.errors);
+            console.error("Received data:", parsed);
+            return null;
+          }
+
+          return validated.data;
         } catch (error) {
-          console.error("Validation failed:", error);
+          console.error("JSON parsing failed:", error);
           return null;
         }
       }
@@ -98,6 +140,7 @@ export const queryAgent = async (
   }
 };
 
+// Updated handleRequiredActions function
 const handleRequiredActions = async (
   run: Run
 ): Promise<
@@ -113,12 +156,12 @@ const handleRequiredActions = async (
       try {
         if (toolCall.function.name === "filter_sections") {
           const args = JSON.parse(toolCall.function.arguments);
-          const validated = SectionsFilterSchema.safeParse(args);
+          const validated = SectionQueryResponseSchema.safeParse(args);
 
           return {
             tool_call_id: toolCall.id,
             output: validated.success
-              ? JSON.stringify({ valid: true, filter: validated.data })
+              ? JSON.stringify({ valid: true, ...validated.data })
               : JSON.stringify({
                   valid: false,
                   errors: validated.error.errors,

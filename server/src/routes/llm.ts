@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import multer from "multer";
 import { environment, openai } from "../index";
@@ -240,42 +240,68 @@ router.post(
     }
   })
 );
+
+// Example validation middleware
+const validateQueryRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const { message } = req.body;
+  if (!message) {
+    res.status(400).json({ error: "Message is required" });
+  }
+  next();
+};
 router.post(
   "/query",
   messageRateLimiter,
+  validateQueryRequest,
   asyncHandler(async (req: Request, res: Response) => {
-    const { message } = req.body;
-    if (!message) {
-      res.status(400).json({ error: "Message is required" });
-    }
-
     try {
-      const filter = await queryAgent(message);
-      if (!filter) {
+      const { message } = req.body;
+
+      if (!message) {
+        // Add return here to prevent further execution
+        res.status(400).json({ error: "Message is required" });
+        return;
+      }
+
+      console.log("message", message);
+      const response = await queryAgent(message);
+      console.log("response", response);
+
+      if (!response?.query) {
+        // Add return here to prevent further execution
         res.status(400).json({
-          error: "Could not generate valid filter from query",
-          details: "Please refine your search criteria",
+          error: "Could not generate valid query",
+          details: response?.explanation || "Invalid search criteria",
         });
+        return;
       }
 
       const { sections, total } = await findSectionsByFilter(
-        filter as Filter<SectionDocument>,
+        response?.query as Filter<SectionDocument>,
         0,
         25
       );
 
+      // Single successful response
       res.json({
-        filter,
+        ...response,
         results: sections,
         total,
         success: true,
       });
+      return;
     } catch (error) {
       console.error("Query endpoint error:", error);
+      // Return here to prevent double response
       res.status(500).json({
         error: "Internal server error during query processing",
         details: process.env.NODE_ENV === "development" ? error : undefined,
       });
+      return;
     }
   })
 );
