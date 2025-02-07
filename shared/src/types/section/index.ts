@@ -79,7 +79,7 @@ export type SectionsFilterParams = {
   >;
   instructionMode?: string;
   includeUnratedInstructors?: boolean;
-  instructor?: string;
+  instructors?: string[];
 };
 
 // ------------------------------------------------------------

@@ -12,6 +12,10 @@ import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
 import { FaUser } from "react-icons/fa";
 import TitleLabel from "./reusable/TitleLabel";
 import { Switch } from "@/components/ui/switch";
+import { DeletableTags } from "./reusable/DeletableTags";
+import Searchbar from "./reusable/SearchBar";
+import fetchProfessors from "./api/fetchProfessors";
+
 const Instructor = ({
   form,
 }: {
@@ -81,6 +85,40 @@ const Instructor = ({
           />
         </div>
       </FormItem>
+      <FormField
+        control={form.control}
+        name="instructors"
+        render={() => (
+          <FormItem>
+            <TitleLabel title="Instructor" />
+            <FormControl>
+              <div>
+                <Searchbar
+                  fetchData={fetchProfessors}
+                  onSelect={(instructor) => {
+                    // Safely update the 'instructors' array
+                    const current = form.getValues("instructors") || [];
+                    // Avoid duplicates:
+                    if (!current.includes(instructor)) {
+                      form.setValue("instructors", [...current, instructor]);
+                    }
+                  }}
+                />
+                <DeletableTags
+                  tags={form.getValues("instructors") || []}
+                  onRemove={(idToRemove) => {
+                    const updated =
+                      form
+                        .getValues("instructors")
+                        ?.filter((id: string) => id !== idToRemove) || [];
+                    form.setValue("instructors", updated);
+                  }}
+                />
+              </div>
+            </FormControl>
+          </FormItem>
+        )}
+      />
     </CollapsibleContentWrapper>
   );
 };

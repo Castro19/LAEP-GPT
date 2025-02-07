@@ -31,4 +31,5 @@ export const SECTION_FILTERS_SCHEMA = z.object({
   // Allow multiple course attributes
   courseAttributes: z.array(z.enum(COURSE_ATTRIBUTES)).optional(),
   instructionMode: z.string(z.enum(["P", "A"])).optional(),
+  instructors: z.array(z.string()).optional(),
 });
