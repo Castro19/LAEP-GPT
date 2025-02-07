@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from "react";
 import {
@@ -8,13 +9,9 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "@/components/ui/command";
-import { useUserData } from "@/hooks/useUserData";
-import { Course, CourseSidebar } from "@polylink/shared/types";
-import { fetchCoursesAPI } from "@/components/flowchart/helpers/fetchCourses";
-
 import { environment } from "@/helpers/getEnvironmentVars";
+
 // Debounce function
-// eslint-disable-next-line no-unused-vars
 function debounce(func: (...args: any[]) => void, wait: number) {
   let timeout: NodeJS.Timeout;
   return function (this: any, ...args: any[]) {
@@ -23,18 +20,15 @@ function debounce(func: (...args: any[]) => void, wait: number) {
   };
 }
 
-const CourseSearchbar = ({
-  onSelect,
-}: {
-  // eslint-disable-next-line no-unused-vars
-  onSelect: (courseId: string) => void;
-}) => {
-  const { userData } = useUserData();
+type SearchbarProps = {
+  onSelect: (value: string) => void;
+  fetchData: (value: string) => Promise<any[]>;
+};
 
-  const catalogYear = userData.flowchartInformation?.catalog || "2022-2026";
+const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [courses, setCourses] = useState<CourseSidebar[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -50,18 +44,19 @@ const CourseSearchbar = ({
   // Fetch courses when inputValue changes
   useEffect(() => {
     if (!inputValue) {
-      setCourses([]);
+      setData([]);
       return;
     }
 
     setIsLoading(true);
     setError(null);
 
-    const fetchCourses = async () => {
+    const onFetchData = async () => {
       try {
-        const coursesFetched = await fetchCoursesAPI(catalogYear, inputValue);
-        console.log("coursesFetched", coursesFetched);
-        setCourses(coursesFetched || []);
+        const dataFetched = await fetchData(inputValue);
+        console.log("dataFetched", dataFetched);
+
+        setData(dataFetched || []);
       } catch (err) {
         if (environment === "dev") {
           console.error("Failed to fetch courses:", err);
@@ -71,10 +66,10 @@ const CourseSearchbar = ({
       }
     };
 
-    fetchCourses();
-  }, [inputValue, catalogYear]);
+    onFetchData();
+  }, [fetchData, inputValue]);
 
-  const hasMatches = courses.length > 0;
+  const hasMatches = data.length > 0;
 
   return (
     <Command className="w-full min-h-full">
@@ -88,36 +83,20 @@ const CourseSearchbar = ({
         ) : error ? (
           <div>{error}</div>
         ) : inputValue !== "" && !hasMatches ? (
-          <CommandEmpty className="text-center">
-            No class found.
-            <br />
-            <br />
-            Search for a course without a space between the course name and the
-            section number.
-            <br />
-            EX: UNIV401 instead of UNIV 401.
-          </CommandEmpty>
+          <CommandEmpty className="text-center">No Match found.</CommandEmpty>
         ) : (
           <CommandGroup>
-            {courses.map((item, index) => {
-              const course = {
-                id: item.courseId,
-                // Pick a nice beige color
-                color: "#F5F5DC",
-                units: item.units,
-                displayName: item.displayName,
-                desc: item.desc,
-              } as Course;
+            {data.map((item, index) => {
               return (
                 <CommandItem
                   key={index}
-                  value={course.id!}
+                  value={item}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     onSelect(currentValue);
                   }}
                 >
-                  {item.courseId}
+                  {item}
                 </CommandItem>
               );
             })}
@@ -128,4 +107,4 @@ const CourseSearchbar = ({
   );
 };
 
-export default CourseSearchbar;
+export default Searchbar;

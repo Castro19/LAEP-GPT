@@ -59,6 +59,7 @@ export function SectionFilters() {
         (reduxFilters.courseAttribute as (typeof COURSE_ATTRIBUTES)[number][]) ||
         [],
       instructionMode: reduxFilters.instructionMode || "",
+      instructors: reduxFilters.instructors || [],
     },
   });
 
@@ -86,6 +87,7 @@ export function SectionFilters() {
       // Join the array of attributes into a comma-separated string.
       courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
+      instructors: watchedValues.instructors || [],
     };
 
     // Only dispatch if something actually changed.
@@ -103,16 +105,19 @@ export function SectionFilters() {
     }
     const updatedFilters: SectionsFilterParams = {
       courseIds: data.courseIds || [],
-      status: data.status || "",
+      units: data.units?.toString() || "",
+      courseAttribute: data.courseAttributes || [],
       subject: data.subject || "",
+
       days: data.days ? data.days.join(",") : "",
       timeRange,
+      status: data.status || "",
+      instructionMode: data.instructionMode || "",
+
       minInstructorRating: data.minInstructorRating || "",
       maxInstructorRating: data.maxInstructorRating || "",
       includeUnratedInstructors: data.includeUnratedInstructors,
-      units: data.units?.toString() || "",
-      courseAttribute: data.courseAttributes || [],
-      instructionMode: data.instructionMode || "",
+      instructors: data.instructors || [],
     };
     dispatch(setFilters(updatedFilters));
     dispatch(fetchSectionsAsync());

@@ -19,7 +19,7 @@ interface CustomRequest extends Request {
     units?: string;
     courseAttribute?: string;
     instructionMode?: string;
-    instructor?: string;
+    instructors?: string[];
     minInstructorRating?: string;
     maxInstructorRating?: string;
     includeUnratedInstructors?: boolean;

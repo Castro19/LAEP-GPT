@@ -198,9 +198,9 @@ function buildSectionsQuery(
   }
 
   // 10) instructor
-  if (filter.instructor) {
+  if (filter.instructors) {
     query.instructorsWithRatings = {
-      $elemMatch: { instructor: filter.instructor },
+      $elemMatch: { instructor: { $in: filter.instructors } },
     };
   }
 

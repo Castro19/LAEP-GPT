@@ -16,7 +16,7 @@ router.get("/", async (req: Request, res: any) => {
       units, // Max number of units  e.g., 1, 2, 3, 4, 5, 6
       courseAttribute, // e.g., "GWR"
       instructionMode, // e.g., "P" or "PS" or "PA", etc.
-      instructor, // e.g., "John Doe"
+      instructors, // e.g., ["John Doe", "Jane Doe"]
       minInstructorRating, // e.g., "3.5"
       maxInstructorRating, // e.g., "4.0"
       includeUnratedInstructors, // e.g., true or false
@@ -49,7 +49,7 @@ router.get("/", async (req: Request, res: any) => {
           : (courseAttribute as SectionsFilterParams["courseAttribute"]),
       instructionMode:
         instructionMode as SectionsFilterParams["instructionMode"],
-      instructor: instructor as string,
+      instructors: instructors as string[],
       minInstructorRating: minInstructorRating as string,
       maxInstructorRating: maxInstructorRating as string,
       includeUnratedInstructors: includeUnratedInstructors as boolean,
