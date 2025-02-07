@@ -7,16 +7,13 @@ import {
 } from "@/redux/flowSelection/flowSelectionSlice";
 import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@polylink/shared/types";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import {
-  RiCalendarLine,
   RiBookLine,
   RiGraduationCapLine,
   RiStackLine,
 } from "react-icons/ri";
 
-const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
 
 const FlowChartOptions = ({
   type = "flowchart",
