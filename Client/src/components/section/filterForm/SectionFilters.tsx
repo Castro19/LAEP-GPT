@@ -20,6 +20,7 @@ import {
   setFilters,
   fetchSectionsAsync,
   setIsInitialState,
+  setPage,
 } from "@/redux/section/sectionSlice";
 import { SectionsFilterParams } from "@polylink/shared/types";
 
@@ -101,9 +102,11 @@ export function SectionFilters() {
 
   // onSubmit is now used only to trigger the API call.
   const onSubmit = (data: SectionFiltersForm) => {
+    dispatch(setIsInitialState(false));
+    dispatch(setPage(1));
     const timeRange =
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
-    dispatch(setIsInitialState(false));
+
     if (environment === "dev") {
       console.log("Filtering Query", data);
     }
