@@ -44,6 +44,7 @@ const ReusableDropdown = ({
         <SelectContent
           position={position}
           data-testid={`dropdown-${name.toLowerCase()}-list`}
+          className="w-min"
         >
           {valueLabelDropdown
             ? valueLabelDropdown.map((valueLabel) => (

@@ -5,17 +5,17 @@ import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
-// import FlowchartSidebar from "@/components/flowchart/flowchartSidebar/FlowchartSidebar";
-
 import FlowChartLayout from "@/components/layout/flowchart/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { useParams } from "react-router-dom";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
+import EmptyFlowchart from "@/components/flowchart/EmptyFlowchart";
+import { useParams } from "react-router-dom";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
   const { flowchartId } = useParams();
   const { flowchartData, loading } = useAppSelector((state) => state.flowchart);
+
   const initialLoadRef = useRef(false);
 
   useEffect(() => {
@@ -39,7 +39,11 @@ const FlowChatPage = () => {
         <OuterSidebar />
         <SidebarProvider className="dark:bg-slate-900">
           <FlowChartLayout>
-            <FlowChart flowchartData={flowchartData} />
+            {flowchartData ? (
+              <FlowChart flowchartData={flowchartData} />
+            ) : (
+              <EmptyFlowchart />
+            )}
           </FlowChartLayout>
         </SidebarProvider>
       </div>

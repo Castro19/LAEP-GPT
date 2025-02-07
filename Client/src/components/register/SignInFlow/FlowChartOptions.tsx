@@ -7,16 +7,13 @@ import {
 } from "@/redux/flowSelection/flowSelectionSlice";
 import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@polylink/shared/types";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import {
-  RiCalendarLine,
   RiBookLine,
   RiGraduationCapLine,
   RiStackLine,
 } from "react-icons/ri";
 
-const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
 
 const FlowChartOptions = ({
   type = "flowchart",
@@ -96,106 +93,69 @@ const FlowChartOptions = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full"
+      className="w-full max-w-4xl"
     >
-      <Card className="p-6 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold">Academic Path</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Configure your academic journey details
-          </p>
+      {/* Dropdowns in a Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Catalog Dropdown */}
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-2 mb-2">
+            <RiBookLine className="w-5 h-5 text-blue-500" />
+            <h3 className="text-lg font-medium text-white">Catalog</h3>
+          </div>
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <ReusableDropdown
+              name="Catalog"
+              dropdownItems={catalogOptions}
+              handleChangeItem={(_, value) => handleChangeOption("catalog", value)}
+              selectedItem={selections.catalog || ""}
+              className="w-full border rounded-lg hover:border-blue-300 transition-colors"
+            />
+          </motion.div>
         </div>
 
-        <div className="space-y-6">
-          {/* Starting Year Dropdown */}
-          {type === "signup" && (
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 mb-2">
-                <RiCalendarLine className="w-5 h-5 text-blue-500" />
-                <h3 className="text-lg font-medium">Starting Year</h3>
-              </div>
-              <motion.div whileHover={{ scale: 1.01 }}>
-                <ReusableDropdown
-                  name="Starting Year"
-                  dropdownItems={YEAR_OPTIONS}
-                  handleChangeItem={(_, value) =>
-                    handleChangeOption("startingYear", value)
-                  }
-                  selectedItem={selections.startingYear || ""}
-                  className="w-full border rounded-lg hover:border-blue-300 transition-colors"
-                />
-              </motion.div>
-            </div>
-          )}
-
-          {/* Catalog Dropdown */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 mb-2">
-              <RiBookLine className="w-5 h-5 text-blue-500" />
-              <h3 className="text-lg font-medium">Catalog</h3>
-            </div>
-            <motion.div whileHover={{ scale: 1.01 }}>
-              <ReusableDropdown
-                name="Catalog"
-                dropdownItems={catalogOptions}
-                handleChangeItem={(_, value) =>
-                  handleChangeOption("catalog", value)
-                }
-                selectedItem={selections.catalog || ""}
-                className="w-full border rounded-lg hover:border-blue-300 transition-colors"
-              />
-            </motion.div>
+        {/* Major Dropdown */}
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-2 mb-2">
+            <RiGraduationCapLine className="w-5 h-5 text-blue-500" />
+            <h3 className="text-lg font-medium text-white">Major</h3>
           </div>
-
-          {/* Major Dropdown */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 mb-2">
-              <RiGraduationCapLine className="w-5 h-5 text-blue-500" />
-              <h3 className="text-lg font-medium">Major</h3>
-            </div>
-            <motion.div whileHover={{ scale: 1.01 }}>
-              <ReusableDropdown
-                name="Major"
-                dropdownItems={majorOptions}
-                handleChangeItem={(_, value) =>
-                  handleChangeOption("major", value)
-                }
-                selectedItem={selections.major || ""}
-                className="w-full border rounded-lg hover:border-blue-300 transition-colors"
-              />
-            </motion.div>
-          </div>
-
-          {/* Concentration Dropdown */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 mb-2">
-              <RiStackLine className="w-5 h-5 text-blue-500" />
-              <h3 className="text-lg font-medium">Concentration</h3>
-            </div>
-            <motion.div whileHover={{ scale: 1.01 }}>
-              <ReusableDropdown
-                name="Concentration"
-                dropdownItems={concentrationOptions.map(
-                  (item) => item.concName
-                )}
-                handleChangeItem={(_, value) =>
-                  handleChangeConcentration(value)
-                }
-                selectedItem={selections.concentration?.concName || ""}
-                className="w-full border rounded-lg hover:border-blue-300 transition-colors"
-              />
-            </motion.div>
-          </div>
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <ReusableDropdown
+              name="Major"
+              dropdownItems={majorOptions}
+              handleChangeItem={(_, value) => handleChangeOption("major", value)}
+              selectedItem={selections.major || ""}
+              className="w-full border rounded-lg hover:border-blue-300 transition-colors"
+            />
+          </motion.div>
         </div>
 
-        {/* Info Note */}
-        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-          These details will be used to generate your personalized flowchart
-        </p>
-      </Card>
+        {/* Concentration Dropdown */}
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-2 mb-2">
+            <RiStackLine className="w-5 h-5 text-blue-500" />
+            <h3 className="text-lg font-medium text-white">Concentration</h3>
+          </div>
+          <motion.div whileHover={{ scale: 1.01 }}>
+            <ReusableDropdown
+              name="Concentration"
+              dropdownItems={concentrationOptions.map((item) => item.concName)}
+              handleChangeItem={(_, value) => handleChangeConcentration(value)}
+              selectedItem={selections.concentration?.concName || ""}
+              className="w-full border rounded-lg hover:border-blue-300 transition-colors"
+            />
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Info Note */}
+      <p className="text-sm text-gray-400 text-center mt-4">
+        These details will be used to generate your personalized flowchart
+      </p>
     </motion.div>
   );
+
 };
 
 export default FlowChartOptions;
