@@ -22,7 +22,7 @@ const SectionContainer = () => {
             </div>
           )}
         </ScrollArea>
-        <PaginationFooter />
+        {courses.length > 0 ? <PaginationFooter /> : null}
       </div>
     </div>
   );
