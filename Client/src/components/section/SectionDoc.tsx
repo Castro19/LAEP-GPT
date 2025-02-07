@@ -416,7 +416,7 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
       });
     } else {
       toast({
-        title: `${section.classNumber} Added`,
+        title: `${section.courseId} Added`,
         description: message,
       });
     }
