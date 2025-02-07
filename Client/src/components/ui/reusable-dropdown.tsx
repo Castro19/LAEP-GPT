@@ -7,6 +7,10 @@ import { SelectValue } from "./select";
 interface ReusableDropdownProps {
   name: string;
   dropdownItems: string[];
+  valueLabelDropdown?: {
+    value: string;
+    label: string;
+  }[];
   // eslint-disable-next-line no-unused-vars
   handleChangeItem: (name: string, value: string) => void;
   selectedItem: string;
@@ -19,6 +23,7 @@ const ReusableDropdown = ({
   name,
   dropdownItems,
   handleChangeItem,
+  valueLabelDropdown,
   selectedItem,
   position = "popper",
   placeholder = "Select an option", // Default value
@@ -40,16 +45,26 @@ const ReusableDropdown = ({
           position={position}
           data-testid={`dropdown-${name.toLowerCase()}-list`}
         >
-          {dropdownItems.map((value: string, index: number) => (
-            <SelectItem
-              key={`${value}-${index}`}
-              value={value}
-              data-testid={`dropdown-${name.toLowerCase()}-item-${index}`}
-              className="whitespace-normal break-words"
-            >
-              {value}
-            </SelectItem>
-          ))}
+          {valueLabelDropdown
+            ? valueLabelDropdown.map((valueLabel) => (
+                <SelectItem
+                  key={valueLabel.value}
+                  value={valueLabel.value}
+                  data-testid={`dropdown-${name.toLowerCase()}-item-${valueLabel.value}`}
+                >
+                  {valueLabel.label}
+                </SelectItem>
+              ))
+            : dropdownItems.map((value: string, index: number) => (
+                <SelectItem
+                  key={`${value}-${index}`}
+                  value={value}
+                  data-testid={`dropdown-${name.toLowerCase()}-item-${index}`}
+                  className="whitespace-normal break-words"
+                >
+                  {value}
+                </SelectItem>
+              ))}
         </SelectContent>
       </Select>
     </LabelInputContainer>
