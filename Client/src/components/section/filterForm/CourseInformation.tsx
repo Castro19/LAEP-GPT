@@ -33,8 +33,12 @@ const CourseInformation = ({
                     // Safely update the 'courseIds' array
                     const current = form.getValues("courseIds") || [];
                     // Avoid duplicates:
-                    if (!current.includes(courseId)) {
-                      form.setValue("courseIds", [...current, courseId]);
+                    const courseIdArray = courseId.split(" - ");
+                    if (!current.includes(courseIdArray[0])) {
+                      form.setValue("courseIds", [
+                        ...current,
+                        courseIdArray[0],
+                      ]);
                     }
                   }}
                 />
@@ -70,6 +74,7 @@ const CourseInformation = ({
                   onValueChange={(value) =>
                     form.setValue("units", value[0] as number)
                   }
+                  min={0}
                   max={6}
                   step={1}
                   className="w-full h-2 bg-gray-300 rounded-full"

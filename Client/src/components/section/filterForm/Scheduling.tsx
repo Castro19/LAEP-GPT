@@ -17,7 +17,11 @@ const Scheduling = ({
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
   return (
-    <CollapsibleContentWrapper title="Scheduling" icon={FaClock}>
+    <CollapsibleContentWrapper
+      title="Scheduling"
+      icon={FaClock}
+      defaultOpen={false}
+    >
       {/* Days Selector */}
       <FormField
         control={form.control}

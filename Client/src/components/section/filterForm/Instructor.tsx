@@ -22,7 +22,11 @@ const Instructor = ({
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
   return (
-    <CollapsibleContentWrapper title="Instructors & Ratings" icon={FaUser}>
+    <CollapsibleContentWrapper
+      title="Instructors & Ratings"
+      icon={FaUser}
+      defaultOpen={false}
+    >
       <FormField
         control={form.control}
         // We will treat this field as the "main" field

@@ -288,7 +288,9 @@ const LabSectionCard: React.FC<SectionCardProps> = ({ section, courseId }) => {
       <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
       <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
-      <SectionSchedule section={section} />
+      <div className="flex flex-row gap-2">
+        <SectionSchedule section={section} />
+      </div>
     </div>
   );
 };
