@@ -1,4 +1,4 @@
-import { serverUrl } from "@/helpers/getEnvironmentVars";
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { SectionsFilterParams, Section } from "@polylink/shared/types";
 
 const buildQueryString = (filter: SectionsFilterParams) => {
@@ -45,4 +45,33 @@ export async function fetchSections(
   }
   const { data, page, totalPages } = await response.json();
   return { data, page, totalPages };
+}
+
+type QueryAIResponse = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  query: any;
+  explanation: string;
+  results: Section[];
+  total: number;
+};
+export async function queryAI(message: string): Promise<QueryAIResponse> {
+  console.log("query", message);
+  try {
+    const response = await fetch(`${serverUrl}/llms/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to create flowchart");
+    }
+    const { query, explanation, results, total } = await response.json();
+    return { query, explanation, results, total };
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error querying AI", error);
+    }
+    throw error;
+  }
 }

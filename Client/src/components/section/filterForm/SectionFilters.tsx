@@ -29,6 +29,8 @@ import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
 
 // Environment
 import { environment } from "@/helpers/getEnvironmentVars";
+import QueryAI from "./QueryAI";
+import AdminViewOnly from "@/components/security/AdminViewOnly";
 
 // Define a Zod schema for the filter form.
 
@@ -152,8 +154,17 @@ export function SectionFilters() {
 
               <div className="px-6 space-y-6 pb-4">
                 <CourseInformation form={form} />
+                {/* Border with pop up effect*/}
+                <div className="border-t border-slate-600" />
                 <Scheduling form={form} />
+                {/* Border */}
+                <div className="border-t border-slate-600" />
                 <Instructor form={form} />
+                {/* Border */}
+                <AdminViewOnly>
+                  <div className="border-t border-slate-600" />
+                  <QueryAI />
+                </AdminViewOnly>
               </div>
             </ScrollArea>
           </div>
