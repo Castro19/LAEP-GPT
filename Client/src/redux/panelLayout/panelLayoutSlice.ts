@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PanelData } from "@/components/section/sidebar/PanelLayouts";
+import { environment } from "@/helpers/getEnvironmentVars";
 interface PanelLayoutState {
   panels: PanelData[];
   outerDirection: "vertical" | "horizontal";
@@ -52,10 +53,12 @@ const panelLayoutSlice = createSlice({
       const { sourceIndex, destinationIndex } = action.payload;
 
       if (sourceIndex === destinationIndex) return;
-      console.log("sourceIndex", sourceIndex);
-      console.log("destinationIndex", destinationIndex);
+      if (environment === "dev") {
+        console.log("sourceIndex", sourceIndex);
+        console.log("destinationIndex", destinationIndex);
 
-      console.log("state.panels", state.panels);
+        console.log("state.panels", state.panels);
+      }
       const [removed] = state.panels.splice(sourceIndex, 1);
       state.panels.splice(destinationIndex, 0, removed);
     },

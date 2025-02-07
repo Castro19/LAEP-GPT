@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 // Example arrays
 const TIME_OF_DAY = ["Morning", "Afternoon", "Night"] as const;
@@ -53,7 +54,9 @@ const ScheduleBuilderQueryForm = () => {
 
   // Handle form submission
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log("AutoScheduler Filters:", data);
+    if (environment === "dev") {
+      console.log("AutoScheduler Filters:", data);
+    }
     // TODO: trigger auto-generation of schedules based on these filters
   };
 

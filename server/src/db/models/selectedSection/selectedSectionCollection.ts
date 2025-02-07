@@ -4,7 +4,7 @@ import {
 } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection, UpdateResult } from "mongodb";
-
+import { environment } from "../../../index";
 let selectedSectionCollection: Collection<SelectedSectionDocument>;
 
 const initializeCollection = (): Collection<SelectedSectionDocument> => {
@@ -29,7 +29,9 @@ export const findSelectedSectionsByUserId = async (
     }
     return result;
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
     throw error;
   }
 };
@@ -48,7 +50,9 @@ export const deleteSelectedSection = async (
       sectionId,
     });
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
     throw error;
   }
 };
@@ -69,7 +73,9 @@ export const createOrUpdateSelectedSection = async (
 
     return updateResult;
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
     throw error;
   }
 };

@@ -1,3 +1,4 @@
+import { environment } from "../../..";
 import { MongoQuery } from "../../../types/mongo";
 import * as instructorCollection from "./instructorCollection";
 
@@ -16,8 +17,9 @@ export const getInstructors = async (searchTerm: string): Promise<string[]> => {
   filters.push({
     name: { $regex: escapedSearchTerm, $options: "i" },
   });
-
-  console.log("filters", filters);
+  if (environment === "dev") {
+    console.log("filters", filters);
+  }
   // Combine filters
   if (filters.length > 0) {
     query = { ...query, $and: filters };

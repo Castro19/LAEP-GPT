@@ -1,4 +1,4 @@
-import { serverUrl } from "./getEnvironmentVars";
+import { environment, serverUrl } from "./getEnvironmentVars";
 import { TeamDocument } from "@polylink/shared/types";
 
 export const getTeamMembers = async (): Promise<TeamDocument[]> => {
@@ -7,7 +7,9 @@ export const getTeamMembers = async (): Promise<TeamDocument[]> => {
     const data = await response.json();
     return data as TeamDocument[];
   } catch (error) {
-    console.error("Error fetching team members:", error);
+    if (environment === "dev") {
+      console.error("Error fetching team members:", error);
+    }
     return [];
   }
 };

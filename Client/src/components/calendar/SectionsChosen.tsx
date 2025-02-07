@@ -1,3 +1,4 @@
+import { environment } from "@/helpers/getEnvironmentVars";
 import {
   useAppDispatch,
   useAppSelector,
@@ -16,7 +17,9 @@ const SectionsChosen = () => {
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
   }, [dispatch]);
 
-  console.log("MAPPING FROM SELECTED SECTIONS", selectedSections);
+  if (environment === "dev") {
+    console.log("MAPPING FROM SELECTED SECTIONS", selectedSections);
+  }
   return <div className="flex flex-col gap-4"></div>;
 };
 
