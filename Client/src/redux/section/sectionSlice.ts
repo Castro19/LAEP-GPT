@@ -122,9 +122,11 @@ const sectionSlice = createSlice({
         state.queryError = null;
         state.queryExplanation = action.payload.explanation;
       })
-      .addCase(queryAIAsync.rejected, (state, action) => {
+      .addCase(queryAIAsync.rejected, (state) => {
         state.loading = false;
-        state.queryError = action.error.message || "An unknown error occurred";
+        state.sections = [];
+        state.total = 0;
+        state.queryError = "Failed to generate query";
         state.queryExplanation = null;
       });
   },

@@ -11,6 +11,8 @@ import {
   setIsInitialState,
   setPage,
 } from "@/redux/section/sectionSlice";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const QueryAI = () => {
   const dispatch = useAppDispatch();
@@ -32,37 +34,63 @@ const QueryAI = () => {
       defaultOpen={false}
     >
       <FormItem>
-        <div className="flex items-start justify-between  flex-col gap-4">
-          <TitleLabel title="Enter your filters" />
+        <div className="flex items-start justify-between flex-col gap-4">
+          {queryError && (
+            <>
+              {/* Warning Icon */}
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-red-500" />
+                <p className="text-red-500">{queryError}</p>
+              </div>
+            </>
+          )}
+          <TitleLabel title="Search Courses Your Way" />
           <div className="flex flex-col gap-4 w-full">
-            <Textarea
-              className="h-24"
-              placeholder="EX: Find me classes in the morning on Monday"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  handleQuerySearch();
+            <ScrollArea className="h-36">
+              <Textarea
+                className="h-32 max-h-36"
+                placeholder={
+                  `Examples:\n` +
+                  `• "Find CSC 300-500 courses with good reviews, available Mon-Thu"\n` +
+                  `• "Show me morning USCP courses with open seats"\n` +
+                  `• "I need MATH classes before 2pm with excellent professors"\n` +
+                  `\nSearch naturally - we'll handle the details!`
                 }
-              }}
-            />
-
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    handleQuerySearch();
+                  }
+                }}
+              />
+            </ScrollArea>
             <Button
               type="button"
               onClick={handleQuerySearch}
               className="w-full"
-              disabled={loading}
+              disabled={loading || query.length === 0}
             >
-              Search
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Searching...
+                </div>
+              ) : (
+                "Find My Courses"
+              )}
             </Button>
           </div>
         </div>
       </FormItem>
-      <TitleLabel title="Explanation" />
-      {queryError && <p className="text-red-500">{queryError}</p>}
-      {queryExplanation && <p>{queryExplanation}</p>}
+      {queryExplanation !== null && (
+        <>
+          <TitleLabel title="Explanation" />
+          {queryExplanation !== null && <p>{queryExplanation}</p>}
+        </>
+      )}
     </CollapsibleContentWrapper>
   );
 };
