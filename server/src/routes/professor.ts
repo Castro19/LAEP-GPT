@@ -12,7 +12,6 @@ router.get("/", (async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    console.log("searchTerm", searchTerm);
 
     const result = await getInstructors(searchTerm);
     res.status(200).json(result);

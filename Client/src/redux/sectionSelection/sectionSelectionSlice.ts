@@ -5,6 +5,7 @@ import {
   createOrUpdateSection,
   transformSectionToSelectedSection,
 } from "./crudSelectionSection";
+import { environment } from "@/helpers/getEnvironmentVars";
 interface SectionSelectionState {
   selectedSections: SelectedSection[];
   message: string;
@@ -21,10 +22,12 @@ export const fetchSelectedSectionsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await fetchSections();
-      console.log("RESPONSE", response);
+
       return response.selectedSections;
     } catch (error) {
-      console.error("Error fetching sections:", error);
+      if (environment === "dev") {
+        console.error("Error fetching sections:", error);
+      }
       throw error;
     }
   }
@@ -38,7 +41,9 @@ export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
       const response = await createOrUpdateSection(selectedSection);
       return response;
     } catch (error) {
-      console.error("Error creating or updating section:", error);
+      if (environment === "dev") {
+        console.error("Error creating or updating section:", error);
+      }
       throw error;
     }
   }

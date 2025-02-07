@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Section, SectionsFilterParams } from "@polylink/shared/types";
 import { fetchSections } from "./crudSection";
-
+import { environment } from "@/helpers/getEnvironmentVars";
 interface SectionState {
   sections: Section[];
   total: number;
@@ -45,7 +45,9 @@ export const fetchSectionsAsync = createAsyncThunk(
       const response = await fetchSections(filters, page);
       return response; // { data, total, page, pageSize, totalPages }
     } catch (error) {
-      console.error("Error fetching sections:", error);
+      if (environment === "dev") {
+        console.error("Error fetching sections:", error);
+      }
       throw error;
     }
   }

@@ -21,6 +21,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { createOrUpdateSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
 import { useAppDispatch } from "@/redux";
 import { toast } from "../ui/use-toast";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
@@ -395,7 +396,9 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
   // Handler for the Add button
   const handleAdd = async (section: SectionDetail) => {
     // Implement your add functionality here
-    console.log("Add button clicked for meeting:", section);
+    if (environment === "dev") {
+      console.log("Add button clicked for meeting:", section);
+    }
     const { payload } = await dispatch(
       createOrUpdateSelectedSectionAsync(section)
     );

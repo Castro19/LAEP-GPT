@@ -54,7 +54,6 @@ const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
     const onFetchData = async () => {
       try {
         const dataFetched = await fetchData(inputValue);
-        console.log("dataFetched", dataFetched);
 
         setData(dataFetched || []);
       } catch (err) {

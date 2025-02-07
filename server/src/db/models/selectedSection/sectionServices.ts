@@ -1,3 +1,4 @@
+import { environment } from "../../..";
 import * as selectedSelectionModel from "./selectedSectionCollection";
 import { SelectedSection } from "@polylink/shared/types";
 
@@ -12,7 +13,9 @@ export const getSelectedSectionsByUserId = async (
     }
     return result.selectedSections;
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
     throw error;
   }
 };
@@ -59,7 +62,9 @@ export const postSelectedSection = async (
       };
     }
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
     throw error;
   }
 };
@@ -71,7 +76,9 @@ export const deleteSelectedSection = async (
   try {
     await selectedSelectionModel.deleteSelectedSection(userId, sectionId);
   } catch (error) {
-    console.error(error);
+    if (environment === "dev") {
+      console.error(error);
+    }
     throw error;
   }
 };

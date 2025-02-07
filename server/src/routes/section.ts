@@ -2,6 +2,7 @@ import express from "express";
 import { getSectionsByFilter } from "../db/models/section/sectionServices"; // new function
 import { CustomRequest as Request } from "../types/express";
 import { SectionsFilterParams } from "@polylink/shared/types";
+import { environment } from "../index";
 const router = express.Router();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,7 +75,9 @@ router.get("/", async (req: Request, res: any) => {
       totalPages: Math.ceil(total / PAGE_SIZE),
     });
   } catch (error) {
-    console.error("Error fetching sections:", error);
+    if (environment === "dev") {
+      console.error("Error fetching sections:", error);
+    }
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });

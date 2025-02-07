@@ -60,7 +60,7 @@ const CourseSearchbar = ({
     const fetchCourses = async () => {
       try {
         const coursesFetched = await fetchCoursesAPI(catalogYear, inputValue);
-        console.log("coursesFetched", coursesFetched);
+
         setCourses(coursesFetched || []);
       } catch (err) {
         if (environment === "dev") {

@@ -3,7 +3,7 @@ import express from "express";
 import { CustomRequest } from "../types/express";
 import { postSelectedSection } from "../db/models/selectedSection/sectionServices";
 import { getSelectedSectionsByUserId } from "../db/models/selectedSection/sectionServices";
-
+import { environment } from "../index";
 const router = express.Router();
 
 router.get("/", async (req: CustomRequest, res: any) => {
@@ -20,7 +20,9 @@ router.get("/", async (req: CustomRequest, res: any) => {
       selectedSections,
     });
   } catch (error) {
-    console.error("Error fetching sections:", error);
+    if (environment === "dev") {
+      console.error("Error fetching sections:", error);
+    }
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -42,7 +44,9 @@ router.post("/", async (req, res: any) => {
       selectedSections,
     });
   } catch (error) {
-    console.error("Error creating or updating selected section:", error);
+    if (environment === "dev") {
+      console.error("Error creating or updating selected section:", error);
+    }
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
