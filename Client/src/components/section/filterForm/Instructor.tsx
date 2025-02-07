@@ -94,6 +94,7 @@ const Instructor = ({
             <FormControl>
               <div>
                 <Searchbar
+                  placeholder="Search for an instructor"
                   fetchData={fetchProfessors}
                   onSelect={(instructor) => {
                     // Safely update the 'instructors' array

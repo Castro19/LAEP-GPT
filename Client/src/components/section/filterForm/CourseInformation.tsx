@@ -1,7 +1,6 @@
 import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import SectionCourseDropdown from "../SectionCourseDropdown";
 import { Slider } from "@/components/ui/slider";
 import { FaBook } from "react-icons/fa";
 import { COURSE_ATTRIBUTES, SECTION_FILTERS_SCHEMA } from "./constants";
@@ -9,6 +8,9 @@ import { z } from "zod";
 import { DeletableTags } from "./reusable/DeletableTags";
 import ReusableDropdown from "@/components/ui/reusable-dropdown";
 import TitleLabel from "./reusable/TitleLabel";
+import Searchbar from "./reusable/SearchBar";
+import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CourseInformation = ({
   form,
@@ -25,7 +27,9 @@ const CourseInformation = ({
             <TitleLabel title="Course" />
             <FormControl>
               <div>
-                <SectionCourseDropdown
+                <Searchbar
+                  placeholder="Search for a course"
+                  fetchData={fetchCourses}
                   onSelect={(courseId) => {
                     // Safely update the 'courseIds' array
                     const current = form.getValues("courseIds") || [];

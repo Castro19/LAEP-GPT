@@ -3,6 +3,13 @@
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { CourseObject } from "@polylink/shared/types";
 
+export const fetchCourses = async (inputValue?: string) => {
+  const response = await fetchCoursesAPI("2022-2026", inputValue);
+  const courses = response.map((course) => course.courseId);
+
+  return courses;
+};
+
 export const fetchCoursesAPI = async (
   catalogYear: string,
   inputValue?: string

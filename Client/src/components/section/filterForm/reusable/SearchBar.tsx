@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   Command,
   CommandInput,
@@ -23,14 +23,21 @@ function debounce(func: (...args: any[]) => void, wait: number) {
 type SearchbarProps = {
   onSelect: (value: string) => void;
   fetchData: (value: string) => Promise<any[]>;
+  placeholder?: string;
 };
 
-const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
+const Searchbar = ({
+  onSelect,
+  fetchData,
+  placeholder = "Search",
+}: SearchbarProps) => {
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const commandRef = useRef<HTMLDivElement>(null);
 
   // Debounce input value changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,6 +47,26 @@ const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
     }, 300),
     []
   );
+
+  // Click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        commandRef.current &&
+        !commandRef.current.contains(event.target as Node)
+      ) {
+        setSearchQuery("");
+        setInputValue("");
+        setData([]);
+        setValue("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Fetch courses when inputValue changes
   useEffect(() => {
@@ -54,7 +81,6 @@ const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
     const onFetchData = async () => {
       try {
         const dataFetched = await fetchData(inputValue);
-
         setData(dataFetched || []);
       } catch (err) {
         if (environment === "dev") {
@@ -69,12 +95,15 @@ const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
   }, [fetchData, inputValue]);
 
   const hasMatches = data.length > 0;
-
   return (
     <Command className="w-full min-h-full">
       <CommandInput
-        placeholder="Type to search for a class"
-        onValueChange={(value) => handleInputChange(value)}
+        placeholder={placeholder}
+        value={searchQuery}
+        onValueChange={(value) => {
+          setSearchQuery(value);
+          handleInputChange(value);
+        }}
       />
       <CommandList>
         {isLoading ? (
@@ -93,6 +122,10 @@ const Searchbar = ({ onSelect, fetchData }: SearchbarProps) => {
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     onSelect(currentValue);
+                    // Reset states to close the list
+                    setSearchQuery("");
+                    setInputValue("");
+                    setData([]);
                   }}
                 >
                   {item}
