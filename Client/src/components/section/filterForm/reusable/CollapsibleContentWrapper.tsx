@@ -32,7 +32,7 @@ const CollapsibleContentWrapper = ({
         <CollapsibleTrigger asChild>
           <Button
             variant="outline"
-            className="w-full justify-between items-center p-4 dark:bg-transparent dark:text-white rounded-lg shadow-lg dark:bg-slate-950"
+            className="w-full justify-between items-center p-2 dark:bg-transparent dark:text-white rounded-lg shadow-lg dark:bg-slate-950"
           >
             <div className="flex items-center space-x-2">
               <Icon className="w-5 h-5" />
@@ -46,7 +46,7 @@ const CollapsibleContentWrapper = ({
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <Card className="p-6 border-gray-200 dark:border-r-gray-800  shadow-inner flex flex-col gap-8">
+          <Card className="p-4 border-gray-200 dark:border-r-gray-800  shadow-inner flex flex-col gap-5">
             {children}
           </Card>
         </CollapsibleContent>
