@@ -73,7 +73,8 @@ export type SectionsFilterParams = {
   enrollmentStatus?: string;
   minInstructorRating?: string;
   maxInstructorRating?: string;
-  units?: string;
+  minUnits?: string;
+  maxUnits?: string;
   courseAttribute?: Array<
     "GE D" | "USCP" | "GE C" | "GWR" | "GE E" | "GE B" | "GE F" | "GE A"
   >;

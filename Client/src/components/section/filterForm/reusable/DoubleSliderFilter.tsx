@@ -12,14 +12,20 @@ interface InstructorRatingRangeFilterProps {
    */
   // eslint-disable-next-line no-unused-vars
   onRangeChange: (range: [number, number]) => void;
+  label?: string;
+  max?: number;
+  step?: number;
 }
 
 const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
   initialRange = [0, 4],
+  label = "Stars",
+  step = 0.1,
+  max = 4,
   onRangeChange,
 }) => {
   const [range, setRange] = useState<[number, number]>(initialRange);
-
+  const labels = Array.from({ length: max + 1 }, (_, i) => i);
   // Keep local state in sync if the form resets/updates from outside
   useEffect(() => {
     setRange(initialRange);
@@ -37,7 +43,7 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
       {/* You can display the current values, star icons, etc. */}
       <div className="flex items-center space-x-2 text-xs dark:text-gray-400">
         <span>
-          {range[0].toFixed(1)} - {range[1].toFixed(1)} Stars
+          {range[0].toFixed(1)} - {range[1].toFixed(1)} {label}
         </span>
       </div>
 
@@ -45,14 +51,14 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
         value={range}
         onValueChange={handleSliderChange}
         min={0}
-        max={4}
-        step={0.1}
+        max={max}
+        step={step}
         className="w-full h-1 bg-gray-300 rounded-full dark:bg-gray-300"
       />
 
       {/* Labels for the slider values */}
       <div className="flex justify-between w-full px-2">
-        {[0, 1, 2, 3, 4].map((value) => (
+        {labels.map((value) => (
           <span key={value} className="text-sm dark:text-gray-400">
             {value}
           </span>
