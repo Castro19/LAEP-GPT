@@ -143,8 +143,8 @@ export function SectionFilters() {
 
               <div className="px-6 space-y-6 pb-4">
                 <CourseInformation form={form} />
-                <Instructor form={form} />
                 <Scheduling form={form} />
+                <Instructor form={form} />
               </div>
             </ScrollArea>
           </div>

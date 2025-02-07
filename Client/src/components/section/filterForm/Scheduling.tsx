@@ -51,7 +51,7 @@ const Scheduling = ({
         name="status"
         render={({ field }) => (
           <FormItem>
-            <TitleLabel title="Status" />
+            <TitleLabel title="Enrollment Status" />
             <FormControl>
               <div className="flex gap-2">
                 <Button
