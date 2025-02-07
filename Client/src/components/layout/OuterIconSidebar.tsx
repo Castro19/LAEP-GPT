@@ -10,7 +10,7 @@ import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 // (Use your icons or lucide-react icons, e.g. Home, User, etc.)
 
 import { IoMdChatboxes } from "react-icons/io";
-import { IoHomeSharp } from "react-icons/io5";
+import { IoHomeSharp, IoLogOutOutline } from "react-icons/io5";
 
 import {
   Tooltip,
@@ -21,10 +21,12 @@ import {
 import { UserAvatar } from "../userProfile/UserAvatar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
-import { useAppSelector } from "@/redux";
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { signOutUser } from "@/redux/auth/authSlice";
 
 function OuterSidebar() {
   const { userData } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -179,6 +181,23 @@ function OuterSidebar() {
                 </Tooltip>
               </TooltipProvider>
             </SidebarMenu>
+            {location.pathname === "/profile/edit" && (
+              <SidebarMenu className="mb-6 justify-center items-center">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => dispatch(signOutUser())}
+                      >
+                        <IoLogOutOutline className="m-auto w-5 h-5 rotate-180 text-red-500" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Sign Out</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </SidebarMenu>
+            )}
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
