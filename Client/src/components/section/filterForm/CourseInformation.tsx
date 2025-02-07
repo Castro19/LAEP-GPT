@@ -11,7 +11,6 @@ import TitleLabel from "./reusable/TitleLabel";
 import Searchbar from "./reusable/SearchBar";
 import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CourseInformation = ({
   form,
 }: {
