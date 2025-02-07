@@ -25,7 +25,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ value }) => {
                   ? "bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg"
                   : "bg-gray-700 text-gray-300"
               }`}
-              animate={{ scale: value >= (step / 3) * 100 ? 1.2 : 1 }}
+              //  animate={{ scale: value >= (step / 3) * 100 ? 1.2 : 1 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
               {step}

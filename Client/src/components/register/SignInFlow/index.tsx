@@ -17,7 +17,6 @@ const signInFlowSteps = [
   "basic-information",
   "demographics",
   "interests",
-  "flowchart",
 ];
 
 const SignInFlow = () => {
@@ -25,12 +24,11 @@ const SignInFlow = () => {
   const { handleSave, userData } = useUserData();
   const isMobile = useIsMobile();
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { flowchartData } = useAppSelector((state) => state.flowchart);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [choice, setChoice] = useState<"now" | "later">("now");
-  const [isSkipButton, setIsSkipButton] = useState(true);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -77,17 +75,6 @@ const SignInFlow = () => {
         navigate("/sign-in-flow/terms");
     }
   }, [currentStep, userData, navigate]);
-
-  useEffect(() => {
-    if (
-      selections.startingYear &&
-      selections.catalog &&
-      selections.major &&
-      selections.concentration
-    ) {
-      setIsSkipButton(false);
-    }
-  }, [flowchartData, selections]);
 
   const handleNext = () => {
     if (currentStep === "terms") {
@@ -235,13 +222,9 @@ const SignInFlow = () => {
                 ) : isTermsAccepted ? (
                   <button
                     onClick={handleCompleteProfile}
-                    className={`px-4 py-2 rounded-md border transition-all duration-200 ${
-                      isSkipButton
-                        ? "bg-slate-700 hover:bg-slate-600 border-slate-600/50"
-                        : "bg-green-900/80 hover:bg-green-900 border-green-800/50"
-                    } text-white ${isMobile ? "text-sm" : ""}`}
+                    className={`px-4 py-2 rounded-md border transition-all duration-200 bg-green-900/80 hover:bg-green-900 border-green-800/50 text-white ${isMobile ? "text-sm" : ""}`}
                   >
-                    {isSkipButton ? "Skip" : "Create Flowchart"}
+                    Finish
                   </button>
                 ) : (
                   <Button

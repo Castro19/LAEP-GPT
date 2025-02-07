@@ -25,7 +25,6 @@ import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
 import ProfilePageLayout from "./components/layout/ProfilePage/ProfilePageLayout.tsx";
 import FlowChatPage from "./pages/FlowChatPage.tsx";
-import FlowChartOptions from "./components/register/SignInFlow/FlowChartOptions.tsx";
 import FlowChart from "./components/flowchart/FlowChart.tsx";
 import SignUpForm from "./pages/register/SignUpForm.tsx";
 import LoginForm from "./pages/register/LoginForm.tsx";
@@ -42,6 +41,7 @@ import SectionPage from "./pages/SectionPage.tsx";
 import CalendarPage from "./pages/CalendarPage.tsx";
 import BasicInformation from "./components/register/SignInFlow/BasicInformation.tsx";
 import InputInformation from "./components/register/SignInFlow/InputInformation.tsx";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
 let routerChosen: typeof createBrowserRouter = createBrowserRouter;
@@ -173,10 +173,6 @@ const router = routerChosen([
       {
         path: "interests",
         element: <Interests />,
-      },
-      {
-        path: "flowchart",
-        element: <FlowChartOptions type="signup" />,
       },
     ],
   },
