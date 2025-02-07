@@ -55,6 +55,11 @@ const FlowChartOptions = ({
         handleChangeFlowchartInformation("major", value);
       }
     }
+     // Reset concentration if major is changed
+    if (key === "major" && selections.concentration) {
+      dispatch(setSelection({ key: "concentration", value: "" })); // Reset concentration
+    }
+
     dispatch(
       setSelection({
         key: key as "startingYear" | "catalog" | "major" | "concentration",
