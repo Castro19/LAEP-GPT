@@ -1,18 +1,28 @@
 import FlowChartOptions from "../register/SignInFlow/FlowChartOptions";
-import { AnimatedModalDemo } from "../layout/CustomModal";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "../ui/button";
+import ProgressBar from "./ProgressBar";
 
 const EmptyFlowchart = () => {
   const { selections } = useAppSelector((state) => state.flowSelection);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+
+  // Calculate progress (1/3, 2/3, 3/3)
+  const stepsCompleted =
+    (selections.catalog ? 1 : 0) +
+    (selections.major ? 1 : 0) +
+    (selections.concentration ? 1 : 0);
+
+  const progress = (stepsCompleted / 3) * 100; // Convert to percentage
+  const isComplete = stepsCompleted === 3;
+
   const handleSaveFlowchart = () => {
-    if (selections.catalog && selections.major && selections.concentration) {
+    if (isComplete && selections.catalog && selections.major && selections.concentration) {
       fetchFlowchartDataHelper(
         dispatch,
         selections.catalog,
@@ -22,29 +32,54 @@ const EmptyFlowchart = () => {
       navigate("/flowchart");
     } else {
       toast({
-        title: "Please select a catalog and major",
-        description:
-          "You must select a catalog and major to create a flowchart",
+        title: "Please select a catalog, major, and concentration",
+        description: "You must select all options to create a flowchart",
         variant: "destructive",
       });
     }
   };
+
   return (
-    <div className="flex flex-col justify-center items-center h-full">
-      <h1 className="text-2xl font-bold">kjcsakfjn</h1>
-      <div className="flex flex-col gap-4 p -4">
-        <FlowChartOptions type="flowchart" />
-        <Button onClick={handleSaveFlowchart}>Generate Flowchart</Button>
+    <div className="h-screen flex justify-center items-start">
+      <div className="flex flex-col items-center w-full max-w-4xl mt-12">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white">Academic Path</h1>
+          <p className="text-md text-gray-400 mt-1">
+            Configure your academic journey
+          </p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="w-full mt-4">
+          <ProgressBar value={progress} />
+          <p className="text-sm text-gray-400 mt-1 text-center">
+            {stepsCompleted}/3 Steps Completed
+          </p>
+        </div>
+
+        {/* Selections */}
+        <div className="w-full mt-4">
+          <FlowChartOptions type="flowchart" />
+        </div>
+
+        {/* Generate Flowchart Button */}
+        <div className="w-full mt-6">
+          <Button
+            className={`w-full py-3 text-lg transition-all font-semibold rounded-md ${
+              isComplete
+                ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                : "bg-gray-600 text-gray-400 cursor-not-allowed"
+            }`}
+            onClick={handleSaveFlowchart}
+            disabled={!isComplete}
+          >
+            Generate Flowchart
+          </Button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default EmptyFlowchart;
-
-/*
-Look at AnimatedModak
-
-
-
-*/
