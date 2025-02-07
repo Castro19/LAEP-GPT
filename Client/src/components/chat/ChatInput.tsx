@@ -49,6 +49,7 @@ const ChatInput = ({
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    if (msg.length <= 0) return;
     dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
 
@@ -219,6 +220,14 @@ const ChatInput = ({
           rows={1}
           value={msg}
           onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e); 
+            }
+          }
+        }
+          
         />
         {currentChatId && loading[currentChatId] ? (
           <Button
