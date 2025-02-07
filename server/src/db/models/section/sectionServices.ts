@@ -8,6 +8,7 @@ import {
 } from "@polylink/shared/types";
 import { findSectionsByFilter } from "./sectionCollection";
 import { Filter } from "mongodb";
+import { environment } from "../../..";
 /**
  * Build a filter object that can be passed to the collection query.
  */
@@ -84,10 +85,6 @@ function buildSectionsQuery(
     if (!isNaN(minRating) && !isNaN(maxRating)) {
       // 6c. If we also want to include unrated instructors
       //    we need an OR condition:
-      console.log(
-        "filter.includeUnratedInstructors",
-        filter.includeUnratedInstructors
-      );
       if (filter.includeUnratedInstructors) {
         query["$or"] = [
           {
@@ -199,8 +196,8 @@ function buildSectionsQuery(
 
   // 10) instructor
   if (filter.instructors) {
-    query.instructorsWithRatings = {
-      $elemMatch: { instructor: { $in: filter.instructors } },
+    query.instructors = {
+      $elemMatch: { name: { $in: filter.instructors } },
     };
   }
 
@@ -221,7 +218,9 @@ export async function getSectionsByFilter(
     // and also get a total count so you can return that in the response
     return await findSectionsByFilter(query, skip, limit);
   } catch (error) {
-    console.error("Error searching sections by filter:", error);
+    if (environment === "dev") {
+      console.error("Error searching sections by filter:", error);
+    }
     return { sections: [], total: 0 };
   }
 }
