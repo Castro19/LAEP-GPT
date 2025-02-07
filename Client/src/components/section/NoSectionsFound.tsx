@@ -20,7 +20,7 @@ const FILTER_LABELS: Record<string, string> = {
 
 // Mapping for instruction modes
 const INSTRUCTION_MODE_MAP: Record<string, string> = {
-  P: "Presential",
+  P: "In-Person",
   A: "Asynchronous",
 };
 
