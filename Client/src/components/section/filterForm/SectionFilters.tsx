@@ -16,7 +16,11 @@ import Scheduling from "./Scheduling";
 
 // Redux hooks and actions
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { setFilters, fetchSectionsAsync } from "@/redux/section/sectionSlice";
+import {
+  setFilters,
+  fetchSectionsAsync,
+  setIsInitialState,
+} from "@/redux/section/sectionSlice";
 import { SectionsFilterParams } from "@polylink/shared/types";
 
 // Constants
@@ -99,6 +103,7 @@ export function SectionFilters() {
   const onSubmit = (data: SectionFiltersForm) => {
     const timeRange =
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
+    dispatch(setIsInitialState(false));
     if (environment === "dev") {
       console.log("Filtering Query", data);
     }

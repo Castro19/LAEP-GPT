@@ -10,6 +10,7 @@ interface SectionState {
   loading: boolean;
   error: string | null;
   filters: SectionsFilterParams;
+  isInitialState: boolean;
 }
 
 const initialState: SectionState = {
@@ -19,6 +20,7 @@ const initialState: SectionState = {
   totalPages: 0,
   loading: false,
   error: null,
+  isInitialState: true,
   filters: {
     courseIds: [],
     status: "",
@@ -65,6 +67,9 @@ const sectionSlice = createSlice({
     setPage: (state, action: PayloadAction<number>) => {
       state.page = action.payload;
     },
+    setIsInitialState: (state, action: PayloadAction<boolean>) => {
+      state.isInitialState = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -84,5 +89,5 @@ const sectionSlice = createSlice({
   },
 });
 
-export const { setFilters, setPage } = sectionSlice.actions;
+export const { setFilters, setPage, setIsInitialState } = sectionSlice.actions;
 export const sectionReducer = sectionSlice.reducer;
