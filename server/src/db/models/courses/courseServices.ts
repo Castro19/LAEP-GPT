@@ -24,7 +24,10 @@ export const getCourses = async (
   if (searchTerm) {
     const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     filters.push({
-      courseId: { $regex: "^" + escapedSearchTerm, $options: "i" },
+      $or: [
+        { courseId: { $regex: escapedSearchTerm, $options: "i" } },
+        { displayName: { $regex: escapedSearchTerm, $options: "i" } },
+      ],
     });
   }
 
