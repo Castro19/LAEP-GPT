@@ -57,8 +57,8 @@ export function SectionFilters() {
       minInstructorRating: reduxFilters.minInstructorRating || "",
       maxInstructorRating: reduxFilters.maxInstructorRating || "",
       includeUnratedInstructors: reduxFilters.includeUnratedInstructors,
-      minUnits: reduxFilters.minUnits || "0",
-      maxUnits: reduxFilters.maxUnits || "9",
+      minUnits: reduxFilters.minUnits || "",
+      maxUnits: reduxFilters.maxUnits || "",
       // Convert the stored string of attributes into an array
       courseAttributes:
         (reduxFilters.courseAttribute as (typeof COURSE_ATTRIBUTES)[number][]) ||
