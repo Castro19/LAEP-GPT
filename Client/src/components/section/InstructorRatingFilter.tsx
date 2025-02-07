@@ -1,52 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { Slider } from "@/components/ui/slider";
-import { Star } from "./StarRating"; // Assuming Star is exported from StarRating
 
-interface InstructorRatingFilterProps {
-  initialRating?: number;
+import { DoubleSlider } from "@/components/ui/slider";
+
+interface InstructorRatingRangeFilterProps {
+  /**
+   * The initial range for min and max rating, e.g. [0, 4]
+   */
+  initialRange?: [number, number];
+  /**
+   * Callback with the updated [min, max] whenever the slider changes
+   */
   // eslint-disable-next-line no-unused-vars
-  onRatingChange: (rating: number) => void;
+  onRangeChange: (range: [number, number]) => void;
 }
 
-interface InstructorRatingFilterProps {
-  initialRating?: number;
-  // eslint-disable-next-line no-unused-vars
-  onRatingChange: (rating: number) => void;
-}
-
-const InstructorRatingFilter: React.FC<InstructorRatingFilterProps> = ({
-  initialRating = 0,
-  onRatingChange,
+const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
+  initialRange = [0, 4],
+  onRangeChange,
 }) => {
-  const [rating, setRating] = useState(initialRating);
+  const [range, setRange] = useState<[number, number]>(initialRange);
 
-  // Synchronize the internal state with any changes to initialRating (e.g., after a form reset)
+  // Keep local state in sync if the form resets/updates from outside
   useEffect(() => {
-    setRating(initialRating);
-  }, [initialRating]);
+    setRange(initialRange);
+  }, [initialRange]);
 
   const handleSliderChange = (value: number[]) => {
-    const newRating = value[0];
-    setRating(newRating);
-    onRatingChange(newRating);
+    // Radix slider returns an array of two values for a double slider
+    const [minRating, maxRating] = value as [number, number];
+    setRange([minRating, maxRating]);
+    onRangeChange([minRating, maxRating]);
   };
 
-  const totalStars = 4;
-  const stars = Array.from({ length: totalStars }, (_, index) => {
-    const fillPercentage = Math.max(0, Math.min(1, rating - index));
-    return <Star key={index} fillPercentage={fillPercentage} />;
-  });
-
   return (
-    <div className="flex flex-col items-center space-y-2">
-      <div className="flex items-center">{stars}</div>
-      <Slider
-        value={[rating]}
+    <div className="flex flex-col items-center space-y-2 w-full mt-2">
+      {/* You can display the current values, star icons, etc. */}
+      <div className="flex items-center space-x-2 text-xs dark:text-gray-400">
+        <span>
+          {range[0].toFixed(1)} - {range[1].toFixed(1)} Stars
+        </span>
+      </div>
+
+      <DoubleSlider
+        value={range}
         onValueChange={handleSliderChange}
-        max={totalStars}
+        min={0}
+        max={4}
         step={0.1}
-        className="w-full h-1 bg-gray-300 rounded-full"
+        className="w-full h-1 bg-gray-300 rounded-full dark:bg-gray-300"
       />
+
+      {/* Labels for the slider values */}
+      <div className="flex justify-between w-full px-2">
+        {[0, 1, 2, 3, 4].map((value) => (
+          <span key={value} className="text-sm dark:text-gray-400">
+            {value}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };

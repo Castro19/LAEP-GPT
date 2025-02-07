@@ -2,28 +2,30 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { RiFilterLine, RiStarFill } from "react-icons/ri";
+import { RiFilterLine } from "react-icons/ri";
 
+// UI
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Components
+import CourseInformation from "./CourseInformation";
+import Instructor from "./Instructor";
+import Scheduling from "./Scheduling";
 
 // Redux hooks and actions
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setFilters, fetchSectionsAsync } from "@/redux/section/sectionSlice";
 import { SectionsFilterParams } from "@polylink/shared/types";
-import InstructorRatingFilter from "../InstructorRatingFilter";
-import CourseInformation from "./CourseInformation";
+
+// Constants
 import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
-import Scheduling from "./Scheduling";
+
+// Environment
 import { environment } from "@/helpers/getEnvironmentVars";
+
 // Define a Zod schema for the filter form.
 
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
@@ -48,7 +50,9 @@ export function SectionFilters() {
       endTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[1]
         : "20:00",
-      instructorRating: reduxFilters.instructorRating || "",
+      minInstructorRating: reduxFilters.minInstructorRating || "",
+      maxInstructorRating: reduxFilters.maxInstructorRating || "",
+      includeUnratedInstructors: reduxFilters.includeUnratedInstructors,
       units: reduxFilters.units ? Number(reduxFilters.units) : 6,
       // Convert the stored string of attributes into an array
       courseAttributes:
@@ -75,7 +79,9 @@ export function SectionFilters() {
       subject: watchedValues.subject || "",
       days: watchedValues.days ? watchedValues.days.join(",") : "",
       timeRange,
-      instructorRating: watchedValues.instructorRating || "",
+      minInstructorRating: watchedValues.minInstructorRating || "",
+      maxInstructorRating: watchedValues.maxInstructorRating || "",
+      includeUnratedInstructors: watchedValues.includeUnratedInstructors,
       units: watchedValues.units?.toString() || "",
       // Join the array of attributes into a comma-separated string.
       courseAttribute: watchedValues.courseAttributes || [],
@@ -101,7 +107,9 @@ export function SectionFilters() {
       subject: data.subject || "",
       days: data.days ? data.days.join(",") : "",
       timeRange,
-      instructorRating: data.instructorRating || "",
+      minInstructorRating: data.minInstructorRating || "",
+      maxInstructorRating: data.maxInstructorRating || "",
+      includeUnratedInstructors: data.includeUnratedInstructors,
       units: data.units?.toString() || "",
       courseAttribute: data.courseAttributes || [],
       instructionMode: data.instructionMode || "",
@@ -132,33 +140,7 @@ export function SectionFilters() {
                 <CourseInformation form={form} />
                 <Scheduling form={form} />
                 {/* Instructor Rating */}
-                <FormField
-                  control={form.control}
-                  name="instructorRating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="text-sm font-medium text-gray-700 flex items-center">
-                          Instructor Rating ≥ {field.value || 0}
-                          <RiStarFill className="inline-block w-4 h-4 ml-1 text-yellow-500" />
-                        </FormLabel>
-                        <FormControl className="flex-1 ml-4">
-                          <InstructorRatingFilter
-                            initialRating={
-                              field.value ? parseFloat(field.value) : undefined
-                            }
-                            onRatingChange={(rating) =>
-                              form.setValue(
-                                "instructorRating",
-                                rating.toString()
-                              )
-                            }
-                          />
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                <Instructor form={form} />
               </div>
             </ScrollArea>
           </div>

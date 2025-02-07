@@ -13,11 +13,13 @@ router.get("/", async (req: Request, res: any) => {
       status, // "open" or "closed"
       days, // e.g., "Mo,Tu,We"
       timeRange, // e.g., "08:00:00-10:00:00"
-      instructorRating, // e.g., "3.5"
       units, // Max number of units  e.g., 1, 2, 3, 4, 5, 6
       courseAttribute, // e.g., "GWR"
       instructionMode, // e.g., "P" or "PS" or "PA", etc.
       instructor, // e.g., "John Doe"
+      minInstructorRating, // e.g., "3.5"
+      maxInstructorRating, // e.g., "4.0"
+      includeUnratedInstructors, // e.g., true or false
       page = "1", // Default to page 1 if not provided
     } = req.query;
 
@@ -38,7 +40,6 @@ router.get("/", async (req: Request, res: any) => {
       status: status as string,
       days: days as string,
       timeRange: timeRange as string,
-      instructorRating: instructorRating as string,
       units: units,
       courseAttribute:
         typeof courseAttribute === "string"
@@ -49,6 +50,9 @@ router.get("/", async (req: Request, res: any) => {
       instructionMode:
         instructionMode as SectionsFilterParams["instructionMode"],
       instructor: instructor as string,
+      minInstructorRating: minInstructorRating as string,
+      maxInstructorRating: maxInstructorRating as string,
+      includeUnratedInstructors: includeUnratedInstructors as boolean,
     };
 
     // Call the service with the parsed query object
