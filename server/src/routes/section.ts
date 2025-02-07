@@ -49,7 +49,10 @@ router.get("/", async (req: Request, res: any) => {
           : (courseAttribute as SectionsFilterParams["courseAttribute"]),
       instructionMode:
         instructionMode as SectionsFilterParams["instructionMode"],
-      instructors: instructors as string[],
+      instructors:
+        typeof instructors === "string"
+          ? (instructors as string).split(",")
+          : (instructors as string[]),
       minInstructorRating: minInstructorRating as string,
       maxInstructorRating: maxInstructorRating as string,
       includeUnratedInstructors: includeUnratedInstructors as boolean,
