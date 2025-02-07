@@ -106,6 +106,7 @@ export const qdrant = {
 export const fallbackAssistantId = process.env.FALLBACK_ASST_ID;
 export const professorReviewsAssistantId =
   process.env.PROFESSOR_REVIEWS_ASST_ID;
+export const queryAssistantId = process.env.QUERY_ASST_ID;
 
 export const environment = process.env.ENVIRONMENT;
 // Connect to the database and start the server

@@ -11,6 +11,11 @@ import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
 import { RunningStreamData } from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio";
+import { queryAgent } from "../helpers/assistants/queryAgent";
+
+import { findSectionsByFilter } from "../db/models/section/sectionCollection";
+import { SectionDocument } from "@polylink/shared/types";
+import { Filter } from "mongodb";
 
 const router = express.Router();
 
@@ -232,6 +237,45 @@ router.post(
       if (environment === "dev") {
         console.error("Error generating bio:", error);
       }
+    }
+  })
+);
+router.post(
+  "/query",
+  messageRateLimiter,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { message } = req.body;
+    if (!message) {
+      res.status(400).json({ error: "Message is required" });
+    }
+
+    try {
+      const filter = await queryAgent(message);
+      if (!filter) {
+        res.status(400).json({
+          error: "Could not generate valid filter from query",
+          details: "Please refine your search criteria",
+        });
+      }
+
+      const { sections, total } = await findSectionsByFilter(
+        filter as Filter<SectionDocument>,
+        0,
+        25
+      );
+
+      res.json({
+        filter,
+        results: sections,
+        total,
+        success: true,
+      });
+    } catch (error) {
+      console.error("Query endpoint error:", error);
+      res.status(500).json({
+        error: "Internal server error during query processing",
+        details: process.env.NODE_ENV === "development" ? error : undefined,
+      });
     }
   })
 );
