@@ -13,14 +13,16 @@ type CollapsibleContentWrapperProps = {
   children: React.ReactNode;
   title: string;
   icon: React.ComponentType<{ className?: string }>;
+  defaultOpen?: boolean;
 };
 
 const CollapsibleContentWrapper = ({
   children,
   title,
   icon: Icon,
+  defaultOpen = true,
 }: CollapsibleContentWrapperProps) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -28,7 +30,7 @@ const CollapsibleContentWrapper = ({
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      <Collapsible open={open} onOpenChange={setOpen} defaultOpen={true}>
+      <Collapsible open={open} onOpenChange={setOpen} defaultOpen={defaultOpen}>
         <CollapsibleTrigger asChild>
           <Button
             variant="outline"
