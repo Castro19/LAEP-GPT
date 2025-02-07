@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { RiFilterLine } from "react-icons/ri";
 
 // UI
 import { Card } from "@/components/ui/card";
@@ -134,9 +133,8 @@ export function SectionFilters() {
             <ScrollArea className="h-full min-w-full mb-4">
               <div className="p-6 space-y-6">
                 <div className="flex items-center justify-center space-x-2">
-                  <RiFilterLine className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                    Filter Sections
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                    Course Filters
                   </h2>
                 </div>
               </div>
