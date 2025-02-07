@@ -20,6 +20,7 @@ import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
+import ProfileEmptyFlowchart from "@/components/flowchart/ProfileEmptyFlowchart";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -229,20 +230,35 @@ export function ProfilePage() {
           </TabsList>
           <TabsContent value="flowchart">
             <Card className="h-full">
-              <FlowChart flowchartData={flowchartData} />
               <div className="flex flex-col w-full gap-4 mb-2">
-                <SpecialButton
-                  onClick={handleUpdateFlowchart}
-                  text="Save Flowchart"
-                />
-                <SpecialButton
-                  text="Modify Flowcharts"
-                  onClick={() => {
-                    navigate(
-                      `/flowchart/${userData.flowchartInformation.flowchartId}`
-                    );
-                  }}
-                />
+                {flowchartData ? (
+                  <>
+                    <FlowChart flowchartData={flowchartData} />
+                    <SpecialButton
+                      onClick={handleUpdateFlowchart}
+                      text="Save Flowchart"
+                    />
+                    <SpecialButton
+                      text="Modify Flowcharts"
+                      onClick={() => {
+                        navigate(
+                          `/flowchart/${userData.flowchartInformation.flowchartId}`
+                        );
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <ProfileEmptyFlowchart />
+                    <SpecialButton
+                      text="Go to Flowchart"
+                      icon={<></>}
+                      onClick={() => {
+                        navigate("/flowchart");
+                      }}
+                    />
+                  </>
+                )}
               </div>
             </Card>
           </TabsContent>
