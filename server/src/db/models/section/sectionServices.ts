@@ -75,14 +75,69 @@ function buildSectionsQuery(
 
   // 6) instructorRating
   //    e.g. ">=3.5" or "3.5"? For simplicity, let's assume it's always "3.5" meaning ">= 3.5".
-  if (filter.instructorRating) {
-    const rating = parseFloat(filter.instructorRating);
-    if (!isNaN(rating) && rating > 0) {
-      // We want at least one instructorWithRatings whose overallRating >= rating
-      query["instructorsWithRatings"] = {
-        $elemMatch: { overallRating: { $gte: rating } },
-      };
+  // 6a. Parse min/max rating if provided.
+  if (filter.minInstructorRating && filter.maxInstructorRating) {
+    const minRating = parseFloat(filter.minInstructorRating);
+    const maxRating = parseFloat(filter.maxInstructorRating);
+
+    // 6b. Ensure these are valid numbers; adjust any conditions you need here.
+    if (!isNaN(minRating) && !isNaN(maxRating)) {
+      // 6c. If we also want to include unrated instructors
+      //    we need an OR condition:
+      console.log(
+        "filter.includeUnratedInstructors",
+        filter.includeUnratedInstructors
+      );
+      if (filter.includeUnratedInstructors) {
+        query["$or"] = [
+          {
+            // *Rated* instructors in the given range
+            instructorsWithRatings: {
+              $elemMatch: {
+                overallRating: {
+                  $gte: minRating,
+                  $lte: maxRating,
+                },
+              },
+            },
+          },
+          {
+            // *Unrated* instructors: array is missing entirely
+            instructorsWithRatings: {
+              $exists: false,
+            },
+          },
+          {
+            // *Unrated* instructors: array is present but empty
+            instructorsWithRatings: {
+              $size: 0,
+            },
+          },
+        ];
+      } else {
+        // 6d. If we only want instructors that have a rating in the range
+        query["instructorsWithRatings"] = {
+          $elemMatch: {
+            overallRating: {
+              $gte: minRating,
+              $lte: maxRating,
+            },
+          },
+        };
+      }
     }
+  }
+  // 6e. If only `includeUnratedInstructors` is true with *no* min/max rating
+  //    you can include a separate condition if desired.
+  else if (filter.includeUnratedInstructors) {
+    // For example, include *all* rated in any range plus *all* unrated
+    // or only show *unrated*. Depends on your business logic.
+    query["$or"] = [
+      { instructorsWithRatings: { $exists: false } },
+      { instructorsWithRatings: { $size: 0 } },
+      // Or if you want *all* (including rated):
+      {},
+    ];
   }
 
   // 7) units (e.g., 1, 2, 3, 4, 5, 6)

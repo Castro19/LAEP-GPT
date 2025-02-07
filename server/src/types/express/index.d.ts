@@ -16,11 +16,13 @@ interface CustomRequest extends Request {
     status?: string;
     days?: string;
     timeRange?: string;
-    instructorRating?: string;
     units?: string;
     courseAttribute?: string;
     instructionMode?: string;
     instructor?: string;
+    minInstructorRating?: string;
+    maxInstructorRating?: string;
+    includeUnratedInstructors?: boolean;
     page?: number;
   };
 }

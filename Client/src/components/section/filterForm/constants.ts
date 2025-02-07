@@ -24,7 +24,9 @@ export const SECTION_FILTERS_SCHEMA = z.object({
   // Capture start and end times separately.
   startTime: z.string().optional(),
   endTime: z.string().optional(),
-  instructorRating: z.string().optional(),
+  minInstructorRating: z.string().optional(),
+  maxInstructorRating: z.string().optional(),
+  includeUnratedInstructors: z.boolean().optional(),
   units: z.number().min(1).max(6).optional(),
   // Allow multiple course attributes
   courseAttributes: z.array(z.enum(COURSE_ATTRIBUTES)).optional(),
