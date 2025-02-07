@@ -14,7 +14,8 @@ router.get("/", async (req: Request, res: any) => {
       status, // "open" or "closed"
       days, // e.g., "Mo,Tu,We"
       timeRange, // e.g., "08:00:00-10:00:00"
-      units, // Max number of units  e.g., 1, 2, 3, 4, 5, 6
+      minUnits, // e.g., "1"
+      maxUnits, // e.g., "6"
       courseAttribute, // e.g., "GWR"
       instructionMode, // e.g., "P" or "PS" or "PA", etc.
       instructors, // e.g., ["John Doe", "Jane Doe"]
@@ -41,7 +42,8 @@ router.get("/", async (req: Request, res: any) => {
       status: status as string,
       days: days as string,
       timeRange: timeRange as string,
-      units: units,
+      minUnits: minUnits as string,
+      maxUnits: maxUnits as string,
       courseAttribute:
         typeof courseAttribute === "string"
           ? (courseAttribute.split(

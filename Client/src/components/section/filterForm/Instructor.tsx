@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { SECTION_FILTERS_SCHEMA } from "./constants";
-import InstructorRatingFilter from "../InstructorRatingFilter";
+import DoubleSliderFilter from "./reusable/DoubleSliderFilter";
 import { z } from "zod";
 import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
 import { FaUser } from "react-icons/fa";
@@ -49,7 +49,7 @@ const Instructor = ({
 
                 <div className="flex flex-col w-full">
                   <FormControl className="flex-1 w-full ml-4">
-                    <InstructorRatingFilter
+                    <DoubleSliderFilter
                       // 3. Pass BOTH min and max to initialRange
                       initialRange={[minValue, maxValue]}
                       onRangeChange={([newMin, newMax]) => {

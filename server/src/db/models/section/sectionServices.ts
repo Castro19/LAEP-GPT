@@ -137,35 +137,56 @@ function buildSectionsQuery(
     ];
   }
 
-  // 7) units (e.g., 1, 2, 3, 4, 5, 6)
-  //    Because `units` in the schema is a string, you'll have to decide how it's stored.
-  if (filter.units) {
-    const filterUnits = parseInt(filter.units, 10);
+  // 7) units (e.g., "1-4")
+  if (filter.minUnits && filter.maxUnits) {
+    const minUnits = parseInt(filter.minUnits, 10);
+    const maxUnits = parseInt(filter.maxUnits, 10);
 
-    if (!isNaN(filterUnits)) {
+    if (!isNaN(minUnits) && !isNaN(maxUnits)) {
       query.$expr = {
-        $lte: [
+        $and: [
+          // Check if unit's lower bound >= minUnits
           {
-            $cond: [
-              // Check if the units string contains " - " (with spaces)
-              { $regexMatch: { input: "$units", regex: / - / } },
+            $gte: [
               {
-                // For ranges like "1 - 4", split using " - ", trim the second element, and convert to an int.
-                $toInt: {
-                  $trim: {
-                    input: {
-                      $arrayElemAt: [{ $split: ["$units", " - "] }, 1],
+                $cond: [
+                  { $regexMatch: { input: "$units", regex: / - / } },
+                  {
+                    $toInt: {
+                      $trim: {
+                        input: {
+                          $arrayElemAt: [{ $split: ["$units", " - "] }, 0],
+                        },
+                      },
                     },
                   },
-                },
+                  { $toInt: "$units" },
+                ],
               },
-              {
-                // Otherwise, assume it's a single number and convert directly.
-                $toInt: "$units",
-              },
+              minUnits,
             ],
           },
-          filterUnits, // Only match courses whose max units is <= filterUnits.
+          // Check if unit's upper bound <= maxUnits
+          {
+            $lte: [
+              {
+                $cond: [
+                  { $regexMatch: { input: "$units", regex: / - / } },
+                  {
+                    $toInt: {
+                      $trim: {
+                        input: {
+                          $arrayElemAt: [{ $split: ["$units", " - "] }, 1],
+                        },
+                      },
+                    },
+                  },
+                  { $toInt: "$units" },
+                ],
+              },
+              maxUnits,
+            ],
+          },
         ],
       };
     }
@@ -224,3 +245,12 @@ export async function getSectionsByFilter(
     return { sections: [], total: 0 };
   }
 }
+
+/*
+minUnits: "1"
+maxUnits: "4"
+
+$units: "2 - 3"
+
+good: 2 >= 1 && 3 <= 4
+*/

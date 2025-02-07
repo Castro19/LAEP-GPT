@@ -1,7 +1,6 @@
 import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { Slider } from "@/components/ui/slider";
 import { FaBook } from "react-icons/fa";
 import { COURSE_ATTRIBUTES, SECTION_FILTERS_SCHEMA } from "./constants";
 import { z } from "zod";
@@ -11,6 +10,7 @@ import TitleLabel from "./reusable/TitleLabel";
 import Searchbar from "./reusable/SearchBar";
 import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
 import SUBJECTS from "./api/subjects";
+import DoubleSliderFilter from "./reusable/DoubleSliderFilter";
 
 const CourseInformation = ({
   form,
@@ -85,34 +85,33 @@ const CourseInformation = ({
       {/* Minimum Units Slider */}
       <FormField
         control={form.control}
-        name="units"
-        render={({ field }) => (
-          <FormItem>
-            <TitleLabel title="Units" />
-            <FormControl>
-              <div className="flex flex-col items-center space-y-2">
-                <span className="text-sm text-gray-700">
-                  {field.value} Units
-                </span>
-                <Slider
-                  value={[field.value || 0]}
-                  onValueChange={(value) =>
-                    form.setValue("units", value[0] as number)
-                  }
-                  min={0}
-                  max={6}
-                  step={1}
-                  className="w-full h-2 bg-gray-300 rounded-full"
-                  aria-label="Minimum Units"
+        name="minUnits"
+        render={({ field }) => {
+          // 1. Get the min from the field
+          const minValue = parseFloat(field.value ?? "0");
+
+          // 2. Watch the max so the component re-renders when it changes
+          const maxValueString = form.watch("maxUnits");
+          const maxValue = parseFloat(maxValueString ?? "9");
+
+          return (
+            <FormItem>
+              <TitleLabel title="Units" />
+              <FormControl className="flex-1 w-full ml-4">
+                <DoubleSliderFilter
+                  initialRange={[minValue, maxValue]}
+                  onRangeChange={([newMin, newMax]) => {
+                    field.onChange(newMin.toString());
+                    form.setValue("maxUnits", newMax.toString());
+                  }}
+                  max={9}
+                  step={0.5}
+                  label="Units"
                 />
-                <div className="flex justify-between w-full text-xs text-gray-600">
-                  <span>0</span>
-                  <span>6</span>
-                </div>
-              </div>
-            </FormControl>
-          </FormItem>
-        )}
+              </FormControl>
+            </FormItem>
+          );
+        }}
       />
       <FormField
         control={form.control}

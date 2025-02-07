@@ -57,7 +57,8 @@ export function SectionFilters() {
       minInstructorRating: reduxFilters.minInstructorRating || "",
       maxInstructorRating: reduxFilters.maxInstructorRating || "",
       includeUnratedInstructors: reduxFilters.includeUnratedInstructors,
-      units: reduxFilters.units ? Number(reduxFilters.units) : 6,
+      minUnits: reduxFilters.minUnits || "0",
+      maxUnits: reduxFilters.maxUnits || "9",
       // Convert the stored string of attributes into an array
       courseAttributes:
         (reduxFilters.courseAttribute as (typeof COURSE_ATTRIBUTES)[number][]) ||
@@ -87,7 +88,8 @@ export function SectionFilters() {
       minInstructorRating: watchedValues.minInstructorRating || "",
       maxInstructorRating: watchedValues.maxInstructorRating || "",
       includeUnratedInstructors: watchedValues.includeUnratedInstructors,
-      units: watchedValues.units?.toString() || "",
+      minUnits: watchedValues.minUnits || "",
+      maxUnits: watchedValues.maxUnits || "",
       // Join the array of attributes into a comma-separated string.
       courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
@@ -112,7 +114,8 @@ export function SectionFilters() {
     }
     const updatedFilters: SectionsFilterParams = {
       courseIds: data.courseIds || [],
-      units: data.units?.toString() || "",
+      minUnits: data.minUnits || "",
+      maxUnits: data.maxUnits || "",
       courseAttribute: data.courseAttributes || [],
       subject: data.subject || "",
 
