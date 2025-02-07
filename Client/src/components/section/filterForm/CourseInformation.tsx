@@ -58,6 +58,30 @@ const CourseInformation = ({
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="subject"
+        render={({ field }) => (
+          <FormItem>
+            <TitleLabel title="Subject" />
+            <FormControl>
+              <ReusableDropdown
+                name="subject"
+                className="w-full mt-2 dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
+                dropdownItems={[]}
+                valueLabelDropdown={SUBJECTS.map((subject) => ({
+                  value: subject.subject,
+                  label: subject.description,
+                }))}
+                handleChangeItem={(_, selectedValue) => {
+                  form.setValue("subject", selectedValue);
+                }}
+                selectedItem={field.value || ""}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
       {/* Minimum Units Slider */}
       <FormField
         control={form.control}
@@ -86,30 +110,6 @@ const CourseInformation = ({
                   <span>6</span>
                 </div>
               </div>
-            </FormControl>
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="subject"
-        render={({ field }) => (
-          <FormItem>
-            <TitleLabel title="Subject" />
-            <FormControl>
-              <ReusableDropdown
-                name="subject"
-                className="w-full mt-2 dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
-                dropdownItems={[]}
-                valueLabelDropdown={SUBJECTS.map((subject) => ({
-                  value: subject.subject,
-                  label: subject.description,
-                }))}
-                handleChangeItem={(_, selectedValue) => {
-                  form.setValue("subject", selectedValue);
-                }}
-                selectedItem={field.value || ""}
-              />
             </FormControl>
           </FormItem>
         )}
