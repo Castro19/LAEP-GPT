@@ -61,7 +61,12 @@ const Scheduling = ({
                 <Button
                   type="button"
                   variant={field.value === "open" ? "default" : "outline"}
-                  onClick={() => form.setValue("status", "open")}
+                  onClick={() =>
+                    form.setValue(
+                      "status",
+                      field.value === "open" ? undefined : "open"
+                    )
+                  }
                   className="px-4 py-2"
                 >
                   Open
@@ -69,7 +74,12 @@ const Scheduling = ({
                 <Button
                   type="button"
                   variant={field.value === "closed" ? "default" : "outline"}
-                  onClick={() => form.setValue("status", "closed")}
+                  onClick={() =>
+                    form.setValue(
+                      "status",
+                      field.value === "closed" ? undefined : "closed"
+                    )
+                  }
                   className="px-4 py-2"
                 >
                   Closed
@@ -96,7 +106,12 @@ const Scheduling = ({
                     key={mode}
                     type="button"
                     variant={field.value === code ? "default" : "outline"}
-                    onClick={() => form.setValue("instructionMode", code)}
+                    onClick={() =>
+                      form.setValue(
+                        "instructionMode",
+                        field.value === code ? undefined : code
+                      )
+                    }
                     className="h-8 text-sm"
                   >
                     {mode}
