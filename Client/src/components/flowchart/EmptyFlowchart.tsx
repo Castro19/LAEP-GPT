@@ -1,13 +1,18 @@
 import FlowChartOptions from "../register/SignInFlow/FlowChartOptions";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "../ui/button";
 import ProgressBar from "./ProgressBar";
-
+import { useUserData } from "@/hooks/useUserData";
+import { environment } from "@/helpers/getEnvironmentVars";
+import { FlowchartData } from "@polylink/shared/types";
 const EmptyFlowchart = () => {
   const { selections } = useAppSelector((state) => state.flowSelection);
+  const { userData, handleChangeFlowchartInformation, handleSave } =
+    useUserData();
+  const { flowchartList } = useAppSelector((state) => state.flowchart);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
@@ -21,21 +26,65 @@ const EmptyFlowchart = () => {
   const progress = (stepsCompleted / 3) * 100; // Convert to percentage
   const isComplete = stepsCompleted === 3;
 
-  const handleSaveFlowchart = () => {
-    if (isComplete && selections.catalog && selections.major && selections.concentration) {
-      fetchFlowchartDataHelper(
+  const handleSaveFlowchart = async () => {
+    if (
+      isComplete &&
+      selections.catalog &&
+      selections.major &&
+      selections.concentration
+    ) {
+      const flowchartData = await fetchFlowchartDataHelper(
         dispatch,
         selections.catalog,
         selections.major,
-        selections.concentration.code
+        selections.concentration.code,
+        userData.year,
+        true
       );
-      navigate("/flowchart");
+      await saveFlowchartToDB(flowchartData);
     } else {
       toast({
         title: "Please select a catalog, major, and concentration",
         description: "You must select all options to create a flowchart",
         variant: "destructive",
       });
+    }
+  };
+
+  const saveFlowchartToDB = async (flowchartData: FlowchartData) => {
+    let flowchart;
+
+    if (!flowchartData) {
+      return;
+    }
+    try {
+      flowchart = await dispatch(
+        flowchartActions.postFlowchartInDB({
+          flowchartData,
+          name: flowchartData.name,
+          // If there are no flowcharts in the database, set the new flowchart as primary
+          primaryOption: (flowchartList ?? []).length === 0,
+        })
+      ).unwrap(); // Unwraps the result to get the payload or throw error
+
+      if (flowchart && flowchart.flowchartId) {
+        if (flowchart.primaryOption) {
+          handleChangeFlowchartInformation(
+            "flowchartId",
+            flowchart.flowchartId
+          );
+          handleSave();
+        }
+        navigate(`/flowchart/${flowchart.flowchartId}`);
+      } else {
+        if (environment === "dev") {
+          console.error("Failed to get flowchartId from the response.");
+        }
+      }
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Failed to save flowchart:", error);
+      }
     }
   };
 

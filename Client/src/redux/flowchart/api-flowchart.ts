@@ -1,7 +1,7 @@
-import { fetchFlowchartData } from "./flowchartSlice";
+import { fetchFlowchartData, setLoading } from "./flowchartSlice";
 import { AppDispatch } from "../store";
 import { resetFlowchartData } from "./flowchartSlice";
-import { Course, Term } from "@polylink/shared/types";
+import { Course, FlowchartData, Term } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 /**
@@ -10,12 +10,16 @@ import { environment } from "@/helpers/getEnvironmentVars";
  * @param catalog Selected catalog (e.g., "2022-2026")
  * @param major Selected major (e.g., "Computer Science")
  * @param concentration Selected concentration (e.g., "22-26.52CSCBSU")
+ * @param startYear Start year (e.g., "2022")
+ * @param autoFill Whether to auto fill the flowchart (e.g., true)
  */
 export async function fetchFlowchartDataHelper(
   dispatch: AppDispatch,
   catalog: string,
   major: string,
-  concentration: string
+  concentration: string,
+  startYear: string = "2022",
+  autoFill: boolean = true
 ) {
   // Construct the file path for the JSON file
   const filePath = `api/data/flows/json/dflows/${encodeURIComponent(catalog)}/${encodeURIComponent(
@@ -28,6 +32,7 @@ export async function fetchFlowchartDataHelper(
   const courseUrl = `https://raw.githubusercontent.com/polyflowbuilder/polyflowbuilder/refs/heads/main/api/data/courses/${catalog}/${catalog}.json`;
 
   try {
+    dispatch(setLoading({ type: "fetchFlowchartData", value: true }));
     // Reset the flowchart data before fetching new data
     dispatch(resetFlowchartData());
 
@@ -64,13 +69,60 @@ export async function fetchFlowchartDataHelper(
       });
     });
 
+    let flowchartData = jsonData;
+    if (autoFill && startYear) {
+      const year = yearMap(startYear);
+      flowchartData = autoFillFlowchart(flowchartData, year);
+    }
     // Dispatch the action to update the flowchart data in the Redux store
-    dispatch(fetchFlowchartData.fulfilled(jsonData, "", ""));
+    dispatch(fetchFlowchartData.fulfilled(flowchartData, "", ""));
+    return flowchartData;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (environment === "dev") {
       console.error("Error fetching flowchart data:", error);
     }
     dispatch(fetchFlowchartData.rejected(error.toString(), "", ""));
+    dispatch(setLoading({ type: "fetchFlowchartData", value: false }));
   }
 }
+
+const autoFillFlowchart = (
+  flowchartData: FlowchartData,
+  studentYear: number
+) => {
+  const { termData } = flowchartData;
+  const maxTIndex = getMaxTIndex(studentYear);
+
+  termData.forEach((term: Term) => {
+    if (term.tIndex <= maxTIndex) {
+      term.courses.forEach((course: Course) => {
+        // Mark the course as completed
+        course.completed = true;
+      });
+    }
+  });
+
+  return flowchartData;
+};
+
+const yearMap = (year: string) => {
+  const yearMap = {
+    freshman: 1,
+    sophomore: 2,
+    junior: 3,
+    senior: 4,
+  };
+  return yearMap[year as keyof typeof yearMap];
+};
+
+const getMaxTIndex = (studentYear: number): number => {
+  const yearToTIndexMap: { [key: number]: number } = {
+    1: 2, // Freshman
+    2: 6, // Sophomore
+    3: 10, // Junior
+    4: 14, // Senior
+  };
+
+  return yearToTIndexMap[studentYear] || 0; // Default to 9 if year is out of range
+};

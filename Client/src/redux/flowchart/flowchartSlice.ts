@@ -225,6 +225,30 @@ const flowchartSlice = createSlice({
         course.completed = !course.completed;
       }
     },
+    setLoading: (
+      state,
+      action: PayloadAction<{ type: string; value: boolean }>
+    ) => {
+      switch (action.payload.type) {
+        case "fetchFlowchartData":
+          state.loading.fetchFlowchartData = action.payload.value;
+          break;
+        case "setFlowchart":
+          state.loading.setFlowchart = action.payload.value;
+          break;
+        case "fetchAllFlowcharts":
+          state.loading.fetchAllFlowcharts = action.payload.value;
+          break;
+        case "updateFlowchart":
+          state.loading.updateFlowchart = action.payload.value;
+          break;
+        case "deleteFlowchart":
+          state.loading.deleteFlowchart = action.payload.value;
+          break;
+        default:
+          break;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -252,7 +276,6 @@ const flowchartSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchFlowchartData.fulfilled, (state, action) => {
-        state.loading.fetchFlowchartData = false;
         state.flowchartData = action.payload;
       })
       .addCase(fetchFlowchartData.rejected, (state, action) => {
@@ -370,6 +393,7 @@ export const {
   resetFlowchartData,
   toggleCourseCompletion,
   setFlowchartList,
+  setLoading,
 } = flowchartSlice.actions;
 
 export const flowchartReducer = flowchartSlice.reducer;

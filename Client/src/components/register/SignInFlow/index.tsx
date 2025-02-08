@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import TitleCard from "../TitleCard";
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { useAppDispatch } from "@/redux";
 import { setIsNewUser } from "@/redux/auth/authSlice";
-import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useUserData } from "@/hooks/useUserData";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useIsMobile from "@/hooks/use-mobile";
@@ -23,7 +22,7 @@ const SignInFlow = () => {
   const dispatch = useAppDispatch();
   const { handleSave, userData } = useUserData();
   const isMobile = useIsMobile();
-  const { selections } = useAppSelector((state) => state.flowSelection);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -110,17 +109,6 @@ const SignInFlow = () => {
     }
     dispatch(setIsNewUser(false));
     handleSave();
-    if (selections.catalog && selections.major && selections.concentration) {
-      fetchFlowchartDataHelper(
-        dispatch,
-        selections.catalog,
-        selections.major,
-        selections.concentration.code
-      );
-      navigate("/flowchart");
-    } else {
-      navigate("/chat");
-    }
   };
 
   const handleDisableClick = () => {

@@ -11,7 +11,7 @@ const FlowChartFooter = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isMobile } = useSidebar();
-  const { flowchartData, flowchartList, currentFlowchart } = useAppSelector(
+  const { flowchartData, flowchartList } = useAppSelector(
     (state) => state.flowchart
   );
   const { flowchartId } = useParams();
@@ -68,52 +68,19 @@ const FlowChartFooter = () => {
     }
   };
 
-  const handleUpdateData = async () => {
-    if (!flowchartData) {
-      navigate("/chat");
-      return;
-    }
-
-    try {
-      await dispatch(
-        flowchartActions.updateFlowchart({
-          flowchartId: flowchartId ?? "",
-          flowchartData,
-          name: currentFlowchart?.name ?? "",
-          primaryOption: currentFlowchart?.primaryOption ?? false,
-        })
-      ).unwrap();
-      navigate(`/flowchart/${flowchartId}`);
-      toast({
-        title: "Flowchart Updated",
-        description: "Your flowchart has been updated successfully.",
-      });
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to update flowchart:", error);
-      }
-    }
-  };
-
   return (
     <footer className="flex flex-col justify-between items-center p-4 w-full gap-4">
       {isMobile && (
         <div className="flex justify-center items-center w-full">
-          {flowchartId === "" || flowchartId === undefined ? (
-            <SpecialButton
-              onClick={handleSaveData}
-              text="Save"
-              icon={<MdSave />}
-              className="flex-1 justify-center w-[60vw] dark:bg-green-700 dark:hover:bg-green-700"
-            />
-          ) : (
-            <SpecialButton
-              onClick={handleUpdateData}
-              text="Update"
-              icon={<MdSave />}
-              className="flex-1 justify-center w-[60vw] dark:bg-green-700 dark:hover:bg-green-700"
-            />
-          )}
+          {flowchartId === "" ||
+            (flowchartId === undefined && (
+              <SpecialButton
+                onClick={handleSaveData}
+                text="Save"
+                icon={<MdSave />}
+                className="flex-1 justify-center w-[60vw] dark:bg-green-700 dark:hover:bg-green-700"
+              />
+            ))}
         </div>
       )}
     </footer>

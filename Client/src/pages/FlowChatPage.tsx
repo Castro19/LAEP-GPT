@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import FlowChart from "@/components/flowchart/FlowChart";
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
   fetchAllFlowcharts,
   setFlowchart,
@@ -10,11 +10,14 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import EmptyFlowchart from "@/components/flowchart/EmptyFlowchart";
 import { useParams } from "react-router-dom";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
   const { flowchartId } = useParams();
-  const { flowchartData, loading } = useAppSelector((state) => state.flowchart);
+  const { flowchartData, loading, currentFlowchart } = useAppSelector(
+    (state) => state.flowchart
+  );
 
   const initialLoadRef = useRef(false);
 
@@ -32,6 +35,36 @@ const FlowChatPage = () => {
 
     initializeFlowcharts();
   }, [flowchartId, flowchartData, dispatch, loading.deleteFlowchart]);
+
+  useEffect(() => {
+    const updateFlowchart = async () => {
+      try {
+        if (
+          flowchartId &&
+          !loading.fetchFlowchartData &&
+          !loading.updateFlowchart &&
+          !loading.deleteFlowchart &&
+          !loading.setFlowchart &&
+          currentFlowchart
+        ) {
+          await dispatch(
+            flowchartActions.updateFlowchart({
+              flowchartId: flowchartId ?? "",
+              flowchartData,
+              name: currentFlowchart?.name ?? "",
+              primaryOption: currentFlowchart?.primaryOption ?? false,
+            })
+          ).unwrap();
+        }
+      } catch (error) {
+        if (environment === "dev") {
+          console.error("Failed to update flowchart:", error);
+        }
+      }
+    };
+    updateFlowchart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flowchartData]);
 
   return (
     <>

@@ -17,10 +17,10 @@ import { useNavigate } from "react-router-dom";
 import SpecialButton from "@/components/ui/specialButton";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
-import { environment } from "@/helpers/getEnvironmentVars";
 import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 import ProfileEmptyFlowchart from "@/components/flowchart/ProfileEmptyFlowchart";
+import { environment } from "@/helpers/getEnvironmentVars";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -46,7 +46,7 @@ export function ProfilePage() {
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { flowchartData, currentFlowchart } = useAppSelector(
+  const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
   const initialLoadRef = useRef(false);
@@ -66,6 +66,36 @@ export function ProfilePage() {
     }
   }, [dispatch, userData.flowchartInformation.flowchartId]);
 
+  useEffect(() => {
+    const updateFlowchart = async () => {
+      try {
+        if (
+          userData.flowchartInformation.flowchartId &&
+          !loading.fetchFlowchartData &&
+          !loading.updateFlowchart &&
+          !loading.deleteFlowchart &&
+          !loading.setFlowchart &&
+          currentFlowchart
+        ) {
+          await dispatch(
+            flowchartActions.updateFlowchart({
+              flowchartId: userData.flowchartInformation.flowchartId ?? "",
+              flowchartData,
+              name: currentFlowchart?.name ?? "",
+              primaryOption: currentFlowchart?.primaryOption ?? false,
+            })
+          ).unwrap();
+        }
+      } catch (error) {
+        if (environment === "dev") {
+          console.error("Failed to update flowchart:", error);
+        }
+      }
+    };
+    updateFlowchart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flowchartData]);
+
   const handleSaveToast = () => {
     handleSave();
     toast({
@@ -82,27 +112,6 @@ export function ProfilePage() {
         title: "Degree Information Updated",
         description: "Your degree information has been updated successfully.",
       });
-    }
-  };
-
-  const handleUpdateFlowchart = async () => {
-    try {
-      await dispatch(
-        flowchartActions.updateFlowchart({
-          flowchartId: userData.flowchartInformation.flowchartId ?? "",
-          flowchartData,
-          name: currentFlowchart?.name ?? "",
-          primaryOption: true,
-        })
-      ).unwrap();
-      toast({
-        title: "Flowchart Saved",
-        description: "Your flowchart has been saved successfully.",
-      });
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to update flowchart:", error);
-      }
     }
   };
 
@@ -234,10 +243,6 @@ export function ProfilePage() {
                 {flowchartData ? (
                   <>
                     <FlowChart flowchartData={flowchartData} />
-                    <SpecialButton
-                      onClick={handleUpdateFlowchart}
-                      text="Save Flowchart"
-                    />
                     <SpecialButton
                       text="Modify Flowcharts"
                       onClick={() => {
