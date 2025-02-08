@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import TermContainer from "./termContainer/TermContainer";
 import { FlowchartData } from "@polylink/shared/types";
@@ -81,6 +81,24 @@ const FlowChart = ({
       });
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (flowchartRef.current) {
+        const scrollLeft = flowchartRef.current.scrollLeft;
+        const yearWidth = flowchartRef.current.scrollWidth / totalYears;
+        const newSelectedYear = Math.round(scrollLeft / yearWidth);
+        setSelectedYear(newSelectedYear);
+      }
+    };
+
+    const refCurrent = flowchartRef.current;
+    refCurrent?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      refCurrent?.removeEventListener("scroll", handleScroll);
+    };
+  }, [totalYears]);
 
   return (
     <div className="flex flex-col ml-12">
