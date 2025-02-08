@@ -32,7 +32,7 @@ export const QuerySchema = z
       (obj) => {
         // Ensure only allowed operators are used
         return Object.keys(obj).every((key) =>
-          allowedOperators.includes(key as any)
+          allowedOperators.includes(key as (typeof allowedOperators)[number])
         );
       },
       {
