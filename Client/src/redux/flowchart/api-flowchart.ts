@@ -70,7 +70,8 @@ export async function fetchFlowchartDataHelper(
     console.log("Flowchart data fetched successfully: ", jsonData);
     let flowchartData = jsonData;
     if (autoFill && startYear) {
-      flowchartData = autoFillFlowchart(flowchartData, startYear);
+      const year = yearMap(startYear);
+      flowchartData = autoFillFlowchart(flowchartData, year);
     }
     // Dispatch the action to update the flowchart data in the Redux store
     dispatch(fetchFlowchartData.fulfilled(flowchartData, "", ""));
@@ -83,16 +84,25 @@ export async function fetchFlowchartDataHelper(
   }
 }
 
-const autoFillFlowchart = (flowchartData: FlowchartData, startYear: string) => {
+const autoFillFlowchart = (
+  flowchartData: FlowchartData,
+  studentYear: number
+) => {
   const { termData } = flowchartData;
-  const year = yearMap(startYear);
-  console.log("Year: ", year);
+  const maxTIndex = getMaxTIndex(studentYear);
+  console.log("Flowchart data: ", flowchartData);
+  console.log("Student Year: ", studentYear);
+  console.log("Maximum tIndex for completion: ", maxTIndex);
+
   termData.forEach((term: Term) => {
-    term.courses.forEach((course: Course) => {
-      // Add completed property as "true"
-      course.completed = true;
-    });
+    if (term.tIndex <= maxTIndex) {
+      term.courses.forEach((course: Course) => {
+        // Mark the course as completed
+        course.completed = true;
+      });
+    }
   });
+
   return flowchartData;
 };
 
@@ -105,3 +115,17 @@ const yearMap = (year: string) => {
   };
   return yearMap[year as keyof typeof yearMap];
 };
+
+const getMaxTIndex = (studentYear: number): number => {
+  const yearToTIndexMap: { [key: number]: number } = {
+    1: 2, // Freshman
+    2: 6, // Sophomore
+    3: 10, // Junior
+    4: 14, // Senior
+  };
+
+  return yearToTIndexMap[studentYear] || 0; // Default to 9 if year is out of range
+};
+
+// tIndex: [-1, 1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15 ]
+// Skips SUmmer [Summer, Fall, Winter, Spring]
