@@ -25,7 +25,7 @@ const QueryAI = () => {
     if (query.trim() === "") {
       return;
     }
-    console.log("query", query);
+
     dispatch(setIsInitialState(false));
     dispatch(setPage(1));
     dispatch(queryAIAsync(query));

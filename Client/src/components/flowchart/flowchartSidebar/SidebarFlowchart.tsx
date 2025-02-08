@@ -9,9 +9,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
+import {
+  flowchartActions,
+  flowSelectionActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
 import FlowchartLog from "../flowchartLog/FlowchartLog";
-import { setFlowchart } from "@/redux/flowchart/flowchartSlice";
+import { setFlowchart, setLoading } from "@/redux/flowchart/flowchartSlice";
 import { useUserData } from "@/hooks/useUserData";
 import {
   Collapsible,
@@ -29,32 +34,36 @@ import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions"
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/components/ui/use-toast";
+import { environment } from "@/helpers/getEnvironmentVars";
+import { FlowchartData } from "@polylink/shared/types";
 
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { open } = useSidebar();
 
-  const flowchartList = useAppSelector(
-    (state) => state.flowchart.flowchartList
-  );
+  const { flowchartList } = useAppSelector((state) => state.flowchart);
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { userData } = useUserData();
+  const { userData, handleChangeFlowchartInformation, handleSave } =
+    useUserData();
 
   // Handler for selecting a log to view
   const handleSelectFlowchart = (flowchartId: string) => {
     dispatch(setFlowchart(flowchartId));
   };
 
-  const handleSaveFlowchart = () => {
+  const handleSaveFlowchart = async () => {
     if (selections.catalog && selections.major && selections.concentration) {
-      fetchFlowchartDataHelper(
+      const flowchartData = await fetchFlowchartDataHelper(
         dispatch,
         selections.catalog,
         selections.major,
-        selections.concentration.code
+        selections.concentration.code,
+        userData.year,
+        true
       );
-      navigate("/flowchart");
+      await saveFlowchartToDB(flowchartData);
+      dispatch(setLoading({ type: "fetchFlowchartData", value: false }));
     } else {
       toast({
         title: "Please select a catalog and major",
@@ -62,6 +71,42 @@ export function SidebarFlowchart() {
           "You must select a catalog and major to create a flowchart",
         variant: "destructive",
       });
+    }
+  };
+
+  const saveFlowchartToDB = async (flowchartData: FlowchartData) => {
+    let flowchart;
+    if (!flowchartData) {
+      return;
+    }
+    try {
+      flowchart = await dispatch(
+        flowchartActions.postFlowchartInDB({
+          flowchartData,
+          name: flowchartData.name,
+          // If there are no flowcharts in the database, set the new flowchart as primary
+          primaryOption: (flowchartList ?? []).length === 0,
+        })
+      ).unwrap(); // Unwraps the result to get the payload or throw error
+
+      if (flowchart && flowchart.flowchartId) {
+        if (flowchart.primaryOption) {
+          handleChangeFlowchartInformation(
+            "flowchartId",
+            flowchart.flowchartId
+          );
+          handleSave();
+        }
+        navigate(`/flowchart/${flowchart.flowchartId}`);
+      } else {
+        if (environment === "dev") {
+          console.error("Failed to get flowchartId from the response.");
+        }
+      }
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Failed to save flowchart:", error);
+      }
     }
   };
 

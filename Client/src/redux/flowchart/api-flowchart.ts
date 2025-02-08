@@ -1,4 +1,4 @@
-import { fetchFlowchartData } from "./flowchartSlice";
+import { fetchFlowchartData, setLoading } from "./flowchartSlice";
 import { AppDispatch } from "../store";
 import { resetFlowchartData } from "./flowchartSlice";
 import { Course, FlowchartData, Term } from "@polylink/shared/types";
@@ -32,6 +32,7 @@ export async function fetchFlowchartDataHelper(
   const courseUrl = `https://raw.githubusercontent.com/polyflowbuilder/polyflowbuilder/refs/heads/main/api/data/courses/${catalog}/${catalog}.json`;
 
   try {
+    dispatch(setLoading({ type: "fetchFlowchartData", value: true }));
     // Reset the flowchart data before fetching new data
     dispatch(resetFlowchartData());
 
@@ -67,7 +68,7 @@ export async function fetchFlowchartDataHelper(
         }
       });
     });
-    console.log("Flowchart data fetched successfully: ", jsonData);
+
     let flowchartData = jsonData;
     if (autoFill && startYear) {
       const year = yearMap(startYear);
@@ -75,12 +76,14 @@ export async function fetchFlowchartDataHelper(
     }
     // Dispatch the action to update the flowchart data in the Redux store
     dispatch(fetchFlowchartData.fulfilled(flowchartData, "", ""));
+    return flowchartData;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (environment === "dev") {
       console.error("Error fetching flowchart data:", error);
     }
     dispatch(fetchFlowchartData.rejected(error.toString(), "", ""));
+    dispatch(setLoading({ type: "fetchFlowchartData", value: false }));
   }
 }
 
@@ -90,9 +93,6 @@ const autoFillFlowchart = (
 ) => {
   const { termData } = flowchartData;
   const maxTIndex = getMaxTIndex(studentYear);
-  console.log("Flowchart data: ", flowchartData);
-  console.log("Student Year: ", studentYear);
-  console.log("Maximum tIndex for completion: ", maxTIndex);
 
   termData.forEach((term: Term) => {
     if (term.tIndex <= maxTIndex) {
@@ -126,6 +126,3 @@ const getMaxTIndex = (studentYear: number): number => {
 
   return yearToTIndexMap[studentYear] || 0; // Default to 9 if year is out of range
 };
-
-// tIndex: [-1, 1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15 ]
-// Skips SUmmer [Summer, Fall, Winter, Spring]
