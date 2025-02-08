@@ -16,12 +16,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 const QueryAI = () => {
   const dispatch = useAppDispatch();
-  const { loading, queryExplanation, queryError } = useAppSelector(
+  const { loading, AIQuery, queryError } = useAppSelector(
     (state) => state.section
   );
   const [query, setQuery] = useState("");
 
   const handleQuerySearch = async () => {
+    if (query.trim() === "") {
+      return;
+    }
+    console.log("query", query);
     dispatch(setIsInitialState(false));
     dispatch(setPage(1));
     dispatch(queryAIAsync(query));
@@ -65,6 +69,7 @@ const QueryAI = () => {
                     handleQuerySearch();
                   }
                 }}
+                maxLength={200}
               />
             </ScrollArea>
             <Button
@@ -85,10 +90,10 @@ const QueryAI = () => {
           </div>
         </div>
       </FormItem>
-      {queryExplanation !== null && (
+      {AIQuery?.explanation !== null && (
         <>
           <TitleLabel title="Explanation" />
-          {queryExplanation !== null && <p>{queryExplanation}</p>}
+          {AIQuery?.explanation !== null && <p>{AIQuery?.explanation}</p>}
         </>
       )}
     </CollapsibleContentWrapper>

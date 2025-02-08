@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Section, SectionsFilterParams } from "@polylink/shared/types";
-import { fetchSections, queryAI } from "./crudSection";
+import { fetchSections, queryAI, querySections } from "./crudSection";
 import { environment } from "@/helpers/getEnvironmentVars";
+
 interface SectionState {
   sections: Section[];
   total: number;
@@ -10,9 +12,13 @@ interface SectionState {
   loading: boolean;
   error: string | null;
   queryError: string | null;
-  queryExplanation: string | null;
   filters: SectionsFilterParams;
   isInitialState: boolean;
+  isQueryAI: boolean;
+  AIQuery: {
+    query: any | null;
+    explanation: string | null;
+  } | null;
 }
 
 const initialState: SectionState = {
@@ -23,8 +29,8 @@ const initialState: SectionState = {
   loading: false,
   error: null,
   queryError: null,
-  queryExplanation: null,
   isInitialState: true,
+  isQueryAI: false,
   filters: {
     courseIds: [],
     status: "",
@@ -39,6 +45,7 @@ const initialState: SectionState = {
     courseAttribute: [],
     instructionMode: "",
   },
+  AIQuery: null,
 };
 
 // When calling fetchSections, pass page and pageSize too.
@@ -74,6 +81,21 @@ export const queryAIAsync = createAsyncThunk(
     }
   }
 );
+
+export const queryAIPagination = createAsyncThunk(
+  "sections/queryAIPagination",
+  async (_, { getState }) => {
+    const state = getState() as { section: SectionState };
+    const { AIQuery } = state.section;
+    if (AIQuery && AIQuery.query) {
+      const response = await querySections(AIQuery.query, state.section.page);
+      return response;
+    } else {
+      throw new Error("No query provided");
+    }
+  }
+);
+
 const sectionSlice = createSlice({
   name: "sections",
   initialState,
@@ -95,9 +117,11 @@ const sectionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch sections (manual Query)
       .addCase(fetchSectionsAsync.pending, (state) => {
+        state.isQueryAI = false;
         state.queryError = null;
-        state.queryExplanation = null;
+        state.AIQuery = null;
         state.loading = true;
       })
       .addCase(fetchSectionsAsync.fulfilled, (state, action) => {
@@ -110,24 +134,41 @@ const sectionSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "An unknown error occurred";
       })
+      // Fetch Sections (AI Query)
       .addCase(queryAIAsync.pending, (state) => {
+        state.isQueryAI = true;
         state.loading = true;
         state.queryError = null;
-        state.queryExplanation = null;
+        state.AIQuery = null;
       })
       .addCase(queryAIAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.sections = action.payload.results;
-        state.total = action.payload.total;
+        state.totalPages = action.payload.totalPages;
         state.queryError = null;
-        state.queryExplanation = action.payload.explanation;
+        state.AIQuery = {
+          query: action.payload.query,
+          explanation: action.payload.explanation,
+        };
       })
       .addCase(queryAIAsync.rejected, (state) => {
         state.loading = false;
         state.sections = [];
-        state.total = 0;
+        state.totalPages = 0;
         state.queryError = "Failed to generate query";
-        state.queryExplanation = null;
+      })
+      // Pagination (AI Query Pagination)
+      .addCase(queryAIPagination.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(queryAIPagination.fulfilled, (state, action) => {
+        state.loading = false;
+        state.sections = action.payload.data;
+        state.page = action.payload.page;
+        state.totalPages = action.payload.totalPages;
+      })
+      .addCase(queryAIPagination.rejected, (state) => {
+        state.loading = false;
       });
   },
 });

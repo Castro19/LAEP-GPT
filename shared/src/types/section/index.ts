@@ -1,23 +1,23 @@
 export type Section = {
-  classNumber: number; // was bsonType: "int"
-  courseId: string; // was bsonType: "string"
-  subject: string; // was bsonType: "string"
-  catalogNumber: string; // was bsonType: "string"
-  component: string; // was bsonType: "string"
-  courseName: string; // was bsonType: "string"
-  description: string; // was bsonType: "string"
-  prerequisites: string[] | null; // was bsonType: ["array", "null"]
-  units: string; // was bsonType: "string"
+  classNumber: number; // unique section number (e.g. 1001)
+  courseId: string; // unique course identifier (e.g. "CSC357")
+  subject: string; // subject abbreviation (e.g. "CSC")
+  catalogNumber: string; // course number (e.g. "357")
+  component: string; // component of the course (e.g. "LEC" | "LAB" | "IND")
+  courseName: string; // name of the course (e.g. "Introduction to Computer Systems")
+  description: string; // description of the course (e.g. "This course introduces students to the principles of computer organization and design.")
+  prerequisites: string[] | null; // prerequisites for the course (e.g. ["CSC108", "CSC110"])
+  units: string; // units of the course (e.g. "3", "1-4", "0", "1-6")
 
-  enrollmentStatus: "O" | "C"; // was bsonType: "string", enum: ["O", "C"]
+  enrollmentStatus: "O" | "C"; // enrollment status of the section (e.g. "O" | "C")
 
   enrollment: {
-    waitTotal: number; // was bsonType: "int"
-    waitCap: number; // was bsonType: "int"
-    classCapacity: number; // was bsonType: "int"
-    enrollmentTotal: number; // was bsonType: "int"
-    enrollmentAvailable: number; // was bsonType: "int"
-    enrollmentStatusDescription: string; // was bsonType: "string"
+    waitTotal: number; // total waitlist capacity (e.g. 100)
+    waitCap: number; // total waitlist capacity (e.g. 100)
+    classCapacity: number; // total class capacity (e.g. 100)
+    enrollmentTotal: number; // total enrollment (e.g. 100)
+    enrollmentAvailable: number; // available enrollment (e.g. 100)
+    enrollmentStatusDescription: string; // enrollment status description (e.g. "Open" | "Closed")
   };
 
   instructionMode: "PA" | "SM" | "P" | "PS" | "AM" | "SA";
@@ -33,31 +33,31 @@ export type Section = {
 
   courseAttributes: Array<
     "GE D" | "USCP" | "GE C" | "GWR" | "GE E" | "GE B" | "GE F" | "GE A"
-  >; // was bsonType: "array" of specific enum strings
+  >; // course attributes the section fulfills (e.g. ["GE D", "USCP"])
 
   meetings: Array<{
     days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su">;
-    start_time: string | null; // was bsonType: ["string", "null"]
-    end_time: string | null; // was bsonType: ["string", "null"]
-    location: string; // was bsonType: "string"
+    start_time: string | null; // start time of the meeting (e.g. "10:00 AM")
+    end_time: string | null; // end time of the meeting (e.g. "11:00 AM")
+    location: string; // location of the meeting (e.g. "TBA")
   }>;
 
   instructors: Array<{
-    name: string; // was bsonType: "string"
-    email: string; // was bsonType: "string"
+    name: string; // name of the instructor (e.g. "John Doe")
+    email: string; // email of the instructor (e.g. "john.doe@illinois.edu")
   }>;
 
   instructorsWithRatings: Array<{
-    name: string; // was bsonType: "string"
-    id: string; // was bsonType: "string"
-    courseId: string; // was bsonType: "string"
-    overallRating: number; // was bsonType: ["double", "int"]
-    numEvals: number; // was bsonType: "int"
-    courseRating: number | null; // was bsonType: ["double", "int", "null"]
-    studentDifficulties: number | null; // was bsonType: ["double", "int", "null"]
+    name: string; // name of the instructor (e.g. "John Doe")
+    id: string; // unique identifier for the instructor (e.g. "1234567890")
+    courseId: string; // unique identifier for the course (e.g. "CSC357")
+    overallRating: number; // overall rating of the instructor (e.g. 4.5)
+    numEvals: number; // number of evaluations for the instructor (e.g. 100)
+    courseRating: number | null; // rating of the instructor for the course (e.g. 4.5)
+    studentDifficulties: number | null; // student difficulties of the instructor (e.g. 3.5)
   }> | null;
 
-  classPair: number | null; // was bsonType: ["int", "null"]
+  classPair: number | null; // class number of the section paired with (e.g. 1002)
 };
 
 export type SectionDocument = Section & {

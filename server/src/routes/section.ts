@@ -1,8 +1,12 @@
 import express from "express";
 import { getSectionsByFilter } from "../db/models/section/sectionServices"; // new function
 import { CustomRequest as Request } from "../types/express";
-import { SectionsFilterParams } from "@polylink/shared/types";
+import { SectionDocument, SectionsFilterParams } from "@polylink/shared/types";
 import { environment } from "../index";
+import { findSectionsByFilter } from "../db/models/section/sectionCollection";
+import { Filter } from "mongodb";
+import { QuerySchema } from "../helpers/assistants/queryAgent";
+
 const router = express.Router();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,6 +84,51 @@ router.get("/", async (req: Request, res: any) => {
     if (environment === "dev") {
       console.error("Error fetching sections:", error);
     }
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+router.post("/query", async (req, res: any) => {
+  try {
+    const userId = req.user?.uid;
+    if (!userId) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    const { query, page } = req.body; // Change from req.query to req.body
+
+    // Validate the filterQuery using Zod
+    const validationResult = QuerySchema.safeParse(query);
+    if (!validationResult.success) {
+      return res.status(400).json({
+        message: "Invalid query",
+        errors: validationResult.error.errors,
+      });
+    }
+
+    const pageNumber = parseInt(page as string, 10) || 1;
+    const PAGE_SIZE = 25;
+    const skip = (pageNumber - 1) * PAGE_SIZE;
+
+    // Assuming the query is already a valid JSON object
+    const filterQuery = query;
+
+    // Validate the filterQuery
+    const { sections, total } = await findSectionsByFilter(
+      filterQuery as Filter<SectionDocument>,
+      skip,
+      PAGE_SIZE
+    );
+    return res.status(200).json({
+      data: sections,
+      total,
+      page: pageNumber,
+      pageSize: PAGE_SIZE,
+      totalPages: Math.ceil(total / PAGE_SIZE),
+    });
+  } catch (error) {
+    console.error("Error querying sections:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });

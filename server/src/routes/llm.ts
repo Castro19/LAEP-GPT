@@ -261,16 +261,10 @@ router.post(
     try {
       const { message } = req.body;
 
-      if (!message) {
-        // Add return here to prevent further execution
-        res.status(400).json({ error: "Message is required" });
-        return;
-      }
-
-      console.log("message", message);
       const response = await queryAgent(message);
-      console.log("response", response);
-
+      if (environment === "dev") {
+        console.log("Query response:", response);
+      }
       if (!response?.query) {
         // Add return here to prevent further execution
         res.status(400).json({
@@ -290,7 +284,7 @@ router.post(
       res.json({
         ...response,
         results: sections,
-        total,
+        totalPages: Math.ceil(total / 25),
         success: true,
       });
       return;
