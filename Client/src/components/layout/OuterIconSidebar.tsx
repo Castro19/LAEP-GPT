@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   SidebarProvider,
   Sidebar,
@@ -30,7 +31,9 @@ function OuterSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNaviation = (path: string) => {
+  const [isProfileHovered, setIsProfileHovered] = useState(false);
+
+  const handleNavigation = (path: string) => {
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else {
@@ -64,7 +67,7 @@ function OuterSidebar() {
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    onClick={() => handleNaviation("/")}
+                    onClick={() => handleNavigation("/")}
                     className={`${
                       isActive("/")
                         ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
@@ -86,7 +89,7 @@ function OuterSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNaviation("/chat")}
+                        onClick={() => handleNavigation("/chat")}
                         className={`${
                           isActive("/chat")
                             ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
@@ -106,7 +109,7 @@ function OuterSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNaviation("/section")}
+                        onClick={() => handleNavigation("/section")}
                         className={`${
                           isActive("/section")
                             ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
@@ -126,7 +129,7 @@ function OuterSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNaviation("/calendar")}
+                        onClick={() => handleNavigation("/calendar")}
                         className={`${
                           isActive("/calendar")
                             ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
@@ -146,7 +149,7 @@ function OuterSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNaviation("/flowchart")}
+                        onClick={() => handleNavigation("/flowchart")}
                         className={`${
                           isActive("/flowchart")
                             ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
@@ -161,13 +164,35 @@ function OuterSidebar() {
                 </TooltipProvider>
               </SidebarMenu>
             </div>
-            <SidebarMenu className="mb-6 pt-4 justify-center items-center border-t-2 border-sidebar-border dark:border-slate-800">
+
+            <SidebarMenu
+              className="mb-6 pt-4 justify-center items-center border-t-2 border-sidebar-border dark:border-slate-800"
+              onMouseEnter={() => setIsProfileHovered(true)}
+              onMouseLeave={() => setIsProfileHovered(false)}
+            >
+              {isProfileHovered && (
+                <div className="mt-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          onClick={() => dispatch(signOutUser())}
+                        >
+                          <IoLogOutOutline className="m-auto w-5 h-5 rotate-180 text-red-500" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Sign Out</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              )}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
-                      onClick={() => handleNaviation("/profile/edit")}
+                      onClick={() => handleNavigation("/profile/edit")}
                       className={`${
                         isActive("/profile/edit")
                           ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
@@ -177,27 +202,10 @@ function OuterSidebar() {
                       <UserAvatar />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>View Profile</TooltipContent>
+                  <TooltipContent side="right">View Profile</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </SidebarMenu>
-            {location.pathname === "/profile/edit" && (
-              <SidebarMenu className="mb-6 justify-center items-center">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        onClick={() => dispatch(signOutUser())}
-                      >
-                        <IoLogOutOutline className="m-auto w-5 h-5 rotate-180 text-red-500" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Sign Out</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </SidebarMenu>
-            )}
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
