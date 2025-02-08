@@ -5,9 +5,10 @@ import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "../ui/button";
 import ProgressBar from "./ProgressBar";
-
+import { useUserData } from "@/hooks/useUserData";
 const EmptyFlowchart = () => {
   const { selections } = useAppSelector((state) => state.flowSelection);
+  const { userData } = useUserData();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
@@ -22,12 +23,19 @@ const EmptyFlowchart = () => {
   const isComplete = stepsCompleted === 3;
 
   const handleSaveFlowchart = () => {
-    if (isComplete && selections.catalog && selections.major && selections.concentration) {
+    if (
+      isComplete &&
+      selections.catalog &&
+      selections.major &&
+      selections.concentration
+    ) {
       fetchFlowchartDataHelper(
         dispatch,
         selections.catalog,
         selections.major,
-        selections.concentration.code
+        selections.concentration.code,
+        userData.year,
+        true
       );
       navigate("/flowchart");
     } else {
