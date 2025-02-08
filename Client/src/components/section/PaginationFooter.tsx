@@ -1,24 +1,38 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { setPage, fetchSectionsAsync } from "@/redux/section/sectionSlice";
+import {
+  setPage,
+  fetchSectionsAsync,
+  queryAIPagination,
+} from "@/redux/section/sectionSlice";
 
 export const PaginationFooter: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { page, totalPages, loading } = useAppSelector(
+  const { page, totalPages, loading, isQueryAI } = useAppSelector(
     (state) => state.section
   );
 
   const handlePrev = () => {
     if (page > 1) {
       dispatch(setPage(page - 1));
-      dispatch(fetchSectionsAsync());
+
+      if (isQueryAI) {
+        dispatch(queryAIPagination());
+      } else {
+        dispatch(fetchSectionsAsync());
+      }
     }
   };
 
   const handleNext = () => {
     if (page < totalPages) {
       dispatch(setPage(page + 1));
-      dispatch(fetchSectionsAsync());
+
+      if (isQueryAI) {
+        dispatch(queryAIPagination());
+      } else {
+        dispatch(fetchSectionsAsync());
+      }
     }
   };
 

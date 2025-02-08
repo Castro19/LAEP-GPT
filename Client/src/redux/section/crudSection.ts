@@ -28,6 +28,7 @@ export async function fetchSections(
   totalPages: number;
 }> {
   const queryString = buildQueryString(filter);
+  console.log("queryString", queryString);
   const response = await fetch(
     `${serverUrl}/sections?${queryString}&page=${pageNumber}`,
     {
@@ -52,26 +53,48 @@ type QueryAIResponse = {
   query: any;
   explanation: string;
   results: Section[];
-  total: number;
+  totalPages: number;
 };
 export async function queryAI(message: string): Promise<QueryAIResponse> {
-  console.log("query", message);
+  console.log("queryAI", message);
   try {
     const response = await fetch(`${serverUrl}/llms/query`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
+      credentials: "include",
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.message || "Failed to create flowchart");
     }
-    const { query, explanation, results, total } = await response.json();
-    return { query, explanation, results, total };
+    const { query, explanation, results, totalPages } = await response.json();
+    return { query, explanation, results, totalPages };
   } catch (error) {
     if (environment === "dev") {
       console.error("Error querying AI", error);
     }
     throw error;
   }
+}
+
+export async function querySections(
+  query: SectionsFilterParams,
+  pageNumber: number
+) {
+  const response = await fetch(`${serverUrl}/sections/query`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ query, page: pageNumber }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to create flowchart");
+  }
+  const { data, page, totalPages } = await response.json();
+  return { data, page, totalPages };
 }

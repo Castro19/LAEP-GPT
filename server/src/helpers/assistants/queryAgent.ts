@@ -1,65 +1,64 @@
 import { Run } from "openai/resources/beta/threads/runs/runs";
-import { openai, queryAssistantId } from "../../index";
+import { environment, openai, queryAssistantId } from "../../index";
 import { z } from "zod";
-// Updated Zod Schema for validation
-const SectionQueryResponseSchema = z
-  .object({
-    query: z
-      .object({
-        $and: z.array(z.record(z.any())).optional(),
-        $or: z.array(z.record(z.any())).optional(),
-        subject: z
-          .string()
-          .regex(/^[A-Z]{3,4}$/)
-          .optional(),
-        courseId: z
-          .union([
-            z.string(),
-            z.object({
-              $regex: z.string().regex(/^[A-Z]{3,4}\d+/),
-            }),
-          ])
-          .optional(),
-        units: z
-          .union([z.string(), z.object({ $in: z.array(z.string()) })])
-          .optional(),
-        meetings: z
-          .object({
-            $elemMatch: z.object({
-              days: z.object({
-                $in: z.array(
-                  z.enum(["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"])
-                ),
-              }),
-              start_time: z.object({
-                $gte: z.string().regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/),
-                $lte: z
-                  .string()
-                  .regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)
-                  .optional(),
-              }),
-            }),
-          })
-          .optional(),
-        instructorsWithRatings: z
-          .object({
-            $elemMatch: z.object({
-              overallRating: z.object({
-                $gte: z.number().min(0).max(4.0),
-              }),
-            }),
-          })
-          .optional(),
-      })
-      .passthrough()
-      .refine((data) => Object.keys(data).length > 0, {
-        message: "Query cannot be empty",
-      }),
-    explanation: z.string(),
-  })
-  .passthrough();
 
-// Updated queryAgent function
+// Define allowed MongoDB operators for enhanced security
+const allowedOperators = [
+  "$and",
+  "$or",
+  "$in",
+  "$eq",
+  "$ne",
+  "$gt",
+  "$gte",
+  "$lt",
+  "$lte",
+] as const;
+
+// Enhanced QuerySchema with operator restrictions
+export const QuerySchema = z
+  .object({
+    $and: z
+      .array(z.record(z.any()))
+      .max(10, "Maximum of 10 conditions allowed in $and")
+      .optional(),
+    $or: z
+      .array(z.record(z.any()))
+      .max(10, "Maximum of 10 conditions allowed in $or")
+      .optional(),
+  })
+  .catchall(
+    z.record(z.any()).refine(
+      (obj) => {
+        // Ensure only allowed operators are used
+        return Object.keys(obj).every((key) =>
+          allowedOperators.includes(key as (typeof allowedOperators)[number])
+        );
+      },
+      {
+        message: `Only the following operators are allowed: ${allowedOperators.join(", ")}`,
+      }
+    )
+  )
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Query cannot be empty",
+  });
+
+// Define the schema for responses that include both query and explanation
+const StructuredResponseSchema = z.object({
+  query: QuerySchema,
+  explanation: z.string().max(200),
+});
+
+// Define the schema for simple queries without explanation
+const SimpleQuerySchema = QuerySchema;
+
+// Union schema to handle both structured and simple queries
+export const SectionQueryResponseSchema = z.union([
+  StructuredResponseSchema,
+  SimpleQuerySchema,
+]);
+
 export const queryAgent = async (
   text: string
 ): Promise<z.infer<typeof SectionQueryResponseSchema> | null> => {
@@ -71,9 +70,12 @@ export const queryAgent = async (
 
     let currentRun = run;
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 20;
 
     while (attempts < maxAttempts) {
+      if (environment === "dev") {
+        console.log("Current run status:", currentRun.status);
+      }
       if (currentRun.status === "requires_action") {
         const toolOutputs = await handleRequiredActions(currentRun);
         currentRun = await openai.beta.threads.runs.submitToolOutputs(
@@ -85,8 +87,9 @@ export const queryAgent = async (
         continue;
       }
 
-      if (["completed", "failed", "cancelled"].includes(currentRun.status))
+      if (["completed", "failed", "cancelled"].includes(currentRun.status)) {
         break;
+      }
 
       await new Promise((resolve) => setTimeout(resolve, 1500));
       currentRun = await openai.beta.threads.runs.retrieve(
@@ -104,19 +107,62 @@ export const queryAgent = async (
     }
 
     const messages = await openai.beta.threads.messages.list(run.thread_id);
+    // Delete thread to clean up:
+    await openai.beta.threads.del(run.thread_id);
 
     for (const message of messages.data.reverse()) {
       if (message.role === "assistant" && message.content[0].type === "text") {
         const content = message.content[0].text.value;
-        console.log("Raw assistant response:", content); // Add logging
+        const cleanedJson = content
+          .replace(/```json/g, "")
+          .replace(/```/g, "")
+          .trim();
 
+        // 1. Partial snippet from your message loop after "cleanedJson" is obtained:
         try {
-          const cleanedJson = content
-            .replace(/```json/g, "")
-            .replace(/```/g, "")
-            .trim();
+          let parsed = JSON.parse(cleanedJson);
 
-          const parsed = JSON.parse(cleanedJson);
+          // 2. Check if this is multiple sub-queries, i.e. no "query" at top-level:
+          if (!("query" in parsed) || !("explanation" in parsed)) {
+            // Attempt to transform multiple queries into a single OR
+            const keys = Object.keys(parsed);
+            // For safety, ensure we have at least one key and each entry has "query" + "explanation"
+            const subQueries = keys
+              .map((k) => {
+                const entry = parsed[k];
+                if (
+                  entry &&
+                  typeof entry === "object" &&
+                  "query" in entry &&
+                  "explanation" in entry
+                ) {
+                  return entry; // { query: {...}, explanation: "..." }
+                }
+                return null;
+              })
+              .filter(Boolean);
+
+            // If we found valid sub-queries
+            if (subQueries.length > 0) {
+              // Build $or from each sub-query's 'query'
+              const orArray = subQueries.map((sq) => sq.query);
+
+              // Combine explanations
+              const combinedExplanation = subQueries
+                .map((sq) => sq.explanation)
+                .join(" AND "); // or any delimiter you like
+
+              // Overwrite 'parsed' with our new single structure
+              parsed = {
+                query: { $or: orArray },
+                explanation: combinedExplanation,
+              };
+            }
+          }
+          if (environment === "dev") {
+            console.log("Parsed:", JSON.stringify(parsed));
+          }
+          // 3. Now pass the final structure to your Zod schema:
           const validated = SectionQueryResponseSchema.safeParse(parsed);
 
           if (!validated.success) {
@@ -140,7 +186,6 @@ export const queryAgent = async (
   }
 };
 
-// Updated handleRequiredActions function
 const handleRequiredActions = async (
   run: Run
 ): Promise<
