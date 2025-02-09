@@ -1,6 +1,7 @@
 import React from "react";
 import {
   CourseInfo,
+  Meeting,
   ProfessorGroup,
   SectionDetail,
 } from "@polylink/shared/types";
@@ -254,7 +255,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
           <SectionEnrollment section={section} />
         </div>
         <div className="flex-1">
-          <SectionSchedule section={section} />
+          <SectionSchedule meetings={section.meetings} />
         </div>
       </div>
     </div>
@@ -268,7 +269,7 @@ const LectureSectionCard: React.FC<SectionCardProps> = ({ section }) => {
       <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
       <div className="flex flex-row gap-2">
-        <SectionSchedule section={section} />
+        <SectionSchedule meetings={section.meetings} />
       </div>
     </div>
   );
@@ -281,7 +282,7 @@ const LabSectionCard: React.FC<SectionCardProps> = ({ section }) => {
       <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
       <div className="flex flex-row gap-2">
-        <SectionSchedule section={section} />
+        <SectionSchedule meetings={section.meetings} />
       </div>
     </div>
   );
@@ -413,10 +414,14 @@ const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({ section }) => {
 // SectionSchedule: Renders meeting times and locations.
 // -----------------------------------------------------------------------------
 type SectionScheduleProps = {
-  section: SectionDetail;
+  meetings: Meeting[];
+  hideLocation?: boolean;
 };
 
-const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
+export const SectionSchedule: React.FC<SectionScheduleProps> = ({
+  meetings,
+  hideLocation = false,
+}) => {
   const getDayName = (dayCode: string): string => {
     switch (dayCode) {
       case "Mo":
@@ -447,14 +452,16 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
 
   return (
     <div className="flex flex-col gap-2 mt-3">
-      {section.meetings.map((meeting, index) => (
+      {meetings.map((meeting, index) => (
         <div key={index} className="flex flex-col gap-3">
-          <div className="flex flex-row gap-2 items-center">
-            <CustomLabel>Location</CustomLabel>
-            <span className="text-sm text-gray-800 dark:text-gray-300">
-              {meeting.location || "N/A"}
-            </span>
-          </div>
+          {!hideLocation && (
+            <div className="flex flex-row gap-2 items-center">
+              <CustomLabel>Location</CustomLabel>
+              <span className="text-sm text-gray-800 dark:text-gray-300">
+                {meeting.location || "N/A"}
+              </span>
+            </div>
+          )}
           <div className="flex flex-row gap-2 items-center">
             <CustomLabel>Days</CustomLabel>
             <div className="flex flex-row gap-2">
@@ -469,7 +476,12 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
               )}
             </div>
           </div>
-          <div className="flex flex-row gap-4 items-center">
+          {/* Stack on top of each other if hideLocation is true */}
+          <div
+            className={`flex flex-row gap-4  ${
+              hideLocation ? "flex-col justify-start" : "items-center"
+            }`}
+          >
             <div className="flex flex-row gap-2 items-center">
               <CustomLabel>Start Time</CustomLabel>
               <Badge variant="content">

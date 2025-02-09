@@ -2,6 +2,7 @@ export type SelectedSection = {
   courseId: string;
   classNumber: number;
   component: string;
+  professor: string[];
   enrollmentStatus: "O" | "C";
   meetings: Array<{
     days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su">;
@@ -9,6 +10,7 @@ export type SelectedSection = {
     end_time: string | null;
   }>;
   classPair: number[];
+  rating: number;
 };
 
 export type SelectedSectionDocument = SelectedSection & {
