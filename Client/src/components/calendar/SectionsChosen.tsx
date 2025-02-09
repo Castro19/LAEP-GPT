@@ -5,6 +5,12 @@ import { useEffect } from "react";
 import { Meeting, SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { SectionSchedule } from "../section/SectionDoc";
+import { ChevronDown } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@radix-ui/react-collapsible";
 
 const SectionsChosen = () => {
   const { selectedSections } = useAppSelector(
@@ -42,48 +48,76 @@ const SectionsChosen = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 gap-2">
       {Object.entries(groupedSections).map(([courseId, professorGroups]) => (
-        <div
-          key={courseId}
-          className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-2"
-        >
-          <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
-            {courseId}
-            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-              ({Object.values(professorGroups).flat().length} sections)
-            </span>
-          </h2>
-
-          {Object.entries(professorGroups).map(([professor, sections]) => (
-            <div key={professor} className="mb-6 last:mb-0">
-              <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                {professor}
-              </h3>
-              <div className="grid grid-cols-1 gap-2">
-                {sections.map((section) => (
-                  <SectionCard key={section.classNumber} section={section} />
-                ))}
+        <Collapsible key={courseId} defaultOpen className="group/collapsible">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
+            <CollapsibleTrigger asChild>
+              <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
+                    {courseId}
+                  </h2>
+                  <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+                    {Object.values(professorGroups).flat().length} sections
+                  </span>
+                </div>
+                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
               </div>
-            </div>
-          ))}
-        </div>
+            </CollapsibleTrigger>
+
+            <CollapsibleContent>
+              <div className="px-3 pb-3 space-y-3">
+                {Object.entries(professorGroups).map(
+                  ([professor, sections]) => (
+                    <Collapsible
+                      key={professor}
+                      defaultOpen
+                      className="group/collapsible"
+                    >
+                      <div className="border-t border-gray-100 dark:border-slate-700 pt-3">
+                        <CollapsibleTrigger asChild>
+                          <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 px-2 py-1 rounded">
+                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              {professor}
+                            </h3>
+                          </div>
+                        </CollapsibleTrigger>
+
+                        <CollapsibleContent>
+                          <div className="grid grid-cols-1 gap-1.5">
+                            {sections.map((section) => (
+                              <SectionCard
+                                key={section.classNumber}
+                                section={section}
+                              />
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </div>
+                    </Collapsible>
+                  )
+                )}
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
       ))}
     </div>
   );
 };
 
 const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   const handleRemove = () => {
     console.log("REMOVING SECTION", section);
   };
 
   return (
-    <div className="border border-gray-200 dark:border-slate-700 rounded-md p-3 bg-gray-50/50 dark:bg-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-      <div className="flex justify-between items-start">
-        <div className="space-y-1">
+    <div className="border border-gray-200 dark:border-slate-700 rounded-md p-2 bg-gray-50/50 dark:bg-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+      <div className="flex justify-between items-start gap-2">
+        <div className="space-y-1 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {section.classNumber}
@@ -103,7 +137,12 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
             hideLocation={true}
           />
         </div>
-        <Button variant="secondary" onClick={handleRemove} className="text-xs">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleRemove}
+          className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+        >
           Remove
         </Button>
       </div>
