@@ -5,12 +5,6 @@ import {
   SectionDetail,
 } from "@polylink/shared/types";
 import { Button } from "../ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
 import StarRating from "./StarRating";
 import {
   Collapsible,
@@ -169,51 +163,51 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
   return (
     <Collapsible defaultOpen={true}>
       <CollapsibleTrigger asChild>
-        <div className="rounded-lg bg-slate-800 p-4 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                {group.instructor.id !== "none" && (
-                  <TooltipProvider>
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(
-                                `https://polyratings.dev/professor/${group.instructor.id}`,
-                                "_blank"
-                              );
-                            }}
-                            variant="link"
-                            className="p-0 m-0"
-                          >
-                            <img
-                              src={"polyratings-favicon.ico"}
-                              alt="PolyRatings Favicon"
-                              className="w-4 h-4"
-                            />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>View Ratings</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </TooltipProvider>
-                )}
-              </div>
-              <h3 className="text-xl font-semibold text-cyan-300">
+        <div className="rounded-lg rounded-b-none bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer bg-opacity-80">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <h3 className="text-xl font-semibold text-gray-300">
                 {group.instructor.name}
               </h3>
+              {group.instructor.id !== "none" && (
+                <span>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(
+                        `https://polyratings.dev/professor/${group.instructor.id}`,
+                        "_blank"
+                      );
+                    }}
+                    variant="link"
+                    className="text-sm font-sm dark:text-gray-400 "
+                  >
+                    (View Ratings)
+                  </Button>
+                </span>
+              )}
             </div>
             {group.instructor.id !== "none" && <StarRating group={group} />}
           </div>
+          {group.instructor.id !== "none" && (
+            <div className="flex justify-end items-center shadow-md pr-2">
+              <div className="text-sm text-gray-300 flex items-center">
+                <strong className="text-lg text-white">
+                  {group.overallRating.toFixed(1)}
+                </strong>
+                <span className="text-gray-400 ml-1">/ 4</span>
+                <span className="ml-3 text-slate-500">
+                  {group.instructor.numEvals} evals
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </CollapsibleTrigger>
 
       <CollapsibleContent>
+        <div className="flex flex-col justify-center items-between"></div>
+
         {pairedCards.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {pairedCards.map((pair, index) => (

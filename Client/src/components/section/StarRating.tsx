@@ -48,9 +48,9 @@ export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          fill="gold"
-          stroke="gold"
-          strokeWidth="2"
+          fill="white"
+          stroke="white"
+          strokeWidth="1"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -78,12 +78,6 @@ const StarRating: React.FC<StarRatingProps> = ({ group }) => {
   return (
     <div className="flex items-center gap-2 font-sans">
       <div className="flex items-center">{stars}</div>
-      <div className="text-sm text-slate-300">
-        <strong>{group.overallRating.toFixed(1)}</strong> / 4
-        <span className="ml-1 text-slate-500">
-          ({group.instructor.numEvals} evals)
-        </span>
-      </div>
     </div>
   );
 };
