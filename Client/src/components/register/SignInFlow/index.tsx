@@ -109,6 +109,7 @@ const SignInFlow = () => {
     }
     dispatch(setIsNewUser(false));
     handleSave();
+    navigate("/chat");
   };
 
   const handleDisableClick = () => {
