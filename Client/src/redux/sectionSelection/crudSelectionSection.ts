@@ -58,5 +58,10 @@ export function transformSectionToSelectedSection(
     enrollmentStatus: section.enrollmentStatus,
     meetings: section.meetings,
     classPair: section.pairedSections,
+    professor: section.instructors.map((instructor) => instructor.name),
+    rating:
+      section.instructorsWithRatings?.[0]?.overallRating ||
+      section.instructorsWithRatings?.[1]?.overallRating ||
+      0,
   };
 }
