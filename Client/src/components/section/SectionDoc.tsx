@@ -15,6 +15,7 @@ import { createOrUpdateSelectedSectionAsync } from "@/redux/sectionSelection/sec
 import { useAppDispatch } from "@/redux";
 import { toast } from "../ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { LabelProps } from "@radix-ui/react-label";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
@@ -94,10 +95,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
             <div className="space-y-6">
               {course.professorGroups.map((group) => (
                 <React.Fragment key={group.instructor.id}>
-                  <ProfessorGroupComponent
-                    group={group}
-                    courseId={course.courseId}
-                  />
+                  <ProfessorGroupComponent group={group} />
                   <div className="border-t border-gray-700 my-4" />
                 </React.Fragment>
               ))}
@@ -115,13 +113,9 @@ const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
 // -----------------------------------------------------------------------------
 type ProfessorGroupProps = {
   group: ProfessorGroup;
-  courseId: string;
 };
 
-const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
-  group,
-  courseId,
-}) => {
+const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
   const processed = new Set<number>();
   const pairedCards: Array<{ lecture?: SectionDetail; lab?: SectionDetail }> =
     [];
@@ -214,15 +208,12 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
               <React.Fragment key={index}>
                 {pair.lecture && (
                   <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
-                    <LectureSectionCard
-                      section={pair.lecture}
-                      courseId={courseId}
-                    />
+                    <LectureSectionCard section={pair.lecture} />
                   </div>
                 )}
                 {pair.lab && (
                   <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
-                    <LabSectionCard section={pair.lab} courseId={courseId} />
+                    <LabSectionCard section={pair.lab} />
                   </div>
                 )}
               </React.Fragment>
@@ -236,13 +227,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
               key={section.classNumber}
               className="border border-gray-300 dark:border-slate-600 rounded-lg"
             >
-              {section.component.toLowerCase().includes("lec") ? (
-                <LectureSectionCard section={section} courseId={courseId} />
-              ) : section.component.toLowerCase().includes("lab") ? (
-                <LabSectionCard section={section} courseId={courseId} />
-              ) : (
-                <SectionCard section={section} courseId={courseId} />
-              )}
+              <SectionCard section={section} />
             </div>
           ))}
         </div>
@@ -257,29 +242,31 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({
 // -----------------------------------------------------------------------------
 type SectionCardProps = {
   section: SectionDetail;
-  courseId: string;
 };
 
-const SectionCard: React.FC<SectionCardProps> = ({ section, courseId }) => {
+const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className="border border-gray-300 dark:border-slate-600 rounded-lg p-3 bg-white dark:bg-slate-700">
-      <SectionHeader section={section} courseId={courseId} />
-      <SectionEnrollment section={section} />
-      <SectionSchedule section={section} />
+    <div className="border border-gray-300 dark:border-slate-600 rounded-lg p-3 bg-white dark:bg-slate-900">
+      <SectionHeader section={section} />
+      <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <SectionEnrollment section={section} />
+        </div>
+        <div className="flex-1">
+          <SectionSchedule section={section} />
+        </div>
+      </div>
     </div>
   );
 };
 
-const LectureSectionCard: React.FC<SectionCardProps> = ({
-  section,
-  courseId,
-}) => {
+const LectureSectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className="border border-gray-300 dark:border-slate-600 rounded-lg p-3 bg-white dark:bg-slate-700">
-      <SectionHeader section={section} courseId={courseId} />
-      <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
+    <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-white dark:bg-slate-900 dark:bg-opacity-30">
+      <SectionHeader section={section} />
+      <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
-      <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
       <div className="flex flex-row gap-2">
         <SectionSchedule section={section} />
       </div>
@@ -287,13 +274,12 @@ const LectureSectionCard: React.FC<SectionCardProps> = ({
   );
 };
 
-const LabSectionCard: React.FC<SectionCardProps> = ({ section, courseId }) => {
+const LabSectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className="border border-gray-300 dark:border-slate-600 rounded-lg p-3 bg-gray-100 dark:bg-slate-700">
-      <SectionHeader section={section} courseId={courseId} />
-      <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
+    <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-gray-100 dark:bg-slate-900 dark:bg-opacity-30">
+      <SectionHeader section={section} />
+      <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
-      <div className="border-t border-gray-300 dark:border-slate-600 my-2"></div>
       <div className="flex flex-row gap-2">
         <SectionSchedule section={section} />
       </div>
@@ -306,100 +292,10 @@ const LabSectionCard: React.FC<SectionCardProps> = ({ section, courseId }) => {
 // -----------------------------------------------------------------------------
 type SectionHeaderProps = {
   section: SectionDetail;
-  courseId: string;
 };
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({ section, courseId }) => {
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <Badge variant="default" className="text-xs">
-          {courseId}
-        </Badge>
-        <Badge variant="secondary" className="text-xs">
-          {section.component}
-        </Badge>
-        <Badge
-          variant={section.enrollmentStatus === "O" ? "default" : "destructive"}
-          className="text-xs"
-        >
-          {section.enrollmentStatus === "O" ? "Open" : "Closed"}
-        </Badge>
-      </div>
-      <Badge variant="default" className="text-xs">
-        {section.classNumber}
-      </Badge>
-    </div>
-  );
-};
-
-// -----------------------------------------------------------------------------
-// SectionEnrollment: Renders enrollment status and enrollment info.
-// -----------------------------------------------------------------------------
-type SectionEnrollmentProps = {
-  section: SectionDetail;
-};
-
-const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({ section }) => {
-  return (
-    <div className="flex flex-col gap-2 mt-2">
-      {/* Enrollment Status */}
-
-      <div className="flex flex-row gap-2 items-center align-items-center">
-        <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-100">
-          Instruction Mode:
-        </h4>
-        <span>{section.instructionMode}</span>
-      </div>
-
-      <div className="flex flex-row gap-2 items-center align-items-center">
-        <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-100">
-          Seats Available:
-        </h4>
-        <span>
-          {section.enrollment.enrollmentAvailable} /{" "}
-          {section.enrollment.enrollmentTotal}
-        </span>
-      </div>
-
-      {/* Waitlist Information */}
-      <div className="flex flex-row gap-2 items-center align-items-center">
-        <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-100 h-full">
-          Waitlist:
-        </h4>
-        <span>
-          {section.enrollment.waitTotal} / {section.enrollment.waitCap}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-// -----------------------------------------------------------------------------
-// SectionSchedule: Renders meeting times and locations.
-// -----------------------------------------------------------------------------
-type SectionScheduleProps = {
-  section: SectionDetail;
-};
-
-const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
+const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
   const dispatch = useAppDispatch();
-  const dayMap: { [key: string]: string } = {
-    Mo: "Monday",
-    Tu: "Tuesday",
-    We: "Wednesday",
-    Th: "Thursday",
-    Fr: "Friday",
-    Sa: "Saturday",
-    Su: "Sunday",
-  };
-
-  const convertTo12HourFormat = (time: string): string => {
-    const [hour, minute] = time.split(":").map(Number);
-    const period = hour >= 12 ? "PM" : "AM";
-    const adjustedHour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
-    return `${adjustedHour}:${minute.toString().padStart(2, "0")} ${period}`;
-  };
 
   // Handler for the Add button
   const handleAdd = async (section: SectionDetail) => {
@@ -427,49 +323,169 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
       });
     }
   };
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Badge variant="default" className="text-xs">
+          {section.classNumber}
+        </Badge>
+        <Badge variant="secondary" className="text-xs">
+          {section.component}
+        </Badge>
+        <Badge
+          variant={section.enrollmentStatus === "O" ? "default" : "destructive"}
+          className="text-xs"
+        >
+          {section.enrollmentStatus === "O" ? "Open" : "Closed"}
+        </Badge>
+      </div>
+      <Button
+        variant="secondary"
+        className="text-xs py-0"
+        onClick={() => handleAdd(section)}
+      >
+        Add
+      </Button>
+    </div>
+  );
+};
+
+// -----------------------------------------------------------------------------
+// SectionEnrollment: Renders enrollment status and enrollment info.
+// -----------------------------------------------------------------------------
+type SectionEnrollmentProps = {
+  section: SectionDetail;
+};
+
+/**
+ * Instruction modes:
+ * - PA (Synchronous)
+ * - SM (Sync/Async Hybrid)
+ * - P (In Person/Async Hybrid)
+ * - PS (In Person)
+ * - AM (In Person/Sync Hybrid)
+ * - SA (Asynchronous)
+ */
+
+const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({ section }) => {
+  const modes = section.instructionMode.split(";");
 
   return (
-    <div className="mt-2 text-sm w-full">
+    <div className="flex flex-col gap-3 mt-4">
+      <div className="flex flex-row gap-2 items-center align-items-center">
+        <CustomLabel>Instruction Mode</CustomLabel>
+        <span>
+          <div className="flex flex-row gap-2">
+            {modes.map((mode, index) => (
+              <Badge key={index} variant="content">
+                {mode}
+              </Badge>
+            ))}
+          </div>
+        </span>
+      </div>
+      <div className="flex flex-row gap-6">
+        <div className="flex flex-row gap-2 items-center align-items-center">
+          <CustomLabel>Seats Available</CustomLabel>
+          <span>
+            <Badge variant="content">
+              {section.enrollment.enrollmentAvailable} /{" "}
+              {section.enrollment.enrollmentTotal}
+            </Badge>
+          </span>
+        </div>
+
+        {/* Waitlist Information */}
+        <div className="flex flex-row gap-2 items-center align-items-center">
+          <CustomLabel>Waitlist</CustomLabel>
+          <span>
+            <Badge variant="content">
+              {section.enrollment.waitTotal} / {section.enrollment.waitCap}
+            </Badge>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// -----------------------------------------------------------------------------
+// SectionSchedule: Renders meeting times and locations.
+// -----------------------------------------------------------------------------
+type SectionScheduleProps = {
+  section: SectionDetail;
+};
+
+const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
+  const getDayName = (dayCode: string): string => {
+    switch (dayCode) {
+      case "Mo":
+        return "Mon";
+      case "Tu":
+        return "Tue";
+      case "We":
+        return "Wed";
+      case "Th":
+        return "Thu";
+      case "Fr":
+        return "Fri";
+      case "Sa":
+        return "Sat";
+      case "Su":
+        return "Sun";
+      default:
+        return "N/A";
+    }
+  };
+
+  const convertTo12HourFormat = (time: string): string => {
+    const [hour, minute] = time.split(":").map(Number);
+    const period = hour >= 12 ? "PM" : "AM";
+    const adjustedHour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
+    return `${adjustedHour}:${minute.toString().padStart(2, "0")} ${period}`;
+  };
+
+  return (
+    <div className="flex flex-col gap-2 mt-3">
       {section.meetings.map((meeting, index) => (
-        <div
-          key={index}
-          className="text-sm text-gray-600 dark:text-gray-300 mb-1"
-        >
-          <div>
-            <span className="font-semibold text-gray-800 dark:text-gray-100">
-              Days:{" "}
-            </span>
-            {meeting.days.map((day) => dayMap[day]).join(", ")}
-          </div>
-          <div>
-            <span className="font-semibold text-gray-800 dark:text-gray-100">
-              Start Time:{" "}
-            </span>
-            {meeting.start_time
-              ? convertTo12HourFormat(meeting.start_time)
-              : "N/A"}
-          </div>
-          <div>
-            <span className="font-semibold text-gray-800 dark:text-gray-100">
-              End Time:{" "}
-            </span>
-            {meeting.end_time ? convertTo12HourFormat(meeting.end_time) : "N/A"}
-          </div>
-          {/* Footer with Location and Add Button */}
-          <div className="flex justify-between items-center mt-4 py-2 border-t border-gray-300 dark:border-slate-600">
-            <div>
-              <span className="font-semibold text-gray-800 dark:text-gray-100">
-                Location:{" "}
-              </span>
+        <div key={index} className="flex flex-col gap-3">
+          <div className="flex flex-row gap-2 items-center">
+            <CustomLabel>Location</CustomLabel>
+            <span className="text-sm text-gray-800 dark:text-gray-300">
               {meeting.location || "N/A"}
+            </span>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <CustomLabel>Days</CustomLabel>
+            <div className="flex flex-row gap-2">
+              {meeting.days.length > 0 ? (
+                meeting.days.map((day) => (
+                  <Badge key={day} variant="content">
+                    {getDayName(day)}
+                  </Badge>
+                ))
+              ) : (
+                <Badge variant="content">N/A</Badge>
+              )}
             </div>
-            <Button
-              onClick={() => handleAdd(section)}
-              variant="default"
-              className="ml-4"
-            >
-              Add
-            </Button>
+          </div>
+          <div className="flex flex-row gap-4 items-center">
+            <div className="flex flex-row gap-2 items-center">
+              <CustomLabel>Start Time</CustomLabel>
+              <Badge variant="content">
+                {meeting.start_time
+                  ? convertTo12HourFormat(meeting.start_time)
+                  : "N/A"}
+              </Badge>
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <CustomLabel>End Time</CustomLabel>
+              <Badge variant="content">
+                {meeting.end_time
+                  ? convertTo12HourFormat(meeting.end_time)
+                  : "N/A"}
+              </Badge>
+            </div>
           </div>
         </div>
       ))}
@@ -481,7 +497,7 @@ const SectionSchedule: React.FC<SectionScheduleProps> = ({ section }) => {
 // Badge Component: Simple badge that adjusts for dark mode.
 // -----------------------------------------------------------------------------
 type BadgeProps = {
-  variant: "default" | "destructive" | "secondary";
+  variant: "default" | "destructive" | "secondary" | "content";
   className?: string;
   children: React.ReactNode;
 };
@@ -494,14 +510,25 @@ const Badge: React.FC<BadgeProps> = ({ variant, className, children }) => {
   } else if (variant === "secondary") {
     variantStyles =
       "bg-blue-200 text-blue-800 dark:bg-blue-300 dark:text-blue-900";
-  } else {
+  } else if (variant === "default") {
     variantStyles =
       "bg-gray-200 text-gray-800 dark:bg-slate-500 dark:text-gray-100";
+  } else {
+    variantStyles =
+      "bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-gray-300 p-1";
   }
   return (
     <span className={`${baseStyles} ${variantStyles} ${className}`}>
       {children}
     </span>
+  );
+};
+
+const CustomLabel: React.FC<LabelProps> = ({ children }) => {
+  return (
+    <h4 className="text-sm font-medium text-gray-800 dark:text-gray-400">
+      {children}
+    </h4>
   );
 };
 

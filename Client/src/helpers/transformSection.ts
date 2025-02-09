@@ -9,10 +9,10 @@ import { Section } from "@polylink/shared/types";
 // Instruction Mode Mapping
 const INSTRUCTION_MODE_MAP = {
   PA: "Synchronous",
-  SM: "Sync/Async Hybrid",
-  P: "In Person/Async Hybrid",
+  SM: "Sync/Async;Hybrid",
+  P: "In Person/Async;Hybrid",
   PS: "In Person",
-  AM: "In Person/Sync Hybrid",
+  AM: "In Person/Sync;Hybrid",
   SA: "Asynchronous",
 };
 
