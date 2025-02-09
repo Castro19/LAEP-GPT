@@ -3,8 +3,17 @@ import CalendarContainer from "@/components/calendar/CalendarContainer";
 import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
 import SelectedSectionContainer from "@/components/calendar/SelectedSectionContainer";
 import CalendarSideOptions from "@/components/calendar/CalendarSideOptions";
+import { useAppDispatch } from "@/redux";
+import { sectionSelectionActions } from "@/redux";
+import { useEffect } from "react";
 
 const CalendarPage = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
+  }, [dispatch]);
+
   return (
     <AdminViewOnly>
       <CalendarPageLayout>

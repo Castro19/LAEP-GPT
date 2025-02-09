@@ -1,4 +1,4 @@
-import { serverUrl } from "@/helpers/getEnvironmentVars";
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { SectionDetail, SelectedSection } from "@polylink/shared/types";
 
 export async function fetchSections(): Promise<{
@@ -46,6 +46,37 @@ export async function createOrUpdateSection(section: SelectedSection): Promise<{
     message: string;
   } = await response.json();
   return data;
+}
+
+export async function removeSection(sectionId: number): Promise<{
+  selectedSections: SelectedSection[];
+  message: string;
+}> {
+  try {
+    const response = await fetch(`${serverUrl}/selectedSections/${sectionId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to remove section");
+    }
+
+    const data: {
+      selectedSections: SelectedSection[];
+      message: string;
+    } = await response.json();
+    return data;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error removing section:", error);
+    }
+    throw error;
+  }
 }
 
 export function transformSectionToSelectedSection(

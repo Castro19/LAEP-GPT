@@ -1,7 +1,5 @@
 import { environment } from "@/helpers/getEnvironmentVars";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { sectionSelectionActions } from "@/redux";
-import { useEffect } from "react";
 import { Meeting, SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { SectionSchedule } from "../section/SectionDoc";
@@ -11,21 +9,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
+import { removeSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
 
 const SectionsChosen = () => {
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
-  }, [dispatch]);
-
   // Group sections by courseId and professor
-  if (selectedSections.length === 0) {
+  if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
     return <div>No sections chosen</div>;
   }
+  if (environment === "dev") {
+    console.log("SELECTED SECTIONS", selectedSections);
+  }
+
   const groupedSections = selectedSections.reduce(
     (acc, section) => {
       const courseKey = section.courseId;
@@ -42,10 +39,6 @@ const SectionsChosen = () => {
     },
     {} as Record<string, Record<string, SelectedSection[]>>
   );
-
-  if (environment === "dev") {
-    console.log("MAPPING FROM SELECTED SECTIONS", selectedSections);
-  }
 
   return (
     <div className="grid grid-cols-1 gap-2">
@@ -108,10 +101,10 @@ const SectionsChosen = () => {
 };
 
 const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const handleRemove = () => {
-    console.log("REMOVING SECTION", section);
+    dispatch(removeSelectedSectionAsync(section.classNumber));
   };
 
   return (

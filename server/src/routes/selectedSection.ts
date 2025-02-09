@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express from "express";
 import { CustomRequest } from "../types/express";
-import { postSelectedSection } from "../db/models/selectedSection/sectionServices";
+import {
+  deleteSelectedSection,
+  postSelectedSection,
+} from "../db/models/selectedSection/sectionServices";
 import { getSelectedSectionsByUserId } from "../db/models/selectedSection/sectionServices";
 import { environment } from "../index";
 const router = express.Router();
@@ -51,4 +54,27 @@ router.post("/", async (req, res: any) => {
   }
 });
 
+router.delete("/:sectionId", async (req, res: any) => {
+  try {
+    const userId = req.user?.uid;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { sectionId } = req.params;
+    const { selectedSections, message } = await deleteSelectedSection(
+      userId,
+      sectionId
+    );
+
+    res.status(200).json({
+      message,
+      selectedSections,
+    });
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error removing section:", error);
+    }
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 export default router;
