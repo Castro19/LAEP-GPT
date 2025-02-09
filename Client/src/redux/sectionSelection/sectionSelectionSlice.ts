@@ -4,6 +4,7 @@ import {
   fetchSections,
   createOrUpdateSection,
   transformSectionToSelectedSection,
+  removeSection,
 } from "./crudSelectionSection";
 import { environment } from "@/helpers/getEnvironmentVars";
 interface SectionSelectionState {
@@ -49,6 +50,21 @@ export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
   }
 );
 
+export const removeSelectedSectionAsync = createAsyncThunk(
+  "sections/removeSelectedSection",
+  async (sectionId: number) => {
+    try {
+      const response = await removeSection(sectionId);
+      return response;
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error removing section:", error);
+      }
+      throw error;
+    }
+  }
+);
+
 const sectionSelectionSlice = createSlice({
   name: "sectionSelection",
   initialState,
@@ -64,6 +80,10 @@ const sectionSelectionSlice = createSlice({
         state.message = action.payload.message;
       }
     );
+    builder.addCase(removeSelectedSectionAsync.fulfilled, (state, action) => {
+      state.selectedSections = action.payload.selectedSections;
+      state.message = action.payload.message;
+    });
   },
 });
 

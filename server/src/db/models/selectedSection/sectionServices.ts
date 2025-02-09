@@ -72,9 +72,23 @@ export const postSelectedSection = async (
 export const deleteSelectedSection = async (
   userId: string,
   sectionId: string
-): Promise<void> => {
+): Promise<{
+  selectedSections: SelectedSection[];
+  message: string;
+}> => {
   try {
-    await selectedSelectionModel.deleteSelectedSection(userId, sectionId);
+    const result = await selectedSelectionModel.deleteSelectedSection(
+      userId,
+      parseInt(sectionId)
+    );
+
+    if (result.modifiedCount === 0) {
+      throw new Error("Section not found");
+    }
+    return {
+      selectedSections: await getSelectedSectionsByUserId(userId),
+      message: `Section ${sectionId} removed from your schedule`,
+    };
   } catch (error) {
     if (environment === "dev") {
       console.error(error);

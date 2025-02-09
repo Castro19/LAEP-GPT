@@ -39,16 +39,22 @@ export const findSelectedSectionsByUserId = async (
 // Delete /selectedSections/:id
 export const deleteSelectedSection = async (
   userId: string,
-  sectionId: string
-): Promise<void> => {
+  sectionId: number
+): Promise<UpdateResult> => {
   if (!selectedSectionCollection) {
     selectedSectionCollection = initializeCollection();
   }
+  console.log("REMOVING SECTION", sectionId);
+
   try {
-    await selectedSectionCollection.deleteOne({
-      userId,
-      sectionId,
-    });
+    const result = await selectedSectionCollection.updateOne(
+      { userId },
+      { $pull: { selectedSections: { classNumber: sectionId } } }
+    );
+    if (result.modifiedCount === 0) {
+      throw new Error("Section not found");
+    }
+    return result;
   } catch (error) {
     if (environment === "dev") {
       console.error(error);
