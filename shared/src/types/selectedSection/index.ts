@@ -1,5 +1,6 @@
 export type SelectedSection = {
   courseId: string;
+  courseName: string;
   classNumber: number;
   component: string;
   professor: string[];

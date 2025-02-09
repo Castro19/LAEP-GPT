@@ -98,7 +98,7 @@ body {
 }
 
 .custom-tr-height tr {
-  height: 50px; /* Adjust the height as needed */
+  height: 40px; /* Adjust the height as needed */
   border: 1px solid #64748b !important;
   color: #ffffff !important;
   font-size: 20px !important;
@@ -107,8 +107,29 @@ body {
 .custom-td-color td {
   border: 1px solid #64748b !important;
   color: #ffffff !important;
+  overflow: hidden;
 }
 .fc-timegrid-axis {
   background-color: #1e293b !important;
   border: 1px solid #64748b !important;
+}
+
+.fc-scroller {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e1 transparent; /* Thumb color, track transparent */
+}
+.fc-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.fc-scroller::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* Adjust to one of your custom colors */
+  border-radius: 9999px;
+}
+.fc-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.fc-header-toolbar {
+  margin-bottom: 0px !important;
 }

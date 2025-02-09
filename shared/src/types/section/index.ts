@@ -117,6 +117,7 @@ export type SectionGroup = {
 // Updated SectionDetail to support standalone display
 export type SectionDetail = {
   courseId: string;
+  courseName: string;
   classNumber: number;
   component: string;
   enrollmentStatus: "O" | "C";

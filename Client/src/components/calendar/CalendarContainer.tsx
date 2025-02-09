@@ -8,7 +8,7 @@ const CalendarContainer = () => {
     return <div>No sections chosen</div>;
   }
   return (
-    <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll pb-12">
+    <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll">
       <div className="overflow-auto flex-1 no-scroll">
         <WeeklyCalendar sections={selectedSections} />
         {/* Could be footer */}
