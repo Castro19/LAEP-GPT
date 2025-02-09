@@ -4,7 +4,28 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { SelectedSection } from "@polylink/shared/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import CalendarTimeSlots from "../section/CalendarTimeSlots";
+import { ScrollArea } from "../ui/scroll-area";
+
+// Define six pastel colors.
+const courseColors = [
+  "#E5FFB9", // light lime
+  "#B9E5FF", // light blue
+  "#B5E5B9", // light green
+  "#FFB7A3", // light coral
+  "#FFE5A3", // light yellow
+  "#E5B9FF", // light purple
+];
+
+// Returns one of the colors based on the courseId string.
+const getColorForCourse = (courseId: string): string => {
+  let hash = 0;
+  for (let i = 0; i < courseId.length; i++) {
+    hash = courseId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % courseColors.length;
+  return courseColors[index];
+};
 
 type WeeklyCalendarProps = {
   sections: SelectedSection[];
@@ -66,9 +87,13 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
         end.setHours(endHour, endMinute, 0, 0);
 
         return {
-          title: `${section.component} ${section.classNumber} – ${section.courseId}`,
+          title: section.courseId,
+          courseName: section.courseName,
+          enrollmentStatus: section.enrollmentStatus,
+          professor: section.professor,
           start,
           end,
+          color: getColorForCourse(section.courseId),
         };
       });
     })
@@ -94,17 +119,16 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
         <FullCalendar
           plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
           initialView="timeGridWeek"
-          initialDate={monday} // Ensure we show the week starting with our computed Monday
-          timeZone="local" // or "UTC" if that is what you need
+          initialDate={monday}
+          timeZone="local"
           headerToolbar={{ left: "", center: "", right: "" }}
           selectable={false}
           allDaySlot={false}
           slotMinTime="07:00:00"
           slotMaxTime="21:00:00"
-          // If you want to show weekend meetings, do not hide days.
-          // Otherwise, you can hide them by setting hiddenDays={[0,6]}
+          hiddenDays={[0, 6]}
           events={events}
-          height="85vh"
+          contentHeight="85vh"
           titleFormat={{}} // (Empty: no title text on top)
           dayHeaderContent={(args) => {
             const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -117,17 +141,25 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
             omitZeroMinute: false,
             meridiem: "short",
           }}
-          slotLabelClassNames="bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500 text-sm"
+          slotLabelClassNames="text-gray-400 dark:text-slate-500 text-sm"
           dayCellClassNames="border border-slate-200 dark:border-slate-700"
           stickyHeaderDates={true}
-          eventColor="#3b82f6"
-          eventContent={(arg) => (
-            <div className="h-full flex items-center justify-center p-1">
-              <div className="w-full rounded-sm bg-blue-100 dark:bg-blue-900 p-1 text-sm">
-                {arg.event.title}
-              </div>
-            </div>
-          )}
+          eventColor="#334155"
+          eventContent={(arg) =>
+            CalendarTimeSlots({
+              event: arg.event as unknown as {
+                title: string;
+                start: Date;
+                end: Date;
+                extendedProps: {
+                  courseName: string;
+                  enrollmentStatus: "O" | "C";
+                  professor: string[];
+                  color: string;
+                };
+              },
+            })
+          }
           nowIndicator={false}
         />
       </ScrollArea>

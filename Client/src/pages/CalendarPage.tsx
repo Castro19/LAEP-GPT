@@ -6,6 +6,7 @@ import CalendarSideOptions from "@/components/calendar/CalendarSideOptions";
 import { useAppDispatch } from "@/redux";
 import { sectionSelectionActions } from "@/redux";
 import { useEffect } from "react";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const CalendarPage = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +16,9 @@ const CalendarPage = () => {
   }, [dispatch]);
 
   const handleBuildSchedule = () => {
-    console.log("Build Schedule");
+    if (environment === "dev") {
+      console.log("Build Schedule");
+    }
   };
 
   return (
