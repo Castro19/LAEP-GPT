@@ -1,26 +1,82 @@
 import React from "react";
-import { ScrollArea } from "../ui/scroll-area";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { SelectedSection } from "@polylink/shared/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-/**
- * A simple interface for each half-hour block's label status.
- */
-type TimeBlock = {
-  label: string; // e.g. "7:00 AM", "7:30 AM"
-  isLabel: boolean; // true if it's on the hour (to display label)
+type WeeklyCalendarProps = {
+  sections: SelectedSection[];
 };
 
-const WeeklyCalendar: React.FC = () => {
-  // Days displayed across the top (X-axis).
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
+  // Map meeting day abbreviations to an offset relative to Monday.
+  // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
+  const dayIndexMap: Record<
+    "Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su",
+    number
+  > = {
+    Mo: 0,
+    Tu: 1,
+    We: 2,
+    Th: 3,
+    Fr: 4,
+    Sa: 5,
+    Su: 6,
+  };
 
-  // Generate time blocks from 7:00 AM (7) to 9:00 PM (21), in 30-min increments
-  const timeBlocks = generateTimes(7, 21, 30);
+  // Compute Monday of the current week (in local time)
+  const getCurrentWeekMonday = (): Date => {
+    const now = new Date();
+    // For Sunday (getDay() === 0), we want the Monday of the same week (6 days ago)
+    const offset = (now.getDay() + 6) % 7;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - offset);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  };
+
+  const monday = getCurrentWeekMonday();
+
+  // Create an event for each meeting in every section.
+  const events = sections.flatMap((section) =>
+    section.meetings.flatMap((meeting) => {
+      // Only create events if both start_time and end_time are provided.
+      if (!meeting.start_time || !meeting.end_time) return [];
+      return meeting.days.map((day) => {
+        // Get the offset (in days) for this meeting day.
+        const offset = dayIndexMap[day as keyof typeof dayIndexMap];
+        const eventDate = new Date(monday);
+        eventDate.setDate(monday.getDate() + offset);
+
+        // Parse the start and end times (formatted as "HH:MM")
+        const [startHour, startMinute] = meeting.start_time
+          ? meeting.start_time.split(":").map(Number)
+          : [0, 0];
+        const [endHour, endMinute] = meeting.end_time
+          ? meeting.end_time.split(":").map(Number)
+          : [0, 0];
+
+        // Create Date objects for the event start and end.
+        const start = new Date(eventDate);
+        start.setHours(startHour, startMinute, 0, 0);
+
+        const end = new Date(eventDate);
+        end.setHours(endHour, endMinute, 0, 0);
+
+        return {
+          title: `${section.component} ${section.classNumber} – ${section.courseId}`,
+          start,
+          end,
+        };
+      });
+    })
+  );
 
   return (
     <div
       className="
-        relative
-        max-h-[100vh]
         border
         border-slate-200
         dark:border-slate-700
@@ -29,150 +85,54 @@ const WeeklyCalendar: React.FC = () => {
         dark:bg-slate-900
         text-slate-900
         dark:text-slate-100
-        overflow-hidden
+        custom-tr-height
+        custom-td-color
+        overflow-auto flex-1 no-scroll
       "
     >
-      {/* 
-        1) Header Table: pinned at top.
-           We separate out the <thead> into its own table so it won't scroll.
-      */}
-      <table className="table-fixed w-full border-collapse">
-        <thead className="bg-gray-100 dark:bg-slate-800">
-          <tr>
-            {/* Time header cell */}
-            <th
-              className="
-                border
-                border-slate-200
-                dark:border-slate-700
-                p-2
-                font-semibold
-                text-center
-              "
-            >
-              Time
-            </th>
-            {/* Monday - Friday */}
-            {days.map((day) => (
-              <th
-                key={day}
-                className="
-                  border
-                  border-slate-200
-                  dark:border-slate-700
-                  p-2
-                  font-semibold
-                  text-center
-                "
-              >
-                {day}
-              </th>
-            ))}
-          </tr>
-        </thead>
-      </table>
-      <ScrollArea className="h-[85vh] w-full">
-        <table className="table-fixed w-full border-collapse">
-          {/* Table Body (Time Rows) */}
-          <tbody>
-            {timeBlocks.map((timeBlock, index) => (
-              <tr
-                key={index}
-                className="hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
-              >
-                {/* Left Column: Time Labels (sticky) */}
-                <td
-                  className={`
-                  sticky
-                  left-0
-                  z-10
-                  border
-                  border-slate-200
-                  dark:border-slate-700
-                  text-center
-                  ${
-                    timeBlock.isLabel
-                      ? "bg-gray-50 dark:bg-slate-800 font-medium"
-                      : "bg-gray-50 dark:bg-slate-800 text-sm text-gray-400 dark:text-slate-500"
-                  }
-                `}
-                >
-                  {/* Each row has a fixed height for spacing (h-16) */}
-                  <div className="h-16 flex items-center justify-center">
-                    {timeBlock.isLabel ? timeBlock.label : ""}
-                  </div>
-                </td>
-
-                {/* Monday - Friday Cells */}
-                {days.map((day) => (
-                  <td
-                    key={day}
-                    className="
-                    border
-                    border-slate-200
-                    dark:border-slate-700
-                    relative
-                  "
-                  >
-                    {/* Each cell also has the same fixed height for 30-min slot */}
-                    <div className="h-16" />
-                    {/* 
-                    place events or selection inside here 
-                  */}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <ScrollArea className="h-full min-w-full mb-4">
+        <FullCalendar
+          plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
+          initialView="timeGridWeek"
+          initialDate={monday} // Ensure we show the week starting with our computed Monday
+          timeZone="local" // or "UTC" if that is what you need
+          headerToolbar={{ left: "", center: "", right: "" }}
+          selectable={false}
+          allDaySlot={false}
+          slotMinTime="07:00:00"
+          slotMaxTime="21:00:00"
+          // If you want to show weekend meetings, do not hide days.
+          // Otherwise, you can hide them by setting hiddenDays={[0,6]}
+          events={events}
+          height="85vh"
+          titleFormat={{}} // (Empty: no title text on top)
+          dayHeaderContent={(args) => {
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            return days[args.date.getDay()];
+          }}
+          dayHeaderClassNames="bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center"
+          slotLabelFormat={{
+            hour: "numeric",
+            minute: "2-digit",
+            omitZeroMinute: false,
+            meridiem: "short",
+          }}
+          slotLabelClassNames="bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500 text-sm"
+          dayCellClassNames="border border-slate-200 dark:border-slate-700"
+          stickyHeaderDates={true}
+          eventColor="#3b82f6"
+          eventContent={(arg) => (
+            <div className="h-full flex items-center justify-center p-1">
+              <div className="w-full rounded-sm bg-blue-100 dark:bg-blue-900 p-1 text-sm">
+                {arg.event.title}
+              </div>
+            </div>
+          )}
+          nowIndicator={false}
+        />
       </ScrollArea>
     </div>
   );
 };
 
 export default WeeklyCalendar;
-
-/**
- * Generate half-hour times from `startHour` to `endHour` (7 -> 21).
- * We label only :00 blocks; :30 blocks remain unlabeled but present
- * so you can attach events there if needed.
- */
-function generateTimes(
-  startHour: number,
-  endHour: number,
-  stepMinutes: number
-): TimeBlock[] {
-  const times: TimeBlock[] = [];
-
-  // 1) For each hour in [startHour, endHour)
-  for (let hour = startHour; hour < endHour; hour++) {
-    // 2) For each step in that hour
-    for (let minute = 0; minute < 60; minute += stepMinutes) {
-      const label = formatTime(hour, minute);
-      const isLabel = minute === 0; // Only label on the hour
-      times.push({ label, isLabel });
-    }
-  }
-
-  // 3) Push the final hour label (9:00 PM)
-  //    so that we see the last block labeled at 9:00 PM
-  times.push({
-    label: formatTime(endHour, 0),
-    isLabel: true,
-  });
-
-  return times;
-}
-
-/**
- * Formats a given hour/minute in 12-hour clock notation with AM/PM.
- */
-function formatTime(hour: number, minute: number): string {
-  const meridiem = hour < 12 ? "AM" : "PM";
-  // Convert to 12-hour
-  let displayHour = hour % 12;
-  displayHour = displayHour === 0 ? 12 : displayHour;
-
-  const minuteStr = minute === 0 ? "00" : minute.toString().padStart(2, "0");
-  return `${displayHour}:${minuteStr} ${meridiem}`;
-}
