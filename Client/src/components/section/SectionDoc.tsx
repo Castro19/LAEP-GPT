@@ -17,7 +17,6 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "../ui/collapsible";
-import { ChevronDownIcon } from "lucide-react";
 import { createOrUpdateSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
 import { useAppDispatch } from "@/redux";
 import { toast } from "../ui/use-toast";
@@ -53,34 +52,47 @@ type CourseSectionProps = {
 };
 
 const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
+  const length = course.professorGroups.reduce(
+    (acc, profGroup) => acc + profGroup.sections.length,
+    0
+  );
   return (
     <Collapsible defaultOpen={true}>
-      <div className="rounded-xl bg-gradient-to-br from-gray-800 to-slate-800 p-[2px] shadow-2xl hover:shadow-indigo-500/20 transition-shadow">
+      <div className="rounded-xl shadow-2xl dark:border-slate-700 border-2">
+        <div className="flex justify-between items-center w-full p-4 dark:bg-slate-950 rounded-xl dark:bg-opacity-70">
+          {/* Left Side - "Currently Viewing" and Section Length */}
+          <div className="flex items-center gap-4">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent dark:bg-slate-200 bg-opacity-30 rounded-full px-2">
+              Currently Viewing
+            </h2>
+            <span className="px-3 rounded-lg bg-gray-700 text-gray-300 text-lg font-medium bg-opacity-50 hover:bg-opacity-60">
+              {length} sections
+            </span>
+          </div>
+
+          {/* Right Side - Collapse All Button (Collapsible Trigger) */}
+          <CollapsibleTrigger asChild>
+            <button className="px-3 py-1 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 text-lg font-medium transition bg-opacity-50 hover:bg-opacity-60">
+              Collapse All
+            </button>
+          </CollapsibleTrigger>
+        </div>
+
         <section className="rounded-xl bg-slate-900 p-6">
           <header className="group">
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full flex justify-between items-center p-4 hover:bg-slate-800 transition-colors rounded-xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600">
-                    <ChevronDownIcon className="w-6 h-6 text-white transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                  <div className="flex gap-2">
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                      {course.subject} {course.catalogNumber}:
-                    </h2>
-                    <span className="text-2xl font-medium text-gray-400 text-wrap">
-                      {course.courseName}
-                    </span>
-                  </div>
-                </div>
-                <span className="px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-300 text-sm">
-                  {course.units} Units
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-xl bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                  {course.subject} {course.catalogNumber}
                 </span>
-              </Button>
-            </CollapsibleTrigger>
+                <h2 className="text-xl font-medium text-gray-100">
+                  {course.courseName}
+                </h2>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-lg text-gray-400">
+                {course.units} Units
+              </span>
+            </div>
           </header>
 
           <CollapsibleContent className="overflow-hidden transition-all duration-300 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
