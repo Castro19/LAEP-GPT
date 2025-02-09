@@ -96,3 +96,19 @@ body {
   @apply bg-gray-100 dark:bg-zinc-600 dark:border-r-gray-500;
   /* Updated dark background to bg-gray-600 for first column */
 }
+
+.custom-tr-height tr {
+  height: 50px; /* Adjust the height as needed */
+  border: 1px solid #64748b !important;
+  color: #ffffff !important;
+  font-size: 20px !important;
+}
+
+.custom-td-color td {
+  border: 1px solid #64748b !important;
+  color: #ffffff !important;
+}
+.fc-timegrid-axis {
+  background-color: #1e293b !important;
+  border: 1px solid #64748b !important;
+}
