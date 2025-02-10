@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 // Redux
 import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import { LogListType } from "@polylink/shared/types";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import ChatLogOptions from "./ChatLogOptions";
-import { useState } from "react";
+
 
 type ChatLogSidebarProps = {
   log: LogListType;
@@ -14,7 +14,9 @@ type ChatLogSidebarProps = {
 
 const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
   const navigate = useNavigate();
-  const [name, setName] = useState(log.title);
+  const { chatId } = useParams(); 
+  const isActive = log.logId === chatId; 
+
   // Redux:
   const dispatch = useAppDispatch();
   const error = useAppSelector((state) => state.message.error); // Access the error state from Redux
@@ -26,13 +28,17 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
   };
+
   return (
-    // Entire rectangle border is needed
-    <SidebarMenuItem className="w-full border-b border-sidebar-border">
-      <div className="group flex items-center justify-between px-2 py-2.5 mb-0.5  rounded-lg transition-colors duration-200 w-full">
+    // Fixes spacing issue by ensuring consistent padding/margins
+    <SidebarMenuItem className="w-full p-1">
+      <div
+        className={`group flex items-center justify-between w-full h-full px-2 py-1 rounded-lg transition-colors duration-200 ml-0.5 -mt-2
+        ${isActive ? "bg-gray-700 dark:bg-gray-800" : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-opacity-70"}`}
+      >
         <SidebarMenuButton
           onClick={() => handleNewLog(log.logId)}
-          className="flex-1 flex items-center gap-3 dark:hover:bg-gray-800 h-8/12"
+          className="flex-1 flex items-center gap-3 h-full hover:bg-transparent active:bg-transparent"
         >
           {/* Title and timestamp */}
           <div className="min-w-0 flex-1">
@@ -47,7 +53,7 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
 
         {/* Options button - only visible on hover */}
         <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <ChatLogOptions log={log} name={name || ""} onNameChange={setName} />
+          <ChatLogOptions log={log} />
         </div>
       </div>
     </SidebarMenuItem>
