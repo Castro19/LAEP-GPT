@@ -25,8 +25,10 @@ const FlowchartLogOptions = ({
 }: {
   flowchart: FetchedFlowchartObject;
   name: string;
+  // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;
   primaryOption: boolean;
+  // eslint-disable-next-line no-unused-vars
   onPrimaryChange: (primaryOption: boolean) => void;
 }) => {
   const { handleSave, handleChangeFlowchartInformation } = useUserData();
