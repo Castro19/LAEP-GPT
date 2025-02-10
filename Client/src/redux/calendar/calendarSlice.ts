@@ -71,6 +71,9 @@ const calendarSlice = createSlice({
   name: "calendar",
   initialState,
   reducers: {
+    setCalendars(state, action) {
+      state.calendars = action.payload;
+    },
     setPage(state, action) {
       state.page = action.payload;
     },
@@ -93,6 +96,6 @@ const calendarSlice = createSlice({
   },
 });
 
-export const { setPage, setTotalPages } = calendarSlice.actions;
+export const { setPage, setTotalPages, setCalendars } = calendarSlice.actions;
 
 export const calendarReducer = calendarSlice.reducer;

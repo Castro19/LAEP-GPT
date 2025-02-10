@@ -1,9 +1,9 @@
-import { SectionDetail } from "../section";
+import { SelectedSection } from "../selectedSection";
 
 export type Calendar = {
   id: number;
   name: string;
-  sections: SectionDetail[];
+  sections: SelectedSection[];
   createdAt: Date;
   updatedAt: Date;
 };

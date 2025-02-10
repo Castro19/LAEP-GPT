@@ -3,13 +3,17 @@ import CalendarContainer from "@/components/calendar/CalendarContainer";
 import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
 import SelectedSectionContainer from "@/components/calendar/SelectedSectionContainer";
 import CalendarSideOptions from "@/components/calendar/CalendarSideOptions";
-import { useAppDispatch } from "@/redux";
+import { calendarActions, useAppDispatch, useAppSelector } from "@/redux";
 import { sectionSelectionActions } from "@/redux";
 import { useEffect } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { generateSchedules } from "@/components/calendar/helpers/buildSchedule";
 
 const CalendarPage = () => {
   const dispatch = useAppDispatch();
+  const { selectedSections } = useAppSelector(
+    (state) => state.sectionSelection
+  );
 
   useEffect(() => {
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
@@ -17,7 +21,11 @@ const CalendarPage = () => {
 
   const handleBuildSchedule = () => {
     if (environment === "dev") {
-      console.log("Build Schedule");
+      // Create all combinations of sections
+      const allCombinations = generateSchedules(selectedSections);
+      dispatch(calendarActions.setCalendars(allCombinations));
+      dispatch(calendarActions.setPage(1));
+      dispatch(calendarActions.setTotalPages(allCombinations.length));
     }
   };
 

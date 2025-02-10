@@ -6,7 +6,7 @@ export type SelectedSection = {
   professor: string[];
   enrollmentStatus: "O" | "C";
   meetings: Array<{
-    days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su">;
+    days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
     start_time: string | null;
     end_time: string | null;
   }>;

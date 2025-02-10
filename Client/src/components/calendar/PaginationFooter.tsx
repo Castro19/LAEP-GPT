@@ -4,7 +4,7 @@ import { setPage } from "@/redux/calendar/calendarSlice";
 
 export const PaginationFooter: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { page, totalPages, calendars, loading } = useAppSelector(
+  const { page, totalPages, loading } = useAppSelector(
     (state) => state.calendar
   );
 
