@@ -68,7 +68,7 @@ const FlowchartUnitCounts = () => {
   }, [flowchartData]);
 
   return (
-    <div>
+    <div className="dark:bg-gray-900 sticky bottom-0">
       <div
         className={`flex ${isMobile ? "flex-col" : "items-center justify-between"} m-4 text-lg`}
       >

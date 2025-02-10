@@ -13,6 +13,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TermContainerProps {
   term: Term;
@@ -69,7 +70,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
     dispatch(setFlowchartData(updatedFlowchartData));
   };
   return (
-    <div className="flex flex-col flex-1 min-w-[250px] max-w-[300px] dark:bg-gray-900 shadow-md h-full">
+    <div className="flex flex-col min-w-[300px] max-w-[350px] dark:bg-gray-900 shadow-md">
       {/* Header */}
       <div className="flex justify-between items-center gap-2">
         <>
@@ -91,50 +92,53 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </>
         <hr className="my-2" />
       </div>
-
-      {/* Body */}
-      <Droppable droppableId={`term-${term.tIndex}`}>
-        {(provided) => (
-          <div
-            className="flex-grow p-2 overflow-y-auto gap-3 flex flex-col"
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {term.courses.map((course, index) => (
-              <TooltipProvider
-                key={`term-${term.tIndex}-${course.id || index}`}
+      <ScrollArea className="h-full min-w-full mb-4">
+        {/* Body */}
+        <div className="h-[40rem]">
+          <Droppable droppableId={`term-${term.tIndex}`}>
+            {(provided) => (
+              <div
+                className="flex-grow p-2 overflow-y-auto gap-2 flex flex-col"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
               >
-                <Tooltip>
-                  <Draggable
+                {term.courses.map((course, index) => (
+                  <TooltipProvider
                     key={`term-${term.tIndex}-${course.id || index}`}
-                    draggableId={`term-${term.tIndex}-${course.id || index}`}
-                    index={index}
                   >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
+                    <Tooltip>
+                      <Draggable
+                        key={`term-${term.tIndex}-${course.id || index}`}
+                        draggableId={`term-${term.tIndex}-${course.id || index}`}
+                        index={index}
                       >
-                        <CourseItem
-                          termIndex={term.tIndex}
-                          course={course}
-                          coursePosition={index}
-                          onToggleComplete={() =>
-                            onCourseToggleComplete(term.tIndex, index)
-                          }
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                  <CourseToolTipContent course={course} />
-                </Tooltip>
-              </TooltipProvider>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <CourseItem
+                              termIndex={term.tIndex}
+                              course={course}
+                              coursePosition={index}
+                              onToggleComplete={() =>
+                                onCourseToggleComplete(term.tIndex, index)
+                              }
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                      <CourseToolTipContent course={course} />
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+      </ScrollArea>
 
       {/* Footer */}
       <div className="p-4">

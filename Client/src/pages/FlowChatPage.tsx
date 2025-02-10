@@ -68,7 +68,7 @@ const FlowChatPage = () => {
 
   return (
     <>
-      <div className="flex overflow-hidden">
+      <div className="flex overflow-hidden no-scroll">
         <OuterSidebar />
         <SidebarProvider className="dark:bg-slate-900">
           <FlowChartLayout>
