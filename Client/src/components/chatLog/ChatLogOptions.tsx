@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   logActions,
   messageActions,
@@ -30,8 +31,9 @@ const ChatLogOptions = ({
   const { userId } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [open, setOpen] = useState(false); 
 
-  // Update name change handler
+  // Handle name change
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     onNameChange(newName);
@@ -52,6 +54,7 @@ const ChatLogOptions = ({
             dispatch(messageActions.resetMsgList(log.logId));
             dispatch(messageActions.toggleNewChat(true));
             dispatch(messageActions.setCurrentChatId(null));
+            setOpen(false); 
           })
           .catch((error) => {
             if (environment === "dev") {
@@ -74,6 +77,8 @@ const ChatLogOptions = ({
           title: name,
         })
       ).unwrap();
+
+      setOpen(false);
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to update chat log:", error);
@@ -82,21 +87,22 @@ const ChatLogOptions = ({
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
           className="w-6 dark:hover:bg-transparent flex justify-end transition-transform hover:scale-125"
+          onClick={() => setOpen(true)}
         >
           <SlOptionsVertical />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72">
         <div className="grid gap-4 p-4">
-          {/* Name */}
+          {/* Name Input */}
           <div className="grid gap-2">
-            <Label htmlFor="name">Modify Chat Log</Label>
+            <Label htmlFor="name">Rename Chat Log</Label>
             <Input
               id="name"
               defaultValue={log.title}
