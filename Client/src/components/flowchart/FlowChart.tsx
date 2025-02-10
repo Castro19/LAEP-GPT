@@ -5,7 +5,7 @@ import { FlowchartData } from "@polylink/shared/types";
 import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
 import defaultTermData from "./exampleData/flowPlaceholder";
 import { Button } from "../ui/button";
-import FlowchartUnitCounts from "./flowchartFooter/FlowchartUnitCounts";
+
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 const TERM_MAP = {
@@ -102,7 +102,7 @@ const FlowChart = ({
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-center gap-2 dark:bg-gray-900 border-b-1 border-slate-600 p-2 ml-12">
+      <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2 ml-12">
         {[...Array(totalYears)].map((_, index) => (
           <Button
             key={index}
@@ -120,12 +120,12 @@ const FlowChart = ({
       </div>
 
       <ScrollArea ref={flowchartRef} className="dark:bg-gray-900">
-        <div className="flex w-max space-x-4 p-4">
+        <div className="flex w-max space-x-4 py-2 px-4">
           {termsData.map((term) => {
             const termName = getTermName(term.tIndex);
             return (
               <div
-                className="flex-shrink-0 min-w-[250px] max-w-[250px] bg-slate-50 text-center border-2 border-slate-500"
+                className="flex-shrink-1 min-w-[340px] max-w-[350px] bg-slate-50 text-center border-2 border-slate-500"
                 key={term.tIndex + termName}
               >
                 <TermContainer
@@ -143,7 +143,6 @@ const FlowChart = ({
           />
         </div>
       </ScrollArea>
-      <FlowchartUnitCounts />
     </div>
   );
 };

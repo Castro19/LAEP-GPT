@@ -120,7 +120,7 @@ const CourseItem: React.FC<CourseItemProps> = ({
         <TooltipTrigger asChild>
           <Card
             onClick={handleClick}
-            className={`w-full h-40 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
+            className={`w-full h-36 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
               course.completed ? "dark:bg-gray-300" : ""
             }`}
             style={{
