@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import { LogListType } from "@polylink/shared/types";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import ChatLogOptions from "./ChatLogOptions";
-import { useState } from "react";
+
 
 type ChatLogSidebarProps = {
   log: LogListType;
@@ -16,8 +16,6 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
   const navigate = useNavigate();
   const { chatId } = useParams(); 
   const isActive = log.logId === chatId; 
-
-  const [name, setName] = useState(log.title);
 
   // Redux:
   const dispatch = useAppDispatch();
@@ -55,7 +53,7 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
 
         {/* Options button - only visible on hover */}
         <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <ChatLogOptions log={log} name={name || ""} onNameChange={setName} />
+          <ChatLogOptions log={log} />
         </div>
       </div>
     </SidebarMenuItem>

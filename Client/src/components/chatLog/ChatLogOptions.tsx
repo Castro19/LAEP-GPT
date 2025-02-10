@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState, useEffect } from "react";
 import {
   logActions,
   messageActions,
@@ -20,24 +20,25 @@ import { environment } from "@/helpers/getEnvironmentVars";
 
 const ChatLogOptions = ({
   log,
-  name,
-  onNameChange,
 }: {
   log: LogListType;
-  name: string;
-  // eslint-disable-next-line no-unused-vars
-  onNameChange: (name: string) => void;
 }) => {
   const { userId } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false); 
+  const [inputValue, setInputValue] = useState(log.title);
 
-  // Handle name change
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
-    onNameChange(newName);
+   // Reset input value when popover is closed without saving
+   const handlePopoverClose = () => {
+    setInputValue(log.title);
   };
+
+  // Effect to reset input value when log.title changes
+  useEffect(() => {
+    setInputValue(log.title);
+  }, [log.title]);
+
 
   const isDeleting = useAppSelector((state) =>
     state.log.deletingLogIds.includes(log.logId)
@@ -69,12 +70,16 @@ const ChatLogOptions = ({
     }
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setInputValue(newName);
+  }
   const handleUpdateData = async () => {
     try {
       await dispatch(
         logActions.updateLogTitle({
           logId: log.logId,
-          title: name,
+          title: inputValue || "",
         })
       ).unwrap();
 
@@ -87,7 +92,11 @@ const ChatLogOptions = ({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(open) => {
+      setOpen(open);
+      if(!open) handlePopoverClose();
+    }}
+ >
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
