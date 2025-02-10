@@ -115,7 +115,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
         overflow-auto flex-1 no-scroll
       "
     >
-      <ScrollArea className="h-full min-w-full mb-4">
+      <ScrollArea className="h-full min-w-full mb-4 pb-12">
         <FullCalendar
           plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
           initialView="timeGridWeek"
