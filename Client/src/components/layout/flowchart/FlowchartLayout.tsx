@@ -5,8 +5,10 @@ import FlowChartHeader from "@/components/flowchart/flowchartHeader/FlowChartHea
 
 import DragDropContextWrapper from "../DragDropContxtWrapper";
 import FlowchartUnitCounts from "@/components/flowchart/flowchartFooter/FlowchartUnitCounts";
+import { useAppSelector } from "@/redux";
 
 const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
   return (
     <DragDropContextWrapper>
       <SidebarFlowchart />
@@ -14,7 +16,7 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
         <FlowChartHeader />
         <div className="flex-1">{children}</div>
         {/* Sticky footer */}
-        <FlowchartUnitCounts />
+        {flowchartData && <FlowchartUnitCounts />}
       </div>
     </DragDropContextWrapper>
   );

@@ -89,7 +89,7 @@ const EmptyFlowchart = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center items-start">
+    <div className="h-screen flex justify-center items-start ml-12">
       <div className="flex flex-col items-center w-full max-w-4xl mt-12">
         {/* Header */}
         <div className="text-center">

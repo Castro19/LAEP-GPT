@@ -7,7 +7,7 @@ const FlowChartHeader = () => {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <header className="sticky top-0 bg-slate-900 text-white p-1 z-50 border-b-2 dark:border-slate-700 shadow-md transition-all duration-300">
+    <header className="sticky top-0 bg-slate-900 text-white p-1 z-50 border-b-2 dark:border-slate-700 shadow-md transition-all duration-300 ml-2">
       <div className="flex items-center justify-between relative w-full">
         <Button
           variant="ghost"
