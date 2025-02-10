@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/useUserData";
@@ -24,26 +25,25 @@ const FlowchartLogOptions = ({
 }: {
   flowchart: FetchedFlowchartObject;
   name: string;
-  // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;
   primaryOption: boolean;
-  // eslint-disable-next-line no-unused-vars
   onPrimaryChange: (primaryOption: boolean) => void;
 }) => {
   const { handleSave, handleChangeFlowchartInformation } = useUserData();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const flowchartList = useAppSelector((state) => state.flowchart.flowchartList);
+  
+  // Popover state
+  const [open, setOpen] = useState(false);
 
-  const flowchartList = useAppSelector(
-    (state) => state.flowchart.flowchartList
-  );
-
-  // Update name change handler
+  // Handle name change
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     onNameChange(newName);
   };
 
+  // Update flowchart data and close popover after saving
   const handleUpdateData = async () => {
     try {
       await dispatch(
@@ -54,15 +54,23 @@ const FlowchartLogOptions = ({
           primaryOption: primaryOption ?? false,
         })
       ).unwrap();
+      
+      // Navigate to the updated flowchart page
       navigate(`/flowchart/${flowchart.flowchartId}`);
+
       if (primaryOption) {
         handleChangeFlowchartInformation("flowchartId", flowchart.flowchartId);
         handleSave();
       }
+
+      // Show success toast
       toast({
         title: "Flowchart Updated",
         description: "Your flowchart has been updated successfully.",
       });
+
+      // Close the popover
+      setOpen(false);
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to update flowchart:", error);
@@ -70,6 +78,7 @@ const FlowchartLogOptions = ({
     }
   };
 
+  // Delete flowchart and close popover after deleting
   const handleDeleteFlowchart = async (flowchartId: string) => {
     // Step 1: Delete the flowchart from the database
     await dispatch(
@@ -82,8 +91,10 @@ const FlowchartLogOptions = ({
           ),
       })
     ).unwrap();
+
     // Step 2: Reset the flowchart data
     dispatch(flowchartActions.resetFlowchartData());
+
     // Step 3: Determine the next flowchart to set
     const nextFlowchartId = flowchartList?.find(
       (fc) => fc.flowchartId !== flowchartId
@@ -94,9 +105,7 @@ const FlowchartLogOptions = ({
       // Step 5: Navigate to the next flowchart
       navigate(`/flowchart/${nextFlowchartId}`);
     } else {
-      dispatch(
-        flowchartActions.setCurrentFlowchart({} as FetchedFlowchartObject)
-      );
+      dispatch(flowchartActions.setCurrentFlowchart({} as FetchedFlowchartObject));
       handleChangeFlowchartInformation("flowchartId", "");
       // Step 5: Navigate to the flowchart list
       navigate("/flowchart");
@@ -106,12 +115,14 @@ const FlowchartLogOptions = ({
       title: "Flowchart Deleted",
       description: "Your flowchart has been deleted successfully.",
     });
+    // Close the popover
+    setOpen(false);
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="flex justify-end m-0 p-0 w-4">
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
           <SlOptionsVertical />
         </Button>
       </PopoverTrigger>
