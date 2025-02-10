@@ -10,6 +10,7 @@ import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 import { sectionReducer } from "./section/sectionSlice";
 import { panelLayoutReducer } from "./panelLayout/panelLayoutSlice";
 import { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice";
+import { calendarReducer } from "./calendar/calendarSlice";
 
 const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ const store = configureStore({
     section: sectionReducer,
     panelLayout: panelLayoutReducer,
     sectionSelection: sectionSelectionReducer,
+    calendar: calendarReducer,
   },
 });
 
