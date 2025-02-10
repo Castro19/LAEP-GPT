@@ -102,7 +102,7 @@ const ChatLogOptions = ({
         <div className="grid gap-4 p-4">
           {/* Name Input */}
           <div className="grid gap-2">
-            <Label htmlFor="name">Rename Chat Log</Label>
+            <Label htmlFor="name">Modify Chat Log</Label>
             <Input
               id="name"
               defaultValue={log.title}
