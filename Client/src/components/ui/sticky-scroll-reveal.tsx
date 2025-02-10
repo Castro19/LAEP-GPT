@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useMotionValueEvent, useScroll } from "framer-motion";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "./scroll-area";
 
 export const StickyScroll = ({
   content,
@@ -16,7 +17,7 @@ export const StickyScroll = ({
   contentClassName?: string;
 }) => {
   const [activeCard, setActiveCard] = React.useState(0);
-  const ref = useRef<any>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     // uncomment line 22 and comment line 23 if you DONT want the overflow container and want to have it change on the entire page scroll
     // target: ref,
@@ -55,53 +56,55 @@ export const StickyScroll = ({
   }, [activeCard, linearGradients]);
 
   return (
-    <motion.div
-      animate={{
-        backgroundColor: backgroundColors[activeCard % backgroundColors.length],
-      }}
-      className="h-[30rem] overflow-y-auto flex justify-center relative space-x-10 rounded-md p-10"
-      ref={ref}
-    >
-      <div className="div relative flex items-start px-4">
-        <div className="max-w-2xl">
-          {content.map((item, index) => (
-            <div key={item.title + index} className="mt-16">
-              <motion.h2
-                initial={{
-                  opacity: 0,
-                }}
-                animate={{
-                  opacity: activeCard === index ? 1 : 0.3,
-                }}
-                className="text-2xl font-bold text-slate-100"
-              >
-                {item.title}
-              </motion.h2>
-              <motion.p
-                initial={{
-                  opacity: 0,
-                }}
-                animate={{
-                  opacity: activeCard === index ? 1 : 0.3,
-                }}
-                className="text-lg text-slate-300 max-w-sm mt-10"
-              >
-                {item.description}
-              </motion.p>
-            </div>
-          ))}
-          <div className="h-48"></div>
-        </div>
-      </div>
-      <div
-        style={{ background: "var(--slate-900)" }}
-        className={cn(
-          "hidden lg:block rounded-md bg-white sticky top-5 overflow-hidden",
-          contentClassName
-        )}
+    <ScrollArea className="overflow-y-auto h-[30rem]" ref={ref}>
+      <motion.div
+        animate={{
+          backgroundColor:
+            backgroundColors[activeCard % backgroundColors.length],
+        }}
+        className="flex justify-center items-start relative space-x-24 rounded-md p-10"
       >
-        {content[activeCard].content ?? null}
-      </div>
-    </motion.div>
+        <div className="div relative flex items-start px-4">
+          <div className="max-w-2xl">
+            {content.map((item, index) => (
+              <div key={item.title + index} className="mt-16">
+                <motion.h2
+                  initial={{
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: activeCard === index ? 1 : 0.3,
+                  }}
+                  className="text-2xl font-bold text-slate-100"
+                >
+                  {item.title}
+                </motion.h2>
+                <motion.p
+                  initial={{
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: activeCard === index ? 1 : 0.3,
+                  }}
+                  className="text-lg text-slate-300 max-w-sm mt-10"
+                >
+                  {item.description}
+                </motion.p>
+              </div>
+            ))}
+            <div className="h-48"></div>
+          </div>
+        </div>
+        <div
+          style={{ background: "var(--slate-900)" }}
+          className={cn(
+            "hidden lg:block rounded-md bg-white sticky top-5 overflow-hidden",
+            contentClassName
+          )}
+        >
+          {content[activeCard].content ?? null}
+        </div>
+      </motion.div>
+    </ScrollArea>
   );
 };

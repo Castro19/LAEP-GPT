@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
 
 const content = [
@@ -50,9 +49,5 @@ const content = [
 ];
 
 export function StickyScrollRevealDemo() {
-  return (
-    <ScrollArea className="h-[30rem]">
-      <StickyScroll content={content} />
-    </ScrollArea>
-  );
+  return <StickyScroll content={content} />;
 }
