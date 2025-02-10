@@ -36,7 +36,7 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
     <SidebarMenuItem className="w-full p-1">
       <div
         className={`group flex items-center justify-between w-full h-full px-2 py-1 rounded-lg transition-colors duration-200 ml-0.5 -mt-2
-        ${isActive ? "bg-gray-700 dark:bg-gray-700 dark:bg-opacity-70" : "hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+        ${isActive ? "bg-gray-700 dark:bg-gray-800" : "hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-opacity-70"}`}
       >
         <SidebarMenuButton
           onClick={() => handleNewLog(log.logId)}

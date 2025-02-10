@@ -92,7 +92,7 @@ const ChatLogOptions = ({
         <Button
           variant="ghost"
           size="icon"
-          className="w-6 dark:hover:bg-transparent flex justify-end transition-transform hover:scale-125 "
+          className="w-6 dark:hover:bg-transparent flex justify-end transition-transform "
           onClick={() => setOpen(true)}
         >
           <SlOptionsVertical />
@@ -102,7 +102,7 @@ const ChatLogOptions = ({
         <div className="grid gap-4 p-4">
           {/* Name Input */}
           <div className="grid gap-2">
-            <Label htmlFor="name">Modify Chat Log</Label>
+            <Label htmlFor="name">Rename</Label>
             <Input
               id="name"
               defaultValue={log.title}
