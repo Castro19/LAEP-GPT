@@ -3,6 +3,7 @@ import ProfilePageHeader from "./ProfilePageHeader";
 
 import DragDropContextWrapper from "../DragDropContxtWrapper";
 import OuterSidebar from "../OuterIconSidebar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ProfilePageLayoutProps = {
   children: ReactNode;
@@ -13,9 +14,11 @@ const ProfilePageLayout = ({ children }: ProfilePageLayoutProps) => {
       <div className="flex">
         <OuterSidebar />
         <DragDropContextWrapper>
-          <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full">
+          <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full oveflow-hidden">
             <ProfilePageHeader />
-            <div className="flex-1 overflow-auto">{children}</div>
+            <ScrollArea className="overflow-y-auto">
+              <div className="flex-1 h-[95vh]">{children}</div>
+            </ScrollArea>
           </div>
         </DragDropContextWrapper>
       </div>

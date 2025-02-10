@@ -1,4 +1,4 @@
-import { StickyScroll } from "../ui/sticky-scroll-reveal";
+import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
 
 const content = [
   {
@@ -49,9 +49,5 @@ const content = [
 ];
 
 export function StickyScrollRevealDemo() {
-  return (
-    <div className="">
-      <StickyScroll content={content} />
-    </div>
-  );
+  return <StickyScroll content={content} />;
 }

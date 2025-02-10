@@ -28,7 +28,9 @@ export async function fetchSections(
   totalPages: number;
 }> {
   const queryString = buildQueryString(filter);
-  console.log("queryString", queryString);
+  if (environment === "dev") {
+    console.log("queryString", queryString);
+  }
   const response = await fetch(
     `${serverUrl}/sections?${queryString}&page=${pageNumber}`,
     {
