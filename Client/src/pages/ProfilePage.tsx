@@ -116,7 +116,7 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 border-3 min-h-screen overflow-auto">
+    <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-auto border-3 min-h-screen overflow-auto">
       <GridItemContainer>
         <CardContent>
           <div className="flex flex-col justify-around items-center my-2">
@@ -231,7 +231,7 @@ export function ProfilePage() {
           </AnimatedModalDemo>
         </div>
       </GridItemContainer>
-      <div className="border border-slate-500 md:col-span-3 md:row-span-2 p-4">
+      <div className="border border-slate-500 md:col-span-3 md:row-span-auto p-4">
         <Tabs defaultValue="flowchart">
           <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
             <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
