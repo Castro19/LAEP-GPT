@@ -1,4 +1,3 @@
-import AdminViewOnly from "@/components/security/AdminViewOnly";
 import CalendarContainer from "@/components/calendar/CalendarContainer";
 import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
 import SelectedSectionContainer from "@/components/calendar/SelectedSectionContainer";
@@ -8,9 +7,11 @@ import { sectionSelectionActions } from "@/redux";
 import { useEffect } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { generateSchedules } from "@/components/calendar/helpers/buildSchedule";
+import EmptyCalendar from "@/components/calendar/EmptyCalendar";
 
 const CalendarPage = () => {
   const dispatch = useAppDispatch();
+  const { calendars } = useAppSelector((state) => state.calendar);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -30,21 +31,19 @@ const CalendarPage = () => {
   };
 
   return (
-    <AdminViewOnly>
-      <CalendarPageLayout>
-        <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
-          <div className="col-span-1">
-            <CalendarSideOptions onClick={handleBuildSchedule}>
-              <SelectedSectionContainer />
-            </CalendarSideOptions>
-            {/* <ScheduleBuilderQueryForm /> */}
-          </div>
-          <div className="col-span-3">
-            <CalendarContainer />
-          </div>
+    <CalendarPageLayout>
+      <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
+        <div className="col-span-1">
+          <CalendarSideOptions onClick={handleBuildSchedule}>
+            <SelectedSectionContainer />
+          </CalendarSideOptions>
+          {/* <ScheduleBuilderQueryForm /> */}
         </div>
-      </CalendarPageLayout>
-    </AdminViewOnly>
+        <div className="col-span-3">
+          {calendars.length > 0 ? <CalendarContainer /> : <EmptyCalendar />}
+        </div>
+      </div>
+    </CalendarPageLayout>
   );
 };
 

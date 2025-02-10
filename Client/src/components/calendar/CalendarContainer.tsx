@@ -5,7 +5,7 @@ const CalendarContainer = () => {
   const { calendars, page } = useAppSelector((state) => state.calendar);
 
   if (calendars.length === 0 || !Array.isArray(calendars)) {
-    return <div>No sections chosen</div>;
+    return <div>Build a schedule first</div>;
   }
   const sections = calendars[page - 1].sections;
   return (
