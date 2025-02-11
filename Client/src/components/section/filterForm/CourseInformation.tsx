@@ -17,15 +17,45 @@ import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
 import SUBJECTS from "./api/subjects";
 import DoubleSliderFilter from "./reusable/DoubleSliderFilter";
 import { Switch } from "@/components/ui/switch";
+import { useEffect } from "react";
 import { useUserData } from "@/hooks/useUserData";
+import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
+import { resetConcentrationOptions } from "@/redux/flowSelection/flowSelectionSlice";
 
 const CourseInformation = ({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
+  const dispatch = useAppDispatch();
   const { userData } = useUserData();
   const { major, concentration } = userData.flowchartInformation;
+
+  const { majorOptions, concentrationOptions } = useAppSelector(
+    (state) => state.flowSelection
+  );
+
+  // Fetch major options when the techElectives checkbox is checked
+  useEffect(() => {
+    if (form.watch("isTechElective")) {
+      dispatch(flowSelectionActions.fetchMajorOptions("2022-2026"));
+    }
+  }, [dispatch, form]);
+
+  // Fetch concentration options when the techElectives checkbox is checked and a major is selected
+  useEffect(() => {
+    if (form.watch("isTechElective") && form.watch("techElectives.major")) {
+      dispatch(
+        flowSelectionActions.fetchConcentrationOptions({
+          catalog: "2022-2026",
+          major: form.watch("techElectives.major"),
+        })
+      );
+    } else {
+      dispatch(resetConcentrationOptions());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [major, form.watch("techElectives.major"), dispatch]);
 
   return (
     <CollapsibleContentWrapper title="Course Information" icon={FaBook}>
@@ -184,41 +214,89 @@ const CourseInformation = ({
           <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
             Include only Tech Electives
           </FormLabel>
+          <Switch
+            checked={form.watch("isTechElective")}
+            onCheckedChange={(checked) => {
+              form.setValue("isTechElective", checked);
+            }}
+          />
+        </div>
+      </FormItem>
+      {form.watch("isTechElective") && (
+        <>
           <FormField
             control={form.control}
-            name="includeTechElectives"
+            name="techElectives.major"
             render={({ field }) => {
               return (
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                      form.setValue("includeTechElectives", checked);
+                  <ReusableDropdown
+                    name="Major"
+                    dropdownItems={majorOptions}
+                    handleChangeItem={(_, value) => {
+                      console.log("VALUE", value);
+                      // Retrieve the current techElectives values, defaulting concentration to an empty string if undefined.
+                      const currentTechElectives = form.getValues(
+                        "techElectives"
+                      ) || { major: "", concentration: "" };
+                      form.setValue("techElectives", {
+                        ...currentTechElectives,
+                        major: value,
+                        // Ensure concentration is always a string.
+                        concentration: currentTechElectives.concentration ?? "",
+                      });
                     }}
+                    selectedItem={field.value || major || ""}
+                    className="w-full border rounded-lg hover:border-blue-300 transition-colors dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
                   />
                 </FormControl>
               );
             }}
           />
-        </div>
-      </FormItem>
-      {form.getValues("includeTechElectives") && (
-        <>
-          {!major && !concentration ? (
-            <p className="text-sm text-gray-500">
-              Please fill out your major and concentration in your profile to
-              include tech electives.
-            </p>
-          ) : (
-            <p className="text-sm text-gray-500">
-              We will include tech electives from the following.
-              <br />
-              {major && `Major: ${major}`}
-              <br />
-              {concentration && `Concentration: ${concentration}`}
-            </p>
-          )}
+          <FormField
+            control={form.control}
+            name="techElectives.concentration"
+            render={({ field }) => {
+              return (
+                <FormControl>
+                  <ReusableDropdown
+                    name="Concentration"
+                    dropdownItems={concentrationOptions.map(
+                      (item) => item.concName
+                    )}
+                    handleChangeItem={(_, value) => {
+                      console.log("VALUE", value);
+                      const selectedConc = concentrationOptions.find(
+                        (item) => item.concName === value
+                      );
+                      if (selectedConc) {
+                        const currentTechElectives = form.getValues(
+                          "techElectives"
+                        ) || { major: "", concentration: "" };
+                        form.setValue("techElectives", {
+                          ...currentTechElectives,
+                          // Update concentration using the code from your options.
+                          concentration: selectedConc.code,
+                        });
+                      }
+                    }}
+                    /* Convert the saved concentration code to its concName label,
+                       falling back on the default concentration (from your selector) if needed. */
+                    selectedItem={
+                      field.value
+                        ? concentrationOptions.find(
+                            (option) => option.code === field.value
+                          )?.concName ?? ""
+                        : concentrationOptions.find(
+                            (option) => option.code === concentration
+                          )?.concName ?? ""
+                    }
+                    className="w-full border rounded-lg hover:border-blue-300 transition-colors dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
+                  />
+                </FormControl>
+              );
+            }}
+          />
         </>
       )}
     </CollapsibleContentWrapper>

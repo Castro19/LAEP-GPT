@@ -44,7 +44,7 @@ const initialState: SectionState = {
     maxUnits: "9",
     courseAttribute: [],
     instructionMode: "",
-    includeTechElectives: false,
+    techElectives: { major: "", concentration: "" },
   },
   AIQuery: null,
 };

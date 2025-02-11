@@ -82,7 +82,11 @@ export type SectionsFilterParams = {
   instructionMode?: string;
   includeUnratedInstructors?: boolean;
   instructors?: string[];
-  includeTechElectives?: boolean;
+  isTechElective?: boolean;
+  techElectives?: {
+    major: string;
+    concentration: string;
+  };
 };
 
 // ------------------------------------------------------------

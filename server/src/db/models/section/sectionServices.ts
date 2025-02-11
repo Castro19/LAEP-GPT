@@ -9,15 +9,13 @@ import {
 import { findSectionsByFilter } from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
-import { getUserByFirebaseId } from "../user/userServices";
 
 /**
  * Build a filter object that can be passed to the collection query.
  */
-async function buildSectionsQuery(
-  filter: SectionsFilterParams,
-  userId: string
-): Promise<Filter<SectionDocument>> {
+function buildSectionsQuery(
+  filter: SectionsFilterParams
+): Filter<SectionDocument> {
   const query: any = {};
 
   // 1) subject
@@ -225,17 +223,18 @@ async function buildSectionsQuery(
     };
   }
 
-  // 11) includeTechElectives
-  if (filter.includeTechElectives) {
-    // Find the major and concentration from the user's profile
-    const user = await getUserByFirebaseId(userId);
-    if (!user) {
-      return { sections: [], total: 0 };
-    }
-    const { concentration } = user.flowchartInformation;
+  // 11) techElectives
 
-    // Ensure the concentration string is present in the techElectives array
-    query.techElectives = { $in: [concentration] };
+  if (filter.isTechElective === true && filter.techElectives) {
+    if (environment === "dev") {
+      console.log("filter.techElectives", filter.techElectives);
+    }
+    if (!filter.techElectives.concentration) {
+      query.techElectives = { $in: [filter.techElectives.major] };
+    } else {
+      // Ensure the concentration string is present in the techElectives array
+      query.techElectives = { $in: [filter.techElectives.concentration] };
+    }
   }
   return query;
 }
@@ -246,11 +245,10 @@ async function buildSectionsQuery(
 export async function getSectionsByFilter(
   filter: SectionsFilterParams,
   skip = 0,
-  limit = 25,
-  userId: string
+  limit = 25
 ): Promise<{ sections: Section[]; total: number }> {
   try {
-    const query = await buildSectionsQuery(filter, userId);
+    const query = buildSectionsQuery(filter);
     // Perform the find operation with skip & limit
     // and also get a total count so you can return that in the response
     return await findSectionsByFilter(query, skip, limit);

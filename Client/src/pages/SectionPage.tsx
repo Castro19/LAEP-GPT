@@ -1,7 +1,11 @@
 import SectionPageLayout from "@/components/layout/SectionPage/SectionPageLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ReactElement, useEffect, useRef, useState } from "react";
-import { assistantActions, useAppDispatch } from "@/redux";
+import {
+  assistantActions,
+  flowSelectionActions,
+  useAppDispatch,
+} from "@/redux";
 import { useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
 import SectionFilters from "@/components/section/filterForm/SectionFilters";
@@ -9,10 +13,13 @@ import SectionContainer from "@/components/section/SectionContainer";
 import { ChatContainer } from "@/components/chat";
 import AnimateWrapper from "@/components/section/AnimateWrapper";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
+import { useUserData } from "@/hooks/useUserData";
 
 const SectionPage = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
+  const { userData } = useUserData();
+  const { major } = userData.flowchartInformation;
   const assistantList = useAppSelector(
     (state) => state.assistant.assistantList
   );
@@ -72,6 +79,18 @@ const SectionPage = () => {
       );
     }
   }, [currentChoice, dispatch]);
+
+  useEffect(() => {
+    dispatch(flowSelectionActions.fetchMajorOptions("2022-2026"));
+    if (major) {
+      dispatch(
+        flowSelectionActions.fetchConcentrationOptions({
+          catalog: "2022-2026",
+          major: major,
+        })
+      );
+    }
+  }, [dispatch, major]);
 
   return (
     <div className="flex">

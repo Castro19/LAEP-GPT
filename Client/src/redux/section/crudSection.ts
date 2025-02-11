@@ -3,15 +3,26 @@ import { SectionsFilterParams, Section } from "@polylink/shared/types";
 
 const buildQueryString = (filter: SectionsFilterParams) => {
   const queryParams = new URLSearchParams();
+
   Object.entries(filter).forEach(([key, value]) => {
-    if (value) {
-      if (Array.isArray(value)) {
+    if (value !== undefined && value !== null && value !== "") {
+      // Check for the techElectives object and flatten it
+      if (key === "techElectives" && typeof value === "object") {
+        const { major, concentration } = value as {
+          major: string;
+          concentration: string;
+        };
+        queryParams.append("techElectives.major", major);
+        queryParams.append("techElectives.concentration", concentration);
+      } else if (Array.isArray(value)) {
+        // If it's an array, append each item
         value.forEach((v) => queryParams.append(key, v.toString()));
       } else {
         queryParams.append(key, value.toString());
       }
     }
   });
+
   return queryParams.toString();
 };
 /**

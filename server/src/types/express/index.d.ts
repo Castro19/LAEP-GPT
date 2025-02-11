@@ -24,7 +24,9 @@ interface CustomRequest extends Request {
     minInstructorRating?: string;
     maxInstructorRating?: string;
     includeUnratedInstructors?: boolean;
-    includeTechElectives?: boolean;
+    "techElectives.major"?: string;
+    "techElectives.concentration"?: string;
+    isTechElective?: string;
     page?: number;
   };
 }

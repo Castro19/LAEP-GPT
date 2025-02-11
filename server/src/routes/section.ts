@@ -17,6 +17,8 @@ router.get("/", async (req: Request, res: any) => {
       res.status(401).send("Unauthorized");
       return;
     }
+
+    // Instead of destructuring techElectives as an object, access the flattened fields:
     const {
       subject,
       courseIds, // array of courseIds
@@ -31,9 +33,23 @@ router.get("/", async (req: Request, res: any) => {
       minInstructorRating, // e.g., "3.5"
       maxInstructorRating, // e.g., "4.0"
       includeUnratedInstructors, // e.g., true or false
-      includeTechElectives, // e.g., true or false
       page = "1", // Default to page 1 if not provided
+      isTechElective, // e.g., true or false
     } = req.query;
+
+    // Access the flattened techElectives values from the query.
+    const techElectivesMajor = req.query["techElectives.major"];
+    const techElectivesConcentration = req.query["techElectives.concentration"];
+
+    // Convert potential array values into a single string (or fallback to an empty string).
+    const techElectives = {
+      major: Array.isArray(techElectivesMajor)
+        ? techElectivesMajor[0]
+        : (techElectivesMajor as string) || "",
+      concentration: Array.isArray(techElectivesConcentration)
+        ? techElectivesConcentration[0]
+        : (techElectivesConcentration as string) || "",
+    };
 
     // Convert page from string to number
     const pageNumber = parseInt(page as string, 10) || 1;
@@ -69,15 +85,15 @@ router.get("/", async (req: Request, res: any) => {
       minInstructorRating: minInstructorRating as string,
       maxInstructorRating: maxInstructorRating as string,
       includeUnratedInstructors: includeUnratedInstructors as boolean,
-      includeTechElectives: includeTechElectives as boolean,
+      techElectives, // Use the flattened object values here
+      isTechElective: isTechElective === "true", // Converts the string "true" to boolean true, any other value becomes false
     };
 
     // Call the service with the parsed query object
     const { sections, total } = await getSectionsByFilter(
       filterParams,
       skip,
-      PAGE_SIZE,
-      userId
+      PAGE_SIZE
     );
 
     // Return a paginated response
