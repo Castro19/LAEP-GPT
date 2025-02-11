@@ -1,4 +1,3 @@
-import { Label } from "@radix-ui/react-context-menu";
 import { CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/redux";
