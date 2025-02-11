@@ -36,7 +36,7 @@ export type Section = {
   >; // course attributes the section fulfills (e.g. ["GE D", "USCP"])
 
   meetings: Array<{
-    days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su">;
+    days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
     start_time: string | null; // start time of the meeting (e.g. "10:00 AM")
     end_time: string | null; // end time of the meeting (e.g. "11:00 AM")
     location: string; // location of the meeting (e.g. "TBA")
@@ -146,7 +146,7 @@ export type EnrollmentInfo = {
 };
 
 export type Meeting = {
-  days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su">;
+  days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
   start_time: string | null;
   end_time: string | null;
   location: string;

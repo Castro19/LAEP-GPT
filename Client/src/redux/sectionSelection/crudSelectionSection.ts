@@ -88,7 +88,10 @@ export function transformSectionToSelectedSection(
     classNumber: section.classNumber,
     component: section.component,
     enrollmentStatus: section.enrollmentStatus,
-    meetings: section.meetings,
+    meetings: section.meetings.map((meeting) => ({
+      ...meeting,
+      days: meeting.days.filter((day) => day),
+    })),
     classPair: section.pairedSections,
     professor: section.instructors.map((instructor) => instructor.name),
     rating:
