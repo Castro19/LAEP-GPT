@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   CourseInfo,
   Meeting,
@@ -13,10 +13,12 @@ import {
   CollapsibleContent,
 } from "../ui/collapsible";
 import { createOrUpdateSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
-import { useAppDispatch } from "@/redux";
+import { useAppDispatch, useAppSelector } from "@/redux";
 import { toast } from "../ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { LabelProps } from "@radix-ui/react-label";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { transformToSectionDetail } from "@/helpers/transformSection";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
@@ -297,6 +299,21 @@ type SectionHeaderProps = {
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
   const dispatch = useAppDispatch();
+  const [displayAddPairModal, setDisplayAddPairModal] = useState(false);
+  const { sections } = useAppSelector((state) => state.section);
+
+  const handleAddPair = async (section: SectionDetail) => {
+    handleAdd(section);
+    // Get the paired section from its class number
+    const pairedSection = sections.find(
+      (s) => s.classNumber === section.pairedSections[0]
+    );
+    // Convert to sectionDetail
+    if (pairedSection) {
+      const pairedSectionDetail = transformToSectionDetail(pairedSection);
+      handleAdd(pairedSectionDetail);
+    }
+  };
 
   // Handler for the Add button
   const handleAdd = async (section: SectionDetail) => {
@@ -340,13 +357,51 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
           {section.enrollmentStatus === "O" ? "Open" : "Closed"}
         </Badge>
       </div>
-      <Button
-        variant="secondary"
-        className="text-xs py-0"
-        onClick={() => handleAdd(section)}
-      >
-        Add
-      </Button>
+      {section.pairedSections && section.pairedSections.length > 0 ? (
+        <Popover
+          open={displayAddPairModal}
+          onOpenChange={setDisplayAddPairModal}
+        >
+          <PopoverTrigger asChild className="flex justify-end m-0 p-0 w-4">
+            <Button
+              variant="secondary"
+              className="text-xs py-0"
+              onClick={() => setDisplayAddPairModal(true)}
+            >
+              Add
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72">
+            <div className="grid gap-2">
+              {/* Display the class Pair & disclaimer that it is recommend to pair sections. Give option of adding class pair or just adding this single section. */}
+              <div className="flex flex-row gap-2">
+                <Button
+                  variant="secondary"
+                  className="text-xs py-0"
+                  onClick={() => handleAddPair(section)}
+                >
+                  Add Class Pair
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="text-xs py-0"
+                  onClick={() => handleAdd(section)}
+                >
+                  Add Single Section
+                </Button>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <Button
+          variant="secondary"
+          className="text-xs py-0"
+          onClick={() => handleAdd(section)}
+        >
+          Add
+        </Button>
+      )}
     </div>
   );
 };

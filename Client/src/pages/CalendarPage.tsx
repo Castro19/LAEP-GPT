@@ -6,7 +6,7 @@ import { calendarActions, useAppDispatch, useAppSelector } from "@/redux";
 import { sectionSelectionActions } from "@/redux";
 import { useEffect } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { generateSchedules } from "@/components/calendar/helpers/buildSchedule";
+import { generateAllScheduleCombinations } from "@/components/calendar/helpers/buildSchedule";
 import EmptyCalendar from "@/components/calendar/EmptyCalendar";
 
 const CalendarPage = () => {
@@ -25,7 +25,7 @@ const CalendarPage = () => {
       console.log("Building schedule...");
     }
     // Create all combinations of sections
-    const allCombinations = generateSchedules(selectedSections);
+    const allCombinations = generateAllScheduleCombinations(selectedSections);
     dispatch(calendarActions.setCalendars(allCombinations));
     dispatch(calendarActions.setPage(1));
     dispatch(calendarActions.setTotalPages(allCombinations.length));

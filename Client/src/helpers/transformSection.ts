@@ -170,7 +170,7 @@ export function transformSectionsToCatalog(sections: Section[]): CourseInfo[] {
 /**
  * Transforms an old-schema Section into a new-schema SectionDetail.
  */
-function transformToSectionDetail(section: Section): SectionDetail {
+export function transformToSectionDetail(section: Section): SectionDetail {
   return {
     courseId: section.courseId,
     courseName: section.courseName,
