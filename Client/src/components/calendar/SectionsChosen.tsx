@@ -1,4 +1,3 @@
-import { environment } from "@/helpers/getEnvironmentVars";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { Meeting, SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
@@ -18,9 +17,6 @@ const SectionsChosen = () => {
   // Group sections by courseId and professor
   if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
     return <div>No sections chosen</div>;
-  }
-  if (environment === "dev") {
-    console.log("SELECTED SECTIONS", selectedSections);
   }
 
   const groupedSections = selectedSections.reduce(

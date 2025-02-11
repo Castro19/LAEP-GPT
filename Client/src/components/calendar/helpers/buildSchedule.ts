@@ -115,11 +115,11 @@ function getValidSelectionsForCourse(
   sections: SelectedSection[]
 ): SelectedSection[][] {
   const validSelections: SelectedSection[][] = [];
-
+  const standaloneSections: SelectedSection[] = [];
   // Add standalone sections (only if classPair is empty).
   sections.forEach((section) => {
     if (section.classPair.length === 0) {
-      validSelections.push([section]);
+      standaloneSections.push(section);
     }
   });
 
@@ -133,44 +133,16 @@ function getValidSelectionsForCourse(
       }
     }
   }
-
-  return validSelections;
-}
-
-/**
- * Recursively combine course selections.
- *
- * @param courseSelections - an array where each element is an array of valid selections for a course.
- *                           (Each valid selection is itself an array of one or more SelectedSection.)
- * @param index - current index into courseSelections.
- * @param currentSchedule - the current built schedule.
- * @returns an array of complete schedules (each is an array of SelectedSection).
- */
-function combineCourseSelections(
-  courseSelections: SelectedSection[][][],
-  index: number,
-  currentSchedule: SelectedSection[]
-): SelectedSection[][] {
-  if (index === courseSelections.length) {
-    // Base case: we have chosen one selection per course.
-    return [currentSchedule];
-  }
-
-  const combinations: SelectedSection[][] = [];
-  // For each valid selection option for the current course:
-  for (const selection of courseSelections[index]) {
-    // Check for any time conflict with the schedule built so far.
-    if (!hasConflict(currentSchedule, selection)) {
-      const newSchedule = currentSchedule.concat(selection);
-      const subCombinations = combineCourseSelections(
-        courseSelections,
-        index + 1,
-        newSchedule
-      );
-      combinations.push(...subCombinations);
+  for (const section of standaloneSections) {
+    // Check if the section classNumber is in the classPair of any other section.
+    const isPaired = sections.some((otherSection) =>
+      otherSection.classPair.includes(section.classNumber)
+    );
+    if (!isPaired) {
+      validSelections.push([section]);
     }
   }
-  return combinations;
+  return validSelections;
 }
 
 /**
@@ -179,6 +151,63 @@ function combineCourseSelections(
 function computeAverageRating(sections: SelectedSection[]): number {
   const totalRating = sections.reduce((sum, sec) => sum + sec.rating, 0);
   return totalRating / sections.length;
+}
+
+function combineCourseSelections(
+  courseGroups: SelectedSection[][][],
+  index: number,
+  currentSchedule: SelectedSection[]
+): SelectedSection[][] {
+  if (index === courseGroups.length) {
+    return [currentSchedule];
+  }
+
+  const combinations: SelectedSection[][] = [];
+  const currentCourseGroup = courseGroups[index];
+
+  for (const selection of currentCourseGroup) {
+    // Ensure selection is non-empty (valid sections)
+    if (selection.length === 0) continue;
+
+    if (!hasConflict(currentSchedule, selection)) {
+      const newSchedule = [...currentSchedule, ...selection];
+      const subCombinations = combineCourseSelections(
+        courseGroups,
+        index + 1,
+        newSchedule
+      );
+      combinations.push(...subCombinations);
+    } else {
+      const subCombinations = combineCourseSelections(
+        courseGroups,
+        index + 1,
+        currentSchedule
+      );
+      combinations.push(...subCombinations);
+    }
+  }
+
+  return combinations;
+}
+
+export function generateSchedules(
+  courseGroups: SelectedSection[][][]
+): Schedule[] {
+  // Validate courseGroups structure to avoid empty selections
+  const isValid = courseGroups.every(
+    (group) => group.length > 0 && group.every((sel) => sel.length > 0)
+  );
+  if (!isValid) return [];
+
+  const allSchedules = combineCourseSelections(courseGroups, 0, []);
+
+  const schedules: Schedule[] = allSchedules.map((sections) => ({
+    sections,
+    averageRating: computeAverageRating(sections),
+  }));
+
+  schedules.sort((a, b) => b.averageRating - a.averageRating);
+  return schedules;
 }
 
 /**
@@ -193,7 +222,9 @@ function computeAverageRating(sections: SelectedSection[]): number {
  * @param sections - The list of candidate sections.
  * @returns A sorted array of schedules.
  */
-export function generateSchedules(sections: SelectedSection[]): Schedule[] {
+export function generateAllScheduleCombinations(
+  sections: SelectedSection[]
+): Schedule[] {
   // Group sections by courseId.
   const coursesMap = new Map<string, SelectedSection[]>();
   sections.forEach((section) => {
@@ -206,40 +237,28 @@ export function generateSchedules(sections: SelectedSection[]): Schedule[] {
   // For each course group, compute valid selection options.
   // Each element in courseSelections is an array of valid selections for one course.
   // A valid selection is itself an array of SelectedSection (either one section or a pair).
-  const courseSelections: SelectedSection[][][] = [];
+  const courseGroups: SelectedSection[][][] = [];
   for (const [, courseSections] of coursesMap.entries()) {
     const validSelections = getValidSelectionsForCourse(courseSections);
     // If no valid selection exists for a required course, then no complete schedule is possible.
     if (validSelections.length === 0) {
       return []; // Alternatively, you might want to throw an error or skip this course.
     }
-    courseSelections.push(validSelections);
+    courseGroups.push(validSelections);
   }
 
-  // Recursively combine one selection per course ensuring there are no time conflicts.
-  const allScheduleSections = combineCourseSelections(courseSelections, 0, []);
+  const isValid = courseGroups.every(
+    (group) => group.length > 0 && group.every((sel) => sel.length > 0)
+  );
+  if (!isValid) return [];
 
-  // Map each schedule combination to a Schedule object with average rating.
-  const schedules: Schedule[] = allScheduleSections.map((scheduleSections) => ({
-    sections: scheduleSections,
-    averageRating: computeAverageRating(scheduleSections),
+  const allSchedules = combineCourseSelections(courseGroups, 0, []);
+
+  const schedules: Schedule[] = allSchedules.map((sections) => ({
+    sections,
+    averageRating: computeAverageRating(sections),
   }));
 
-  // Sort schedules by descending average rating.
   schedules.sort((a, b) => b.averageRating - a.averageRating);
-
   return schedules;
 }
-
-/* Example Usage:
-  
-  import { generateSchedules, SelectedSection } from "./scheduleGenerator";
-  
-  const candidateSections: SelectedSection[] = [
-    // ... populate with your sections ...
-  ];
-  
-  const possibleSchedules = generateSchedules(candidateSections);
-  console.log(possibleSchedules);
-   
-  */
