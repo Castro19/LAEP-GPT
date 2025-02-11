@@ -50,19 +50,17 @@ type CourseSectionProps = {
 };
 
 const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
+  const [isOpen, setIsOpen] = useState(true);
   const length = course.professorGroups.reduce(
     (acc, profGroup) => acc + profGroup.sections.length,
     0
   );
   return (
-    <Collapsible defaultOpen={true}>
+    <Collapsible defaultOpen={isOpen} onOpenChange={setIsOpen}>
       <div className="rounded-xl shadow-2xl dark:border-slate-700 border-2">
         <div className="flex justify-between items-center w-full p-4 dark:bg-slate-950 rounded-xl dark:bg-opacity-70">
           {/* Left Side - "Currently Viewing" and Section Length */}
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent dark:bg-slate-200 bg-opacity-30 rounded-full px-2">
-              Currently Viewing
-            </h2>
             <span className="px-3 rounded-lg bg-gray-700 text-gray-300 text-lg font-medium bg-opacity-50 hover:bg-opacity-60">
               {length} sections
             </span>
@@ -71,7 +69,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
           {/* Right Side - Collapse All Button (Collapsible Trigger) */}
           <CollapsibleTrigger asChild>
             <button className="px-3 py-1 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 text-lg font-medium transition bg-opacity-50 hover:bg-opacity-60">
-              Collapse All
+              {isOpen ? "Collapse All" : "Expand"}
             </button>
           </CollapsibleTrigger>
         </div>
@@ -158,7 +156,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
   });
 
   return (
-    <Collapsible defaultOpen={true}>
+    <Collapsible defaultOpen={false}>
       <CollapsibleTrigger asChild>
         <div className="rounded-lg rounded-b-none bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer bg-opacity-80">
           <div className="flex items-center justify-between">
@@ -184,10 +182,20 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
                 </span>
               )}
             </div>
-            {group.instructor.id !== "none" && <StarRating group={group} />}
+
+            {/* Right side - added height spacer */}
+            {group.instructor.id !== "none" ? (
+              <StarRating group={group} />
+            ) : (
+              <div className="flex items-center gap-2 font-sans h-[34px]">
+                <div className="flex items-center">No Ratings</div>
+              </div>
+            )}
           </div>
-          {group.instructor.id !== "none" && (
-            <div className="flex justify-end items-center shadow-md pr-2">
+
+          {/* Rating details section - add hidden spacer for no-ratings */}
+          {group.instructor.id !== "none" ? (
+            <div className="flex justify-end items-center pr-2 ">
               <div className="text-sm text-gray-300 flex items-center">
                 <strong className="text-lg text-white">
                   {group.overallRating.toFixed(1)}
@@ -198,6 +206,9 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
                 </span>
               </div>
             </div>
+          ) : (
+            // Invisible spacer to match rating details height
+            <div className="h-[24px] opacity-0"></div>
           )}
         </div>
       </CollapsibleTrigger>
