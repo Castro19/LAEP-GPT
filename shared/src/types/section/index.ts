@@ -56,6 +56,7 @@ export type Section = {
     courseRating: number | null; // rating of the instructor for the course (e.g. 4.5)
     studentDifficulties: number | null; // student difficulties of the instructor (e.g. 3.5)
   }> | null;
+  techElectives: string[];
 
   classPair: number | null; // class number of the section paired with (e.g. 1002)
 };
@@ -81,6 +82,11 @@ export type SectionsFilterParams = {
   instructionMode?: string;
   includeUnratedInstructors?: boolean;
   instructors?: string[];
+  isTechElective?: boolean;
+  techElectives?: {
+    major: string;
+    concentration: string;
+  };
 };
 
 // ------------------------------------------------------------

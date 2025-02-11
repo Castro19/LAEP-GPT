@@ -30,6 +30,7 @@ import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
 // Environment
 import { environment } from "@/helpers/getEnvironmentVars";
 import QueryAI from "./QueryAI";
+import { useUserData } from "@/hooks/useUserData";
 
 // Define a Zod schema for the filter form.
 
@@ -38,6 +39,8 @@ export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 export function SectionFilters() {
   const dispatch = useAppDispatch();
   const reduxFilters = useAppSelector((state) => state.section.filters);
+  const { userData } = useUserData();
+  const { major, concentration } = userData.flowchartInformation;
 
   // Initialize the form with default values from Redux, converting as necessary.
   const form = useForm<SectionFiltersForm>({
@@ -66,6 +69,11 @@ export function SectionFilters() {
         [],
       instructionMode: reduxFilters.instructionMode || "",
       instructors: reduxFilters.instructors || [],
+      isTechElective: reduxFilters.isTechElective || false,
+      techElectives: {
+        major: major,
+        concentration: concentration,
+      },
     },
   });
 
@@ -95,6 +103,11 @@ export function SectionFilters() {
       courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
       instructors: watchedValues.instructors || [],
+      isTechElective: watchedValues.isTechElective || false,
+      techElectives: watchedValues.techElectives || {
+        major: "",
+        concentration: "",
+      },
     };
 
     // Only dispatch if something actually changed.
@@ -110,29 +123,77 @@ export function SectionFilters() {
     const timeRange =
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
 
-    if (environment === "dev") {
-      console.log("Filtering Query", data);
-    }
     const updatedFilters: SectionsFilterParams = {
       courseIds: data.courseIds || [],
       minUnits: data.minUnits || "",
       maxUnits: data.maxUnits || "",
       courseAttribute: data.courseAttributes || [],
       subject: data.subject || "",
-
       days: data.days ? data.days.join(",") : "",
       timeRange,
       status: data.status || "",
       instructionMode: data.instructionMode || "",
-
       minInstructorRating: data.minInstructorRating || "",
       maxInstructorRating: data.maxInstructorRating || "",
       includeUnratedInstructors: data.includeUnratedInstructors,
       instructors: data.instructors || [],
+      techElectives: data.techElectives || {
+        major: "",
+        concentration: "",
+      },
+      isTechElective: data.isTechElective || false,
     };
+
+    // For example, build query string:
+    const queryString = buildQueryString(updatedFilters);
+    if (environment === "dev") {
+      console.log("Filtering Query", queryString);
+    }
+    // You can then use queryString in your API call.
     dispatch(setFilters(updatedFilters));
     dispatch(fetchSectionsAsync());
   };
+
+  function buildQueryString(filters: SectionsFilterParams): string {
+    const params = new URLSearchParams();
+
+    // Add simple (string or number) filter values.
+    if (filters.courseIds && filters.courseIds.length > 0) {
+      params.append("courseIds", filters.courseIds.join(","));
+    }
+    if (filters.status) params.append("status", filters.status);
+    if (filters.subject) params.append("subject", filters.subject);
+    if (filters.days) params.append("days", filters.days);
+    if (filters.timeRange) params.append("timeRange", filters.timeRange);
+    if (filters.minInstructorRating)
+      params.append("minInstructorRating", filters.minInstructorRating);
+    if (filters.maxInstructorRating)
+      params.append("maxInstructorRating", filters.maxInstructorRating);
+    params.append(
+      "includeUnratedInstructors",
+      String(filters.includeUnratedInstructors)
+    );
+    if (filters.minUnits) params.append("minUnits", filters.minUnits);
+    if (filters.maxUnits) params.append("maxUnits", filters.maxUnits);
+    // If courseAttribute is an array
+    if (filters.courseAttribute && filters.courseAttribute.length > 0) {
+      params.append("courseAttribute", filters.courseAttribute.join(","));
+    }
+    if (filters.instructionMode)
+      params.append("instructionMode", filters.instructionMode);
+    if (filters.instructors && filters.instructors.length > 0) {
+      params.append("instructors", filters.instructors.join(","));
+    }
+
+    // For techElectives, flatten it to two query parameters.
+    params.append("techElectives.major", filters.techElectives?.major || "");
+    params.append(
+      "techElectives.concentration",
+      filters.techElectives?.concentration || ""
+    );
+
+    return params.toString();
+  }
 
   return (
     <Form {...form}>

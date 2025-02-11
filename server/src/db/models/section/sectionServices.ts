@@ -9,6 +9,7 @@ import {
 import { findSectionsByFilter } from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
+
 /**
  * Build a filter object that can be passed to the collection query.
  */
@@ -222,6 +223,19 @@ function buildSectionsQuery(
     };
   }
 
+  // 11) techElectives
+
+  if (filter.isTechElective === true && filter.techElectives) {
+    if (environment === "dev") {
+      console.log("filter.techElectives", filter.techElectives);
+    }
+    if (!filter.techElectives.concentration) {
+      query.techElectives = { $in: [filter.techElectives.major] };
+    } else {
+      // Ensure the concentration string is present in the techElectives array
+      query.techElectives = { $in: [filter.techElectives.concentration] };
+    }
+  }
   return query;
 }
 

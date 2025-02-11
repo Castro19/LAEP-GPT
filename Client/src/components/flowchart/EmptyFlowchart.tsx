@@ -8,10 +8,10 @@ import ProgressBar from "./ProgressBar";
 import { useUserData } from "@/hooks/useUserData";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { FlowchartData } from "@polylink/shared/types";
+import { updateUserData } from "@/redux/user/userSlice";
 const EmptyFlowchart = () => {
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { userData, handleChangeFlowchartInformation, handleSave } =
-    useUserData();
+  const { userData, handleSave } = useUserData();
   const { flowchartList } = useAppSelector((state) => state.flowchart);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -69,10 +69,18 @@ const EmptyFlowchart = () => {
 
       if (flowchart && flowchart.flowchartId) {
         if (flowchart.primaryOption) {
-          handleChangeFlowchartInformation(
-            "flowchartId",
-            flowchart.flowchartId
+          dispatch(
+            updateUserData({
+              flowchartInformation: {
+                flowchartId: flowchart.flowchartId,
+                concentration: selections.concentration?.code ?? "",
+                major: selections.major ?? "",
+                catalog: selections.catalog ?? "",
+                startingYear: userData.year,
+              },
+            })
           );
+
           handleSave();
         }
         navigate(`/flowchart/${flowchart.flowchartId}`);

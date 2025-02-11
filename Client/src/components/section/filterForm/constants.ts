@@ -33,4 +33,11 @@ export const SECTION_FILTERS_SCHEMA = z.object({
   courseAttributes: z.array(z.enum(COURSE_ATTRIBUTES)).optional(),
   instructionMode: z.string(z.enum(["P", "A"])).optional(),
   instructors: z.array(z.string()).optional(),
+  isTechElective: z.boolean().optional(),
+  techElectives: z
+    .object({
+      major: z.string(),
+      concentration: z.string(),
+    })
+    .optional(),
 });
