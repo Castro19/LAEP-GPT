@@ -66,6 +66,7 @@ export function SectionFilters() {
         [],
       instructionMode: reduxFilters.instructionMode || "",
       instructors: reduxFilters.instructors || [],
+      includeTechElectives: reduxFilters.includeTechElectives,
     },
   });
 
@@ -95,6 +96,7 @@ export function SectionFilters() {
       courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
       instructors: watchedValues.instructors || [],
+      includeTechElectives: watchedValues.includeTechElectives,
     };
 
     // Only dispatch if something actually changed.
@@ -129,6 +131,7 @@ export function SectionFilters() {
       maxInstructorRating: data.maxInstructorRating || "",
       includeUnratedInstructors: data.includeUnratedInstructors,
       instructors: data.instructors || [],
+      includeTechElectives: data.includeTechElectives,
     };
     dispatch(setFilters(updatedFilters));
     dispatch(fetchSectionsAsync());

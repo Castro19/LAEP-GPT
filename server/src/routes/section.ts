@@ -12,6 +12,11 @@ const router = express.Router();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 router.get("/", async (req: Request, res: any) => {
   try {
+    const userId = req.user?.uid;
+    if (!userId) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
     const {
       subject,
       courseIds, // array of courseIds
@@ -26,6 +31,7 @@ router.get("/", async (req: Request, res: any) => {
       minInstructorRating, // e.g., "3.5"
       maxInstructorRating, // e.g., "4.0"
       includeUnratedInstructors, // e.g., true or false
+      includeTechElectives, // e.g., true or false
       page = "1", // Default to page 1 if not provided
     } = req.query;
 
@@ -63,13 +69,15 @@ router.get("/", async (req: Request, res: any) => {
       minInstructorRating: minInstructorRating as string,
       maxInstructorRating: maxInstructorRating as string,
       includeUnratedInstructors: includeUnratedInstructors as boolean,
+      includeTechElectives: includeTechElectives as boolean,
     };
 
     // Call the service with the parsed query object
     const { sections, total } = await getSectionsByFilter(
       filterParams,
       skip,
-      PAGE_SIZE
+      PAGE_SIZE,
+      userId
     );
 
     // Return a paginated response

@@ -9,12 +9,15 @@ import {
 import { findSectionsByFilter } from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
+import { getUserByFirebaseId } from "../user/userServices";
+
 /**
  * Build a filter object that can be passed to the collection query.
  */
-function buildSectionsQuery(
-  filter: SectionsFilterParams
-): Filter<SectionDocument> {
+async function buildSectionsQuery(
+  filter: SectionsFilterParams,
+  userId: string
+): Promise<Filter<SectionDocument>> {
   const query: any = {};
 
   // 1) subject
@@ -222,6 +225,18 @@ function buildSectionsQuery(
     };
   }
 
+  // 11) includeTechElectives
+  if (filter.includeTechElectives) {
+    // Find the major and concentration from the user's profile
+    const user = await getUserByFirebaseId(userId);
+    if (!user) {
+      return { sections: [], total: 0 };
+    }
+    const { concentration } = user.flowchartInformation;
+
+    // Ensure the concentration string is present in the techElectives array
+    query.techElectives = { $in: [concentration] };
+  }
   return query;
 }
 
@@ -231,10 +246,11 @@ function buildSectionsQuery(
 export async function getSectionsByFilter(
   filter: SectionsFilterParams,
   skip = 0,
-  limit = 25
+  limit = 25,
+  userId: string
 ): Promise<{ sections: Section[]; total: number }> {
   try {
-    const query = buildSectionsQuery(filter);
+    const query = await buildSectionsQuery(filter, userId);
     // Perform the find operation with skip & limit
     // and also get a total count so you can return that in the response
     return await findSectionsByFilter(query, skip, limit);

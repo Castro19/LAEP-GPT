@@ -1,5 +1,10 @@
 import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
-import { FormField, FormItem, FormControl } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormControl,
+  FormLabel,
+} from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { FaBook } from "react-icons/fa";
 import { COURSE_ATTRIBUTES, SECTION_FILTERS_SCHEMA } from "./constants";
@@ -11,12 +16,17 @@ import Searchbar from "./reusable/SearchBar";
 import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
 import SUBJECTS from "./api/subjects";
 import DoubleSliderFilter from "./reusable/DoubleSliderFilter";
+import { Switch } from "@/components/ui/switch";
+import { useUserData } from "@/hooks/useUserData";
 
 const CourseInformation = ({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
+  const { userData } = useUserData();
+  const { major, concentration } = userData.flowchartInformation;
+
   return (
     <CollapsibleContentWrapper title="Course Information" icon={FaBook}>
       <FormField
@@ -169,6 +179,48 @@ const CourseInformation = ({
           </FormItem>
         )}
       />
+      <FormItem>
+        <div className="flex items-center justify-between gap-1">
+          <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
+            Include only Tech Electives
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name="includeTechElectives"
+            render={({ field }) => {
+              return (
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      form.setValue("includeTechElectives", checked);
+                    }}
+                  />
+                </FormControl>
+              );
+            }}
+          />
+        </div>
+      </FormItem>
+      {form.getValues("includeTechElectives") && (
+        <>
+          {!major && !concentration ? (
+            <p className="text-sm text-gray-500">
+              Please fill out your major and concentration in your profile to
+              include tech electives.
+            </p>
+          ) : (
+            <p className="text-sm text-gray-500">
+              We will include tech electives from the following.
+              <br />
+              {major && `Major: ${major}`}
+              <br />
+              {concentration && `Concentration: ${concentration}`}
+            </p>
+          )}
+        </>
+      )}
     </CollapsibleContentWrapper>
   );
 };
