@@ -22,12 +22,13 @@ const CalendarPage = () => {
 
   const handleBuildSchedule = () => {
     if (environment === "dev") {
-      // Create all combinations of sections
-      const allCombinations = generateSchedules(selectedSections);
-      dispatch(calendarActions.setCalendars(allCombinations));
-      dispatch(calendarActions.setPage(1));
-      dispatch(calendarActions.setTotalPages(allCombinations.length));
+      console.log("Building schedule...");
     }
+    // Create all combinations of sections
+    const allCombinations = generateSchedules(selectedSections);
+    dispatch(calendarActions.setCalendars(allCombinations));
+    dispatch(calendarActions.setPage(1));
+    dispatch(calendarActions.setTotalPages(allCombinations.length));
   };
 
   return (

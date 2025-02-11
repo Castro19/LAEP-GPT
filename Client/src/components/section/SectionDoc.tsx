@@ -434,10 +434,6 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
         return "Thu";
       case "Fr":
         return "Fri";
-      case "Sa":
-        return "Sat";
-      case "Su":
-        return "Sun";
       default:
         return "N/A";
     }
