@@ -373,10 +373,10 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
           open={displayAddPairModal}
           onOpenChange={setDisplayAddPairModal}
         >
-          <PopoverTrigger asChild className="flex justify-end m-0 p-0 w-4">
+          <PopoverTrigger asChild className="flex justify-end">
             <Button
               variant="secondary"
-              className="text-xs py-0"
+              className="text-xs "
               onClick={() => setDisplayAddPairModal(true)}
             >
               Add
