@@ -1,3 +1,4 @@
+import { environment } from "@/helpers/getEnvironmentVars";
 import { SelectedSection } from "@polylink/shared/types";
 // Define a type for a full weekly schedule.
 export type Schedule = {
@@ -164,12 +165,14 @@ function combineCourseSelections(
 
   const combinations: SelectedSection[][] = [];
   const currentCourseGroup = courseGroups[index];
+  let validSelectionFound = false;
 
   for (const selection of currentCourseGroup) {
-    // Ensure selection is non-empty (valid sections)
+    // Skip empty selections
     if (selection.length === 0) continue;
 
     if (!hasConflict(currentSchedule, selection)) {
+      validSelectionFound = true;
       const newSchedule = [...currentSchedule, ...selection];
       const subCombinations = combineCourseSelections(
         courseGroups,
@@ -177,14 +180,17 @@ function combineCourseSelections(
         newSchedule
       );
       combinations.push(...subCombinations);
-    } else {
-      const subCombinations = combineCourseSelections(
-        courseGroups,
-        index + 1,
-        currentSchedule
-      );
-      combinations.push(...subCombinations);
     }
+  }
+
+  // If no valid selection was found for this course group, then there’s no valid schedule.
+  if (!validSelectionFound) {
+    const subCombinations = combineCourseSelections(
+      courseGroups,
+      index + 1,
+      currentSchedule
+    );
+    combinations.push(...subCombinations);
   }
 
   return combinations;
@@ -251,14 +257,36 @@ export function generateAllScheduleCombinations(
     (group) => group.length > 0 && group.every((sel) => sel.length > 0)
   );
   if (!isValid) return [];
-
-  const allSchedules = combineCourseSelections(courseGroups, 0, []);
-
+  if (environment === "dev") {
+    console.log("COURSE GROUPS", courseGroups);
+  }
+  const allSchedules: SelectedSection[][] = [];
+  for (
+    let courseGroupIndex = 0;
+    courseGroupIndex < courseGroups.length;
+    courseGroupIndex++
+  ) {
+    for (const selection of courseGroups[courseGroupIndex]) {
+      // Start processing the next course group (courseGroupIndex + 1)
+      const schedules = combineCourseSelections(
+        courseGroups,
+        courseGroupIndex + 1,
+        selection
+      );
+      if (environment === "dev") {
+        console.log(`SCHEDULES ${courseGroupIndex}: `, schedules);
+      }
+      allSchedules.push(...schedules);
+    }
+  }
+  if (environment === "dev") {
+    console.log("ALL SCHEDULES", allSchedules);
+  }
   const schedules: Schedule[] = allSchedules.map((sections) => ({
-    sections,
-    averageRating: computeAverageRating(sections),
+    sections: sections.flat(),
+    averageRating: computeAverageRating(sections.flat()),
   }));
 
-  schedules.sort((a, b) => b.averageRating - a.averageRating);
+  // schedules.sort((a, b) => b.averageRating - a.averageRating);
   return schedules;
 }
