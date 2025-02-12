@@ -124,8 +124,11 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
   };
 
   return (
-    <div
-      className="
+    <div className="relative">
+      {" "}
+      {/* This container is now the modal's scope */}
+      <div
+        className="
         border
         border-slate-200
         dark:border-slate-700
@@ -138,46 +141,48 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
         custom-td-color
         overflow-auto flex-1 no-scroll
       "
-    >
-      <ScrollArea className="h-full min-w-full mb-4 pb-12">
-        <FullCalendar
-          plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
-          initialView="timeGridWeek"
-          initialDate={monday}
-          timeZone="local"
-          headerToolbar={{ left: "", center: "", right: "" }}
-          selectable={false}
-          allDaySlot={false}
-          slotMinTime="07:00:00"
-          slotMaxTime="21:00:00"
-          hiddenDays={[0, 6]}
-          events={events}
-          contentHeight="80vh"
-          titleFormat={{}} // (Empty: no title text on top)
-          dayHeaderContent={(args) => {
-            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-            return days[args.date.getDay()];
-          }}
-          dayHeaderClassNames="bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center"
-          slotLabelFormat={{
-            hour: "numeric",
-            minute: "2-digit",
-            omitZeroMinute: false,
-            meridiem: "short",
-          }}
-          slotLabelClassNames="text-gray-400 dark:text-slate-500 text-sm"
-          dayCellClassNames="border border-slate-200 dark:border-slate-700"
-          stickyHeaderDates={true}
-          eventColor="#334155"
-          eventContent={(arg) =>
-            CalendarTimeSlots({
-              event: arg.event as unknown as CalendarClassSection,
-            })
-          }
-          eventClick={handleEventClick}
-          nowIndicator={false}
-        />
-      </ScrollArea>
+      >
+        <ScrollArea className="h-full min-w-full mb-4 pb-12">
+          <FullCalendar
+            plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
+            initialView="timeGridWeek"
+            initialDate={monday}
+            timeZone="local"
+            headerToolbar={{ left: "", center: "", right: "" }}
+            selectable={false}
+            allDaySlot={false}
+            slotMinTime="07:00:00"
+            slotMaxTime="21:00:00"
+            hiddenDays={[0, 6]}
+            events={events}
+            contentHeight="80vh"
+            titleFormat={{}} // (Empty: no title text on top)
+            dayHeaderContent={(args) => {
+              const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+              return days[args.date.getDay()];
+            }}
+            dayHeaderClassNames="bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center"
+            slotLabelFormat={{
+              hour: "numeric",
+              minute: "2-digit",
+              omitZeroMinute: false,
+              meridiem: "short",
+            }}
+            slotLabelClassNames="text-gray-400 dark:text-slate-500 text-sm"
+            dayCellClassNames="border border-slate-200 dark:border-slate-700"
+            stickyHeaderDates={true}
+            eventColor="#334155"
+            eventContent={(arg) =>
+              CalendarTimeSlots({
+                event: arg.event as unknown as CalendarClassSection,
+              })
+            }
+            eventClick={handleEventClick}
+            nowIndicator={false}
+          />
+        </ScrollArea>
+      </div>
+      <div id="calendar-modal-root" />
     </div>
   );
 };

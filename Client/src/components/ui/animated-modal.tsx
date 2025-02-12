@@ -4,6 +4,7 @@ import { ReactNode, createContext, useContext, useRef, useState } from "react";
 import { Button } from "./button";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { MdEdit } from "react-icons/md";
+import { createPortal } from "react-dom";
 
 interface ModalContextType {
   open: boolean;
@@ -60,6 +61,28 @@ export const ModalTriggerButton = ({
   );
 };
 
+export const CustomModalTriggerButton = ({
+  className,
+  children,
+  color,
+}: {
+  className?: string;
+  children: ReactNode;
+  color?: string;
+}) => {
+  const { setOpen } = useModal();
+
+  return (
+    <div
+      className={className}
+      style={{ backgroundColor: color }}
+      onClick={() => setOpen(true)}
+    >
+      {children}
+    </div>
+  );
+};
+
 export const ModalBody = ({
   children,
   className,
@@ -76,11 +99,15 @@ export const ModalBody = ({
   const modalRef = useRef(null);
   const { setOpen } = useModal();
 
-  useOutsideClick(modalRef, () => {
-    if (!disableOutsideClick) {
-      setOpen(false);
-    }
-  }, [modalRef, ...excludeRefs]);
+  useOutsideClick(
+    modalRef,
+    () => {
+      if (!disableOutsideClick) {
+        setOpen(false);
+      }
+    },
+    [modalRef, ...excludeRefs]
+  );
 
   return (
     <AnimatePresence>
@@ -235,5 +262,90 @@ const CloseIcon = () => {
         <path d="M6 6l12 12" />
       </svg>
     </button>
+  );
+};
+
+export const CustomModalBody = ({
+  children,
+  className,
+  excludeRefs = [],
+  disableOutsideClick = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  excludeRefs?: React.RefObject<HTMLElement>[];
+  disableOutsideClick?: boolean;
+}) => {
+  const { open, setOpen } = useModal();
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(
+    modalRef,
+    () => {
+      if (!disableOutsideClick) {
+        setOpen(false);
+      }
+    },
+    [modalRef, ...excludeRefs]
+  );
+
+  // Get the dedicated modal root inside the WeeklyCalendar container
+  const modalRoot = document.getElementById("calendar-modal-root");
+
+  if (!open || !modalRoot) return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex items-start justify-center absolute inset-0 z-[999] backdrop-blur-md pt-24" // z-index high enough and adds blur effect
+        >
+          {/* Custom overlay: darker semi-transparent instead of black */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-900/70" // darker semi-transparent overlay
+          />
+
+          <motion.div
+            ref={modalRef}
+            className={cn(
+              "min-h-[50%] max-h-[90%] md:max-w-[60%] bg-slate-900 dark:bg-neutral-950 border dark:border-neutral-800 md:rounded-2xl relative z-[1000] flex flex-col overflow-hidden",
+              className
+            )}
+            initial={{
+              opacity: 0,
+              scale: 0.5,
+              rotateX: 40,
+              y: 40,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              rotateX: 0,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.8,
+              rotateX: 10,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 15,
+            }}
+          >
+            <CloseIcon />
+            {children}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    modalRoot
   );
 };
