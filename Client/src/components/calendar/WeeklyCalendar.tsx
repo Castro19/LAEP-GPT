@@ -128,7 +128,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
           slotMaxTime="21:00:00"
           hiddenDays={[0, 6]}
           events={events}
-          contentHeight="85vh"
+          contentHeight="80vh"
           titleFormat={{}} // (Empty: no title text on top)
           dayHeaderContent={(args) => {
             const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

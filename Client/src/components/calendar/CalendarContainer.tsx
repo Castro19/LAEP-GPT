@@ -1,3 +1,4 @@
+import CalendarInfo from "./CalendarInfo";
 import { PaginationFooter } from "./PaginationFooter";
 import WeeklyCalendar from "./WeeklyCalendar";
 import { useAppSelector } from "@/redux";
@@ -11,6 +12,7 @@ const CalendarContainer = () => {
   return (
     <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll">
       <div className="overflow-auto flex-1 no-scroll">
+        <CalendarInfo />
         <WeeklyCalendar sections={sections} />
         <PaginationFooter />
       </div>
