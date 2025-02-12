@@ -8,7 +8,10 @@ const CalendarContainer = () => {
   if (calendars.length === 0 || !Array.isArray(calendars)) {
     return <div>Build a schedule first</div>;
   }
-  const sections = calendars[page - 1].sections;
+  const sections = calendars[page - 1]?.sections;
+  if (!sections) {
+    return <div>Build a schedule first</div>;
+  }
   return (
     <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll">
       <div className="overflow-auto flex-1 no-scroll">
