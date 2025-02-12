@@ -1,5 +1,5 @@
 import { environment } from "@/helpers/getEnvironmentVars";
-import { Calendar } from "@polylink/shared/types";
+import { Calendar, SelectedSection } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   fetchCalendars,
@@ -9,7 +9,10 @@ import {
 interface calendarState {
   page: number;
   totalPages: number;
-  calendars: Calendar[];
+  calendars: { sections: SelectedSection[]; averageRating: number }[];
+  scheduleList: Calendar[];
+  currentCalendar: Calendar | null;
+  primaryCalendarId: number;
   loading: boolean;
 }
 
@@ -17,6 +20,9 @@ const initialState: calendarState = {
   page: 1,
   totalPages: 1,
   calendars: [],
+  scheduleList: [],
+  currentCalendar: null,
+  primaryCalendarId: 0,
   loading: false,
 };
 
@@ -26,8 +32,8 @@ export const fetchCalendarsAsync = createAsyncThunk(
   async () => {
     try {
       const response = await fetchCalendars();
-
-      return response.calendars;
+      const { calendars, primaryCalendarId } = response;
+      return { calendars, primaryCalendarId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error fetching calendars:", error);
@@ -39,10 +45,11 @@ export const fetchCalendarsAsync = createAsyncThunk(
 
 export const createOrUpdateCalendarAsync = createAsyncThunk(
   "calendars/createOrUpdateCalendar",
-  async (calendar: Calendar) => {
+  async (sections: SelectedSection[]) => {
     try {
-      const response = await createOrUpdateCalendar(calendar);
-      return response;
+      const response = await createOrUpdateCalendar(sections);
+      const { calendars, primaryCalendarId } = response;
+      return { calendars, primaryCalendarId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error creating or updating calendar:", error);
@@ -57,7 +64,8 @@ export const removeCalendarAsync = createAsyncThunk(
   async (calendarId: number) => {
     try {
       const response = await removeCalendar(calendarId);
-      return response;
+      const { calendars, primaryCalendarId } = response;
+      return { calendars, primaryCalendarId, calendarId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error removing calendar:", error);
@@ -83,15 +91,18 @@ const calendarSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCalendarsAsync.fulfilled, (state, action) => {
-      state.calendars = action.payload;
+      state.scheduleList = action.payload.calendars;
+      state.primaryCalendarId = action.payload.primaryCalendarId;
     });
     builder.addCase(createOrUpdateCalendarAsync.fulfilled, (state, action) => {
-      state.calendars = [...state.calendars, action.payload.calendar];
+      state.primaryCalendarId = action.payload.primaryCalendarId;
+      state.scheduleList = action.payload.calendars;
     });
     builder.addCase(removeCalendarAsync.fulfilled, (state, action) => {
-      state.calendars = state.calendars.filter(
+      state.scheduleList = state.scheduleList.filter(
         (calendar) => calendar.id !== action.payload.calendarId
       );
+      state.primaryCalendarId = action.payload.primaryCalendarId;
     });
   },
 });

@@ -2,6 +2,9 @@ import AnimateWrapper from "../section/AnimateWrapper";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { createOrUpdateCalendarAsync } from "@/redux/calendar/calendarSlice";
+import { environment } from "@/helpers/getEnvironmentVars";
+import { useAppDispatch, useAppSelector } from "@/redux";
 
 const CalendarSideOptions = ({
   children,
@@ -10,6 +13,29 @@ const CalendarSideOptions = ({
   children: React.ReactNode;
   onClick: () => void;
 }) => {
+  const dispatch = useAppDispatch();
+  const { page, calendars, loading } = useAppSelector(
+    (state) => state.calendar
+  );
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const sections = calendars[page - 1]?.sections;
+  const onSaveSchedule = () => {
+    try {
+      if (environment === "dev") {
+        console.log("Saving schedule...");
+      }
+      dispatch(createOrUpdateCalendarAsync(sections));
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error saving schedule:", error);
+      }
+    }
+  };
+
   return (
     <AnimateWrapper>
       <div className="flex flex-col h-full">
@@ -27,6 +53,13 @@ const CalendarSideOptions = ({
           {/* Apply Filters button */}
           <Button type="submit" className="w-full shadow-lg" onClick={onClick}>
             Build Schedule
+          </Button>
+          <Button
+            onClick={onSaveSchedule}
+            variant="outline"
+            className="w-full shadow-lg"
+          >
+            Save Schedule
           </Button>
         </div>
       </div>
