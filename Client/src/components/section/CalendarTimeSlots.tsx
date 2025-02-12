@@ -3,6 +3,7 @@ import { CalendarClassSection } from "../calendar/WeeklyCalendar";
 import { Modal, ModalContent } from "../ui/animated-modal";
 import { CustomModalBody } from "../ui/animated-modal";
 import { CustomModalTriggerButton } from "../ui/animated-modal";
+import CalendarSectionInfo from "../calendar/CalendarSectionInfo";
 
 interface CalendarTimeSlotsProps {
   event: CalendarClassSection;
@@ -40,8 +41,8 @@ const CalendarTimeSlots: React.FC<CalendarTimeSlotsProps> = ({ event }) => {
           </div>
         </CustomModalTriggerButton>
         <CustomModalBody>
-          <ModalContent>
-            <div>Section Details</div>
+          <ModalContent className="dark:bg-slate-950">
+            <CalendarSectionInfo />
           </ModalContent>
         </CustomModalBody>
       </Modal>

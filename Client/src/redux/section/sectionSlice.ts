@@ -199,7 +199,7 @@ const sectionSlice = createSlice({
       })
       .addCase(fetchSingleSection.fulfilled, (state, action) => {
         state.loading = false;
-        state.calendarSelectedSection = action.payload;
+        state.calendarSelectedSection = action.payload[0];
       })
       .addCase(fetchSingleSection.rejected, (state) => {
         state.loading = false;
