@@ -1,9 +1,14 @@
 import { serverUrl } from "@/helpers/getEnvironmentVars";
-import { Calendar, SelectedSection } from "@polylink/shared/types";
+import {
+  Calendar,
+  CalendarListItem,
+  SelectedSection,
+} from "@polylink/shared/types";
 
+// Calendar List
 export async function fetchCalendars(): Promise<{
-  calendars: Calendar[];
-  primaryCalendarId: number;
+  calendars: CalendarListItem[];
+  primaryCalendarId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/calendars`, {
@@ -20,8 +25,8 @@ export async function fetchCalendars(): Promise<{
 export async function createOrUpdateCalendar(
   sections: SelectedSection[]
 ): Promise<{
-  calendars: Calendar[];
-  primaryCalendarId: number;
+  calendars: CalendarListItem[];
+  primaryCalendarId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/calendars`, {
@@ -40,9 +45,27 @@ export async function createOrUpdateCalendar(
   }
 }
 
-export async function removeCalendar(calendarId: number): Promise<{
-  calendars: Calendar[];
-  primaryCalendarId: number;
+// Calendar Item
+
+export async function getCalendarById(calendarId: string): Promise<Calendar> {
+  try {
+    const response = await fetch(`${serverUrl}/calendars/${calendarId}`, {
+      credentials: "include",
+    });
+    const data = await response.json();
+    if (!data.calendar) {
+      throw new Error("Calendar not found");
+    }
+    return data.calendar;
+  } catch (error) {
+    console.error("Error getting calendar by id:", error);
+    throw error;
+  }
+}
+
+export async function removeCalendar(calendarId: string): Promise<{
+  calendars: CalendarListItem[];
+  primaryCalendarId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/calendars/${calendarId}`, {

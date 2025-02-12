@@ -1,18 +1,23 @@
 import { environment } from "@/helpers/getEnvironmentVars";
-import { Calendar, SelectedSection } from "@polylink/shared/types";
+import {
+  Calendar,
+  CalendarListItem,
+  SelectedSection,
+} from "@polylink/shared/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   fetchCalendars,
   createOrUpdateCalendar,
   removeCalendar,
+  getCalendarById,
 } from "./crudCalendar";
 interface calendarState {
   page: number;
   totalPages: number;
   calendars: { sections: SelectedSection[]; averageRating: number }[];
-  scheduleList: Calendar[];
+  calendarList: CalendarListItem[];
   currentCalendar: Calendar | null;
-  primaryCalendarId: number;
+  primaryCalendarId: string;
   loading: boolean;
 }
 
@@ -20,9 +25,9 @@ const initialState: calendarState = {
   page: 1,
   totalPages: 1,
   calendars: [],
-  scheduleList: [],
+  calendarList: [],
   currentCalendar: null,
-  primaryCalendarId: 0,
+  primaryCalendarId: "",
   loading: false,
 };
 
@@ -59,9 +64,10 @@ export const createOrUpdateCalendarAsync = createAsyncThunk(
   }
 );
 
+// Calendar Item
 export const removeCalendarAsync = createAsyncThunk(
   "calendars/removeCalendar",
-  async (calendarId: number) => {
+  async (calendarId: string) => {
     try {
       const response = await removeCalendar(calendarId);
       const { calendars, primaryCalendarId } = response;
@@ -69,6 +75,21 @@ export const removeCalendarAsync = createAsyncThunk(
     } catch (error) {
       if (environment === "dev") {
         console.error("Error removing calendar:", error);
+      }
+      throw error;
+    }
+  }
+);
+
+export const getCalendarByIdAsync = createAsyncThunk(
+  "calendars/getCalendarById",
+  async (calendarId: string) => {
+    try {
+      const response = await getCalendarById(calendarId);
+      return response;
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error getting calendar by id:", error);
       }
       throw error;
     }
@@ -88,25 +109,32 @@ const calendarSlice = createSlice({
     setTotalPages(state, action) {
       state.totalPages = action.payload;
     },
+    setCurrentCalendar(state, action) {
+      state.currentCalendar = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCalendarsAsync.fulfilled, (state, action) => {
-      state.scheduleList = action.payload.calendars;
+      state.calendarList = action.payload.calendars;
       state.primaryCalendarId = action.payload.primaryCalendarId;
     });
     builder.addCase(createOrUpdateCalendarAsync.fulfilled, (state, action) => {
       state.primaryCalendarId = action.payload.primaryCalendarId;
-      state.scheduleList = action.payload.calendars;
+      state.calendarList = action.payload.calendars;
     });
     builder.addCase(removeCalendarAsync.fulfilled, (state, action) => {
-      state.scheduleList = state.scheduleList.filter(
+      state.calendarList = state.calendarList.filter(
         (calendar) => calendar.id !== action.payload.calendarId
       );
       state.primaryCalendarId = action.payload.primaryCalendarId;
     });
+    builder.addCase(getCalendarByIdAsync.fulfilled, (state, action) => {
+      state.currentCalendar = action.payload;
+    });
   },
 });
 
-export const { setPage, setTotalPages, setCalendars } = calendarSlice.actions;
+export const { setPage, setTotalPages, setCalendars, setCurrentCalendar } =
+  calendarSlice.actions;
 
 export const calendarReducer = calendarSlice.reducer;

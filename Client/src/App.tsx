@@ -110,6 +110,12 @@ const router = routerChosen([
       {
         path: "calendar",
         element: <CalendarPage />,
+        children: [
+          {
+            path: ":calendarId",
+            element: <CalendarPage />,
+          },
+        ],
       },
     ],
   },

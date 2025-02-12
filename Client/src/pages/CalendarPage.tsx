@@ -8,10 +8,17 @@ import { useEffect } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { generateAllScheduleCombinations } from "@/components/calendar/helpers/buildSchedule";
 import EmptyCalendar from "@/components/calendar/EmptyCalendar";
+import { Calendar } from "@polylink/shared/types";
+
+import { useNavigate, useParams } from "react-router-dom";
 
 const CalendarPage = () => {
+  const { calendarId } = useParams();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { calendars } = useAppSelector((state) => state.calendar);
+  const { calendars, currentCalendar } = useAppSelector(
+    (state) => state.calendar
+  );
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -19,6 +26,34 @@ const CalendarPage = () => {
   useEffect(() => {
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(calendarActions.fetchCalendarsAsync());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchCalendar = async () => {
+      if (calendarId) {
+        const response = await dispatch(
+          calendarActions.getCalendarByIdAsync(calendarId)
+        );
+        const calendar = response.payload as Calendar;
+        try {
+          if (calendar.sections) {
+            dispatch(calendarActions.setCurrentCalendar(calendar));
+            dispatch(calendarActions.setCalendars([]));
+            dispatch(calendarActions.setPage(1));
+            dispatch(calendarActions.setTotalPages(1));
+          }
+        } catch (error) {
+          if (environment === "dev") {
+            console.error("Error fetching calendar: ", error);
+          }
+        }
+      }
+    };
+    fetchCalendar();
+  }, [calendarId, dispatch]);
 
   const handleBuildSchedule = () => {
     if (environment === "dev") {
@@ -29,6 +64,8 @@ const CalendarPage = () => {
     dispatch(calendarActions.setCalendars(allCombinations));
     dispatch(calendarActions.setPage(1));
     dispatch(calendarActions.setTotalPages(allCombinations.length));
+    dispatch(calendarActions.setCurrentCalendar(allCombinations[0]));
+    navigate("/calendar");
   };
 
   return (
@@ -41,7 +78,11 @@ const CalendarPage = () => {
           {/* <ScheduleBuilderQueryForm /> */}
         </div>
         <div className="col-span-3">
-          {calendars.length > 0 ? <CalendarContainer /> : <EmptyCalendar />}
+          {calendars.length === 0 && currentCalendar === null ? (
+            <EmptyCalendar />
+          ) : (
+            <CalendarContainer />
+          )}
         </div>
       </div>
     </CalendarPageLayout>
