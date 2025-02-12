@@ -72,6 +72,7 @@ export type SectionsFilterParams = {
   days?: string;
   timeRange?: string;
   enrollmentStatus?: string;
+  classNumber?: string;
   minInstructorRating?: string;
   maxInstructorRating?: string;
   minUnits?: string;

@@ -11,6 +11,7 @@ declare module "express-serve-static-core" {
 interface CustomRequest extends Request {
   user?: DecodedIdToken & { role?: UserType };
   query: {
+    classNumber?: string;
     subject?: string;
     courseIds: string;
     status?: string;

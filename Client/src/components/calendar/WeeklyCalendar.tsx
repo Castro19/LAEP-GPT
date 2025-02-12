@@ -6,6 +6,21 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { SelectedSection } from "@polylink/shared/types";
 import CalendarTimeSlots from "../section/CalendarTimeSlots";
 import { ScrollArea } from "../ui/scroll-area";
+import { fetchSingleSection } from "@/redux/section/sectionSlice";
+import { useAppDispatch } from "@/redux";
+
+export type CalendarClassSection = {
+  title: string;
+  start: Date;
+  end: Date;
+  extendedProps: {
+    courseName: string;
+    classNumber: string;
+    enrollmentStatus: "O" | "C";
+    professor: string[];
+    color: string;
+  };
+};
 
 // Define six pastel colors.
 const courseColors = [
@@ -32,6 +47,7 @@ type WeeklyCalendarProps = {
 };
 
 const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
+  const dispatch = useAppDispatch();
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
   const dayIndexMap: Record<
@@ -89,6 +105,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
         return {
           title: section.courseId,
           courseName: section.courseName,
+          classNumber: section.classNumber,
           enrollmentStatus: section.enrollmentStatus,
           professor: section.professor,
           start,
@@ -98,6 +115,13 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
       });
     })
   );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleEventClick = (eventClickArg: any) => {
+    const { classNumber } = eventClickArg.event.extendedProps;
+    console.log("CLASS NUMBER", classNumber);
+    dispatch(fetchSingleSection(classNumber));
+  };
 
   return (
     <div
@@ -147,19 +171,10 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
           eventColor="#334155"
           eventContent={(arg) =>
             CalendarTimeSlots({
-              event: arg.event as unknown as {
-                title: string;
-                start: Date;
-                end: Date;
-                extendedProps: {
-                  courseName: string;
-                  enrollmentStatus: "O" | "C";
-                  professor: string[];
-                  color: string;
-                };
-              },
+              event: arg.event as unknown as CalendarClassSection,
             })
           }
+          eventClick={handleEventClick}
           nowIndicator={false}
         />
       </ScrollArea>

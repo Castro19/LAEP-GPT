@@ -236,6 +236,10 @@ function buildSectionsQuery(
       query.techElectives = { $in: [filter.techElectives.concentration] };
     }
   }
+
+  if (filter.classNumber) {
+    query.classNumber = parseInt(filter.classNumber, 10);
+  }
   return query;
 }
 

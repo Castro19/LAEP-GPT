@@ -20,6 +20,7 @@ router.get("/", async (req: Request, res: any) => {
 
     // Instead of destructuring techElectives as an object, access the flattened fields:
     const {
+      classNumber,
       subject,
       courseIds, // array of courseIds
       status, // "open" or "closed"
@@ -60,6 +61,7 @@ router.get("/", async (req: Request, res: any) => {
 
     // Convert 'courseIds' and 'courseAttribute' to arrays if necessary
     const filterParams: SectionsFilterParams = {
+      classNumber: classNumber as string,
       subject: subject as string,
       courseIds:
         typeof courseIds === "string"
