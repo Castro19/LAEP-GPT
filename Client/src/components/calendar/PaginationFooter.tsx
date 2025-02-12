@@ -1,17 +1,17 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { setPage } from "@/redux/calendar/calendarSlice";
+import { setPage, setCurrentCalendar } from "@/redux/calendar/calendarSlice";
 
 export const PaginationFooter: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { page, totalPages, loading } = useAppSelector(
+  const { page, totalPages, loading, calendars } = useAppSelector(
     (state) => state.calendar
   );
 
   const handlePrev = () => {
     if (page > 1) {
       dispatch(setPage(page - 1));
-
+      dispatch(setCurrentCalendar(calendars[page - 1]));
       // dispatch(fetchCalendarsAsync());
     }
   };
@@ -19,6 +19,7 @@ export const PaginationFooter: React.FC = () => {
   const handleNext = () => {
     if (page < totalPages) {
       dispatch(setPage(page + 1));
+      dispatch(setCurrentCalendar(calendars[page - 1]));
     }
   };
 

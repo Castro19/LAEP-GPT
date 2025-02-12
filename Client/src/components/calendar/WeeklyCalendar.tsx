@@ -119,7 +119,6 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
-    console.log("CLASS NUMBER", classNumber);
     dispatch(fetchSingleSection(classNumber));
   };
 
