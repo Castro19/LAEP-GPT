@@ -52,6 +52,7 @@ const SidebarProvider = React.forwardRef<
   React.ComponentProps<"div"> & {
     defaultOpen?: boolean;
     open?: boolean;
+    // eslint-disable-next-line no-unused-vars
     onOpenChange?: (open: boolean) => void;
   }
 >(
@@ -79,6 +80,7 @@ const SidebarProvider = React.forwardRef<
     const open = openProp ?? _open;
 
     const setOpen = React.useCallback(
+      // eslint-disable-next-line no-unused-vars
       (value: boolean | ((value: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value;
 
