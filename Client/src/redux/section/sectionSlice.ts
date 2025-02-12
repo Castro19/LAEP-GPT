@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Section, SectionsFilterParams } from "@polylink/shared/types";
-import { fetchSections, queryAI, querySections } from "./crudSection";
+import {
+  fetchSections,
+  getSectionByClassNumber,
+  queryAI,
+  querySections,
+} from "./crudSection";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 interface SectionState {
   sections: Section[];
+  calendarSelectedSection: Section | null;
   total: number;
   page: number;
   totalPages: number;
@@ -23,6 +29,7 @@ interface SectionState {
 
 const initialState: SectionState = {
   sections: [],
+  calendarSelectedSection: null,
   total: 0,
   page: 1,
   totalPages: 0,
@@ -93,6 +100,21 @@ export const queryAIPagination = createAsyncThunk(
       return response;
     } else {
       throw new Error("No query provided");
+    }
+  }
+);
+
+export const fetchSingleSection = createAsyncThunk(
+  "sections/fetchSingleSection",
+  async (classNumber: string): Promise<any> => {
+    try {
+      const response: any = await getSectionByClassNumber(classNumber);
+      return response;
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error fetching single section:", error);
+      }
+      throw error;
     }
   }
 );
@@ -169,6 +191,17 @@ const sectionSlice = createSlice({
         state.totalPages = action.payload.totalPages;
       })
       .addCase(queryAIPagination.rejected, (state) => {
+        state.loading = false;
+      })
+      // Fetch Single Section
+      .addCase(fetchSingleSection.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchSingleSection.fulfilled, (state, action) => {
+        state.loading = false;
+        state.calendarSelectedSection = action.payload;
+      })
+      .addCase(fetchSingleSection.rejected, (state) => {
         state.loading = false;
       });
   },

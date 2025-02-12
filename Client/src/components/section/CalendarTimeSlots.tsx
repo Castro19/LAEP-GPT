@@ -1,17 +1,8 @@
 import React from "react";
+import { CalendarClassSection } from "../calendar/WeeklyCalendar";
 
 interface CalendarTimeSlotsProps {
-  event: {
-    extendedProps: {
-      courseName: string;
-      enrollmentStatus: "O" | "C";
-      professor: string[];
-      color: string;
-    };
-    title: string;
-    start: Date;
-    end: Date;
-  };
+  event: CalendarClassSection;
 }
 
 const CalendarTimeSlots: React.FC<CalendarTimeSlotsProps> = ({ event }) => {
@@ -28,7 +19,7 @@ const CalendarTimeSlots: React.FC<CalendarTimeSlotsProps> = ({ event }) => {
 
   return (
     <div
-      className="rounded-md hover:opacity-90 transition-opacity"
+      className="rounded-md hover:opacity-90 transition-opacity cursor-pointer"
       style={{ backgroundColor: event.extendedProps.color }}
     >
       <div className="flex flex-col">

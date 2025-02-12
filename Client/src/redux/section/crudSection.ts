@@ -111,3 +111,21 @@ export async function querySections(
   const { data, page, totalPages } = await response.json();
   return { data, page, totalPages };
 }
+
+export async function getSectionByClassNumber(classNumber: string) {
+  const response = await fetch(
+    `${serverUrl}/sections?classNumber=${classNumber}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to create flowchart");
+  }
+  const { data } = await response.json();
+  return data;
+}
