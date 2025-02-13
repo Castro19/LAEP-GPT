@@ -28,19 +28,45 @@ const PROJECTION = {
 };
 // Read an individual professor rating
 export const viewProfessorRatings = async (
-  query: MongoQuery<ProfessorRatingDocument>
+  query: MongoQuery<ProfessorRatingDocument>,
+  projection?: Partial<ProfessorRatingDocument>
 ): Promise<ProfessRatingList[]> => {
   if (!professorRatingCollection) initializeCollection();
 
   try {
     const result = await professorRatingCollection
       .find(query)
-      .project(PROJECTION)
+      // Ensure _id is never included in the projection
+      .project(projection ? { _id: 0, ...projection } : PROJECTION)
       .toArray();
     return result as ProfessRatingList[];
   } catch (error: unknown) {
     if (environment === "dev") {
       console.error("Error viewing professor ratings: ", error);
+    }
+    return [];
+  }
+};
+
+export const viewProfessorsbyProjection = async (
+  query: MongoQuery<ProfessorRatingDocument>,
+  projection: {
+    [key: string]: 1;
+  },
+  limit?: number
+): Promise<Partial<ProfessorRatingDocument>[]> => {
+  if (!professorRatingCollection) initializeCollection();
+
+  try {
+    const result = await professorRatingCollection
+      .find(query)
+      .project(projection)
+      .limit(limit ?? 10)
+      .toArray();
+    return result as Partial<ProfessorRatingDocument>[];
+  } catch (error: unknown) {
+    if (environment === "dev") {
+      console.error("Error viewing professors by projection: ", error);
     }
     return [];
   }

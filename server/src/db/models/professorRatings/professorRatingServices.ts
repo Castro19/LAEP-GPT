@@ -8,8 +8,9 @@ import { sortAndLimitReviews } from "./professorRatingUtil";
 
 export const getProfessorRatings = async (
   professorIds: string[],
-  courseIds?: string[]
-): Promise<ProfessRatingList[]> => {
+  courseIds?: string[],
+  projection?: Partial<ProfessorRatingDocument>
+): Promise<Partial<ProfessorRatingDocument>[]> => {
   const query: MongoQuery<ProfessorRatingDocument> = {
     id: {},
   };
@@ -18,7 +19,10 @@ export const getProfessorRatings = async (
     query.id = { $in: professorIds };
   }
   try {
-    const result = await professorRatingCollection.viewProfessorRatings(query);
+    const result = await professorRatingCollection.viewProfessorRatings(
+      query,
+      projection
+    );
     if (result.length === 0) {
       throw new Error("No professor ratings found");
     }

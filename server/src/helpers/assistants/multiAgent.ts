@@ -4,107 +4,15 @@ import {
   runAssistantAndStreamResponse,
   runAssistantAndCollectResponse,
 } from "./streamResponse";
-
-import {
-  getProfessorRatings,
-  getProfessorsByCourseIds,
-} from "../../db/models/professorRatings/professorRatingServices";
-import { searchProfessors } from "../qdrant/qdrantQuery";
-
 import { addMessageToThread } from "../openAI/threadFunctions";
 import { initializeOrFetchIds } from "../openAI/threadFunctions";
 import { getAssistantById } from "../../db/models/assistant/assistantServices";
-import { RunningStreamData } from "@polylink/shared/types";
-import { getLiveClasses } from "../../db/models/liveClasses/liveClassServices";
-
-async function professorRatings(
-  messageToAdd: string,
-  object: {
-    professors: null | string[];
-    courses: null | string[];
-  }
-): Promise<string> {
-  const { professors, courses } = object;
-
-  let professorArray: string[] = [];
-  let courseArray: string[] = [];
-
-  if (professors) {
-    professorArray = professors;
-  }
-  if (courses) {
-    courseArray = courses;
-  }
-
-  // Modify messageToAdd based on the query results
-  if (professorArray.length > 0) {
-    // Search through vector database for professors
-    const professorIds: string[] = [];
-    try {
-      for (const professor of professorArray) {
-        const professorId = await searchProfessors(professor, 1);
-        professorIds.push(professorId);
-      }
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to search professors:", error);
-      }
-    }
-    // Query MongoDB for professors & courses
-    try {
-      const professorRatings = await getProfessorRatings(
-        professorIds,
-        courseArray.length > 0 ? courseArray : undefined
-      );
-      messageToAdd += `Professor Ratings: ${JSON.stringify(professorRatings)}`;
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to get professors by course IDs:", error);
-      }
-    }
-  } else if (courseArray.length > 0 && professorArray.length === 0) {
-    // Search through vector database for courses
-    try {
-      const professorRatings = await getProfessorsByCourseIds(courseArray);
-      messageToAdd += `Course Descriptions: ${JSON.stringify(
-        professorRatings
-      )}`;
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to search courses:", error);
-      }
-    }
-  } else {
-    messageToAdd +=
-      "No professors or courses found. Analyze the message and see if the user needs to specify the teacher's first name and last name and any courses they are interested in. Answer the user's question as best as possible.";
-  }
-  return messageToAdd;
-}
-
-async function planSpringSchedule(
-  messageToAdd: string,
-  object: {
-    courses: string[];
-    preferences: {
-      preferred_time: string;
-      preferred_days: string[];
-    };
-  }
-): Promise<string> {
-  const { courses } = object;
-
-  // TODO: Implement the logic to plan the spring schedule
-  try {
-    const liveClasses = await getLiveClasses(courses);
-    const liveClassString = JSON.stringify(liveClasses);
-    messageToAdd = `Options: ${liveClassString}\n`;
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Failed to plan spring schedule:", error);
-    }
-  }
-  return messageToAdd;
-}
+import {
+  RunningStreamData,
+  ScheduleBuilderSection,
+  ScheduleBuilderObject,
+} from "@polylink/shared/types";
+import scheduleBuilder from "./multiAgentHelpers/scheduleBuilder";
 
 type MultiAgentRequest = {
   model: { id: string; title: string };
@@ -113,6 +21,7 @@ type MultiAgentRequest = {
   userMessageId: string;
   runningStreams: RunningStreamData;
   chatId: string;
+  sections?: ScheduleBuilderSection[];
 };
 
 async function handleMultiAgentModel({
@@ -122,12 +31,17 @@ async function handleMultiAgentModel({
   userMessageId,
   runningStreams,
   chatId,
+  sections,
 }: MultiAgentRequest): Promise<void> {
-  let messageToAdd = "";
-
+  let messageToAdd = message;
   try {
     // First assistant: process the user's message and return JSON object
-    const helperAssistantId = ASST_MAP["course_helper"];
+    let helperAssistantId: string | null = null;
+    if (model.title === "Schedule Builder") {
+      helperAssistantId = ASST_MAP["schedule_builder_query"] as string;
+    } else {
+      helperAssistantId = ASST_MAP["course_helper"] as string;
+    }
     if (!helperAssistantId) {
       throw new Error("Helper assistant ID not found");
     }
@@ -141,7 +55,7 @@ async function handleMultiAgentModel({
     runningStreams[userMessageId].threadId = threadId;
 
     // Add user's message to helper thread
-    await addMessageToThread(threadId, "user", message, null, model.title);
+    await addMessageToThread(threadId, "user", messageToAdd, null, model.title);
 
     // Run the helper assistant and collect response
     const { assistantResponse: helperResponse, runId } =
@@ -166,9 +80,8 @@ async function handleMultiAgentModel({
     }
     runningStreams[userMessageId].threadId = threadId;
     // Parse the helper assistant's response (assumes it's a JSON string)
-    let jsonObject;
+    let jsonObject: ScheduleBuilderObject | null = null;
 
-    // TO-DO: How to always ensure that the response is a JSON object?
     try {
       const completedRun = await openai.beta.threads.runs.retrieve(
         threadId,
@@ -182,64 +95,48 @@ async function handleMultiAgentModel({
 
       if (helperResponse) {
         jsonObject = JSON.parse(helperResponse);
-      } else {
-        jsonObject = {
-          assistant: "fallback",
-        };
       }
-      if (jsonObject.assistant === "professor_reviews") {
-        messageToAdd = await professorRatings(messageToAdd, jsonObject);
-        // Add user's modified message to the main thread
-        await addMessageToThread(
-          threadId,
-          "assistant",
-          messageToAdd,
-          null,
-          model.title
+      if (model.title === "Schedule Builder") {
+        if (!jsonObject) {
+          throw new Error("JSON object not found");
+        }
+        if (!sections) {
+          throw new Error("Sections not found");
+        }
+        // Add classNumbers to jsonObject.
+        jsonObject.fetchSections.classNumbers = sections.map(
+          (section) => section.classNumber
         );
-        // Run the assistant and stream response
-        await runAssistantAndStreamResponse(
-          threadId,
-          ASST_MAP["professor_reviews"] as string,
-          res,
-          userMessageId,
-          runningStreams
-        );
-      } else if (jsonObject.assistant === "spring") {
-        messageToAdd = await planSpringSchedule(messageToAdd, jsonObject);
-        // Add user's modified message to the main thread
-        await addMessageToThread(
-          threadId,
-          "user",
-          messageToAdd,
-          null,
-          model.title
-        );
-        await runAssistantAndStreamResponse(
-          threadId,
-          assistantId,
-          res,
-          userMessageId,
-          runningStreams
-        );
-      } else {
-        // Add user's modified message to the main thread
-        await addMessageToThread(
-          threadId,
-          "user",
-          messageToAdd,
-          null,
-          model.title
-        );
+        // Add sectionInfo to jsonObject.
+        jsonObject.fetchProfessors.sectionInfo = sections.map((section) => ({
+          courseId: section.courseId,
+          classNumber: section.classNumber,
+          professor: section.professor,
+        }));
 
-        await runAssistantAndStreamResponse(
-          threadId,
-          ASST_MAP["fallback"] as string,
-          res,
-          userMessageId,
-          runningStreams
-        );
+        messageToAdd = await scheduleBuilder(messageToAdd, jsonObject);
+      } else {
+        if (environment === "dev") {
+          console.log("Do other multi agent model here");
+        }
       }
+      // Add user's modified message to the main thread
+      await addMessageToThread(
+        threadId,
+        "assistant",
+        messageToAdd,
+        null,
+        model.title
+      );
+      // Run the assistant and stream response
+      await runAssistantAndStreamResponse(
+        threadId,
+        ASST_MAP["professor_reviews"] as string,
+        res,
+        userMessageId,
+        runningStreams
+      );
+
       if (environment === "dev") {
         console.log("JSON OBJECT: ", jsonObject);
       }

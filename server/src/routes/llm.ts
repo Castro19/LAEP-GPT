@@ -9,12 +9,15 @@ import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
-import { RunningStreamData } from "@polylink/shared/types";
+import {
+  RunningStreamData,
+  ScheduleBuilderSection,
+  SectionDocument,
+} from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio";
 import { queryAgent } from "../helpers/assistants/queryAgent";
-
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
-import { SectionDocument } from "@polylink/shared/types";
+
 import { Filter } from "mongodb";
 
 const router = express.Router();
@@ -39,6 +42,7 @@ type LLMRequestBody = {
   userMessageId: string;
   currentModel: string;
   file?: Express.Multer.File;
+  sections?: ScheduleBuilderSection[];
 };
 
 const MAX_FILE_SIZE_MB = 1;
@@ -54,7 +58,7 @@ router.post(
       res.setHeader("Transfer-Encoding", "chunked");
     }
 
-    const { message, chatId, userId, userMessageId, currentModel } =
+    const { message, chatId, userId, userMessageId, currentModel, sections } =
       req.body as LLMRequestBody;
 
     if (!userId) {
@@ -104,7 +108,8 @@ router.post(
 
     if (
       model.title === "Professor Ratings" ||
-      model.title === "Spring Planner Assistant"
+      model.title === "Spring Planner Assistant" ||
+      model.title === "Schedule Builder"
     ) {
       try {
         await handleMultiAgentModel({
@@ -114,6 +119,7 @@ router.post(
           userMessageId,
           runningStreams,
           chatId,
+          sections,
         });
       } catch (error) {
         if (environment === "dev") {
