@@ -76,6 +76,9 @@ jobs:
       - name: Run lint
         run: cd server && npm run lint
 
+      - name: Build Server
+        run: cd server && npm run build
+
     # Placeholder for future server-side testing
     # - name: Run Server Tests
     #   run: cd server && npm test
