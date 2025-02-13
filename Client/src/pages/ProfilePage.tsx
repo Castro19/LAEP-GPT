@@ -19,9 +19,11 @@ import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
-import ProfileEmptyFlowchart from "@/components/flowchart/ProfileEmptyFlowchart";
+import ProfileEmptyState from "@/components/userProfile/ProfileEmptyState";
 import { environment } from "@/helpers/getEnvironmentVars";
 import WeeklyCalendar from "@/components/calendar/WeeklyCalendar";
+import { HiOutlineAcademicCap, HiOutlineCalendar } from "react-icons/hi2";
+
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -40,6 +42,21 @@ const yearMapping = (year: string) => {
       return "";
   }
 };
+
+const flowchartEmptyState = {
+  title: "No Flowchart Found",
+  description:
+    "Create your academic plan to visualize your path to graduation and track your progress.",
+  icon: <HiOutlineAcademicCap className="text-slate-300" size={48} />,
+};
+
+const weeklyCalendarEmptyState = {
+  title: "No Calendar Found",
+  description:
+    "Create a calendar to view your weekly schedule for Spring 2025!",
+  icon: <HiOutlineCalendar className="text-slate-300" size={48} />,
+};
+
 export function ProfilePage() {
   const dispatch = useAppDispatch();
   const { userType } = useAppSelector((state) => state.auth);
@@ -256,15 +273,20 @@ export function ProfilePage() {
             <TabsTrigger value="weekly-calendar">Weekly Calendar</TabsTrigger>
           </TabsList>
           <TabsContent value="flowchart">
-            <Card className="h-full">
-              <div className="flex flex-col w-full gap-4 mb-2">
-                {flowchartData ? (
+            {flowchartData ? (
+              <Card className="h-full">
+                <div className="flex flex-col w-full gap-4 mb-2">
                   <FlowChart flowchartData={flowchartData} />
-                ) : (
-                  <ProfileEmptyFlowchart />
-                )}
-              </div>
-            </Card>
+                </div>
+              </Card>
+            ) : (
+              <ProfileEmptyState
+                title={flowchartEmptyState.title}
+                description={flowchartEmptyState.description}
+                icon={flowchartEmptyState.icon}
+                type="flowchart"
+              />
+            )}
           </TabsContent>
           <TabsContent value="weekly-calendar">
             {currentCalendar ? (
@@ -274,7 +296,12 @@ export function ProfilePage() {
               />
             ) : (
               <div className="flex flex-col justify-center items-center">
-                <p>No calendar found</p>
+                <ProfileEmptyState
+                  title={weeklyCalendarEmptyState.title}
+                  description={weeklyCalendarEmptyState.description}
+                  icon={weeklyCalendarEmptyState.icon}
+                  type="calendar"
+                />
               </div>
             )}
           </TabsContent>
