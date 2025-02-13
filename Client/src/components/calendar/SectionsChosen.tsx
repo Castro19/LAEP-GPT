@@ -39,7 +39,7 @@ const SectionsChosen = () => {
   return (
     <div className="grid grid-cols-1 gap-2">
       {Object.entries(groupedSections).map(([courseId, professorGroups]) => (
-        <Collapsible key={courseId} defaultOpen className="group/collapsible">
+        <Collapsible key={courseId} className="group/collapsible">
           <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
             <CollapsibleTrigger asChild>
               <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
