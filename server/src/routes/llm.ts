@@ -9,11 +9,7 @@ import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
-import {
-  RunningStreamData,
-  ScheduleBuilderSection,
-  SectionDocument,
-} from "@polylink/shared/types";
+import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio";
 import { queryAgent } from "../helpers/assistants/queryAgent";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
@@ -42,7 +38,7 @@ type LLMRequestBody = {
   userMessageId: string;
   currentModel: string;
   file?: Express.Multer.File;
-  sections?: ScheduleBuilderSection[];
+  sections?: string;
 };
 
 const MAX_FILE_SIZE_MB = 1;
@@ -111,6 +107,9 @@ router.post(
       model.title === "Spring Planner Assistant" ||
       model.title === "Schedule Builder"
     ) {
+      if (environment === "dev") {
+        console.log("Sections: ", sections);
+      }
       try {
         await handleMultiAgentModel({
           model,
@@ -119,7 +118,7 @@ router.post(
           userMessageId,
           runningStreams,
           chatId,
-          sections,
+          sections: JSON.parse(sections as string), // convert str to json object
         });
       } catch (error) {
         if (environment === "dev") {

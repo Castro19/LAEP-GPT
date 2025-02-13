@@ -1,5 +1,5 @@
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
-import { AssistantType } from "@polylink/shared/types";
+import { AssistantType, ScheduleBuilderSection } from "@polylink/shared/types";
 export default async function sendMessage(
   currentModel: AssistantType,
   file: File | null, //include file as arguement
@@ -7,7 +7,8 @@ export default async function sendMessage(
   currentChatId: string | null,
   userId: string,
   userMessageId: string,
-  botMessageId: string
+  botMessageId: string,
+  sections: ScheduleBuilderSection[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   // if (msg.length >= 2000) {
@@ -45,6 +46,12 @@ export default async function sendMessage(
     }
     if (currentChatId) {
       formData.append("chatId", currentChatId);
+    }
+    if (sections && currentModel.title === "Schedule Builder") {
+      if (environment === "dev") {
+        console.log("Adding sections to form data: ", sections);
+      }
+      formData.append("sections", JSON.stringify(sections));
     }
 
     const fetchPromise: Promise<Response> = fetch(`${serverUrl}/llms/respond`, {

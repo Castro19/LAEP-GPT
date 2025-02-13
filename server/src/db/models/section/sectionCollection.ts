@@ -49,7 +49,6 @@ export const findSectionsbyProjection = async (
     sectionCollection = initializeCollection();
   }
   // Add courseId to projection always:
-  projection.courseId = 1;
   const sections = await sectionCollection
     .find(query)
     .project(projection)

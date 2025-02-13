@@ -136,19 +136,11 @@ async function handleMultiAgentModel({
         userMessageId,
         runningStreams
       );
-
-      if (environment === "dev") {
-        console.log("JSON OBJECT: ", jsonObject);
-      }
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to parse JSON from helper assistant:", error);
       }
       throw new Error("Failed to parse JSON from helper assistant");
-    }
-
-    if (environment === "dev") {
-      console.log("messageToAdd: ", messageToAdd);
     }
   } catch (error) {
     if (error instanceof Error && error.message === "Response canceled") {
