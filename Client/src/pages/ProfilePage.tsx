@@ -122,7 +122,6 @@ export function ProfilePage() {
     };
     fetchCalendars();
     // Only run this effect once on component mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useEffect(() => {
