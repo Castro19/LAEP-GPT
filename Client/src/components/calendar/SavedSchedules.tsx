@@ -58,7 +58,12 @@ const ScheduleItem = ({
             {calendar.name}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Created: {new Date(calendar.updatedAt).toLocaleDateString()}
+            {new Date(calendar.updatedAt).toLocaleString(undefined, {
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </p>
         </div>
       </Button>

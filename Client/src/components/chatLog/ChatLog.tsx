@@ -5,7 +5,6 @@ import { LogListType } from "@polylink/shared/types";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import ChatLogOptions from "./ChatLogOptions";
 
-
 type ChatLogSidebarProps = {
   log: LogListType;
   // eslint-disable-next-line no-unused-vars
@@ -14,8 +13,8 @@ type ChatLogSidebarProps = {
 
 const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
   const navigate = useNavigate();
-  const { chatId } = useParams(); 
-  const isActive = log.logId === chatId; 
+  const { chatId } = useParams();
+  const isActive = log.logId === chatId;
 
   // Redux:
   const dispatch = useAppDispatch();
@@ -46,7 +45,12 @@ const ChatLog = ({ log, onSelectLog }: ChatLogSidebarProps) => {
               {log.title}
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {new Date(log.timestamp).toLocaleString()}
+              {new Date(log.timestamp).toLocaleString(undefined, {
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </p>
           </div>
         </SidebarMenuButton>

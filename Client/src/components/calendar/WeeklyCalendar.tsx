@@ -44,9 +44,13 @@ const getColorForCourse = (courseId: string): string => {
 
 type WeeklyCalendarProps = {
   sections: SelectedSection[];
+  height?: string;
 };
 
-const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
+const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
+  sections,
+  height = "80vh",
+}) => {
   const dispatch = useAppDispatch();
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
@@ -154,7 +158,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ sections }) => {
             slotMaxTime="21:00:00"
             hiddenDays={[0, 6]}
             events={events}
-            contentHeight="80vh"
+            contentHeight={height}
             titleFormat={{}} // (Empty: no title text on top)
             dayHeaderContent={(args) => {
               const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
