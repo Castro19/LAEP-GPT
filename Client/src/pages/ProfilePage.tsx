@@ -1,8 +1,12 @@
-import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
+import {
+  calendarActions,
+  flowchartActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
 import { Label } from "../components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WeeklyCalendar from "../components/register/WeeklyCalendar";
 import { useUserData } from "@/hooks/useUserData";
 // import Terms from "@/components/register/SignInFlow/Terms";
 import { toast } from "@/components/ui/use-toast";
@@ -11,16 +15,13 @@ import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
 import FlowChart from "@/components/flowchart/FlowChart";
 import { useEffect, useRef } from "react";
-
-import { useNavigate } from "react-router-dom";
-
-import SpecialButton from "@/components/ui/specialButton";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
 import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 import ProfileEmptyFlowchart from "@/components/flowchart/ProfileEmptyFlowchart";
 import { environment } from "@/helpers/getEnvironmentVars";
+import WeeklyCalendar from "@/components/calendar/WeeklyCalendar";
 export const labelStyle = "text-lg self-center";
 
 const yearMapping = (year: string) => {
@@ -40,8 +41,6 @@ const yearMapping = (year: string) => {
   }
 };
 export function ProfilePage() {
-  const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
@@ -49,6 +48,10 @@ export function ProfilePage() {
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
+  const { currentCalendar, primaryCalendarId } = useAppSelector(
+    (state) => state.calendar
+  );
+
   const initialLoadRef = useRef(false);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
@@ -95,6 +98,21 @@ export function ProfilePage() {
     updateFlowchart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flowchartData]);
+
+  useEffect(() => {
+    const fetchCalendars = async () => {
+      await dispatch(calendarActions.fetchCalendarsAsync());
+    };
+    fetchCalendars();
+    // Only run this effect once on component mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (primaryCalendarId) {
+      dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
+    }
+  }, [primaryCalendarId, dispatch]);
 
   const handleSaveToast = () => {
     handleSave();
@@ -235,51 +253,30 @@ export function ProfilePage() {
         <Tabs defaultValue="flowchart">
           <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
             <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
-            <TabsTrigger value="availability">Availability</TabsTrigger>
+            <TabsTrigger value="weekly-calendar">Weekly Calendar</TabsTrigger>
           </TabsList>
           <TabsContent value="flowchart">
             <Card className="h-full">
               <div className="flex flex-col w-full gap-4 mb-2">
                 {flowchartData ? (
-                  <>
-                    <FlowChart flowchartData={flowchartData} />
-                    <SpecialButton
-                      text="Modify Flowcharts"
-                      onClick={() => {
-                        navigate(
-                          `/flowchart/${userData.flowchartInformation.flowchartId}`
-                        );
-                      }}
-                    />
-                  </>
+                  <FlowChart flowchartData={flowchartData} />
                 ) : (
-                  <>
-                    <ProfileEmptyFlowchart />
-                    <SpecialButton
-                      text="Go to Flowchart"
-                      icon={<></>}
-                      onClick={() => {
-                        navigate("/flowchart");
-                      }}
-                    />
-                  </>
+                  <ProfileEmptyFlowchart />
                 )}
               </div>
             </Card>
           </TabsContent>
-          <TabsContent value="availability">
-            <Card className="h-full">
-              <div className="flex flex-col justify-start h-full py-6">
-                <div className="flex flex-col justify-center items-center">
-                  <WeeklyCalendar />
-                </div>
-
-                <SpecialButton
-                  onClick={handleSaveToast}
-                  text="Save Availability"
-                />
+          <TabsContent value="weekly-calendar">
+            {currentCalendar ? (
+              <WeeklyCalendar
+                sections={currentCalendar.sections}
+                height="100vh"
+              />
+            ) : (
+              <div className="flex flex-col justify-center items-center">
+                <p>No calendar found</p>
               </div>
-            </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
