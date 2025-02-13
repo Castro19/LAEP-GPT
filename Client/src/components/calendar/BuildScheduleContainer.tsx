@@ -18,23 +18,25 @@ const BuildScheduleContainer = ({
     (state) => state.calendar
   );
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  const sections = calendars[page - 1]?.sections;
   const onSaveSchedule = () => {
     try {
       if (environment === "dev") {
         console.log("Saving schedule...");
       }
-      dispatch(createOrUpdateCalendarAsync(sections));
+      const sections = calendars[page - 1]?.sections;
+      if (sections) {
+        dispatch(createOrUpdateCalendarAsync(sections));
+      }
     } catch (error) {
       if (environment === "dev") {
         console.error("Error saving schedule:", error);
       }
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AnimateWrapper>

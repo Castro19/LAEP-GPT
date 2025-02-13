@@ -111,7 +111,7 @@ async function handleMultiAgentModel({
         jsonObject.fetchProfessors.sectionInfo = sections.map((section) => ({
           courseId: section.courseId,
           classNumber: section.classNumber,
-          professor: section.professor,
+          professors: section.professors,
         }));
 
         messageToAdd = await scheduleBuilder(messageToAdd, jsonObject);

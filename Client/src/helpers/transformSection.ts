@@ -3,6 +3,8 @@ import {
   ProfessorGroup,
   SectionDetail,
   InstructorWithRatings,
+  ScheduleBuilderSection,
+  SelectedSection,
 } from "@polylink/shared/types";
 import { Section } from "@polylink/shared/types";
 
@@ -230,4 +232,17 @@ function getEarliestMeetingTimeForGroup(group: ProfessorGroup): string | null {
     });
   });
   return earliest;
+}
+
+export function transformSectionsToScheduleBuilderSections(
+  sections: SelectedSection[]
+): ScheduleBuilderSection[] {
+  return sections.map((section) => ({
+    courseId: section.courseId,
+    classNumber: section.classNumber,
+    professors: section.professors.map((professor) => ({
+      id: professor.id,
+      name: professor.name,
+    })),
+  }));
 }

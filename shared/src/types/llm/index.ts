@@ -56,8 +56,8 @@ export type ScheduleBuilderObject = {
 export type ScheduleBuilderSection = {
   courseId: string;
   classNumber: number;
-  professor: {
-    id: string;
+  professors: {
+    id: string | null;
     name: string;
   }[];
 };

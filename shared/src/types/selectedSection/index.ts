@@ -3,7 +3,10 @@ export type SelectedSection = {
   courseName: string;
   classNumber: number;
   component: string;
-  professor: string[];
+  professors: {
+    name: string;
+    id: string | null;
+  }[];
   enrollmentStatus: "O" | "C";
   meetings: Array<{
     days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;

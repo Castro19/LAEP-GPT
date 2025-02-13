@@ -51,13 +51,13 @@ async function scheduleBuilder(
       {} as Record<string, 1>
     );
     const professorIds = jsonObject.fetchProfessors.sectionInfo.flatMap(
-      (section) => section.professor.map((professor) => professor.id)
+      (section) => section.professors.map((professor) => professor.id)
     );
     const courseIds = jsonObject.fetchProfessors.sectionInfo.flatMap(
       (section) => section.courseId
     );
     const professors = await getProfessorRatings(
-      professorIds,
+      professorIds.filter((id): id is string => id !== null),
       courseIds,
       professorRatingsProjection as unknown as Partial<ProfessorRatingDocument>
     );

@@ -93,7 +93,13 @@ export function transformSectionToSelectedSection(
       days: meeting.days.filter((day) => day),
     })),
     classPair: section.pairedSections,
-    professor: section.instructors.map((instructor) => instructor.name),
+    professors: section.instructors.map((instructor) => ({
+      name: instructor.name,
+      id:
+        section.instructorsWithRatings?.find(
+          (instr) => instr.name === instructor.name
+        )?.id ?? null,
+    })),
     rating:
       section.instructorsWithRatings?.[0]?.overallRating ||
       section.instructorsWithRatings?.[1]?.overallRating ||
