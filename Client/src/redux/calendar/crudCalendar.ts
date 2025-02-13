@@ -45,8 +45,33 @@ export async function createOrUpdateCalendar(
   }
 }
 
-// Calendar Item
+// Update Calendar List Item
+export async function updateCalendar(
+  calendar: Calendar,
+  primaryCalendarId: string,
+  name: string
+): Promise<{
+  calendars: CalendarListItem[];
+  primaryCalendarId: string;
+}> {
+  try {
+    const response = await fetch(`${serverUrl}/calendars/${calendar.id}`, {
+      method: "PUT",
+      body: JSON.stringify({ calendar, primaryCalendarId, name }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating calendar list item:", error);
+    throw error;
+  }
+}
 
+// Calendar Item
 export async function getCalendarById(calendarId: string): Promise<Calendar> {
   try {
     const response = await fetch(`${serverUrl}/calendars/${calendarId}`, {

@@ -31,7 +31,53 @@ export const getCalendarListByUserId = async (
   }
 };
 
-export const createOrUpdateCalendarList = async (
+export const updateCalendarListItem = async ({
+  userId,
+  calendarId,
+  calendar,
+  primaryCalendarId,
+  name,
+}: {
+  userId: string;
+  calendarId: string;
+  calendar: Calendar;
+  primaryCalendarId: string;
+  name: string;
+}): Promise<{
+  calendars: CalendarListItem[];
+  primaryCalendarId: string;
+}> => {
+  const calendarListItem = {
+    id: calendarId,
+    name: name,
+    updatedAt: new Date(),
+  };
+  try {
+    const calendarResult = await calendarListModel.updateCalendarListItem(
+      userId,
+      calendarListItem,
+      primaryCalendarId
+    );
+    if (!calendarResult) {
+      throw new Error("Failed to update calendar");
+    }
+    const calendars = await calendarListModel.findCalendarListByUserId(userId);
+    if (!calendars) {
+      throw new Error("No calendars found for the user");
+    }
+    return {
+      calendars: calendars.calendars,
+      primaryCalendarId: calendars.primaryCalendarId,
+    };
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
+};
+
+export const createOrUpdateCalendar = async (
   userId: string,
   sections: SelectedSection[]
 ): Promise<{

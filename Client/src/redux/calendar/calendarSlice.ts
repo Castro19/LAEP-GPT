@@ -10,6 +10,7 @@ import {
   createOrUpdateCalendar,
   removeCalendar,
   getCalendarById,
+  updateCalendar,
 } from "./crudCalendar";
 interface calendarState {
   page: number;
@@ -96,6 +97,31 @@ export const getCalendarByIdAsync = createAsyncThunk(
   }
 );
 
+export const updateCalendarAsync = createAsyncThunk(
+  "calendars/updateCalendar",
+  async ({
+    calendar,
+    primaryCalendarId,
+    name,
+  }: {
+    calendar: Calendar;
+    primaryCalendarId: string;
+    name: string;
+  }) => {
+    try {
+      const response = await updateCalendar(calendar, primaryCalendarId, name);
+      const { calendars, primaryCalendarId: newPrimaryCalendarId } = response;
+
+      return { calendars, primaryCalendarId: newPrimaryCalendarId };
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error updating calendar:", error);
+      }
+      throw error;
+    }
+  }
+);
+
 const calendarSlice = createSlice({
   name: "calendar",
   initialState,
@@ -114,22 +140,31 @@ const calendarSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Fetch Calendar List
     builder.addCase(fetchCalendarsAsync.fulfilled, (state, action) => {
       state.calendarList = action.payload.calendars;
       state.primaryCalendarId = action.payload.primaryCalendarId;
     });
+    // Create or Update Calendar
     builder.addCase(createOrUpdateCalendarAsync.fulfilled, (state, action) => {
       state.primaryCalendarId = action.payload.primaryCalendarId;
       state.calendarList = action.payload.calendars;
     });
+    // Remove Calendar
     builder.addCase(removeCalendarAsync.fulfilled, (state, action) => {
       state.calendarList = state.calendarList.filter(
         (calendar) => calendar.id !== action.payload.calendarId
       );
       state.primaryCalendarId = action.payload.primaryCalendarId;
     });
+    // Get Calendar By Id
     builder.addCase(getCalendarByIdAsync.fulfilled, (state, action) => {
       state.currentCalendar = action.payload;
+    });
+    // Update Calendar
+    builder.addCase(updateCalendarAsync.fulfilled, (state, action) => {
+      state.calendarList = action.payload.calendars;
+      state.primaryCalendarId = action.payload.primaryCalendarId;
     });
   },
 });

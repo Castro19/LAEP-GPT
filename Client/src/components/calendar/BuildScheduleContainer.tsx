@@ -6,7 +6,7 @@ import { createOrUpdateCalendarAsync } from "@/redux/calendar/calendarSlice";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { useAppDispatch, useAppSelector } from "@/redux";
 
-const CalendarSideOptions = ({
+const BuildScheduleContainer = ({
   children,
   onClick,
 }: {
@@ -67,4 +67,4 @@ const CalendarSideOptions = ({
   );
 };
 
-export default CalendarSideOptions;
+export default BuildScheduleContainer;

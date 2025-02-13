@@ -4,9 +4,10 @@ import { CustomRequest } from "../types/express";
 import { environment } from "../index";
 import {
   getCalendarListByUserId,
-  createOrUpdateCalendarList,
+  createOrUpdateCalendar,
   deleteCalendarItem,
   getCalendarById,
+  updateCalendarListItem,
 } from "../db/models/calendar/calendarListServices";
 const router = express.Router();
 
@@ -40,7 +41,7 @@ router.post("/", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { sections } = req.body;
-    const result = await createOrUpdateCalendarList(userId, sections);
+    const result = await createOrUpdateCalendar(userId, sections);
     return res.status(200).json({
       message: "Calendar created or updated successfully",
       calendars: result.calendars,
@@ -72,6 +73,34 @@ router.get("/:calendarId", async (req, res: any) => {
   } catch (error) {
     if (environment === "dev") {
       console.error("Error fetching calendar:", error);
+    }
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.put("/:calendarId", async (req, res: any) => {
+  try {
+    const userId = req.user?.uid;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { calendarId } = req.params;
+    const { calendar, primaryCalendarId, name } = req.body;
+    const result = await updateCalendarListItem({
+      userId,
+      calendarId,
+      calendar,
+      primaryCalendarId,
+      name,
+    });
+    return res.status(200).json({
+      message: "Calendar updated successfully",
+      calendars: result.calendars,
+      primaryCalendarId: result.primaryCalendarId,
+    });
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error updating calendar:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }

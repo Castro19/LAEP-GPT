@@ -75,6 +75,34 @@ export const createOrUpdateCalendarList = async (
   }
 };
 
+export const updateCalendarListItem = async (
+  userId: string,
+  calendarListItem: CalendarListItem,
+  primaryCalendarId: string
+): Promise<UpdateResult<CalendarListDocument>> => {
+  if (!calendarCollection) {
+    calendarCollection = initializeCollection();
+  }
+  try {
+    const updateResult = await calendarCollection.updateOne(
+      { userId, "calendars.id": calendarListItem.id },
+      {
+        $set: {
+          "calendars.$.name": calendarListItem.name,
+          "calendars.$.updatedAt": calendarListItem.updatedAt,
+          primaryCalendarId: primaryCalendarId,
+        },
+      }
+    );
+    return updateResult;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
+};
+
 export const deleteCalendarListItem = async (
   userId: string,
   calendarId: string
