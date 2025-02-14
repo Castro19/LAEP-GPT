@@ -31,12 +31,14 @@ import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
 import { environment } from "@/helpers/getEnvironmentVars";
 import QueryAI from "./QueryAI";
 import { useUserData } from "@/hooks/useUserData";
+import useMobile from "@/hooks/use-mobile";
 
 // Define a Zod schema for the filter form.
 
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 
 export function SectionFilters() {
+  const isMobile = useMobile();
   const dispatch = useAppDispatch();
   const reduxFilters = useAppSelector((state) => state.section.filters);
   const { userData } = useUserData();
@@ -199,7 +201,7 @@ export function SectionFilters() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col h-full"
+        className={`flex flex-col ${isMobile ? "h-[90%]" : "h-full"}`}
       >
         <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[83%]">
           <div className="overflow-auto flex-1 no-scroll">
