@@ -38,7 +38,7 @@ export const getCalendarById = async (
   if (!calendarCollection) {
     calendarCollection = initializeCollection();
   }
-  console.log("GETTING CALENDAR BY ID", calendarId);
+
   try {
     const result = await calendarCollection.findOne(
       { id: calendarId, userId },

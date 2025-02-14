@@ -20,8 +20,8 @@ const ChatPage = () => {
   const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
-  const assistantList = useAppSelector(
-    (state) => state.assistant.assistantList
+  const { assistantList, currentModel } = useAppSelector(
+    (state) => state.assistant
   );
   const { primaryCalendarId, currentCalendar } = useAppSelector(
     (state) => state.calendar
@@ -48,8 +48,14 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (assistantList.length > 0) {
-      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+      // Set the assistant to the assistant with our current chat ID
+      if (currentModel) {
+        dispatch(assistantActions.setCurrentAssistant(currentModel.id));
+      } else {
+        dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assistantList, dispatch]);
 
   useEffect(() => {
@@ -99,7 +105,9 @@ const ChatPage = () => {
     }
   }, [primaryCalendarId, dispatch]);
 
-  console.log("CURRENT CALENDAR: ", currentCalendar);
+  if (environment === "dev") {
+    console.log("CURRENT CALENDAR: ", currentCalendar);
+  }
   return (
     <>
       <div className="flex">
