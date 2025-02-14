@@ -34,10 +34,14 @@ export const viewProfessorRatings = async (
   if (!professorRatingCollection) initializeCollection();
 
   try {
+    const defaultProjection = { _id: 0, id: 1 };
+    const finalProjection = projection
+      ? { ...defaultProjection, ...projection }
+      : PROJECTION;
+
     const result = await professorRatingCollection
       .find(query)
-      // Ensure _id is never included in the projection
-      .project(projection ? { _id: 0, ...projection } : PROJECTION)
+      .project(finalProjection)
       .toArray();
     return result as ProfessRatingList[];
   } catch (error: unknown) {
