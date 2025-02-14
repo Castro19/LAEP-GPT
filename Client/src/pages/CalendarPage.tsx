@@ -14,19 +14,15 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import { generateAllScheduleCombinations } from "@/components/calendar/helpers/buildSchedule";
 import EmptyCalendar from "@/components/calendar/EmptyCalendar";
 import { Calendar } from "@polylink/shared/types";
-import { useToast } from "@/components/ui/use-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  TabsContent,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  CustomTabsTrigger,
-} from "@/components/ui/tabs";
-import { ChatContainer, NewChat } from "@/components/chat";
+import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { onNewChat } from "@/components/chat/helpers/newChatHandler";
+import CalendarAIChatContainer from "@/components/calendar/CalendarAIChatContainer";
+import useMobile from "@/hooks/use-mobile";
 
 const CalendarPage = () => {
+  const isMobile = useMobile();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -44,7 +40,6 @@ const CalendarPage = () => {
   );
   const userId = useAppSelector((state) => state.auth.userId);
   const hasFetchedassistantList = useRef(false);
-  const { toast } = useToast();
 
   // Fetch the selected sections
   useEffect(() => {
@@ -138,52 +133,79 @@ const CalendarPage = () => {
 
   return (
     <CalendarPageLayout>
-      <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
-        <div className="col-span-1">
-          <Tabs defaultValue="Build Schedule">
-            <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
-              <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
-              <CustomTabsTrigger
-                value="AI Chat"
-                disabled={!currentCalendar || !selectedSections}
-                showToast={() => {
-                  if (!currentCalendar || !selectedSections) {
-                    toast({
-                      title:
-                        "Please select sections and build a schedule first.",
-                      description:
-                        "You can build a schedule by clicking the 'Build Schedule' tab.",
-                    });
-                  }
-                }}
-              >
-                AI Chat
-              </CustomTabsTrigger>
-            </TabsList>
-            <TabsContent value="Build Schedule">
-              <BuildScheduleContainer onClick={handleBuildSchedule}>
-                <SelectedSectionContainer />
-              </BuildScheduleContainer>
-            </TabsContent>
-            <TabsContent value="AI Chat">
-              <header className="sticky top-0 bg-slate-900 text-white p-1 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
-                <div className="flex items-center justify-end">
-                  <NewChat />
-                </div>
-              </header>
-              <ChatContainer />
-            </TabsContent>
-          </Tabs>
+      {isMobile ? (
+        <CalendarMobile handleBuildSchedule={handleBuildSchedule} />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
+          <div className="col-span-1">
+            <Tabs defaultValue="Build Schedule">
+              <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+                <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
+                <TabsTrigger
+                  value="AI Chat"
+                  disabled={!currentCalendar || !selectedSections}
+                >
+                  AI Chat
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="Build Schedule">
+                <BuildScheduleContainer onClick={handleBuildSchedule}>
+                  <SelectedSectionContainer />
+                </BuildScheduleContainer>
+              </TabsContent>
+              <TabsContent value="AI Chat">
+                <CalendarAIChatContainer />
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div className="col-span-3">
+            {calendars.length === 0 && currentCalendar === null ? (
+              <EmptyCalendar />
+            ) : (
+              <CalendarContainer />
+            )}
+          </div>
         </div>
-        <div className="col-span-3">
-          {calendars.length === 0 && currentCalendar === null ? (
-            <EmptyCalendar />
-          ) : (
-            <CalendarContainer />
-          )}
-        </div>
-      </div>
+      )}
     </CalendarPageLayout>
+  );
+};
+
+type CalendarMobileProps = {
+  handleBuildSchedule: () => void;
+};
+
+const CalendarMobile = ({ handleBuildSchedule }: CalendarMobileProps) => {
+  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { selectedSections } = useAppSelector(
+    (state) => state.sectionSelection
+  );
+
+  return (
+    <Tabs defaultValue="Build Schedule">
+      <TabsList className="grid w-full grid-cols-3 dark:bg-gray-900">
+        <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
+        <TabsTrigger value="Calendar">Calendar</TabsTrigger>
+
+        <TabsTrigger
+          value="AI Chat"
+          disabled={!currentCalendar || !selectedSections}
+        >
+          AI Chat
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="Build Schedule">
+        <BuildScheduleContainer onClick={handleBuildSchedule}>
+          <SelectedSectionContainer />
+        </BuildScheduleContainer>
+      </TabsContent>
+      <TabsContent value="Calendar">
+        <CalendarContainer />
+      </TabsContent>
+      <TabsContent value="AI Chat">
+        <CalendarAIChatContainer />
+      </TabsContent>
+    </Tabs>
   );
 };
 

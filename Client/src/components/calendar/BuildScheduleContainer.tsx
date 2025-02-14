@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { createOrUpdateCalendarAsync } from "@/redux/calendar/calendarSlice";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { useAppDispatch, useAppSelector } from "@/redux";
+import useMobile from "@/hooks/use-mobile";
 
 const BuildScheduleContainer = ({
   children,
@@ -13,6 +14,7 @@ const BuildScheduleContainer = ({
   children: React.ReactNode;
   onClick: () => void;
 }) => {
+  const isMobile = useMobile();
   const dispatch = useAppDispatch();
   const { page, calendars, loading } = useAppSelector(
     (state) => state.calendar
@@ -41,7 +43,11 @@ const BuildScheduleContainer = ({
   return (
     <AnimateWrapper>
       <div className="flex flex-col h-full">
-        <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[80%]">
+        <Card
+          className={`flex flex-col border-0 shadow-lg no-scroll flex-1 ${
+            isMobile ? "max-h-[70%]" : "max-h-[75%]"
+          }`}
+        >
           <div className="overflow-auto flex-1 no-scroll">
             <ScrollArea className="h-full min-w-full mb-4">
               <div className="px-6 space-y-4 pb-4">{children}</div>

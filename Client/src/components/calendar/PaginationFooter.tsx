@@ -29,7 +29,7 @@ export const PaginationFooter: React.FC = () => {
   };
 
   return (
-    <footer className="sticky bottom-0 pb-20 w-full bg-gray-900 text-white py-3 shadow-lg">
+    <footer className="sticky bottom-28 w-full bg-gray-900 text-white py-3 shadow-lg">
       <div className="max-w-5xl mx-auto flex items-center justify-between px-4">
         <button
           onClick={handlePrev}
