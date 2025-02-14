@@ -56,8 +56,10 @@ function MobileHeader() {
       return location.pathname === path;
     }
   };
-  const isChatSidebar = location.pathname.includes("/chat");
-  const headerStyles = isChatSidebar
+  const isInSidebar =
+    location.pathname.includes("/chat") ||
+    location.pathname.includes("/flowchart");
+  const headerStyles = isInSidebar
     ? "dark:bg-slate-950 border-none"
     : "bg-white dark:bg-gray-900 border-b-2 dark:border-slate-900";
 
