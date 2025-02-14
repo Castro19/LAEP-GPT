@@ -96,13 +96,13 @@ const SectionPage = () => {
   }, [dispatch, major]);
 
   return (
-    <div className={`flex ${isMobile ? "" : ""}`}>
+    <div className="flex">
       {isMobile ? null : <OuterSidebar />}
       <SidebarProvider className="dark:bg-slate-900">
         <SectionPageLayout>
           {isMobile ? (
             <Tabs defaultValue="filters">
-              <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900 mt-16">
+              <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
                 <TabsTrigger value="filters">Filters</TabsTrigger>
                 <TabsTrigger value="sections">View Sections</TabsTrigger>
               </TabsList>
