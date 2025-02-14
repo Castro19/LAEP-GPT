@@ -28,6 +28,8 @@ import { signOutUser } from "@/redux/auth/authSlice";
 function OuterSidebar() {
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
+  const { currentCalendar } = useAppSelector((state) => state.calendar);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,6 +41,8 @@ function OuterSidebar() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat" && currentChatId) {
       navigate(`/chat/${currentChatId}`);
+    } else if (path === "/calendar" && currentCalendar) {
+      navigate(`/calendar/${currentCalendar.id}`);
     } else {
       navigate(path);
     }
@@ -50,6 +54,10 @@ function OuterSidebar() {
         location.pathname ===
         `/flowchart/${userData.flowchartInformation.flowchartId}`
       );
+    } else if (path === "/chat" && currentChatId) {
+      return location.pathname === `/chat/${currentChatId}`;
+    } else if (path === "/calendar" && currentCalendar) {
+      return location.pathname === `/calendar/${currentCalendar.id}`;
     } else {
       return location.pathname === path;
     }
@@ -196,11 +204,6 @@ function OuterSidebar() {
                     <Button
                       variant="ghost"
                       onClick={() => handleNavigation("/profile/edit")}
-                      className={`${
-                        isActive("/profile/edit")
-                          ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
-                          : "hover:text-slate-600"
-                      }`}
                     >
                       <UserAvatar />
                     </Button>
