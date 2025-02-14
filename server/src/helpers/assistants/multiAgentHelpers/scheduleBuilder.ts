@@ -17,13 +17,17 @@ async function scheduleBuilder(
   messageToAdd: string,
   jsonObject: ScheduleBuilderObject
 ): Promise<string> {
-  if (jsonObject.queryType === "schedule") {
-    messageToAdd += await fetchSections(jsonObject, messageToAdd);
-  } else if (jsonObject.queryType === "professors") {
-    messageToAdd += await fetchProfessors(jsonObject, messageToAdd);
-  } else if (jsonObject.queryType === "both") {
-    messageToAdd += await fetchSections(jsonObject, messageToAdd);
-    messageToAdd += await fetchProfessors(jsonObject, messageToAdd);
+  switch (jsonObject.queryType) {
+    case "schedule":
+      messageToAdd += await fetchSections(jsonObject, messageToAdd);
+      break;
+    case "professors":
+      messageToAdd += await fetchProfessors(jsonObject, messageToAdd);
+      break;
+    case "both":
+      messageToAdd += await fetchSections(jsonObject, messageToAdd);
+      messageToAdd += await fetchProfessors(jsonObject, messageToAdd);
+      break;
   }
   return messageToAdd;
 }
