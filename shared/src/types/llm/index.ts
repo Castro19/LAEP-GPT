@@ -24,7 +24,7 @@ export type RunningStreamData = Record<
 >;
 
 export type ScheduleBuilderObject = {
-  queryType: "schedule" | "both";
+  queryType: "schedule" | "professors" | "both";
   fetchSections: {
     required: boolean; // Always true
     classNumbers: number[]; // List of class numbers to fetch
