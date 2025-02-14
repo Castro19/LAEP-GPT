@@ -11,9 +11,10 @@ import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import EmptyFlowchart from "@/components/flowchart/EmptyFlowchart";
 import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
-
+import useMobile from "@/hooks/use-mobile";
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
+  const isMobile = useMobile();
   const { flowchartId } = useParams();
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
@@ -69,7 +70,7 @@ const FlowChatPage = () => {
   return (
     <>
       <div className="flex overflow-hidden no-scroll">
-        <OuterSidebar />
+        {isMobile ? null : <OuterSidebar />}
         <SidebarProvider className="dark:bg-slate-900">
           <FlowChartLayout>
             {flowchartData ? (

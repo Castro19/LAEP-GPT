@@ -36,12 +36,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/components/ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { FlowchartData } from "@polylink/shared/types";
-
+import useMobile from "@/hooks/use-mobile";
+import MobileHeader from "@/components/layout/MobileHeader";
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { open } = useSidebar();
-
+  const isMobile = useMobile();
   const { flowchartList } = useAppSelector((state) => state.flowchart);
   const { selections } = useAppSelector((state) => state.flowSelection);
   const { userData, handleChangeFlowchartInformation, handleSave } =
@@ -136,12 +137,16 @@ export function SidebarFlowchart() {
       ${open ? "opacity-100" : "opacity-0 -translate-x-16"}
     `}
     >
-      <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none mt-4">
-        <div className="flex items-center justify-center">
-          <span className="text-lg text-center font-semibold ml-4">
-            {userData.flowchartInformation.catalog}
-          </span>
-        </div>
+      <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none">
+        {isMobile ? (
+          <MobileHeader />
+        ) : (
+          <div className="flex items-center justify-center mt-4">
+            <span className="text-lg text-center font-semibold ml-4">
+              {userData.flowchartInformation.catalog}
+            </span>
+          </div>
+        )}
       </SidebarHeader>
       <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
         <ScrollArea className="h-full">
