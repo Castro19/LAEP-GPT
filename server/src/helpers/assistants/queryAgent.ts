@@ -1,67 +1,51 @@
-import { Run } from "openai/resources/beta/threads/runs/runs";
 import { environment, openai, queryAssistantId } from "../../index";
 import { z } from "zod";
 
-// Define allowed MongoDB operators for enhanced security
-const allowedOperators = [
-  "$and",
-  "$or",
-  "$in",
-  "$eq",
-  "$ne",
-  "$gt",
-  "$gte",
-  "$lt",
-  "$lte",
-] as const;
+// Security-focused schema configuration
+const ForbiddenPatterns = z.string().refine(
+  // eslint-disable-next-line no-control-regex
+  (val) => !/[;$\\|<>\\/\x00-\x1F]/.test(val),
+  "Contains forbidden characters"
+);
 
-// Enhanced QuerySchema with operator restrictions
-export const QuerySchema = z
-  .object({
-    $and: z
-      .array(z.record(z.any()))
-      .max(10, "Maximum of 10 conditions allowed in $and")
-      .optional(),
-    $or: z
-      .array(z.record(z.any()))
-      .max(10, "Maximum of 10 conditions allowed in $or")
-      .optional(),
-  })
-  .catchall(
-    z.record(z.any()).refine(
-      (obj) => {
-        // Ensure only allowed operators are used
-        return Object.keys(obj).every((key) =>
-          allowedOperators.includes(key as (typeof allowedOperators)[number])
-        );
-      },
-      {
-        message: `Only the following operators are allowed: ${allowedOperators.join(", ")}`,
-      }
-    )
-  )
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "Query cannot be empty",
-  });
+const MaxDepthSchema = z.any().superRefine((val, ctx) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const checkDepth = (obj: any, depth = 0): void => {
+    if (depth > 5) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Object nesting too deep (max 5 levels)",
+      });
+    }
 
-// Define the schema for responses that include both query and explanation
-const StructuredResponseSchema = z.object({
-  query: QuerySchema,
-  explanation: z.string().max(200),
+    if (typeof obj === "object" && obj !== null) {
+      Object.values(obj).forEach((v) => checkDepth(v, depth + 1));
+    }
+  };
+
+  checkDepth(val);
 });
 
-// Define the schema for simple queries without explanation
-const SimpleQuerySchema = QuerySchema;
+export const SafeQuerySchema = z
+  .union([
+    z.object({}).passthrough().and(MaxDepthSchema).and(ForbiddenPatterns),
+    z.array(z.any()).max(100),
+    z.record(z.any()),
+  ])
+  .refine(
+    (data) => {
+      const json = JSON.stringify(data);
+      return json.length <= 5000 && !/(\\u0000|\\u001b|\\u009b)/.test(json);
+    },
+    { message: "Query exceeds security limits" }
+  );
 
-// Union schema to handle both structured and simple queries
-export const SectionQueryResponseSchema = z.union([
-  StructuredResponseSchema,
-  SimpleQuerySchema,
-]);
+export type QueryResponse = {
+  query: unknown;
+  explanation?: string;
+} | null;
 
-export const queryAgent = async (
-  text: string
-): Promise<z.infer<typeof SectionQueryResponseSchema> | null> => {
+export const queryAgent = async (text: string): Promise<QueryResponse> => {
   try {
     const run = await openai.beta.threads.createAndRun({
       assistant_id: queryAssistantId as string,
@@ -72,109 +56,56 @@ export const queryAgent = async (
     let attempts = 0;
     const maxAttempts = 20;
 
-    while (attempts < maxAttempts) {
-      if (environment === "dev") {
-        console.log("Current run status:", currentRun.status);
-      }
-      if (currentRun.status === "requires_action") {
-        const toolOutputs = await handleRequiredActions(currentRun);
-        currentRun = await openai.beta.threads.runs.submitToolOutputs(
-          run.thread_id,
-          currentRun.id,
-          { tool_outputs: toolOutputs }
-        );
-        attempts++;
-        continue;
-      }
-
-      if (["completed", "failed", "cancelled"].includes(currentRun.status)) {
-        break;
-      }
-
+    while (
+      attempts < maxAttempts &&
+      !["completed", "failed", "cancelled"].includes(currentRun.status)
+    ) {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       currentRun = await openai.beta.threads.runs.retrieve(
         run.thread_id,
         currentRun.id
       );
       attempts++;
+      if (environment === "dev") {
+        console.log(`Polling attempt ${attempts}: ${currentRun.status}`);
+      }
     }
 
     if (currentRun.status !== "completed") {
-      console.error(
-        `Run failed after ${attempts} attempts: ${currentRun.status}`
-      );
+      console.error(`Run failed with status: ${currentRun.status}`);
       return null;
     }
 
     const messages = await openai.beta.threads.messages.list(run.thread_id);
-    // Delete thread to clean up:
     await openai.beta.threads.del(run.thread_id);
 
     for (const message of messages.data.reverse()) {
       if (message.role === "assistant" && message.content[0].type === "text") {
         const content = message.content[0].text.value;
-        const cleanedJson = content
-          .replace(/```json/g, "")
-          .replace(/```/g, "")
-          .trim();
 
-        // 1. Partial snippet from your message loop after "cleanedJson" is obtained:
         try {
-          let parsed = JSON.parse(cleanedJson);
+          // Flexible JSON extraction
+          const jsonString = content
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim();
 
-          // 2. Check if this is multiple sub-queries, i.e. no "query" at top-level:
-          if (!("query" in parsed) || !("explanation" in parsed)) {
-            // Attempt to transform multiple queries into a single OR
-            const keys = Object.keys(parsed);
-            // For safety, ensure we have at least one key and each entry has "query" + "explanation"
-            const subQueries = keys
-              .map((k) => {
-                const entry = parsed[k];
-                if (
-                  entry &&
-                  typeof entry === "object" &&
-                  "query" in entry &&
-                  "explanation" in entry
-                ) {
-                  return entry; // { query: {...}, explanation: "..." }
-                }
-                return null;
-              })
-              .filter(Boolean);
+          const parsed = JSON.parse(jsonString);
 
-            // If we found valid sub-queries
-            if (subQueries.length > 0) {
-              // Build $or from each sub-query's 'query'
-              const orArray = subQueries.map((sq) => sq.query);
+          // Security validation
+          const safeData = SafeQuerySchema.parse(parsed);
 
-              // Combine explanations
-              const combinedExplanation = subQueries
-                .map((sq) => sq.explanation)
-                .join(" AND "); // or any delimiter you like
-
-              // Overwrite 'parsed' with our new single structure
-              parsed = {
-                query: { $or: orArray },
-                explanation: combinedExplanation,
-              };
-            }
-          }
-          if (environment === "dev") {
-            console.log("Parsed:", JSON.stringify(parsed));
-          }
-          // 3. Now pass the final structure to your Zod schema:
-          const validated = SectionQueryResponseSchema.safeParse(parsed);
-
-          if (!validated.success) {
-            console.error("Validation errors:", validated.error.errors);
-            console.error("Received data:", parsed);
-            return null;
-          }
-
-          return validated.data;
+          // Extract query from common patterns
+          return {
+            query: safeData.query ?? safeData.filter ?? safeData,
+            explanation: safeData.explanation || safeData.description || "",
+          };
         } catch (error) {
-          console.error("JSON parsing failed:", error);
-          return null;
+          console.error("Processing failed:", error);
+          return {
+            query: null,
+            explanation: "Failed to parse response",
+          };
         }
       }
     }
@@ -184,46 +115,4 @@ export const queryAgent = async (
     console.error("Query agent error:", error);
     return null;
   }
-};
-
-const handleRequiredActions = async (
-  run: Run
-): Promise<
-  {
-    tool_call_id: string;
-    output: string;
-  }[]
-> => {
-  if (!run.required_action?.submit_tool_outputs?.tool_calls) return [];
-
-  return Promise.all(
-    run.required_action.submit_tool_outputs.tool_calls.map(async (toolCall) => {
-      try {
-        if (toolCall.function.name === "filter_sections") {
-          const args = JSON.parse(toolCall.function.arguments);
-          const validated = SectionQueryResponseSchema.safeParse(args);
-
-          return {
-            tool_call_id: toolCall.id,
-            output: validated.success
-              ? JSON.stringify({ valid: true, ...validated.data })
-              : JSON.stringify({
-                  valid: false,
-                  errors: validated.error.errors,
-                }),
-          };
-        }
-        return {
-          tool_call_id: toolCall.id,
-          output: JSON.stringify({ error: "Unknown tool call" }),
-        };
-      } catch (error) {
-        console.error("Tool call processing failed:", error);
-        return {
-          tool_call_id: toolCall.id,
-          output: JSON.stringify({ error: "Tool execution failed" }),
-        };
-      }
-    })
-  );
 };
