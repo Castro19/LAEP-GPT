@@ -15,6 +15,10 @@ const ChatContainer = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isUserAtBottomRef = useRef(true);
 
+  // Tech Debt IMO (Fix later)
+  const chatContainerHeight = location.pathname.includes("/chat")
+    ? "h-[85%]"
+    : "h-[77%]";
   useEffect(() => {
     if (currentChatId && messagesByChatId[currentChatId]) {
       setMsgList(messagesByChatId[currentChatId].content);
@@ -53,20 +57,24 @@ const ChatContainer = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen justify-between bg-slate-900">
-      {isNewChat && !loading[currentChatId ?? ""] ? (
-        <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />
-      ) : (
-        <ScrollArea ref={messagesContainerRef}>
-          <div className="flex-1 overflow-auto p-4">
-            {msgList.map((message) => (
-              <ChatMessage key={message.id} msg={message} />
-            ))}
-          </div>
-        </ScrollArea>
-      )}
-      {/* Border */}
-
+    <div className="flex flex-col h-screen bg-slate-900">
+      <div className={`flex flex-col ${chatContainerHeight} bg-slate-900`}>
+        {/* Only one flex child grows: our message list */}
+        {isNewChat && !loading[currentChatId ?? ""] ? (
+          <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />
+        ) : (
+          <ScrollArea
+            ref={messagesContainerRef}
+            className="flex-1" // Ensures this area gets only the remaining space
+          >
+            <div className="p-4">
+              {msgList.map((message) => (
+                <ChatMessage key={message.id} msg={message} />
+              ))}
+            </div>
+          </ScrollArea>
+        )}
+      </div>
       <ChatInput
         messagesContainerRef={messagesContainerRef}
         textareaRef={textareaRef}
