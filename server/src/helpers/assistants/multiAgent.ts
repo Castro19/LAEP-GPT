@@ -128,14 +128,25 @@ async function handleMultiAgentModel({
         null,
         model.title
       );
-      // Run the assistant and stream response
-      await runAssistantAndStreamResponse(
-        threadId,
-        ASST_MAP["professor_reviews"] as string,
-        res,
-        userMessageId,
-        runningStreams
-      );
+      if (assistantId) {
+        if (environment === "dev") {
+          console.log(
+            "Running assistant: ",
+            model.title,
+            "with message: ",
+            messageToAdd
+          );
+          console.log("ASST ID: ", assistantId);
+        }
+        // Run the assistant and stream response
+        await runAssistantAndStreamResponse(
+          threadId,
+          assistantId,
+          res,
+          userMessageId,
+          runningStreams
+        );
+      }
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to parse JSON from helper assistant:", error);
