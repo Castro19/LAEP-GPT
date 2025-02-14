@@ -28,7 +28,8 @@ const NewChat = () => {
                 navigate,
                 error,
                 loading,
-                messagesByChatId
+                messagesByChatId,
+                location.pathname.includes("/calendar")
               )
             }
           >
