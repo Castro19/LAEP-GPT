@@ -5,7 +5,7 @@ import { SectionDocument, SectionsFilterParams } from "@polylink/shared/types";
 import { environment } from "../index";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import { Filter } from "mongodb";
-import { QuerySchema } from "../helpers/assistants/queryAgent";
+import { SafeQuerySchema } from "../helpers/assistants/queryAgent";
 
 const router = express.Router();
 
@@ -125,7 +125,7 @@ router.post("/query", async (req, res: any) => {
     const { query, page } = req.body; // Change from req.query to req.body
 
     // Validate the filterQuery using Zod
-    const validationResult = QuerySchema.safeParse(query);
+    const validationResult = SafeQuerySchema.safeParse(query);
     if (!validationResult.success) {
       return res.status(400).json({
         message: "Invalid query",
