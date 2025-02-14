@@ -56,11 +56,17 @@ function MobileHeader() {
       return location.pathname === path;
     }
   };
+  const isChatSidebar = location.pathname.includes("/chat");
+  const headerStyles = isChatSidebar
+    ? "dark:bg-slate-950 border-none"
+    : "bg-white dark:bg-gray-900 border-b-2 dark:border-slate-900";
 
   return (
-    <div className="relative z-50">
+    <div className="relative z-50 w-full">
       {/* Header */}
-      <div className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 border-b-2 dark:border-slate-700 flex items-center justify-between px-4 py-2">
+      <div
+        className={`w-full ${headerStyles} flex items-center justify-between px-4 py-2`}
+      >
         <div className="flex items-center">
           <Button variant="ghost" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? (
@@ -113,7 +119,7 @@ function MobileHeader() {
 
       {/* Sliding Menu */}
       <div
-        className={`fixed top-14 left-0 w-full bg-white dark:bg-gray-900 border-b-2 dark:border-slate-700 transform transition-transform duration-300 ${
+        className={`absolute left-0 top-full w-full ${headerStyles} transform transition-transform duration-300 ${
           menuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >

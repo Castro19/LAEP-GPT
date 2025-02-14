@@ -16,8 +16,11 @@ import {
 } from "@/redux";
 import { useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import MobileHeader from "../MobileHeader";
+import useMobile from "@/hooks/use-mobile";
 
 export function ChatPageSidebar() {
+  const isMobile = useMobile();
   const dispatch = useAppDispatch();
   const logList = useAppSelector((state) => state.log.logList);
   const userId = useAppSelector((state) => state.auth.userId);
@@ -74,10 +77,14 @@ export function ChatPageSidebar() {
           ${open ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-16"}
         `}
       >
-        <SidebarHeader className="mt-8 border-b-2 border-sidebar-border dark:border-slate-700 flex-none">
-          <div className="flex items-center justify-center">
-            <h1 className="text-xl font-bold leading-tight">Chat Logs</h1>
-          </div>
+        <SidebarHeader className="border-b-2 border-sidebar-border dark:border-slate-700 flex-none">
+          {isMobile ? (
+            <MobileHeader />
+          ) : (
+            <div className="flex items-center justify-center">
+              <h1 className="text-xl font-bold leading-tight">Chat Logs</h1>
+            </div>
+          )}
         </SidebarHeader>
         <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
           <ScrollArea className="h-full">

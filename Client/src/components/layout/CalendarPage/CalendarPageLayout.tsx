@@ -20,7 +20,7 @@ const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
           }`}
         >
           {isMobile ? <MobileHeader /> : <CalendarPageHeader />}
-          <div className={`flex-1 ${isMobile ? "mt-16" : ""}`}>{children}</div>
+          <div className="flex-1">{children}</div>
         </div>
       </div>
     </div>

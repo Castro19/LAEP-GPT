@@ -14,9 +14,11 @@ import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
 import { LogData } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
+import useMobile from "@/hooks/use-mobile";
+
 const ChatPage = () => {
   const dispatch = useAppDispatch();
-
+  const isMobile = useMobile();
   const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
@@ -111,7 +113,7 @@ const ChatPage = () => {
   return (
     <>
       <div className="flex">
-        <OuterSidebar />
+        {isMobile ? null : <OuterSidebar />}
         <SidebarProvider className="dark:bg-slate-900">
           <ChatPageLayout>
             <ChatContainer />
