@@ -44,7 +44,6 @@ export const deleteSelectedSection = async (
   if (!selectedSectionCollection) {
     selectedSectionCollection = initializeCollection();
   }
-  console.log("REMOVING SECTION", sectionId);
 
   try {
     const result = await selectedSectionCollection.updateOne(

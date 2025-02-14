@@ -18,17 +18,15 @@ const BuildScheduleContainer = ({
     (state) => state.calendar
   );
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  const sections = calendars[page - 1]?.sections;
   const onSaveSchedule = () => {
     try {
       if (environment === "dev") {
         console.log("Saving schedule...");
       }
-      dispatch(createOrUpdateCalendarAsync(sections));
+      const sections = calendars[page - 1]?.sections;
+      if (sections) {
+        dispatch(createOrUpdateCalendarAsync(sections));
+      }
     } catch (error) {
       if (environment === "dev") {
         console.error("Error saving schedule:", error);
@@ -36,10 +34,14 @@ const BuildScheduleContainer = ({
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <AnimateWrapper>
       <div className="flex flex-col h-full">
-        <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[83%]">
+        <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[80%]">
           <div className="overflow-auto flex-1 no-scroll">
             <ScrollArea className="h-full min-w-full mb-4">
               <div className="px-6 space-y-4 pb-4">{children}</div>
@@ -49,7 +51,7 @@ const BuildScheduleContainer = ({
         {/* Divider */}
         <div className="border-t border-gray-200 p-4" />
         {/* Sticky footer with Reset and Apply */}
-        <div className="sticky bottom-0 mx-4 bg-background/95 backdrop-blur flex gap-2 shadow-lg">
+        <div className="sticky bottom-0 mx-4 bg-background/95 backdrop-blur flex gap-2 shadow-lg mb-8">
           {/* Apply Filters button */}
           <Button type="submit" className="w-full shadow-lg" onClick={onClick}>
             Build Schedule

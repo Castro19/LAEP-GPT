@@ -8,7 +8,7 @@ import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import { putUserReaction } from "@/redux/message/messageSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSidebar } from "../ui/sidebar";
+import useMobile from "@/hooks/use-mobile";
 
 const md = new MarkdownIt();
 
@@ -35,7 +35,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   const dispatch = useAppDispatch();
   const { currentChatId } = useAppSelector((state) => state.message);
   const { trackUserReaction } = useTrackAnalytics();
-  const { isMobile } = useSidebar();
+  const isMobile = useMobile();
   const isUserMessage = msg.sender === "user";
 
   // Convert Markdown to HTML and sanitize
@@ -44,7 +44,10 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
     ADD_ATTR: ["target", "rel"],
   });
 
-  const isScreenWidthSmall = isMobile || location.pathname.includes("/section");
+  const isScreenWidthSmall =
+    isMobile ||
+    location.pathname.includes("/section") ||
+    location.pathname.includes("/calendar");
 
   const handleLike = (id: string) => {
     if (currentChatId) {

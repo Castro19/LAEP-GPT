@@ -98,6 +98,7 @@ export const ASST_MAP = {
   professor_reviews: process.env.PROFESSOR_REVIEWS_ASST_ID,
   fallback: process.env.FALLBACK_ASST_ID,
   course_helper: process.env.COURSE_QUERY_ASST_ID,
+  schedule_builder_query: process.env.SCHEDULE_BUILDER_QUERY_ASST_ID,
 };
 
 export const qdrant = {

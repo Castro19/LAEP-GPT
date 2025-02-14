@@ -22,7 +22,7 @@ const SectionsChosen = () => {
   const groupedSections = selectedSections.reduce(
     (acc, section) => {
       const courseKey = section.courseId;
-      const professorKey = section.professor.join(", ");
+      const professorKey = section.professors.map((p) => p.name).join(", ");
 
       if (!acc[courseKey]) {
         acc[courseKey] = {};

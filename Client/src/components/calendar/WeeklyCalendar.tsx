@@ -111,7 +111,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
           courseName: section.courseName,
           classNumber: section.classNumber,
           enrollmentStatus: section.enrollmentStatus,
-          professor: section.professor,
+          professors: section.professors,
           start,
           end,
           color: getColorForCourse(section.courseId),

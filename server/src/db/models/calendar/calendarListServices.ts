@@ -17,7 +17,13 @@ export const getCalendarListByUserId = async (
   try {
     const result = await calendarListModel.findCalendarListByUserId(userId);
     if (!result) {
-      throw new Error("No calendars found for the user");
+      if (environment === "dev") {
+        console.log("No calendars found for the user");
+      }
+      return {
+        calendars: [],
+        primaryCalendarId: "",
+      };
     }
     return {
       calendars: result.calendars,

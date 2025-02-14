@@ -10,16 +10,21 @@ export const PaginationFooter: React.FC = () => {
 
   const handlePrev = () => {
     if (page > 1) {
-      dispatch(setPage(page - 1));
-      dispatch(setCurrentCalendar(calendars[page - 1]));
-      // dispatch(fetchCalendarsAsync());
+      const newIndex = page - 2;
+      if (newIndex >= 0 && newIndex < calendars.length) {
+        dispatch(setPage(newIndex + 1));
+        dispatch(setCurrentCalendar(calendars[newIndex]));
+      }
     }
   };
 
   const handleNext = () => {
     if (page < totalPages) {
-      dispatch(setPage(page + 1));
-      dispatch(setCurrentCalendar(calendars[page - 1]));
+      const newIndex = page;
+      if (newIndex >= 0 && newIndex < calendars.length) {
+        dispatch(setPage(newIndex + 1));
+        dispatch(setCurrentCalendar(calendars[newIndex]));
+      }
     }
   };
 

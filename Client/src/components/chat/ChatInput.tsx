@@ -16,6 +16,7 @@ import { Button } from "../ui/button";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import createLogTitle from "@/redux/log/crudLog";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { transformSectionsToScheduleBuilderSections } from "@/helpers/transformSection";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -36,6 +37,8 @@ const ChatInput = ({
   const { msg, isNewChat, currentChatId, loading, error } = useAppSelector(
     (state) => state.message
   );
+  const { currentCalendar } = useAppSelector((state) => state.calendar);
+
   const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
@@ -109,6 +112,14 @@ const ChatInput = ({
             userId: userId ? userId : "",
             userMessageId,
             botMessageId,
+            sections:
+              currentModel.title === "Schedule Builder" &&
+              currentCalendar &&
+              currentCalendar.sections
+                ? transformSectionsToScheduleBuilderSections(
+                    currentCalendar.sections
+                  )
+                : [], // Remove this empty list eventually
           })
         ).unwrap();
       } catch (error) {
@@ -223,11 +234,9 @@ const ChatInput = ({
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              handleSubmit(e); 
+              handleSubmit(e);
             }
-          }
-        }
-          
+          }}
         />
         {currentChatId && loading[currentChatId] ? (
           <Button

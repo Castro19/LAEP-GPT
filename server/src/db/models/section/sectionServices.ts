@@ -6,7 +6,7 @@ import {
   SectionDocument,
   SectionsFilterParams,
 } from "@polylink/shared/types";
-import { findSectionsByFilter } from "./sectionCollection";
+import * as sectionCollection from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
 
@@ -255,7 +255,7 @@ export async function getSectionsByFilter(
     const query = buildSectionsQuery(filter);
     // Perform the find operation with skip & limit
     // and also get a total count so you can return that in the response
-    return await findSectionsByFilter(query, skip, limit);
+    return await sectionCollection.findSectionsByFilter(query, skip, limit);
   } catch (error) {
     if (environment === "dev") {
       console.error("Error searching sections by filter:", error);
@@ -264,6 +264,36 @@ export async function getSectionsByFilter(
   }
 }
 
+export async function getSectionsbyProjection(
+  classNumbers: (string | number)[],
+  fields: (
+    | "courseId"
+    | "courseName"
+    | "description"
+    | "units"
+    | "enrollmentStatus"
+    | "courseAttributes"
+    | "meetings"
+    | "instructors"
+    | "instructorWithRatings"
+  )[]
+): Promise<Partial<Section>[]> {
+  // Convert classNumbers to numbers if they are strings
+  const numericClassNumbers = classNumbers.map((num) => Number(num));
+
+  const query = { classNumber: { $in: numericClassNumbers } };
+
+  // Construct the projection object with fields set to 1
+  const projection = fields.reduce(
+    (acc, field) => {
+      acc[field] = 1;
+      return acc;
+    },
+    {} as Record<string, 1>
+  );
+
+  return await sectionCollection.findSectionsbyProjection(query, projection);
+}
 /*
 minUnits: "1"
 maxUnits: "4"

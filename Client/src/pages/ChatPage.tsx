@@ -5,6 +5,7 @@ import {
   useAppDispatch,
   assistantActions,
   messageActions,
+  calendarActions,
 } from "@/redux";
 import { useParams } from "react-router-dom";
 import { fetchLogById } from "@/redux/log/crudLog";
@@ -19,8 +20,11 @@ const ChatPage = () => {
   const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
-  const assistantList = useAppSelector(
-    (state) => state.assistant.assistantList
+  const { assistantList, currentModel } = useAppSelector(
+    (state) => state.assistant
+  );
+  const { primaryCalendarId, currentCalendar } = useAppSelector(
+    (state) => state.calendar
   );
   const hasFetchedassistantList = useRef(false);
 
@@ -44,8 +48,14 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (assistantList.length > 0) {
-      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+      // Set the assistant to the assistant with our current chat ID
+      if (currentModel) {
+        dispatch(assistantActions.setCurrentAssistant(currentModel.id));
+      } else {
+        dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assistantList, dispatch]);
 
   useEffect(() => {
@@ -79,6 +89,25 @@ const ChatPage = () => {
     fetchLog();
   }, [chatId, dispatch]);
 
+  useEffect(() => {
+    const fetchCalendars = async () => {
+      if (userId) {
+        await dispatch(calendarActions.fetchCalendarsAsync());
+      }
+    };
+    fetchCalendars();
+    // Only run this effect once on component mount
+  }, [dispatch, userId]);
+
+  useEffect(() => {
+    if (primaryCalendarId) {
+      dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
+    }
+  }, [primaryCalendarId, dispatch]);
+
+  if (environment === "dev") {
+    console.log("CURRENT CALENDAR: ", currentCalendar);
+  }
   return (
     <>
       <div className="flex">

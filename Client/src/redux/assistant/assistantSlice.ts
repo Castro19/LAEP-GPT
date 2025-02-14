@@ -62,6 +62,16 @@ const assistantSlice = createSlice({
         state.currentModel = defaultModel;
       }
     },
+    setAssistantByTitle: (state, action: PayloadAction<string>) => {
+      const newModel = state.assistantList.find(
+        (asst) => asst.title === action.payload
+      );
+      if (newModel) {
+        state.currentModel = newModel;
+      } else {
+        state.currentModel = defaultModel;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAll.pending, (state) => {
@@ -78,6 +88,7 @@ const assistantSlice = createSlice({
   },
 });
 
-export const { setCurrentAssistant } = assistantSlice.actions;
+export const { setCurrentAssistant, setAssistantByTitle } =
+  assistantSlice.actions;
 
 export const assistantReducer = assistantSlice.reducer;

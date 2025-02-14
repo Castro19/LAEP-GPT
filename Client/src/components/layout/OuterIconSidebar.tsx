@@ -27,6 +27,7 @@ import { signOutUser } from "@/redux/auth/authSlice";
 
 function OuterSidebar() {
   const { userData } = useAppSelector((state) => state.user);
+  const { currentChatId } = useAppSelector((state) => state.message);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,6 +37,8 @@ function OuterSidebar() {
   const handleNavigation = (path: string) => {
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
+    } else if (path === "/chat" && currentChatId) {
+      navigate(`/chat/${currentChatId}`);
     } else {
       navigate(path);
     }

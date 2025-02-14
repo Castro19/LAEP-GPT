@@ -5,6 +5,7 @@ import {
   AssistantType,
   MessageObjType,
   MessageSliceType,
+  ScheduleBuilderSection,
 } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 
@@ -17,6 +18,7 @@ interface fetchBotResponseParams {
   userId: string;
   userMessageId: string;
   botMessageId: string;
+  sections: ScheduleBuilderSection[];
 }
 type SendMessageReturnType = {
   botMessage: MessageObjType;
@@ -42,6 +44,7 @@ export const fetchBotResponse = createAsyncThunk<
       userId,
       userMessageId,
       botMessageId,
+      sections,
     }: fetchBotResponseParams,
     { dispatch, rejectWithValue }
   ) => {
@@ -52,6 +55,7 @@ export const fetchBotResponse = createAsyncThunk<
         text: msg, //form
         model: currentModel.title,
         userReaction: null,
+        sections: sections,
       } as MessageObjType;
 
       if (msg.length === 0) {
@@ -92,7 +96,8 @@ export const fetchBotResponse = createAsyncThunk<
           currentChatId,
           userId,
           userMessageId,
-          botMessageId
+          botMessageId,
+          sections
         );
       dispatch(
         updateThinkingState({

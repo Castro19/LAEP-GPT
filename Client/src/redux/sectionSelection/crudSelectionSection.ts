@@ -82,6 +82,12 @@ export async function removeSection(sectionId: number): Promise<{
 export function transformSectionToSelectedSection(
   section: SectionDetail
 ): SelectedSection {
+  const professorRatings = section.instructorsWithRatings?.map(
+    (instructor) => ({
+      name: instructor.name,
+      id: instructor.id,
+    })
+  );
   return {
     courseId: section.courseId,
     courseName: section.courseName,
@@ -93,7 +99,7 @@ export function transformSectionToSelectedSection(
       days: meeting.days.filter((day) => day),
     })),
     classPair: section.pairedSections,
-    professor: section.instructors.map((instructor) => instructor.name),
+    professors: professorRatings ?? [],
     rating:
       section.instructorsWithRatings?.[0]?.overallRating ||
       section.instructorsWithRatings?.[1]?.overallRating ||
