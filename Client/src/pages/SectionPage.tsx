@@ -14,8 +14,11 @@ import { ChatContainer } from "@/components/chat";
 import AnimateWrapper from "@/components/section/AnimateWrapper";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import { useUserData } from "@/hooks/useUserData";
-
+import useMobile from "@/hooks/use-mobile";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const SectionPage = () => {
+  const isMobile = useMobile();
+
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
   const { userData } = useUserData();
@@ -97,15 +100,28 @@ const SectionPage = () => {
       <OuterSidebar />
       <SidebarProvider className="dark:bg-slate-900">
         <SectionPageLayout>
-          <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
-            <div className="col-span-1">
-              {/* <SectionFilters /> */}
-              {currentPanel}
+          {isMobile ? (
+            <Tabs defaultValue="filters">
+              <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+                <TabsTrigger value="filters">Filters</TabsTrigger>
+                <TabsTrigger value="sections">View Sections</TabsTrigger>
+              </TabsList>
+              <TabsContent value="filters">{currentPanel}</TabsContent>
+              <TabsContent value="sections">
+                <SectionContainer />
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
+              <div className="col-span-1">
+                {/* <SectionFilters /> */}
+                {currentPanel}
+              </div>
+              <div className="col-span-2">
+                <SectionContainer />
+              </div>
             </div>
-            <div className="col-span-2">
-              <SectionContainer />
-            </div>
-          </div>
+          )}
         </SectionPageLayout>
       </SidebarProvider>
     </div>
