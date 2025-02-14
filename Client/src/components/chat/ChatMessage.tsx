@@ -78,7 +78,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   const renderLikeButtons = () => {
     if (msg.userReaction === null) {
       return (
-        <div className="mt-2 flex justify-end space-x-1 mb-7">
+        <div className="mt-2 flex justify-end space-x-1">
           <Button variant="ghost" size="sm" onClick={() => handleLike(msg.id)}>
             <FaRegThumbsUp className="w-3 h-3 mr-1" />
           </Button>
