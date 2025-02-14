@@ -16,6 +16,10 @@ const FILTER_LABELS: Record<string, string> = {
   courseAttributes: "Course Attributes",
   instructionMode: "Instruction Mode",
   instructors: "Instructors",
+  minUnits: "Minimum Units",
+  maxUnits: "Maximum Units",
+  isTechElective: "Filtering for Tech Electives",
+  techElectives: "Tech Electives",
 };
 
 // Mapping for instruction modes
@@ -36,7 +40,7 @@ function hourIntToLabel(h24: number): string {
 function valueToLabel(value: string): string {
   // If empty or missing, return an empty string.
   if (!value) return "";
-  // Expecting “HH:MM”
+  // Expecting "HH:MM"
   const [hourStr] = value.split(":");
   const hourInt = parseInt(hourStr, 10) || 0;
   return hourIntToLabel(hourInt);
@@ -52,8 +56,11 @@ const formatFilterValue = (key: string, value: any): string => {
       const [startTime, endTime] = value.split("-");
       return `${valueToLabel(startTime)} - ${valueToLabel(endTime)}`;
     }
+    case "techElectives": {
+      return value.major;
+    }
     case "includeUnratedInstructors":
-      return value ? "Yes" : "No";
+      return value ? "true" : "false";
     case "courseAttributes":
       return value.join(", ");
     case "instructionMode":
@@ -73,17 +80,18 @@ const NoSectionsFound: React.FC = () => {
   const { filters } = useAppSelector((state) => state.section);
 
   // Extract and format active filters
-  const activeFilters = Object.entries(filters)
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    .filter(([_, value]) => {
+  const activeFilters = Object.entries(filters || {})
+    .filter(([, value]) => {
       if (Array.isArray(value)) return value.length > 0;
       if (typeof value === "boolean") return value;
       return value !== undefined && value !== null && value !== "";
     })
-    .map(([key, value]) => ({
-      label: FILTER_LABELS[key] || key,
-      value: formatFilterValue(key, value),
-    }));
+    .map(([key, value]) => {
+      return {
+        label: FILTER_LABELS[key] || key,
+        value: formatFilterValue(key, value),
+      };
+    });
 
   return (
     <motion.div
