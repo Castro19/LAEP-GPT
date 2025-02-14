@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "../ui/button";
 import {
   Tooltip,
@@ -6,26 +5,20 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { IoLogOutOutline } from "react-icons/io5";
 import { IoMdChatboxes } from "react-icons/io";
 import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
 import { UserAvatar } from "../userProfile/UserAvatar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { signOutUser } from "@/redux/auth/authSlice";
+import { useAppSelector } from "@/redux";
 
 function MobileHeader() {
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
   const { currentCalendar } = useAppSelector((state) => state.calendar);
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Controls whether the slide-down menu is visible
-  const [isProfileHovered, setIsProfileHovered] = useState(false);
 
   const handleNavigation = (path: string) => {
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
@@ -132,40 +125,17 @@ function MobileHeader() {
             <TooltipContent>Flowchart</TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div
-          onMouseEnter={() => setIsProfileHovered(true)}
-          onMouseLeave={() => setIsProfileHovered(false)}
-        >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate("/profile/edit")}
-                >
-                  <UserAvatar />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">View Profile</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        {isProfileHovered && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onClick={() => dispatch(signOutUser())}
-                  className="mr-2"
-                >
-                  <IoLogOutOutline className="w-5 h-5 rotate-180 text-red-500" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Sign Out</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" onClick={() => navigate("/profile/edit")}>
+                <UserAvatar />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">View Profile</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
