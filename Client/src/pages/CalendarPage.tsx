@@ -23,12 +23,16 @@ import {
   TabsTrigger,
   CustomTabsTrigger,
 } from "@/components/ui/tabs";
-import { ChatContainer } from "@/components/chat";
+import { ChatContainer, NewChat } from "@/components/chat";
+import { onNewChat } from "@/components/chat/helpers/newChatHandler";
 
 const CalendarPage = () => {
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
   const { calendars, currentCalendar } = useAppSelector(
     (state) => state.calendar
   );
@@ -41,14 +45,18 @@ const CalendarPage = () => {
   const userId = useAppSelector((state) => state.auth.userId);
   const hasFetchedassistantList = useRef(false);
   const { toast } = useToast();
+
+  // Fetch the selected sections
   useEffect(() => {
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
   }, [dispatch]);
 
+  // Fetch the calendars
   useEffect(() => {
     dispatch(calendarActions.fetchCalendarsAsync());
   }, [dispatch]);
 
+  // Fetch the current calendar by ID (if it exists)
   useEffect(() => {
     const fetchCalendar = async () => {
       if (calendarId) {
@@ -73,6 +81,7 @@ const CalendarPage = () => {
     fetchCalendar();
   }, [calendarId, dispatch]);
 
+  // Fetch the assistant list
   useEffect(() => {
     if (hasFetchedassistantList.current || assistantList.length > 0) return;
     hasFetchedassistantList.current = true;
@@ -99,6 +108,21 @@ const CalendarPage = () => {
     }
   }, [assistantList, dispatch]);
 
+  // Start a new chat when the page is loaded
+  useEffect(() => {
+    onNewChat(
+      currentChatId,
+      dispatch,
+      navigate,
+      error,
+      loading,
+      messagesByChatId,
+      true
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, navigate]);
+
+  // Handle the build schedule button click
   const handleBuildSchedule = () => {
     if (environment === "dev") {
       console.log("Building schedule...");
@@ -142,6 +166,11 @@ const CalendarPage = () => {
               </BuildScheduleContainer>
             </TabsContent>
             <TabsContent value="AI Chat">
+              <header className="sticky top-0 bg-slate-900 text-white p-1 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
+                <div className="flex items-center justify-end">
+                  <NewChat />
+                </div>
+              </header>
               <ChatContainer />
             </TabsContent>
           </Tabs>
