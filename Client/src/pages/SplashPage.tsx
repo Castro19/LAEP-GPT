@@ -6,6 +6,7 @@ import SpecialButton from "@/components/ui/specialButton";
 
 const SplashPage = () => {
   const navigate = useNavigate();
+
   return (
     <SplashLayout>
       <div className="bg-slate-900 relative">
@@ -21,36 +22,75 @@ const SplashPage = () => {
           <polygon points="0,0 60,0 0,100" fill="#1f2937" />
         </svg>
         <div className="flex flex-col md:flex-row text-white p-8 relative z-10">
-          <div className="md:w-1/2 flex flex-col items-start space-y-4">
-            <h1 className="text-4xl font-bold leading-tight">
-              PolyLink: Your Personalized AI Advisor at Cal Poly
+          <div className="md:w-1/2 flex flex-col items-start space-y-6">
+            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight text-gray-900 dark:text-white">
+              Your AI-Powered Student Assistant
             </h1>
-            <p className="text-lg mt-4">
-              Welcome to PolyLink, a personalized AI assistant designed to help
-              students make the most of their academic journey.
-              <br />
-              <br />
-              Whether you’re exploring classes, joining clubs, or searching for
-              professors. PolyLink leverages AI to offer personalized
-              recommendations tailored to your goals and interests.
-              <br />
-              <br />
-              Sign in with your Cal Poly account to start exploring resources
-              and connections curated for you.
+            <p className="mt-4 text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              PolyLink leverages{" "}
+              <strong className="font-bold text-gray-900 dark:text-white">
+                AI
+              </strong>{" "}
+              to make your academic journey{" "}
+              <strong className="font-bold text-gray-900 dark:text-white">
+                easier, smarter, and more personalized.
+              </strong>
             </p>
+            <div className="mt-6 space-y-3 text-base md:text-lg">
+              {/* Feature 1 */}
+              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">🚀</span>
+                  <span className="font-semibold text-gray-900 dark:text-white text-lg lg:whitespace-nowrap">
+                    Find Classes Instantly
+                  </span>
+                </div>
+                <p className="mt-2 lg:mt-0 text-base text-gray-700 dark:text-gray-300">
+                  – AI-powered search helps you discover the best Spring 2025
+                  courses.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">📅</span>
+                  <span className="font-semibold text-gray-900 dark:text-white text-lg lg:whitespace-nowrap">
+                    Effortless Schedule Building
+                  </span>
+                </div>
+                <p className="text-base text-gray-700 dark:text-gray-300">
+                  – Generate, customize, and optimize your weekly schedule.
+                </p>
+              </div>
+              {/* Feature 3 */}
+              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">🤖</span>
+                  <span className="font-semibold text-gray-900 dark:text-white text-lg lg:whitespace-nowrap">
+                    Smart AI Insights
+                  </span>
+                </div>
+                <p className="mt-2 lg:mt-0 text-base text-gray-700 dark:text-gray-300">
+                  – Get schedule summaries, professor ratings, and personalized
+                  recommendations.
+                </p>
+              </div>
+            </div>
             <SpecialButton
               text="Log In"
               onClick={() => navigate("/register/login")}
-              className="w-[100px] text-white px-4 py-2 mt-6 rounded dark:bg-green-700 dark:hover:bg-green-700"
+              className="w-[120px] text-white text-lg font-semibold px-5 py-3 mt-6 rounded-xl bg-green-600 hover:bg-green-700 transition duration-300"
               icon={<></>}
             />
           </div>
+
           {/* Image Section */}
           <div className="md:w-1/2 mt-6 md:mt-0 flex justify-center items-center">
             <iframe
               width="560"
               height="315"
-              src="https://www.youtube.com/embed/Q66-GO8spTs?si=ElcsXhDS3T2K-8C6"
+              src="https://www.youtube.com/embed/kjRg9rggu_M?si=JLMqb9UMHdnn1GIL"
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
