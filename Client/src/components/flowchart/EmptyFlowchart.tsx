@@ -76,7 +76,8 @@ const EmptyFlowchart = () => {
                 concentration: selections.concentration?.code ?? "",
                 major: selections.major ?? "",
                 catalog: selections.catalog ?? "",
-                startingYear: userData.year,
+                startingYear:
+                  userData.flowchartInformation.startingYear ?? 2022,
               },
             })
           );

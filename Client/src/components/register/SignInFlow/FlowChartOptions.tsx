@@ -8,12 +8,7 @@ import {
 import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@polylink/shared/types";
 import { motion } from "framer-motion";
-import {
-  RiBookLine,
-  RiGraduationCapLine,
-  RiStackLine,
-} from "react-icons/ri";
-
+import { RiBookLine, RiGraduationCapLine, RiStackLine } from "react-icons/ri";
 
 const FlowChartOptions = ({
   type = "flowchart",
@@ -55,7 +50,7 @@ const FlowChartOptions = ({
         handleChangeFlowchartInformation("major", value);
       }
     }
-     // Reset concentration if major is changed
+    // Reset concentration if major is changed
     if (key === "major" && selections.concentration) {
       dispatch(setSelection({ key: "concentration", value: "" })); // Reset concentration
     }
@@ -112,7 +107,9 @@ const FlowChartOptions = ({
             <ReusableDropdown
               name="Catalog"
               dropdownItems={catalogOptions}
-              handleChangeItem={(_, value) => handleChangeOption("catalog", value)}
+              handleChangeItem={(_, value) =>
+                handleChangeOption("catalog", value)
+              }
               selectedItem={selections.catalog || ""}
               className="w-full border rounded-lg hover:border-blue-300 transition-colors"
             />
@@ -129,7 +126,9 @@ const FlowChartOptions = ({
             <ReusableDropdown
               name="Major"
               dropdownItems={majorOptions}
-              handleChangeItem={(_, value) => handleChangeOption("major", value)}
+              handleChangeItem={(_, value) =>
+                handleChangeOption("major", value)
+              }
               selectedItem={selections.major || ""}
               className="w-full border rounded-lg hover:border-blue-300 transition-colors"
             />
@@ -160,7 +159,6 @@ const FlowChartOptions = ({
       </p>
     </motion.div>
   );
-
 };
 
 export default FlowChartOptions;
