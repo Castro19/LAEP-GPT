@@ -37,10 +37,30 @@ const SplashFooter = () => {
           </div>
         </div>
       </div>
-
       {/* Copyright */}
       <div className="mt-8 pt-8 border-t border-zinc-800 text-center text-gray-400">
         <p>© {new Date().getFullYear()} PolyLink. All rights reserved.</p>
+        {/* Attach LinkedIn Profile on my name */}
+        <p>
+          Made by{" "}
+          <a
+            href="https://www.linkedin.com/in/cristian-castro-oliva/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cristian Castro Oliva
+          </a>
+        </p>
+        <p>
+          & the{" "}
+          <a
+            href="https://polylink.dev/team"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PolyLink Team
+          </a>
+        </p>
       </div>
     </footer>
   );
