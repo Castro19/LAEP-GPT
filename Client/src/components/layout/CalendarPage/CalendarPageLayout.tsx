@@ -11,11 +11,11 @@ type SectionPageLayoutProps = {
 const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
   const isMobile = useMobile();
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col h-full">
       <div className="flex">
         {isMobile ? null : <OuterSidebar />}
         <div
-          className={`bg-slate-900 text-white min-h-screen flex flex-col no-scroll w-full ${
+          className={`bg-slate-900 text-white flex flex-col no-scroll w-full ${
             isMobile ? "ml-0" : "ml-2"
           }`}
         >
