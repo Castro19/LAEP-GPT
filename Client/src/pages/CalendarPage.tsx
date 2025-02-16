@@ -132,6 +132,14 @@ const CalendarPage = () => {
     navigate("/calendar");
   };
 
+  const handleSaveSchedule = () => {
+    if (currentCalendar) {
+      dispatch(
+        calendarActions.createOrUpdateCalendarAsync(currentCalendar.sections)
+      );
+    }
+  };
+
   return (
     <CalendarPageLayout>
       {isMobile ? (
@@ -155,7 +163,7 @@ const CalendarPage = () => {
                 </BuildScheduleContainer>
                 <BuildScheduleFooter
                   onClick={handleBuildSchedule}
-                  onSaveSchedule={() => {}}
+                  onSaveSchedule={handleSaveSchedule}
                 />
               </TabsContent>
               <TabsContent value="AI Chat">
