@@ -24,10 +24,10 @@ interface CustomRequest extends Request {
     instructors?: string[];
     minInstructorRating?: string;
     maxInstructorRating?: string;
-    includeUnratedInstructors?: boolean;
+    includeUnratedInstructors?: string;
     "techElectives.major"?: string;
     "techElectives.concentration"?: string;
     isTechElective?: string;
-    page?: number;
+    page?: string;
   };
 }

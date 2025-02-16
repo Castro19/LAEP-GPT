@@ -86,7 +86,7 @@ router.get("/", async (req: Request, res: any) => {
           : (instructors as string[]),
       minInstructorRating: minInstructorRating as string,
       maxInstructorRating: maxInstructorRating as string,
-      includeUnratedInstructors: includeUnratedInstructors as boolean,
+      includeUnratedInstructors: includeUnratedInstructors === "true", // convert str to boolean
       techElectives, // Use the flattened object values here
       isTechElective: isTechElective === "true", // Converts the string "true" to boolean true, any other value becomes false
     };

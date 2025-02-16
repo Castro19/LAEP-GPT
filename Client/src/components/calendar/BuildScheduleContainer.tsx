@@ -1,9 +1,7 @@
 import AnimateWrapper from "../section/AnimateWrapper";
 import { Card } from "../ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { useAppSelector } from "@/redux";
-import useMobile from "@/hooks/use-mobile";
 
 const BuildScheduleContainer = ({
   children,
@@ -11,7 +9,6 @@ const BuildScheduleContainer = ({
   children: React.ReactNode;
   onClick: () => void;
 }) => {
-  const isMobile = useMobile();
   const { loading } = useAppSelector((state) => state.calendar);
 
   if (loading) {
