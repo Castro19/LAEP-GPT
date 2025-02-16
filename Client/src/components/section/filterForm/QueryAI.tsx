@@ -1,9 +1,7 @@
 import { FormItem } from "@/components/ui/form";
 import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
 import { RiRobot3Line } from "react-icons/ri";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import TitleLabel from "./reusable/TitleLabel";
 import {
@@ -11,8 +9,19 @@ import {
   setIsInitialState,
   setPage,
 } from "@/redux/section/sectionSlice";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { AlertTriangle } from "lucide-react";
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+
+const placeholders = [
+  "Find CSC 300-500 courses available Mon-Thu",
+  "Show me morning USCP courses with open seats",
+  "I need MATH classes before 2pm with excellent professors",
+  "Open labs after 3pm on Tuesdays",
+  "4-unit GWR courses",
+  "In-person CSC classes with no waitlist",
+  "Async GE courses with high-rated professors",
+  "Friday-only classes with seats available",
+];
 
 const QueryAI = () => {
   const dispatch = useAppDispatch();
@@ -22,10 +31,7 @@ const QueryAI = () => {
   const [query, setQuery] = useState("");
 
   const handleQuerySearch = async () => {
-    if (query.trim() === "") {
-      return;
-    }
-
+    if (query.trim() === "") return;
     dispatch(setIsInitialState(false));
     dispatch(setPage(1));
     dispatch(queryAIAsync(query));
@@ -37,63 +43,35 @@ const QueryAI = () => {
       icon={RiRobot3Line}
       defaultOpen={false}
     >
+      {/* This could be <form> if you have a bigger form going on */}
       <FormItem>
-        <div className="flex items-start justify-between flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {queryError && (
-            <>
-              {/* Warning Icon */}
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-red-500" />
-                <p className="text-red-500">{queryError}</p>
-              </div>
-            </>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <p className="text-red-500">{queryError}</p>
+            </div>
           )}
           <TitleLabel title="Search Courses Your Way" />
-          <div className="flex flex-col gap-4 w-full">
-            <ScrollArea className="h-36">
-              <Textarea
-                className="h-32 max-h-36"
-                placeholder={
-                  `Examples:\n` +
-                  `• "Find CSC 300-500 courses with good reviews, available Mon-Thu"\n` +
-                  `• "Show me morning USCP courses with open seats"\n` +
-                  `• "I need MATH classes before 2pm with excellent professors"\n` +
-                  `\nSearch naturally - we'll handle the details!`
-                }
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    handleQuerySearch();
-                  }
-                }}
-                maxLength={200}
-              />
-            </ScrollArea>
-            <Button
-              type="button"
-              onClick={handleQuerySearch}
-              className="w-full"
-              disabled={loading || query.length === 0}
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Searching...
-                </div>
-              ) : (
-                "Find My Courses"
-              )}
-            </Button>
-          </div>
+          <p className="text-sm text-gray-500">
+            Search naturally - we&apos;ll handle the details!
+          </p>
+          <PlaceholdersAndVanishInput
+            placeholders={placeholders}
+            onChange={(e) => setQuery(e.target.value)}
+            // Called after vanish animation triggers
+            onSubmit={handleQuerySearch}
+            maxLength={200}
+            interval={10000}
+            loading={loading}
+          />
         </div>
       </FormItem>
-      {AIQuery?.explanation !== null && (
+
+      {AIQuery?.explanation && (
         <>
           <TitleLabel title="Explanation" />
-          {AIQuery?.explanation !== null && <p>{AIQuery?.explanation}</p>}
+          <p>{AIQuery.explanation}</p>
         </>
       )}
     </CollapsibleContentWrapper>
@@ -101,20 +79,3 @@ const QueryAI = () => {
 };
 
 export default QueryAI;
-
-/*
-import { Switch } from "@/components/ui/switch";
-<div className="flex flex-col gap-4">
-<div className="flex justify-between gap-2">
-  <TitleLabel title="Include other filters?" />
-  <Switch
-    className="self-start"
-    checked={includeOtherFilters}
-    onCheckedChange={(checked) => {
-      setIncludeOtherFilters(checked);
-    }}
-  />
-</div>
-</div>
-  const [includeOtherFilters, setIncludeOtherFilters] = useState(false);
-*/
