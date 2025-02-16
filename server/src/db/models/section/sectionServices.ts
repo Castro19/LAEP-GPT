@@ -75,6 +75,9 @@ function buildSectionsQuery(
     }
   }
 
+  if (environment === "dev") {
+    console.log("FILTER", filter);
+  }
   // 6) instructorRating
   //    e.g. ">=3.5" or "3.5"? For simplicity, let's assume it's always "3.5" meaning ">= 3.5".
   // 6a. Parse min/max rating if provided.
@@ -253,6 +256,9 @@ export async function getSectionsByFilter(
 ): Promise<{ sections: Section[]; total: number }> {
   try {
     const query = buildSectionsQuery(filter);
+    if (environment === "dev") {
+      console.log("query", query);
+    }
     // Perform the find operation with skip & limit
     // and also get a total count so you can return that in the response
     return await sectionCollection.findSectionsByFilter(query, skip, limit);
