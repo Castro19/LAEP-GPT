@@ -82,7 +82,9 @@ export function ChatPageSidebar() {
             <MobileHeader />
           ) : (
             <div className="flex items-center justify-center">
-              <h1 className="text-xl font-bold leading-tight">Chat Logs</h1>
+              <h1 className="text-3xl font-bold leading-tight mt-4">
+                Chat Logs
+              </h1>
             </div>
           )}
         </SidebarHeader>

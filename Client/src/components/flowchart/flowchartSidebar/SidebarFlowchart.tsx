@@ -141,7 +141,7 @@ export function SidebarFlowchart() {
         {isMobile ? (
           <MobileHeader />
         ) : (
-          <div className="flex items-center justify-center mt-4">
+          <div className="flex items-center justify-center mt-1">
             <span className="text-lg text-center font-semibold ml-4">
               {userData.flowchartInformation.catalog}
             </span>

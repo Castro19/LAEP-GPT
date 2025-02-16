@@ -20,7 +20,8 @@ import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { onNewChat } from "@/components/chat/helpers/newChatHandler";
 import CalendarAIChatContainer from "@/components/calendar/CalendarAIChatContainer";
 import useMobile from "@/hooks/use-mobile";
-
+import { PaginationFooter } from "@/components/calendar/PaginationFooter";
+import BuildScheduleFooter from "@/components/calendar/BuildScheduleFooter";
 const CalendarPage = () => {
   const isMobile = useMobile();
   const { calendarId } = useParams();
@@ -152,6 +153,10 @@ const CalendarPage = () => {
                 <BuildScheduleContainer onClick={handleBuildSchedule}>
                   <SelectedSectionContainer />
                 </BuildScheduleContainer>
+                <BuildScheduleFooter
+                  onClick={handleBuildSchedule}
+                  onSaveSchedule={() => {}}
+                />
               </TabsContent>
               <TabsContent value="AI Chat">
                 <CalendarAIChatContainer />
@@ -162,7 +167,10 @@ const CalendarPage = () => {
             {calendars.length === 0 && currentCalendar === null ? (
               <EmptyCalendar />
             ) : (
-              <CalendarContainer />
+              <>
+                <CalendarContainer />
+                <PaginationFooter />
+              </>
             )}
           </div>
         </div>
@@ -198,9 +206,15 @@ const CalendarMobile = ({ handleBuildSchedule }: CalendarMobileProps) => {
         <BuildScheduleContainer onClick={handleBuildSchedule}>
           <SelectedSectionContainer />
         </BuildScheduleContainer>
+
+        <BuildScheduleFooter
+          onClick={handleBuildSchedule}
+          onSaveSchedule={() => {}}
+        />
       </TabsContent>
       <TabsContent value="Calendar">
         <CalendarContainer />
+        <PaginationFooter />
       </TabsContent>
       <TabsContent value="AI Chat">
         <CalendarAIChatContainer />
