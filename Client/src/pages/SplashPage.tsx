@@ -1,12 +1,10 @@
 import { Hero } from "@/components/splashPage/Hero";
 import { StickyScrollRevealDemo } from "@/components/splashPage/MatchingFeatures";
-import { useNavigate } from "react-router-dom";
 import SplashLayout from "@/components/layout/splashPage/SplashLayout";
-import SpecialButton from "@/components/ui/specialButton";
+import JoinButton from "@/components/splashPage/JoinButton";
+import FeaturesGrid from "@/components/splashPage/FeatureSection";
 
 const SplashPage = () => {
-  const navigate = useNavigate();
-
   return (
     <SplashLayout>
       <div className="bg-slate-900 relative">
@@ -21,14 +19,17 @@ const SplashPage = () => {
         >
           <polygon points="0,0 60,0 0,100" fill="#1f2937" />
         </svg>
-        <div className="flex flex-col md:flex-row text-white p-8 relative z-10">
-          <div className="md:w-1/2 flex flex-col items-start space-y-6">
-            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight text-gray-900 dark:text-white">
+
+        {/* Main Content Container */}
+        <div className="flex flex-col lg:flex-row text-white p-8 relative z-10 min-h-[60vh]">
+          {/* Text/Feature Section */}
+          <div className="w-full lg:w-1/2 flex flex-col items-start space-y-12">
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-gray-900 dark:text-white">
               Your AI-Powered Student Assistant
             </h1>
-            <p className="mt-4 text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="mt-4 text-base md:text-2xl text-gray-700 dark:text-gray-200 leading-relaxed">
               PolyLink leverages{" "}
-              <strong className="font-bold text-gray-900 dark:text-white">
+              <strong className="font-extrabold text-gray-900 dark:text-white">
                 AI
               </strong>{" "}
               to make your academic journey{" "}
@@ -36,72 +37,27 @@ const SplashPage = () => {
                 easier, smarter, and more personalized.
               </strong>
             </p>
-            <div className="mt-6 space-y-3 text-base md:text-lg">
-              {/* Feature 1 */}
-              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">🚀</span>
-                  <span className="font-semibold text-gray-900 dark:text-white text-lg lg:whitespace-nowrap">
-                    Find Classes Instantly
-                  </span>
-                </div>
-                <p className="mt-2 lg:mt-0 text-base text-gray-700 dark:text-gray-300">
-                  – AI-powered search helps you discover the best Spring 2025
-                  courses.
-                </p>
-              </div>
 
-              {/* Feature 2 */}
-              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">📅</span>
-                  <span className="font-semibold text-gray-900 dark:text-white text-lg lg:whitespace-nowrap">
-                    Effortless Schedule Building
-                  </span>
-                </div>
-                <p className="text-base text-gray-700 dark:text-gray-300">
-                  – Generate, customize, and optimize your weekly schedule.
-                </p>
-              </div>
-              {/* Feature 3 */}
-              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">🤖</span>
-                  <span className="font-semibold text-gray-900 dark:text-white text-lg lg:whitespace-nowrap">
-                    Smart AI Insights
-                  </span>
-                </div>
-                <p className="mt-2 lg:mt-0 text-base text-gray-700 dark:text-gray-300">
-                  – Get schedule summaries, professor ratings, and personalized
-                  recommendations.
-                </p>
-              </div>
-            </div>
-            <SpecialButton
-              text="Log In"
-              onClick={() => navigate("/register/login")}
-              className="w-[120px] text-white text-lg font-semibold px-5 py-3 mt-6 rounded-xl bg-green-600 hover:bg-green-700 transition duration-300"
-              icon={<></>}
-            />
+            <FeaturesGrid />
+
+            {/* More Prominent Action Button */}
+            <JoinButton />
           </div>
 
-          {/* Image Section */}
-          <div className="md:w-1/2 mt-6 md:mt-0 flex justify-center items-center">
+          {/* YouTube Video Section */}
+          <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
             <iframe
-              width="560"
-              height="315"
+              className="w-full aspect-video max-w-[800px] rounded-lg shadow-lg"
               src="https://www.youtube.com/embed/kjRg9rggu_M?si=JLMqb9UMHdnn1GIL"
-              title="YouTube video player"
+              title="YouTube demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="rounded-lg shadow-lg"
-            ></iframe>
+            />
           </div>
         </div>
 
-        <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400"></div>
-
-        <StickyScrollRevealDemo />
+        {/* Separator */}
+        <div className="flex flex-col border-t border-zinc-800 text-start text-gray-400"></div>
         <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400 relative">
           <svg
             width="100%"
@@ -123,9 +79,11 @@ const SplashPage = () => {
           >
             <polygon points="100,0 100,100 50,100" fill="#1f2937" />
           </svg>
-
-          <Hero />
         </div>
+        <StickyScrollRevealDemo />
+        {/* Border */}
+        <div className="flex flex-col border-t border-zinc-800 text-center text-gray-400"></div>
+        <Hero />
       </div>
     </SplashLayout>
   );

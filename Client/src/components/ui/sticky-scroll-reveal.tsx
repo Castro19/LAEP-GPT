@@ -56,7 +56,7 @@ export const StickyScroll = ({
   }, [activeCard, linearGradients]);
 
   return (
-    <ScrollArea className="overflow-y-auto h-[30rem]" ref={ref}>
+    <ScrollArea className="overflow-y-auto h-[35rem]" ref={ref}>
       <motion.div
         animate={{
           backgroundColor:
@@ -92,7 +92,7 @@ export const StickyScroll = ({
                 </motion.p>
               </div>
             ))}
-            <div className="h-48"></div>
+            <div className="h-56"></div>
           </div>
         </div>
         <div
