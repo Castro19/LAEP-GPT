@@ -5,6 +5,7 @@ import { useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
+import SplashHeaderButton from "@/components/splashPage/SplashHeaderButton";
 
 const SplashHeader = () => {
   const navigate = useNavigate();
@@ -29,15 +30,9 @@ const SplashHeader = () => {
     "text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-100 font-bold tracking-wide drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.3)] transition-all duration-300 hover:drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.5)]";
 
   return (
-    <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2 border-zinc-800 dark:border-x-gray-500 shadow-md">
+    <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2  border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate("/")}
-          className="text-3xl hover:text-gray-300 font-bold leading-tight"
-        >
-          PolyLink
-        </button>
-
+        <SplashHeaderButton />
         {isMobile ? (
           <>
             <button
