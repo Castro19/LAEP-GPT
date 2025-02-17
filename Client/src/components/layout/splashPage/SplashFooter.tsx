@@ -1,4 +1,12 @@
+import { useNavigate } from "react-router-dom";
+
 const SplashFooter = () => {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <footer className="bg-slate-900 text-white p-8 border-t-2 border-zinc-800 dark:border-x-gray-500">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -15,14 +23,17 @@ const SplashFooter = () => {
         <div className="space-y-4">
           <h3 className="text-xl font-bold">Quick Links</h3>
           <div className="flex flex-col space-y-2">
-            <button className="text-gray-300 hover:text-white text-left">
-              Engineering
-            </button>
-            <button className="text-gray-300 hover:text-white text-left">
+            <button
+              className="text-gray-300 hover:text-white text-left"
+              onClick={() => handleLinkClick("/about")}
+            >
               About
             </button>
-            <button className="text-gray-300 hover:text-white text-left">
-              FAQ
+            <button
+              className="text-gray-300 hover:text-white text-left"
+              onClick={() => handleLinkClick("/team")}
+            >
+              Our Team
             </button>
           </div>
         </div>
