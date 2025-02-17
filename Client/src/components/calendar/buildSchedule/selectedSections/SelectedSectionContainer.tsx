@@ -1,4 +1,4 @@
-import CollapsibleContentWrapper from "@/components/section/filterForm/reusable/CollapsibleContentWrapper";
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
 import SavedSchedules from "@/components/calendar/buildSchedule/savedSchedules/SavedSchedules";
 import SectionsChosen from "@/components/calendar/buildSchedule/selectedSections/SectionsChosen";
 

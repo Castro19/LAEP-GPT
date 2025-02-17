@@ -1,9 +1,9 @@
 import { FormItem } from "@/components/ui/form";
-import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
 import { RiRobot3Line } from "react-icons/ri";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import TitleLabel from "./reusable/TitleLabel";
+import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
 import {
   queryAIAsync,
   setIsInitialState,

@@ -1,4 +1,4 @@
-import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
 import {
   FormField,
   FormItem,
@@ -7,15 +7,18 @@ import {
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { FaBook } from "react-icons/fa";
-import { COURSE_ATTRIBUTES, SECTION_FILTERS_SCHEMA } from "./constants";
+import {
+  COURSE_ATTRIBUTES,
+  SECTION_FILTERS_SCHEMA,
+} from "@/components/section/courseFilters/helpers/constants";
 import { z } from "zod";
-import { DeletableTags } from "./reusable/DeletableTags";
+import { DeletableTags } from "@/components/section/reusable/filter/DeletableTags";
 import ReusableDropdown from "@/components/ui/reusable-dropdown";
-import TitleLabel from "./reusable/TitleLabel";
-import Searchbar from "./reusable/SearchBar";
+import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
+import Searchbar from "@/components/section/reusable/filter/SearchBar";
 import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
-import SUBJECTS from "./api/subjects";
-import DoubleSliderFilter from "./reusable/DoubleSliderFilter";
+import SUBJECTS from "@/components/section/courseFilters/helpers/api/subjects";
+import DoubleSliderFilter from "@/components/section/reusable/filter/DoubleSliderFilter";
 import { Switch } from "@/components/ui/switch";
 import { useEffect } from "react";
 import { useUserData } from "@/hooks/useUserData";

@@ -5,16 +5,16 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { SECTION_FILTERS_SCHEMA } from "./constants";
-import DoubleSliderFilter from "./reusable/DoubleSliderFilter";
+import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
+import DoubleSliderFilter from "@/components/section/reusable/filter/DoubleSliderFilter";
 import { z } from "zod";
-import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
 import { FaUser } from "react-icons/fa";
-import TitleLabel from "./reusable/TitleLabel";
+import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
 import { Switch } from "@/components/ui/switch";
-import { DeletableTags } from "./reusable/DeletableTags";
-import Searchbar from "./reusable/SearchBar";
-import fetchProfessors from "./api/fetchProfessors";
+import { DeletableTags } from "@/components/section/reusable/filter/DeletableTags";
+import Searchbar from "@/components/section/reusable/filter/SearchBar";
+import fetchProfessors from "@/components/section/courseFilters/helpers/api/fetchProfessors";
 
 const Instructor = ({
   form,

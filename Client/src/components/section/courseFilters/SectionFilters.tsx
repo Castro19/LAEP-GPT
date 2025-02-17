@@ -3,33 +3,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+// Redux hooks and actions
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { sectionActions } from "@/redux";
+
+// Types
+import { SectionsFilterParams } from "@polylink/shared/types";
+
+// Components
+import CourseInformation from "@/components/section/courseFilters/courseInformation/CourseInformation";
+import Instructor from "@/components/section/courseFilters/instructorAndRatings/Instructor";
+import Scheduling from "@/components/section/courseFilters/scheduling/Scheduling";
 // UI
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Components
-import CourseInformation from "./CourseInformation";
-import Instructor from "./Instructor";
-import Scheduling from "./Scheduling";
-
-// Redux hooks and actions
-import { useAppDispatch, useAppSelector } from "@/redux";
-import {
-  setFilters,
-  fetchSectionsAsync,
-  setIsInitialState,
-  setPage,
-} from "@/redux/section/sectionSlice";
-import { SectionsFilterParams } from "@polylink/shared/types";
-
 // Constants
-import { SECTION_FILTERS_SCHEMA, DAYS, COURSE_ATTRIBUTES } from "./constants";
+import {
+  SECTION_FILTERS_SCHEMA,
+  DAYS,
+  COURSE_ATTRIBUTES,
+} from "@/components/section/courseFilters/helpers/constants";
 
 // Environment
 import { environment } from "@/helpers/getEnvironmentVars";
-import QueryAI from "./QueryAI";
+import QueryAI from "@/components/section/courseFilters/aiClassSearch/QueryAI";
 import { useUserData } from "@/hooks/useUserData";
 import useMobile from "@/hooks/use-mobile";
 
@@ -114,14 +114,14 @@ export function SectionFilters() {
 
     // Only dispatch if something actually changed.
     if (JSON.stringify(updatedFilters) !== JSON.stringify(reduxFilters)) {
-      dispatch(setFilters(updatedFilters));
+      dispatch(sectionActions.setFilters(updatedFilters));
     }
   }, [watchedValues, dispatch, reduxFilters]);
 
   // onSubmit is now used only to trigger the API call.
   const onSubmit = (data: SectionFiltersForm) => {
-    dispatch(setIsInitialState(false));
-    dispatch(setPage(1));
+    dispatch(sectionActions.setIsInitialState(false));
+    dispatch(sectionActions.setPage(1));
     const timeRange =
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
 
@@ -152,8 +152,8 @@ export function SectionFilters() {
       console.log("Filtering Query", queryString);
     }
     // You can then use queryString in your API call.
-    dispatch(setFilters(updatedFilters));
-    dispatch(fetchSectionsAsync());
+    dispatch(sectionActions.setFilters(updatedFilters));
+    dispatch(sectionActions.fetchSectionsAsync());
   };
 
   function buildQueryString(filters: SectionsFilterParams): string {

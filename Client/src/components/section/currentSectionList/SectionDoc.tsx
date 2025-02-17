@@ -4,13 +4,13 @@ import {
   ProfessorGroup,
   SectionDetail,
 } from "@polylink/shared/types";
-import { Button } from "../ui/button";
-import StarRating from "./StarRating";
+import { Button } from "../../ui/button";
+import StarRating from "../reusable/sectionInfo/StarRating";
 import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
-} from "../ui/collapsible";
+} from "../../ui/collapsible";
 import { SectionEnrollment } from "./sectionInfo";
 import { SectionHeader } from "./sectionInfo";
 import { SectionSchedule } from "./sectionInfo";

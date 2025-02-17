@@ -5,14 +5,14 @@ import {
   sectionSelectionActions,
 } from "@/redux";
 import { useState } from "react";
-import BadgeSection from "./helpers/BadgeSection";
-import LabelSection from "./helpers/LabelSection";
-import { convertTo12HourFormat } from "./helpers/timeFormatter";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
+import BadgeSection from "../helpers/BadgeSection";
+import LabelSection from "../helpers/LabelSection";
+import { convertTo12HourFormat } from "../helpers/timeFormatter";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { Button } from "../../ui/button";
 import { transformToSectionDetail } from "@/helpers/transformSection";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { toast } from "../ui/use-toast";
+import { toast } from "../../ui/use-toast";
 
 // -----------------------------------------------------------------------------
 // SectionHeader: Renders a badge for the component type, meeting days, and enrollment status.

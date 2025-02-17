@@ -3,7 +3,7 @@ import { Button } from "../../../ui/button";
 import {
   SectionEnrollment,
   SectionSchedule,
-} from "../../../section/sectionInfo";
+} from "../../../section/currentSectionList/sectionInfo";
 import { transformToSectionDetail } from "@/helpers/transformSection";
 import BadgeSection from "../../../section/helpers/BadgeSection";
 import { formatPrerequisites } from "../../../section/helpers/formatPrereq";

@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppSelector } from "@/redux";
-import { Star } from "../../../section/StarRating";
+import { Star } from "../../../section/reusable/sectionInfo/StarRating";
 import { Card } from "../../../ui/card";
 
 const CalendarAverageRating: React.FC = () => {

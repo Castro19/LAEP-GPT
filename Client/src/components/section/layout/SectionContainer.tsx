@@ -1,12 +1,18 @@
 import { useAppSelector } from "@/redux";
-import { CourseCatalog } from "./SectionDoc";
-import { transformSectionsToCatalog } from "@/helpers/transformSection";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { PaginationFooter } from "./PaginationFooter";
-import NoSectionsFound from "./NoSectionsFound";
-import InitialSectionState from "./InitialSectionState";
-import SectionLoading from "./SectionLoading";
+
+// My Components
+import { CourseCatalog } from "@/components/section/currentSectionList/SectionDoc";
+import InitialSectionState from "@/components/section/emptyState/InitialSectionState";
+import SectionLoading from "@/components/section/emptyState/SectionLoading";
 import useIsMobile from "@/hooks/use-mobile";
+import { PaginationFooter } from "@/components/section/layout/PaginationFooter";
+import NoSectionsFound from "@/components/section/emptyState/NoSectionsFound";
+
+// Helpers
+import { transformSectionsToCatalog } from "@/helpers/transformSection";
+
+// UI
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const SectionContainer = () => {
   const isMobile = useIsMobile();

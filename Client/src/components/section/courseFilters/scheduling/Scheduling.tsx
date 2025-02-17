@@ -1,14 +1,17 @@
 import { FormControl, FormLabel } from "@/components/ui/form";
-import { DAYS, HOURS } from "./constants";
+import {
+  DAYS,
+  HOURS,
+} from "@/components/section/courseFilters/helpers/constants";
 import { FormField } from "@/components/ui/form";
 import { FormItem } from "@/components/ui/form";
-import CollapsibleContentWrapper from "./reusable/CollapsibleContentWrapper";
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
 import { FaClock } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
-import { SECTION_FILTERS_SCHEMA } from "./constants";
+import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
 import { z } from "zod";
-import TitleLabel from "./reusable/TitleLabel";
+import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
 import ReusableDropdown from "@/components/ui/reusable-dropdown";
 
 const Scheduling = ({
