@@ -1,4 +1,15 @@
 import { useEffect, useState } from "react";
+
+// Redux
+import { useAppSelector } from "@/redux";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// Types
+import { UserData } from "@polylink/shared/types";
+
+// UI Components
 import {
   Select,
   SelectContent,
@@ -8,10 +19,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useUserData } from "@/hooks/useUserData";
-import { useAppSelector } from "@/redux";
-import { RootState } from "@/redux/store";
-import { UserData } from "@polylink/shared/types";
 
 const InterestDropdown = ({
   name,
@@ -23,7 +30,7 @@ const InterestDropdown = ({
   dropdownRef?: React.RefObject<HTMLDivElement>;
 }): JSX.Element => {
   const [position, setPosition] = useState<"item-aligned" | "popper">("popper");
-  const userData = useAppSelector((state: RootState) => state.user.userData);
+  const userData = useAppSelector((state) => state.user.userData);
   const { handleAddItem, handleRemoveItem } = useUserData();
   let dropdownItems: string[] = [];
   let selectedItems: string[] = [];

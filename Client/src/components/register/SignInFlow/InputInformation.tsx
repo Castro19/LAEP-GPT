@@ -1,8 +1,13 @@
+import { motion } from "framer-motion";
+import { useOutletContext } from "react-router-dom";
+
+// Components
 import { Card } from "@/components/ui/card";
 
-import { motion } from "framer-motion";
+// Icons
 import { RiAtLine, RiUserSearchLine, RiTimeLine } from "react-icons/ri";
-import { useOutletContext } from "react-router-dom";
+
+// Hooks
 
 const InputInformation = () => {
   // Get choice and handleChoice from outlet context

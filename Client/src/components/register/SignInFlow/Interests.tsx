@@ -1,7 +1,13 @@
-import { CheckboxSurvey } from "@/components/ui/checkbox-survey";
-import { useUserData } from "@/hooks/useUserData";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+
+// Components
+import { CheckboxSurvey } from "@/components/ui/checkbox-survey";
+import { Card } from "@/components/ui/card";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// Icons
 import { RiLightbulbLine, RiGamepadLine, RiFlag2Line } from "react-icons/ri";
 
 export function Interests() {

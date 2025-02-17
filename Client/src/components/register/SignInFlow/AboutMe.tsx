@@ -1,9 +1,13 @@
-import { environment } from "@/helpers/getEnvironmentVars";
-import { Label } from "../../../components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";
-import { RootState } from "@/redux/store";
+
+// Environment variables
+import { serverUrl, environment } from "@/helpers/getEnvironmentVars";
+
+// Components
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { GiFairyWand } from "react-icons/gi";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,13 +16,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { serverUrl } from "@/helpers/getEnvironmentVars";
-import { useState } from "react";
+
 export const labelStyle = "underline text-lg self-center";
 
 const AboutMe = () => {
   const { handleTextChange, handleChange } = useUserData();
-  const { userData } = useAppSelector((state: RootState) => state.user);
+  const { userData } = useAppSelector((state) => state.user);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerateBio = async () => {
