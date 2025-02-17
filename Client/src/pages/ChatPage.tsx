@@ -31,7 +31,7 @@ const ChatPage = () => {
   const hasFetchedassistantList = useRef(false);
 
   useEffect(() => {
-    if (hasFetchedassistantList.current || assistantList.length > 0) return;
+    if (hasFetchedassistantList.current) return;
     hasFetchedassistantList.current = true;
 
     const fetchassistantList = async () => {
@@ -51,7 +51,7 @@ const ChatPage = () => {
   useEffect(() => {
     if (assistantList.length > 0) {
       // Set the assistant to the assistant with our current chat ID
-      if (currentModel) {
+      if (currentModel.id !== "") {
         dispatch(assistantActions.setCurrentAssistant(currentModel.id));
       } else {
         dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
