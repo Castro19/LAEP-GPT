@@ -1,16 +1,12 @@
 import { useEffect } from "react";
-import ReusableDropdown from "../../ui/reusable-dropdown";
 import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
-import {
-  setSelection,
-  resetConcentrationOptions,
-} from "@/redux/flowSelection/flowSelectionSlice";
 import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@polylink/shared/types";
 import { motion } from "framer-motion";
+import ReusableDropdown from "@/components/ui/reusable-dropdown";
 import { RiBookLine, RiGraduationCapLine, RiStackLine } from "react-icons/ri";
 
-const FlowChartOptions = ({
+const FlowchartOptions = ({
   type = "flowchart",
 }: {
   type: "flowchart" | "signup";
@@ -36,7 +32,7 @@ const FlowChartOptions = ({
         })
       );
     } else {
-      dispatch(resetConcentrationOptions());
+      dispatch(flowSelectionActions.resetConcentrationOptions());
     }
   }, [selections.major, selections.catalog, dispatch]);
 
@@ -52,11 +48,13 @@ const FlowChartOptions = ({
     }
     // Reset concentration if major is changed
     if (key === "major" && selections.concentration) {
-      dispatch(setSelection({ key: "concentration", value: "" })); // Reset concentration
+      dispatch(
+        flowSelectionActions.setSelection({ key: "concentration", value: "" })
+      ); // Reset concentration
     }
 
     dispatch(
-      setSelection({
+      flowSelectionActions.setSelection({
         key: key as "startingYear" | "catalog" | "major" | "concentration",
         value,
       })
@@ -75,7 +73,7 @@ const FlowChartOptions = ({
       );
     }
     dispatch(
-      setSelection({
+      flowSelectionActions.setSelection({
         key: "concentration",
         value:
           concentration ||
@@ -161,4 +159,4 @@ const FlowChartOptions = ({
   );
 };
 
-export default FlowChartOptions;
+export default FlowchartOptions;

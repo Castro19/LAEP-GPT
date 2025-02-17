@@ -1,7 +1,10 @@
-// CourseItem.tsx
-import React from "react";
-
+import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { Course, FlowchartData } from "@polylink/shared/types";
+import cloneDeep from "lodash-es/cloneDeep";
+// Env vars
+import { environment } from "@/helpers/getEnvironmentVars";
+// UI Components & Icon
+import { TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Card,
   CardContent,
@@ -15,12 +18,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import cloneDeep from "lodash-es/cloneDeep";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import { TrashIcon } from "lucide-react";
-import { TooltipTrigger } from "@/components/ui/tooltip";
-import { environment } from "@/helpers/getEnvironmentVars";
 
 interface CourseItemProps {
   termIndex: number;
@@ -98,7 +96,7 @@ const CourseItem: React.FC<CourseItemProps> = ({
         termIndex,
         coursePosition
       );
-      dispatch(setFlowchartData(updatedFlowchartData));
+      dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
     }
   };
 

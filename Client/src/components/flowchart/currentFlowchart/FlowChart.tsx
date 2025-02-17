@@ -1,12 +1,13 @@
 import { useMemo, useRef, useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import TermContainer from "./termContainer/TermContainer";
+import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
-import { toggleCourseCompletion } from "@/redux/flowchart/flowchartSlice";
-import defaultTermData from "./exampleData/flowPlaceholder";
-import { Button } from "../ui/button";
 
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+// My components
+import TermContainer from "@/components/flowchart/currentFlowchart/TermContainer";
+import defaultTermData from "@/components/flowchart/exampleData/flowPlaceholder";
+// UI Components
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -24,7 +25,7 @@ const TERM_MAP = {
   15: "Spring",
 };
 
-const FlowChart = ({
+const Flowchart = ({
   flowchartData,
 }: {
   flowchartData?: FlowchartData | null;
@@ -56,7 +57,9 @@ const FlowChart = ({
   };
 
   const onCourseToggleComplete = (termIndex: number, courseIndex: number) => {
-    dispatch(toggleCourseCompletion({ termIndex, courseIndex }));
+    dispatch(
+      flowchartActions.toggleCourseCompletion({ termIndex, courseIndex })
+    );
   };
 
   // Calculate total terms and years
@@ -147,4 +150,4 @@ const FlowChart = ({
   );
 };
 
-export default FlowChart;
+export default Flowchart;

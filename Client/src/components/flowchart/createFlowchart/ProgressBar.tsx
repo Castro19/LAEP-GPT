@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 
 interface ProgressBarProps {
@@ -17,7 +16,10 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ value }) => {
       {/* Step Circles */}
       <div className="flex justify-between items-center w-full mb-4 relative">
         {steps.map(({ label, step }, index) => (
-          <div key={index} className="flex flex-col items-center w-1/3 text-center">
+          <div
+            key={index}
+            className="flex flex-col items-center w-1/3 text-center"
+          >
             {/* Animated Step Circle */}
             <motion.div
               className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-white transition-all ${
@@ -34,7 +36,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ value }) => {
             {/* Step Label */}
             <p
               className={`text-sm mt-2 ${
-                value >= (step / 3) * 100 ? "text-blue-400 font-semibold" : "text-gray-500"
+                value >= (step / 3) * 100
+                  ? "text-blue-400 font-semibold"
+                  : "text-gray-500"
               }`}
             >
               {label}

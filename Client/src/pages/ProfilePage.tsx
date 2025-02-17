@@ -13,7 +13,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
-import FlowChart from "@/components/flowchart/FlowChart";
+import Flowchart from "@/components/flowchart/currentFlowchart/FlowChart";
 import { useEffect, useRef } from "react";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
@@ -275,7 +275,7 @@ export function ProfilePage() {
             {flowchartData ? (
               <Card className="h-full">
                 <div className="flex flex-col w-full gap-4 mb-2">
-                  <FlowChart flowchartData={flowchartData} />
+                  <Flowchart flowchartData={flowchartData} />
                 </div>
               </Card>
             ) : (

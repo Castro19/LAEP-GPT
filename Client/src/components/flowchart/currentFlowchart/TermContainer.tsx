@@ -1,6 +1,6 @@
 // TermContainer.tsx
 import React from "react";
-import CourseItem from "../courseItem/CourseItem";
+import CourseItem from "./CourseItem";
 import { Course, FlowchartData, Term } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import cloneDeep from "lodash-es/cloneDeep";

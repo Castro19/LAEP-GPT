@@ -1,9 +1,12 @@
-// FlowChartHeader.tsx
-import { Button } from "@/components/ui/button";
+// FlowchartHeader.tsx
+// Hooks
 import { useSidebar } from "@/components/ui/sidebar";
+
+// UI Components & Icons
+import { Button } from "@/components/ui/button";
 import { BsLayoutSidebar } from "react-icons/bs";
 
-const FlowChartHeader = () => {
+const FlowchartHeader = () => {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -24,4 +27,4 @@ const FlowChartHeader = () => {
   );
 };
 
-export default FlowChartHeader;
+export default FlowchartHeader;

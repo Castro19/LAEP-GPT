@@ -1,9 +1,12 @@
-import { useNavigate, useParams } from "react-router-dom";
-// Redux
-import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
-import { FetchedFlowchartObject } from "@polylink/shared/types";
-import FlowchartLogOptions from "./FlowchartLogOptions";
 import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
+
+import { FetchedFlowchartObject } from "@polylink/shared/types";
+
+// My components
+import FlowchartLogOptions from "@/components/flowchart/flowchartLog/FlowchartLogOptions";
+// UI Components
 import { SidebarMenuButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
 
 type FlowchartLogProps = {

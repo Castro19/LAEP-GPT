@@ -1,14 +1,14 @@
 // FlowChatLayout.jsx
 import React from "react";
 import { SidebarFlowchart } from "@/components/flowchart/flowchartSidebar/SidebarFlowchart";
-import FlowChartHeader from "@/components/flowchart/flowchartHeader/FlowChartHeader";
 
 import DragDropContextWrapper from "../DragDropContxtWrapper";
-import FlowchartUnitCounts from "@/components/flowchart/flowchartFooter/FlowchartUnitCounts";
+import FlowchartUnitCounts from "@/components/flowchart/layout/FlowchartUnitCounts";
 import { useAppSelector } from "@/redux";
 import useMobile from "@/hooks/use-mobile";
+import FlowchartHeader from "@/components/flowchart/layout/FlowchartHeader";
 
-const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
+const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   const { flowchartData } = useAppSelector((state) => state.flowchart);
   const isMobile = useMobile();
   return (
@@ -19,7 +19,7 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
           isMobile ? "mr-8" : "mr-16"
         }`}
       >
-        <FlowChartHeader />
+        <FlowchartHeader />
         <div className="flex-1">{children}</div>
         {/* Sticky footer */}
         {flowchartData && <FlowchartUnitCounts />}
@@ -28,4 +28,4 @@ const FlowChartLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default FlowChartLayout;
+export default FlowchartLayout;

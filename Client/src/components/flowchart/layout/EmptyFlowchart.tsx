@@ -1,14 +1,28 @@
-import FlowChartOptions from "../register/SignInFlow/FlowChartOptions";
 import { useNavigate } from "react-router-dom";
-import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
+import {
+  flowchartActions,
+  useAppDispatch,
+  useAppSelector,
+  userActions,
+} from "@/redux";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
+
+import FlowchartOptions from "@/components/flowchart/createFlowchart/FlowChartOptions";
+import ProgressBar from "@/components/flowchart/createFlowchart/ProgressBar";
+
+// UI Components
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "../ui/button";
-import ProgressBar from "./ProgressBar";
+import { Button } from "@/components/ui/button";
+
+// Hooks
 import { useUserData } from "@/hooks/useUserData";
+
+// Env vars
 import { environment } from "@/helpers/getEnvironmentVars";
+
+// Types
 import { FlowchartData } from "@polylink/shared/types";
-import { updateUserData } from "@/redux/user/userSlice";
+
 const EmptyFlowchart = () => {
   const { selections } = useAppSelector((state) => state.flowSelection);
   const { userData, handleSave } = useUserData();
@@ -70,7 +84,7 @@ const EmptyFlowchart = () => {
       if (flowchart && flowchart.flowchartId) {
         if (flowchart.primaryOption) {
           dispatch(
-            updateUserData({
+            userActions.updateUserData({
               flowchartInformation: {
                 flowchartId: flowchart.flowchartId,
                 concentration: selections.concentration?.code ?? "",
@@ -118,7 +132,7 @@ const EmptyFlowchart = () => {
 
         {/* Selections */}
         <div className="w-full mt-4">
-          <FlowChartOptions type="flowchart" />
+          <FlowchartOptions type="flowchart" />
         </div>
 
         {/* Generate Flowchart Button */}

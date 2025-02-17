@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from "react";
+import { Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   Command,
   CommandInput,
@@ -8,15 +9,21 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "@/components/ui/command";
+
+// Hooks
 import { useUserData } from "@/hooks/useUserData";
+
+// Types
 import { Course, CourseSidebar } from "@polylink/shared/types";
-import { fetchCoursesAPI } from "../../helpers/fetchCourses";
-import { SidebarMenuSubItem } from "@/components/ui/sidebar";
-import { Draggable } from "@hello-pangea/dnd";
-import { SidebarMenuSub } from "@/components/ui/sidebar";
-import { Droppable } from "@hello-pangea/dnd";
-import SidebarCourse from "./SidebarCourse";
+
+// Fetch Helpers
+import { fetchCoursesAPI } from "@/components/flowchart/helpers/fetchCourses";
+import { SidebarMenuSubItem, SidebarMenuSub } from "@/components/ui/sidebar";
+import SidebarCourse from "@/components/flowchart/flowchartSidebar/courses/SidebarCourse";
+
+// Env vars
 import { environment } from "@/helpers/getEnvironmentVars";
+
 // Debounce function
 // eslint-disable-next-line no-unused-vars
 function debounce(func: (...args: any[]) => void, wait: number) {

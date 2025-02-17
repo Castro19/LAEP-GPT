@@ -1,17 +1,18 @@
 import { useEffect, useRef } from "react";
-import FlowChart from "@/components/flowchart/FlowChart";
+import Flowchart from "@/components/flowchart/currentFlowchart/FlowChart";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
-import FlowChartLayout from "@/components/layout/flowchart/FlowchartLayout";
+import FlowchartLayout from "@/components/layout/flowchart/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
-import EmptyFlowchart from "@/components/flowchart/EmptyFlowchart";
+import EmptyFlowchart from "@/components/flowchart/layout/EmptyFlowchart";
 import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
 import useMobile from "@/hooks/use-mobile";
+
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
   const isMobile = useMobile();
@@ -72,13 +73,13 @@ const FlowChatPage = () => {
       <div className="flex overflow-hidden no-scroll">
         {isMobile ? null : <OuterSidebar />}
         <SidebarProvider className="dark:bg-slate-900">
-          <FlowChartLayout>
+          <FlowchartLayout>
             {flowchartData ? (
-              <FlowChart flowchartData={flowchartData} />
+              <Flowchart flowchartData={flowchartData} />
             ) : (
               <EmptyFlowchart />
             )}
-          </FlowChartLayout>
+          </FlowchartLayout>
         </SidebarProvider>
       </div>
     </>
