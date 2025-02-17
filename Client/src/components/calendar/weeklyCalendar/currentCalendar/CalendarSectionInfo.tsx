@@ -1,9 +1,12 @@
 import { useAppSelector } from "@/redux";
-import { Button } from "../ui/button";
-import { SectionEnrollment, SectionSchedule } from "../section/sectionInfo";
+import { Button } from "../../../ui/button";
+import {
+  SectionEnrollment,
+  SectionSchedule,
+} from "../../../section/sectionInfo";
 import { transformToSectionDetail } from "@/helpers/transformSection";
-import BadgeSection from "../section/helpers/BadgeSection";
-import { formatPrerequisites } from "../section/helpers/formatPrereq";
+import BadgeSection from "../../../section/helpers/BadgeSection";
+import { formatPrerequisites } from "../../../section/helpers/formatPrereq";
 
 const instructionModeMap = {
   PA: "Synchronous",

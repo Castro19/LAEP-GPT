@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setPage, setCurrentCalendar } from "@/redux/calendar/calendarSlice";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 export const PaginationFooter: React.FC = () => {
   const dispatch = useAppDispatch();

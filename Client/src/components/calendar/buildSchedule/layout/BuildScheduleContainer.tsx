@@ -1,5 +1,5 @@
-import AnimateWrapper from "../section/AnimateWrapper";
-import { Card } from "../ui/card";
+import AnimateWrapper from "@/components/section/AnimateWrapper";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAppSelector } from "@/redux";
 

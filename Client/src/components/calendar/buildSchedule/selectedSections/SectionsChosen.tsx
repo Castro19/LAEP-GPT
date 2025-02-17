@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { Meeting, SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
-import { SectionSchedule } from "../section/sectionInfo";
+import { SectionSchedule } from "@/components/section/sectionInfo";
 import { ChevronDown } from "lucide-react";
 import {
   Collapsible,

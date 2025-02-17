@@ -21,7 +21,7 @@ import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 import ProfileEmptyState from "@/components/userProfile/ProfileEmptyState";
 import { environment } from "@/helpers/getEnvironmentVars";
-import WeeklyCalendar from "@/components/calendar/WeeklyCalendar";
+import WeeklyCalendar from "@/components/calendar/weeklyCalendar/currentCalendar/WeeklyCalendar";
 import { HiOutlineAcademicCap, HiOutlineCalendar } from "react-icons/hi2";
 
 export const labelStyle = "text-lg self-center";

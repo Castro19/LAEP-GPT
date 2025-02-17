@@ -4,8 +4,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { SelectedSection } from "@polylink/shared/types";
-import CalendarTimeSlots from "../section/CalendarTimeSlots";
-import { ScrollArea } from "../ui/scroll-area";
+import CalendarTimeSlots from "@/components/section/CalendarTimeSlots";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchSingleSection } from "@/redux/section/sectionSlice";
 import { useAppDispatch } from "@/redux";
 

@@ -1,9 +1,9 @@
 import React from "react";
 import { useAppSelector } from "@/redux";
-import { Star } from "../section/StarRating";
-import { Card } from "../ui/card";
+import { Star } from "../../../section/StarRating";
+import { Card } from "../../../ui/card";
 
-const ScheduleCard: React.FC = () => {
+const CalendarAverageRating: React.FC = () => {
   const { calendars, page } = useAppSelector((state) => state.calendar);
 
   if (calendars.length === 0) {
@@ -38,4 +38,4 @@ const ScheduleCard: React.FC = () => {
   );
 };
 
-export default ScheduleCard;
+export default CalendarAverageRating;

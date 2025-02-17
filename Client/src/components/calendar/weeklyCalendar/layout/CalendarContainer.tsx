@@ -1,5 +1,5 @@
-import CalendarInfo from "./CalendarInfo";
-import WeeklyCalendar from "./WeeklyCalendar";
+import CalendarAverageRating from "@/components/calendar/weeklyCalendar/currentCalendar/CalendarAverageRating";
+import WeeklyCalendar from "@/components/calendar/weeklyCalendar/currentCalendar/WeeklyCalendar";
 import { useAppSelector } from "@/redux";
 import useIsMobile from "@/hooks/use-mobile";
 const CalendarContainer = () => {
@@ -18,7 +18,7 @@ const CalendarContainer = () => {
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden no-scroll">
       <div className="overflow-auto no-scroll">
-        <CalendarInfo />
+        <CalendarAverageRating />
         <WeeklyCalendar
           sections={currentCalendar.sections}
           height={isMobile ? "70vh" : "80vh"}

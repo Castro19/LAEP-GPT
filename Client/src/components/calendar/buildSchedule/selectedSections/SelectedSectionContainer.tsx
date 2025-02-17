@@ -1,7 +1,7 @@
-import CollapsibleContentWrapper from "../section/filterForm/reusable/CollapsibleContentWrapper";
-import SavedSchedules from "./SavedSchedules";
+import CollapsibleContentWrapper from "@/components/section/filterForm/reusable/CollapsibleContentWrapper";
+import SavedSchedules from "@/components/calendar/buildSchedule/savedSchedules/SavedSchedules";
+import SectionsChosen from "@/components/calendar/buildSchedule/selectedSections/SectionsChosen";
 
-import SectionsChosen from "./SectionsChosen";
 import { FaBook, FaCalendar } from "react-icons/fa";
 const SelectedSectionContainer = () => {
   return (

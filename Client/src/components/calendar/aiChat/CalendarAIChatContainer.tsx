@@ -1,5 +1,5 @@
-import { NewChat } from "../chat";
-import { ChatContainer } from "../chat";
+import { NewChat } from "@/components/chat";
+import { ChatContainer } from "@/components/chat";
 
 const CalendarAIChatContainer = () => {
   return (
