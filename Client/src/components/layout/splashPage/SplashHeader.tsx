@@ -5,7 +5,9 @@ import { useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
+
 import SplashHeaderButton from "@/components/splashPage/SplashHeaderButton";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const SplashHeader = () => {
   const navigate = useNavigate();
@@ -68,6 +70,15 @@ const SplashHeader = () => {
                     <FaGithub className="size-5 text-white" />
                   </div>
                 </Button>
+                <Button
+                  onClick={() => handleLinkClick("/about")}
+                  className={mobileMenuStyles}
+                >
+                  <div className="flex items-center space-x-2">
+                    <p className="text-white font-bold">About</p>
+                    <IoIosInformationCircleOutline className="size-5 text-white" />
+                  </div>
+                </Button>
               </div>
             </div>
           </>
@@ -80,6 +91,18 @@ const SplashHeader = () => {
               className={menuStyles}
             >
               <FaGithub className="size-8 text-white" />
+            </Button>
+            <Button
+              onClick={() => handleLinkClick("/team")}
+              className={menuStyles}
+            >
+              <p className="text-white font-bold text-xl">Our Team</p>
+            </Button>
+            <Button
+              onClick={() => handleLinkClick("/about")}
+              className={menuStyles}
+            >
+              <p className="text-white font-bold text-xl">About</p>
             </Button>
           </div>
         )}
