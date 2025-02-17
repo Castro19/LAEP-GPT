@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../../ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 
 type ModeDropDownProps = {

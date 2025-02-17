@@ -2,7 +2,7 @@ import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { MessageObjType } from "@polylink/shared/types";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import { putUserReaction } from "@/redux/message/messageSlice";

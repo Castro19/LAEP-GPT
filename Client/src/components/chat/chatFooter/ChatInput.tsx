@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoSend, IoStopCircleOutline } from "react-icons/io5";
 
-import { FileUpload } from "../ui/file-upload";
+import { FileUpload } from "@/components/ui/file-upload";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
@@ -10,9 +10,9 @@ import { messageActions, logActions } from "@/redux";
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
-} from "./helpers/formatHelper";
+} from "@/components/chat/helpers/formatHelper";
 import { v4 as uuidv4 } from "uuid";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import createLogTitle from "@/redux/log/crudLog";
 import { environment } from "@/helpers/getEnvironmentVars";

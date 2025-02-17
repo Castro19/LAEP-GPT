@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { RiChatNewFill } from "react-icons/ri";
-import { onNewChat } from "./helpers/newChatHandler";
+import { onNewChat } from "../helpers/newChatHandler";
 // Redux:
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { Button } from "../ui/button";
-import { TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { Tooltip } from "../ui/tooltip";
-import { TooltipProvider } from "../ui/tooltip";
+import { Button } from "../../ui/button";
+import { TooltipContent, TooltipTrigger } from "../../ui/tooltip";
+import { Tooltip } from "../../ui/tooltip";
+import { TooltipProvider } from "../../ui/tooltip";
 const NewChat = () => {
   const navigate = useNavigate();
   // Redux:

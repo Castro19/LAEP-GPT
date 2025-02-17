@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { messageActions, useAppDispatch, useAppSelector } from "@/redux";
 
 const AssistantSuggestedMessages = ({

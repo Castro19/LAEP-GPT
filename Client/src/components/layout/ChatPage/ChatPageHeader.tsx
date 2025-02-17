@@ -1,6 +1,6 @@
-import ModeDropDown from "../../chat/ModeDropDown";
+import ModeDropDown from "../../chat/chatHeader/ModeDropDown";
 import { useSidebar } from "@/components/ui/sidebar";
-import NewChat from "../../chat/NewChat";
+import NewChat from "../../chat/chatHeader/NewChat";
 import { AssistantType } from "@polylink/shared/types";
 
 // Redux:
