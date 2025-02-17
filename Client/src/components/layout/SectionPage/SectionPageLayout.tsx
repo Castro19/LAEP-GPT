@@ -1,10 +1,13 @@
 import React from "react";
-import SectionPageHeader from "./SectionPageHeader";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
+// Redux
+import { panelLayoutActions, useAppDispatch } from "@/redux";
 
-import { handleDragEnd } from "@/redux/panelLayout/panelLayoutSlice";
-import { useAppDispatch } from "@/redux";
-import MobileHeader from "../MobileHeader";
+// My components
+import SectionPageHeader from "./SectionPageHeader";
+import MobileHeader from "@/components/layout/MobileHeader";
+
+// Hooks
 import useMobile from "@/hooks/use-mobile";
 
 type SectionPageLayoutProps = {
@@ -18,7 +21,7 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
   // assign a placeholder outerDirection value.
   const onDragEnd = (result: DropResult) => {
     dispatch(
-      handleDragEnd({
+      panelLayoutActions.handleDragEnd({
         sourceIndex: result.source.index,
         destinationIndex: result.destination?.index ?? -1,
       })

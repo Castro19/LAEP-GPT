@@ -1,12 +1,17 @@
-// FlowChatLayout.jsx
+// FlowchartLayout.tsx
 import React from "react";
-import { SidebarFlowchart } from "@/components/flowchart/flowchartSidebar/SidebarFlowchart";
 
-import DragDropContextWrapper from "../DragDropContxtWrapper";
+// My components
+import { SidebarFlowchart } from "@/components/flowchart/flowchartSidebar/SidebarFlowchart";
+import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
 import FlowchartUnitCounts from "@/components/flowchart/layout/FlowchartUnitCounts";
-import { useAppSelector } from "@/redux";
+import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
+
+// Hooks
 import useMobile from "@/hooks/use-mobile";
-import FlowchartHeader from "@/components/flowchart/layout/FlowchartHeader";
+
+// Redux
+import { useAppSelector } from "@/redux";
 
 const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   const { flowchartData } = useAppSelector((state) => state.flowchart);

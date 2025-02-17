@@ -1,11 +1,16 @@
 import { ReactNode } from "react";
-import ProfilePageHeader from "./ProfilePageHeader";
 
-import DragDropContextWrapper from "../DragDropContxtWrapper";
-import OuterSidebar from "../OuterIconSidebar";
+// My components
+import MobileHeader from "@/components/layout/MobileHeader";
+import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
+import ProfilePageHeader from "@/components/layout/ProfilePage/ProfilePageHeader";
+import OuterSidebar from "@/components/layout/OuterIconSidebar";
+
+// UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Hooks
 import useIsMobile from "@/hooks/use-mobile";
-import MobileHeader from "../MobileHeader";
 
 type ProfilePageLayoutProps = {
   children: ReactNode;

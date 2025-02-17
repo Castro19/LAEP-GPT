@@ -1,4 +1,4 @@
-// FlowChatLayout.jsx
+// ChatPageLayout.tsx
 import React from "react";
 import ChatPageHeader from "./ChatPageHeader";
 import { ChatPageSidebar } from "./ChatPageSidebar";

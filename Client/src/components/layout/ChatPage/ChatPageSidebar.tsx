@@ -1,8 +1,15 @@
 import { useEffect, useRef } from "react";
 import { logActions, useAppDispatch, useAppSelector } from "@/redux";
+
+// Hooks
 import useMobile from "@/hooks/use-mobile";
+
+// My components
 import ChatLogList from "@/components/chatLog/ChatLogList";
-import MobileHeader from "../MobileHeader";
+import MobileHeader from "@/components/layout/MobileHeader";
+
+// UI Components
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +18,6 @@ import {
   SidebarMenu,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ChatPageSidebar() {
   const isMobile = useMobile();

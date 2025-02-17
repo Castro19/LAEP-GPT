@@ -1,16 +1,19 @@
-import { Button } from "../ui/button";
+import { UserAvatar } from "@/components/userProfile/UserAvatar";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAppSelector } from "@/redux";
+
+// UI Components
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+// Icons
 import { IoMdChatboxes } from "react-icons/io";
 import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
-import { UserAvatar } from "../userProfile/UserAvatar";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "@/redux";
 
 function MobileHeader() {
   const { userData } = useAppSelector((state) => state.user);

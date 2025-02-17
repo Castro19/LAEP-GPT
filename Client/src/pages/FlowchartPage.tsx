@@ -5,7 +5,7 @@ import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
-import FlowchartLayout from "@/components/layout/flowchart/FlowchartLayout";
+import FlowchartLayout from "@/components/layout/FlowchartPage/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import EmptyFlowchart from "@/components/flowchart/layout/EmptyFlowchart";
