@@ -16,7 +16,7 @@ import { DeletableTags } from "@/components/section/reusable/filter/DeletableTag
 import ReusableDropdown from "@/components/ui/reusable-dropdown";
 import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
 import Searchbar from "@/components/section/reusable/filter/SearchBar";
-import { fetchCourses } from "@/components/flowchart/helpers/fetchCourses";
+import { fetchCourses } from "@/components/flowchart";
 import SUBJECTS from "@/components/section/courseFilters/helpers/api/subjects";
 import DoubleSliderFilter from "@/components/section/reusable/filter/DoubleSliderFilter";
 import { Switch } from "@/components/ui/switch";

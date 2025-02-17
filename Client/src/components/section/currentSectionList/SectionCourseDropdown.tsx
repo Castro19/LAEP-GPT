@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/command";
 import { useUserData } from "@/hooks/useUserData";
 import { Course, CourseSidebar } from "@polylink/shared/types";
-import { fetchCoursesAPI } from "@/components/flowchart/helpers/fetchCourses";
+import { fetchCoursesAPI } from "@/components/flowchart";
 
 import { environment } from "@/helpers/getEnvironmentVars";
 // Debounce function

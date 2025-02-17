@@ -10,7 +10,7 @@ import { messageActions, logActions } from "@/redux";
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
-} from "@/components/chat/helpers/formatHelper";
+} from "@/components/chat";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";

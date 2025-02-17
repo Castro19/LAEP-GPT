@@ -1,9 +1,11 @@
 import React from "react";
-import { CalendarClassSection } from "@/components/calendar/weeklyCalendar/currentCalendar/WeeklyCalendar";
+import {
+  CalendarClassSection,
+  CalendarSectionInfo,
+} from "@/components/calendar";
 import { Modal, ModalContent } from "@/components/ui/animated-modal";
 import { CustomModalBody } from "@/components/ui/animated-modal";
 import { CustomModalTriggerButton } from "@/components/ui/animated-modal";
-import CalendarSectionInfo from "@/components/calendar/weeklyCalendar/currentCalendar/CalendarSectionInfo";
 
 interface CalendarTimeSlotsProps {
   event: CalendarClassSection;

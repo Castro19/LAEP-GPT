@@ -2,9 +2,9 @@ import { useAppSelector } from "@/redux";
 import { CalendarListItem } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import CalendarOptions from "@/components/calendar/buildSchedule/savedSchedules/CalendarOptions";
-
+import { CalendarOptions } from "@/components/calendar";
 import { useState } from "react";
+
 const SavedSchedules = () => {
   const { calendarList, primaryCalendarId } = useAppSelector(
     (state) => state.calendar

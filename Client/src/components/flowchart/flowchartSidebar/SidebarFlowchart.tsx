@@ -9,12 +9,14 @@ import {
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 
 // My components
-import FlowchartLog from "@/components/flowchart/flowchartLog/FlowchartLog";
-import CourseSearchbar from "@/components/flowchart/flowchartSidebar/courses/CourseSearchbar";
-import CourseDropdown from "@/components/flowchart/flowchartSidebar/courses/CourseDropdown";
+import {
+  FlowchartLog,
+  FlowchartOptions,
+  CourseDropdown,
+  CourseSearchbar,
+} from "@/components/flowchart";
 import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import MobileHeader from "@/components/layout/MobileHeader";
-import FlowchartOptions from "@/components/flowchart/createFlowchart/FlowChartOptions";
 
 // Hooks
 import { useUserData } from "@/hooks/useUserData";

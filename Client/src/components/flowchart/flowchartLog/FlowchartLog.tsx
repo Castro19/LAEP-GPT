@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch, messageActions } from "@/redux";
 import { FetchedFlowchartObject } from "@polylink/shared/types";
 
 // My components
-import FlowchartLogOptions from "@/components/flowchart/flowchartLog/FlowchartLogOptions";
+import { FlowchartLogOptions } from "@/components/flowchart";
 // UI Components
 import { SidebarMenuButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
 

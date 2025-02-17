@@ -13,10 +13,10 @@ import {
 import {
   fetchCoursesBySubjectAPI,
   fetchSubjectNamesAPI,
-} from "@/components/flowchart/helpers/fetchCourses";
+} from "@/components/flowchart";
 
 // My components
-import SidebarCourse from "@/components/flowchart/flowchartSidebar/courses/SidebarCourse";
+import { SidebarCourse } from "@/components/flowchart";
 
 // Icons and UI Components
 import { ChevronDown } from "lucide-react";

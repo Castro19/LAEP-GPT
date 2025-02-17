@@ -13,7 +13,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AnimatedModalDemo } from "@/components/layout/CustomModal";
 import Interest from "@/components/userProfile/Interest";
-import Flowchart from "@/components/flowchart/currentFlowchart/FlowChart";
+import { Flowchart } from "@/components/flowchart";
 import { useEffect, useRef } from "react";
 import ProfileBio from "@/components/userProfile/ProfileBio";
 import AboutMe from "@/components/register/SignInFlow/AboutMe";
@@ -21,7 +21,7 @@ import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 import ProfileEmptyState from "@/components/userProfile/ProfileEmptyState";
 import { environment } from "@/helpers/getEnvironmentVars";
-import WeeklyCalendar from "@/components/calendar/weeklyCalendar/currentCalendar/WeeklyCalendar";
+import { WeeklyCalendar } from "@/components/calendar";
 import { HiOutlineAcademicCap, HiOutlineCalendar } from "react-icons/hi2";
 
 export const labelStyle = "text-lg self-center";

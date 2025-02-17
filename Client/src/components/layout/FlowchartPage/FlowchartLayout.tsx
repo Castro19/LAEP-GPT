@@ -2,9 +2,8 @@
 import React from "react";
 
 // My components
-import { SidebarFlowchart } from "@/components/flowchart/flowchartSidebar/SidebarFlowchart";
+import { SidebarFlowchart, FlowchartUnitCounts } from "@/components/flowchart";
 import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
-import FlowchartUnitCounts from "@/components/flowchart/layout/FlowchartUnitCounts";
 import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
 
 // Hooks

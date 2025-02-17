@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
 
 // My components
-import TermContainer from "@/components/flowchart/currentFlowchart/TermContainer";
-import defaultTermData from "@/components/flowchart/exampleData/flowPlaceholder";
+import { TermContainer, defaultTermData } from "@/components/flowchart";
+
 // UI Components
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";

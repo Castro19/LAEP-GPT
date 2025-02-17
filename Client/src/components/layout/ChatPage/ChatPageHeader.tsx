@@ -7,15 +7,13 @@ import {
 } from "@/redux";
 import { useNavigate } from "react-router-dom";
 // My components
-import ModeDropDown from "@/components/chat/chatHeader/ModeDropDown";
-import { useSidebar } from "@/components/ui/sidebar";
-import NewChat from "@/components/chat/chatHeader/NewChat";
-import { onNewChat } from "@/components/chat/helpers/newChatHandler";
+import { ModeDropDown, NewChat, onNewChat } from "@/components/chat";
 // Types
 import { AssistantType } from "@polylink/shared/types";
 // UI Components & Icons
 import { FiSidebar } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const ChatHeader = () => {
   // Redux:

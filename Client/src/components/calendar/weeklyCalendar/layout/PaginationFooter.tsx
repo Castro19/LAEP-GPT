@@ -1,9 +1,8 @@
-import React from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { setPage, setCurrentCalendar } from "@/redux/calendar/calendarSlice";
 import { Button } from "@/components/ui/button";
 
-export const PaginationFooter: React.FC = () => {
+const PaginationFooter = () => {
   const dispatch = useAppDispatch();
   const { page, totalPages, loading, calendars } = useAppSelector(
     (state) => state.calendar
@@ -66,3 +65,5 @@ export const PaginationFooter: React.FC = () => {
     </footer>
   );
 };
+
+export default PaginationFooter;

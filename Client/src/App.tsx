@@ -25,7 +25,7 @@ import NewUserRoute from "./components/security/NewUserRoute.tsx";
 import SplashPage from "./pages/SplashPage.tsx";
 import ProfilePageLayout from "./components/layout/ProfilePage/ProfilePageLayout.tsx";
 import FlowChatPage from "./pages/FlowchartPage.tsx";
-import Flowchart from "./components/flowchart/currentFlowchart/FlowChart.tsx";
+import { Flowchart } from "./components/flowchart";
 import SignUpForm from "./pages/register/SignUpForm.tsx";
 import LoginForm from "./pages/register/LoginForm.tsx";
 import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";

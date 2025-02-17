@@ -7,10 +7,8 @@ import {
 } from "@/redux";
 import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 
-import FlowchartOptions from "@/components/flowchart/createFlowchart/FlowChartOptions";
-import ProgressBar from "@/components/flowchart/createFlowchart/ProgressBar";
-
 // UI Components
+import { ProgressBar, FlowchartOptions } from "@/components/flowchart";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 

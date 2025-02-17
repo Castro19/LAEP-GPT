@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import ChatContainer from "@/components/chat/chatBody/ChatContainer";
+import { ChatContainer } from "@/components/chat";
 import {
   useAppSelector,
   useAppDispatch,

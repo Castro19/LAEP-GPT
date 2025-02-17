@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
-import Flowchart from "@/components/flowchart/currentFlowchart/FlowChart";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
+import { Flowchart, EmptyFlowchart } from "@/components/flowchart";
 import FlowchartLayout from "@/components/layout/FlowchartPage/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
-import EmptyFlowchart from "@/components/flowchart/layout/EmptyFlowchart";
 import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
 import useMobile from "@/hooks/use-mobile";

@@ -9,18 +9,14 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "@/components/ui/command";
-
 // Hooks
 import { useUserData } from "@/hooks/useUserData";
-
 // Types
 import { Course, CourseSidebar } from "@polylink/shared/types";
-
-// Fetch Helpers
-import { fetchCoursesAPI } from "@/components/flowchart/helpers/fetchCourses";
+// Course Components & Fetch Helpers
+import { SidebarCourse, fetchCoursesAPI } from "@/components/flowchart";
+// UI Components
 import { SidebarMenuSubItem, SidebarMenuSub } from "@/components/ui/sidebar";
-import SidebarCourse from "@/components/flowchart/flowchartSidebar/courses/SidebarCourse";
-
 // Env vars
 import { environment } from "@/helpers/getEnvironmentVars";
 

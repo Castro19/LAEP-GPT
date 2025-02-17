@@ -1,5 +1,4 @@
-import CalendarAverageRating from "@/components/calendar/weeklyCalendar/currentCalendar/CalendarAverageRating";
-import WeeklyCalendar from "@/components/calendar/weeklyCalendar/currentCalendar/WeeklyCalendar";
+import { CalendarAverageRating, WeeklyCalendar } from "@/components/calendar";
 import { useAppSelector } from "@/redux";
 import useIsMobile from "@/hooks/use-mobile";
 const CalendarContainer = () => {
