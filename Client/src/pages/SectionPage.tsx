@@ -8,10 +8,10 @@ import {
 } from "@/redux";
 import { useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
-import SectionFilters from "@/components/section/filterForm/SectionFilters";
-import SectionContainer from "@/components/section/SectionContainer";
+import SectionFilters from "@/components/section/courseFilters/SectionFilters";
+import SectionContainer from "@/components/section/layout/SectionContainer";
 import { ChatContainer } from "@/components/chat";
-import AnimateWrapper from "@/components/section/AnimateWrapper";
+import AnimateWrapper from "@/components/section/reusable/wrappers/AnimateWrapper";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import { useUserData } from "@/hooks/useUserData";
 import useMobile from "@/hooks/use-mobile";

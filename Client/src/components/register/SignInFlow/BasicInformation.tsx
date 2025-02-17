@@ -1,13 +1,21 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { useUserData } from "@/hooks/useUserData";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { RootState } from "@/redux/store";
-import ReusableDropdown from "@/components/ui/reusable-dropdown";
-import { MAJORS } from "@/calpolyData/majors";
-import { setSelection } from "@/redux/flowSelection/flowSelectionSlice";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+
+// Redux
+import { useAppDispatch, useAppSelector, flowSelectionActions } from "@/redux";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// Environment variables
+import { MAJORS } from "@/calpolyData/majors";
+
+// Components
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import ReusableDropdown from "@/components/ui/reusable-dropdown";
+
+// Icons & UI Components
 import {
   RiGraduationCapLine,
   RiCalendarLine,
@@ -32,7 +40,7 @@ const BasicInformation = ({
   showStartingYear?: boolean;
 }) => {
   const { handleChange, handleChangeFlowchartInformation } = useUserData();
-  const { userData } = useAppSelector((state: RootState) => state.user);
+  const { userData } = useAppSelector((state) => state.user);
   const { selections } = useAppSelector((state) => state.flowSelection);
 
   const dispatch = useAppDispatch();
@@ -43,7 +51,7 @@ const BasicInformation = ({
       value
     );
     dispatch(
-      setSelection({
+      flowSelectionActions.setSelection({
         key: key as "startingYear" | "catalog" | "major" | "concentration",
         value: value,
       })

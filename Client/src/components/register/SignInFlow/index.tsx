@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import TitleCard from "../TitleCard";
-import { useAppDispatch } from "@/redux";
-import { setIsNewUser } from "@/redux/auth/authSlice";
-import { useUserData } from "@/hooks/useUserData";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAppDispatch, authActions } from "@/redux";
+// Hooks
 import useIsMobile from "@/hooks/use-mobile";
+import { useUserData } from "@/hooks/useUserData";
+// Components
 import { Button } from "@/components/ui/button";
+import TitleCard from "@/components/register/TitleCard";
+// Icons & UI Components
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/components/ui/use-toast";
 
 const signInFlowSteps = [
@@ -82,7 +84,7 @@ const SignInFlow = () => {
       if (choice === "now") {
         navigate("/sign-in-flow/basic-information");
       } else {
-        dispatch(setIsNewUser(false));
+        dispatch(authActions.setIsNewUser(false));
         navigate("/chat");
       }
     } else if (currentStepIndex < signInFlowSteps.length - 1) {
@@ -107,7 +109,7 @@ const SignInFlow = () => {
       });
       return;
     }
-    dispatch(setIsNewUser(false));
+    dispatch(authActions.setIsNewUser(false));
     handleSave();
     navigate("/chat");
   };

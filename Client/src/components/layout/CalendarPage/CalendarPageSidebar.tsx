@@ -1,8 +1,4 @@
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 
 const CalendarPageSidebar = () => {
   return (

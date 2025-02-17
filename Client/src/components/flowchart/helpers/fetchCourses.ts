@@ -1,5 +1,4 @@
-// helpers/apiHelper.js
-
+// helpers/fetchCourses.ts
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { CourseObject } from "@polylink/shared/types";
 

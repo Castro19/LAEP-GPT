@@ -1,7 +1,4 @@
-import CalendarContainer from "@/components/calendar/CalendarContainer";
 import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
-import SelectedSectionContainer from "@/components/calendar/SelectedSectionContainer";
-import BuildScheduleContainer from "@/components/calendar/BuildScheduleContainer";
 import {
   assistantActions,
   calendarActions,
@@ -11,17 +8,24 @@ import {
 import { sectionSelectionActions } from "@/redux";
 import { useEffect, useRef } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { generateAllScheduleCombinations } from "@/components/calendar/helpers/buildSchedule";
-import EmptyCalendar from "@/components/calendar/EmptyCalendar";
+import { generateAllScheduleCombinations } from "@/components/calendar";
+import {
+  EmptyCalendar,
+  CalendarContainer,
+  BuildScheduleContainer,
+  SelectedSectionContainer,
+  BuildScheduleFooter,
+  CalendarAIChatContainer,
+  PaginationFooter,
+} from "@/components/calendar";
 import { Calendar } from "@polylink/shared/types";
 import { useNavigate, useParams } from "react-router-dom";
 import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { onNewChat } from "@/components/chat/helpers/newChatHandler";
-import CalendarAIChatContainer from "@/components/calendar/CalendarAIChatContainer";
+import { onNewChat } from "@/components/chat";
+
 import useMobile from "@/hooks/use-mobile";
-import { PaginationFooter } from "@/components/calendar/PaginationFooter";
-import BuildScheduleFooter from "@/components/calendar/BuildScheduleFooter";
+
 const CalendarPage = () => {
   const isMobile = useMobile();
   const { calendarId } = useParams();

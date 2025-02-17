@@ -1,7 +1,13 @@
-import { RadioSurvey } from "@/components/ui/radio-survey";
-import { useUserData } from "@/hooks/useUserData";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+
+// Components
+import { RadioSurvey } from "@/components/ui/radio-survey";
+import { Card } from "@/components/ui/card";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// Icons & UI Components
 import { RiUserHeartLine, RiGroupLine } from "react-icons/ri";
 
 const genderItems = [

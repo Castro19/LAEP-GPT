@@ -1,3 +1,43 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  flowchartActions,
+  flowSelectionActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
+import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
+
+// My components
+import {
+  FlowchartLog,
+  FlowchartOptions,
+  CourseDropdown,
+  CourseSearchbar,
+} from "@/components/flowchart";
+import { AnimatedModalDemo } from "@/components/layout/CustomModal";
+import MobileHeader from "@/components/layout/MobileHeader";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+import useMobile from "@/hooks/use-mobile";
+
+// Env vars
+import { environment } from "@/helpers/getEnvironmentVars";
+
+// Types
+import { FlowchartData } from "@polylink/shared/types";
+
+// UI Components
+import { ChevronDown } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/components/ui/use-toast";
+import { SidebarMenuSub } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -9,35 +49,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  flowchartActions,
-  flowSelectionActions,
-  useAppDispatch,
-  useAppSelector,
-} from "@/redux";
-import FlowchartLog from "../flowchartLog/FlowchartLog";
-import { setFlowchart, setLoading } from "@/redux/flowchart/flowchartSlice";
-import { useUserData } from "@/hooks/useUserData";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
-import CourseSearchbar from "./courses/CourseSearchbar";
-import { SidebarMenuSub } from "@/components/ui/sidebar";
-import { useNavigate } from "react-router-dom";
-import CourseDropdown from "./courses/CourseDropdown";
-import { useEffect } from "react";
-import { AnimatedModalDemo } from "@/components/layout/CustomModal";
-import FlowChartOptions from "@/components/register/SignInFlow/FlowChartOptions";
-import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "@/components/ui/use-toast";
-import { environment } from "@/helpers/getEnvironmentVars";
-import { FlowchartData } from "@polylink/shared/types";
-import useMobile from "@/hooks/use-mobile";
-import MobileHeader from "@/components/layout/MobileHeader";
+
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -50,7 +62,7 @@ export function SidebarFlowchart() {
 
   // Handler for selecting a log to view
   const handleSelectFlowchart = (flowchartId: string) => {
-    dispatch(setFlowchart(flowchartId));
+    dispatch(flowchartActions.setFlowchart(flowchartId));
   };
 
   const handleSaveFlowchart = async () => {
@@ -64,7 +76,12 @@ export function SidebarFlowchart() {
         true
       );
       await saveFlowchartToDB(flowchartData);
-      dispatch(setLoading({ type: "fetchFlowchartData", value: false }));
+      dispatch(
+        flowchartActions.setLoading({
+          type: "fetchFlowchartData",
+          value: false,
+        })
+      );
     } else {
       toast({
         title: "Please select a catalog and major",
@@ -180,7 +197,7 @@ export function SidebarFlowchart() {
                           title="Create Flowchart"
                           disableOutsideClick={true}
                         >
-                          <FlowChartOptions type="flowchart" />
+                          <FlowchartOptions type="flowchart" />
                         </AnimatedModalDemo>
                       </div>
                     </div>

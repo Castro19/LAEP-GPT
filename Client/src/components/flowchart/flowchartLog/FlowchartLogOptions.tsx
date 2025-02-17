@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
-import { Button } from "@/components/ui/button";
-import { useUserData } from "@/hooks/useUserData";
 import { useNavigate } from "react-router-dom";
+
+import { useUserData } from "@/hooks/useUserData";
 import { FetchedFlowchartObject, UserData } from "@polylink/shared/types";
+
+// env vars
+import { environment } from "@/helpers/getEnvironmentVars";
+
+// UI Components
 import { SlOptionsVertical } from "react-icons/sl";
 import {
   Popover,
@@ -11,10 +16,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
-import { environment } from "@/helpers/getEnvironmentVars";
 
 const FlowchartLogOptions = ({
   flowchart,
@@ -34,8 +39,10 @@ const FlowchartLogOptions = ({
   const { handleSave, handleChangeFlowchartInformation } = useUserData();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const flowchartList = useAppSelector((state) => state.flowchart.flowchartList);
-  
+  const flowchartList = useAppSelector(
+    (state) => state.flowchart.flowchartList
+  );
+
   // Popover state
   const [open, setOpen] = useState(false);
 
@@ -56,7 +63,7 @@ const FlowchartLogOptions = ({
           primaryOption: primaryOption ?? false,
         })
       ).unwrap();
-      
+
       // Navigate to the updated flowchart page
       navigate(`/flowchart/${flowchart.flowchartId}`);
 
@@ -107,7 +114,9 @@ const FlowchartLogOptions = ({
       // Step 5: Navigate to the next flowchart
       navigate(`/flowchart/${nextFlowchartId}`);
     } else {
-      dispatch(flowchartActions.setCurrentFlowchart({} as FetchedFlowchartObject));
+      dispatch(
+        flowchartActions.setCurrentFlowchart({} as FetchedFlowchartObject)
+      );
       handleChangeFlowchartInformation("flowchartId", "");
       // Step 5: Navigate to the flowchart list
       navigate("/flowchart");

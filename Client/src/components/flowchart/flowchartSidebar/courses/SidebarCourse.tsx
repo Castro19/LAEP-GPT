@@ -1,10 +1,12 @@
+import { Course } from "@polylink/shared/types";
+
+// UI Components
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Course } from "@polylink/shared/types";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SidebarCourse = ({ course }: { course: Course }) => {

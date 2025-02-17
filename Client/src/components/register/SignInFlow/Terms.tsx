@@ -1,12 +1,20 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { useUserData } from "@/hooks/useUserData";
-import { useAppSelector } from "@/redux";
-import terms from "@/calpolyData/terms";
+import { motion } from "framer-motion";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
+
+// Redux
+import { useAppSelector } from "@/redux";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// Environment variables
+import terms from "@/calpolyData/terms";
+
+// UI Components
 import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { RiFileTextLine } from "react-icons/ri";
 
 const md = new MarkdownIt();

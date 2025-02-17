@@ -1,8 +1,3 @@
-import ModeDropDown from "../../chat/ModeDropDown";
-import { useSidebar } from "@/components/ui/sidebar";
-import NewChat from "../../chat/NewChat";
-import { AssistantType } from "@polylink/shared/types";
-
 // Redux:
 import {
   useAppDispatch,
@@ -10,10 +5,15 @@ import {
   layoutActions,
   useAppSelector,
 } from "@/redux";
-import { onNewChat } from "@/components/chat/helpers/newChatHandler";
 import { useNavigate } from "react-router-dom";
+// My components
+import { ModeDropDown, NewChat, onNewChat } from "@/components/chat";
+// Types
+import { AssistantType } from "@polylink/shared/types";
+// UI Components & Icons
 import { FiSidebar } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const ChatHeader = () => {
   // Redux:

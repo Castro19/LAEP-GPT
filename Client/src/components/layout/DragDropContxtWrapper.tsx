@@ -1,11 +1,18 @@
 // FlowChatLayout.jsx
 import React from "react";
+import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { Course, CourseObject, Term } from "@polylink/shared/types";
-import { FlowchartData } from "@polylink/shared/types";
-import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
 import cloneDeep from "lodash-es/cloneDeep";
+
+// Types
+import {
+  Course,
+  CourseObject,
+  Term,
+  FlowchartData,
+} from "@polylink/shared/types";
+
+// Helper functions
 import { toast } from "@/components/ui/use-toast";
 import { serverUrl } from "@/helpers/getEnvironmentVars";
 
@@ -102,7 +109,12 @@ const DragDropContextWrapper = ({
 
       recalculateUnits(sourceTerm);
       recalculateUnits(destTerm);
-      dispatch(setFlowchartData({ ...flowchartData, termData: newTermData }));
+      dispatch(
+        flowchartActions.setFlowchartData({
+          ...flowchartData,
+          termData: newTermData,
+        })
+      );
     }
   };
 
@@ -142,7 +154,12 @@ const DragDropContextWrapper = ({
     if (term) {
       term.courses.splice(index, 0, course);
       recalculateUnits(term);
-      dispatch(setFlowchartData({ ...flowchartData, termData: newTermData }));
+      dispatch(
+        flowchartActions.setFlowchartData({
+          ...flowchartData,
+          termData: newTermData,
+        })
+      );
     }
   };
 

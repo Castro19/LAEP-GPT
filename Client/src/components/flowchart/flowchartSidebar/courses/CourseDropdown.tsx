@@ -1,11 +1,30 @@
-import { Draggable } from "@hello-pangea/dnd";
+import React, { useState, useEffect } from "react";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
+
+// Types
+import {
+  Course,
+  CourseSidebar,
+  CourseSubject,
+  SidebarInfo,
+} from "@polylink/shared/types";
+
+// Fetch Helpers
+import {
+  fetchCoursesBySubjectAPI,
+  fetchSubjectNamesAPI,
+} from "@/components/flowchart";
+
+// My components
+import { SidebarCourse } from "@/components/flowchart";
+
+// Icons and UI Components
 import { ChevronDown } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
 import {
   SidebarGroupLabel,
   SidebarMenu,
@@ -13,21 +32,8 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
+  SidebarGroup,
 } from "@/components/ui/sidebar";
-import { SidebarGroup } from "@/components/ui/sidebar";
-import React, { useState, useEffect } from "react";
-import { Droppable } from "@hello-pangea/dnd";
-import {
-  Course,
-  CourseSidebar,
-  CourseSubject,
-  SidebarInfo,
-} from "@polylink/shared/types";
-import {
-  fetchCoursesBySubjectAPI,
-  fetchSubjectNamesAPI,
-} from "../../helpers/fetchCourses";
-import SidebarCourse from "./SidebarCourse";
 
 const CourseDropdown = React.memo(() => {
   const [allClasses, setAllClasses] = useState<SidebarInfo>({});
