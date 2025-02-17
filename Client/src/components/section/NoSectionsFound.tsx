@@ -51,7 +51,7 @@ function valueToLabel(value: string): string {
 const formatFilterValue = (key: string, value: any): string => {
   switch (key) {
     case "days":
-      return value.join(", ");
+      return Array.isArray(value) ? value.join(", ") : String(value);
     case "timeRange": {
       const [startTime, endTime] = value.split("-");
       return `${valueToLabel(startTime)} - ${valueToLabel(endTime)}`;
@@ -62,7 +62,7 @@ const formatFilterValue = (key: string, value: any): string => {
     case "includeUnratedInstructors":
       return value ? "true" : "false";
     case "courseAttributes":
-      return value.join(", ");
+      return Array.isArray(value) ? value.join(", ") : String(value);
     case "instructionMode":
       return INSTRUCTION_MODE_MAP[value] || value;
     case "minInstructorRating":
