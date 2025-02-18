@@ -86,6 +86,8 @@ const ChatPage = () => {
             console.error("Error fetching log: ", error);
           }
         }
+      } else {
+        dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
       }
     };
     fetchLog();
@@ -105,6 +107,7 @@ const ChatPage = () => {
     if (primaryCalendarId) {
       dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryCalendarId, dispatch]);
 
   if (environment === "dev") {
