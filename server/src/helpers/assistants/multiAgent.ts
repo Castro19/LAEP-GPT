@@ -26,7 +26,7 @@ type MultiAgentRequest = {
 };
 
 export type ProfessorRatingsObject = {
-  type: "courses" | "professors" | "both" | "fallback";
+  type: "courses" | "professor" | "both" | "fallback";
   courses?: string[];
   professors?: string[];
   reason?: string;
