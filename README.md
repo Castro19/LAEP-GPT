@@ -1,10 +1,13 @@
-# Project Name
+# [PolyLink](https://polylink.dev)
 
 ## Description
 
-This project is an AI-powered web application designed to assist users with academic and student life-related queries. It provides an intelligent assistant that can answer questions about courses, professors, clubs, and other student resources. Additionally, it features tools for academic planning, schedule building, and personalized recommendations using AI and machine learning.
+This project is an AI-powered web app designed to help college students make the most out of their education.It is **built by students for students**.
 
-The system utilizes a **MERN (MongoDB, Express.js, React, Node.js) stack**, integrates **OpenAI's API** for natural language processing, and leverages the **Qdrant vector database** for efficient semantic search and retrieval.
+We are using the **MERN (MongoDB, Express.js, React, Node.js) stack**, alongside **OpenAI's API** for natural language processing, and leveraing the **Qdrant vector database** for efficient semantic search and retrieval.
+
+- Promo Video: https://youtu.be/DdeKuY-yxvk?si=Niz1s6W2Il6IfK6b
+- Youtube Demo: https://www.youtube.com/watch?v=HlPKFzQB5l4&ab_channel=CristianCastroOliva
 
 ## Features
 
