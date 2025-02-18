@@ -59,6 +59,7 @@ const courseSearchText = `---
 
 🔍 **Example Use Case:** _"Find me a Data Structures class with a professors that have a high rating"_ → The app suggests sections with **top-rated instructors**.
 
+- **Note**: Big shoutout to [PolyFlowBuilder](https://polyflowbuilder.io/) for the inspiration for this feature and I am also thankful for the data they provided from their [github](https://github.com/polyflowbuilder/polyflowbuilder)! 
 `;
 const scheduleBuilderText = `---
 ### **4. Schedule Builder – Instant Class Scheduling**
@@ -90,7 +91,10 @@ const scheduleInsightsText = `---
 - **Reduces decision fatigue** by highlighting the **best schedule option** based on AI-driven analysis.
 
 🔍 **Example Use Case:** _"Summarize my current schedule and give me some insights on how to improve it"_ → The AI assistant **summarizes and recommends how to improve your schedule**.
+
+Another big shoutout to [PolyRatings](https://polyratings.dev/) as we are using the data from their website to provide the best possible professor ratings to the users.
 `;
+
 const conclusionText = `---
 ## **Why Choose PolyLink?**
 
