@@ -301,7 +301,6 @@ const validateQueryRequest = (
 };
 router.post(
   "/query",
-  messageRateLimiter,
   validateQueryRequest,
   asyncHandler(async (req: Request, res: Response) => {
     try {

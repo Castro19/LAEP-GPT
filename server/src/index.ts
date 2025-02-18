@@ -97,7 +97,7 @@ export const openai = new OpenAI({
 export const ASST_MAP = {
   professor_ratings_query: process.env.FORMAT_ASST_ID,
   schedule_builder_query: process.env.SCHEDULE_BUILDER_QUERY_ASST_ID,
-  section_query: process.env.SECTION_QUERY_ASST_ID,
+  section_query: process.env.QUERY_ASST_ID,
 };
 
 export const qdrant = {
