@@ -108,7 +108,6 @@ const ChatPage = () => {
     if (primaryCalendarId) {
       dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryCalendarId, dispatch]);
 
   if (environment === "dev") {
