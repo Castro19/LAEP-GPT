@@ -86,9 +86,12 @@ const ChatPage = () => {
             console.error("Error fetching log: ", error);
           }
         }
+      } else {
+        dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
       }
     };
     fetchLog();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, dispatch]);
 
   useEffect(() => {
