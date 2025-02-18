@@ -20,7 +20,7 @@ The system utilizes a **MERN (MongoDB, Express.js, React, Node.js) stack**, inte
 
 Using Polyratings, get instant AI summaries of professor ratings and find the best professors for your classes!
 
-![Professor Ratings AI](https://giphy.com/embed/SFSTMMjn0Mx7NCuzWu)
+![Professor Ratings AI](https://giphy.com/gifs/SFSTMMjn0Mx7NCuzWu)
 
 ### Course AI Query
 
