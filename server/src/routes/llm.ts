@@ -158,6 +158,7 @@ router.post(
             userMessageId,
             runningStreams,
             chatId,
+            sections: JSON.parse(sections as string), // convert str to json object
           });
         }
       } catch (error) {
