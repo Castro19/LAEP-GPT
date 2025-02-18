@@ -148,6 +148,9 @@ router.post(
             runningStreams,
           });
         } else {
+          if (environment === "dev") {
+            console.log("MODEL: ", model);
+          }
           await handleMultiAgentModel({
             model,
             message,
@@ -155,7 +158,6 @@ router.post(
             userMessageId,
             runningStreams,
             chatId,
-            sections: JSON.parse(sections as string), // convert str to json object
           });
         }
       } catch (error) {

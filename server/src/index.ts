@@ -95,21 +95,15 @@ export const openai = new OpenAI({
 });
 
 export const ASST_MAP = {
-  professor_reviews: process.env.PROFESSOR_REVIEWS_ASST_ID,
-  fallback: process.env.FALLBACK_ASST_ID,
-  course_helper: process.env.COURSE_QUERY_ASST_ID,
+  professor_ratings_query: process.env.FORMAT_ASST_ID,
   schedule_builder_query: process.env.SCHEDULE_BUILDER_QUERY_ASST_ID,
+  section_query: process.env.SECTION_QUERY_ASST_ID,
 };
 
 export const qdrant = {
   qdrantUrl: process.env.QDRANT_URL,
   qdrantApiKey: process.env.QDRANT_API_KEY,
 };
-
-export const fallbackAssistantId = process.env.FALLBACK_ASST_ID;
-export const professorReviewsAssistantId =
-  process.env.PROFESSOR_REVIEWS_ASST_ID;
-export const queryAssistantId = process.env.QUERY_ASST_ID;
 
 export const environment = process.env.ENVIRONMENT;
 // Connect to the database and start the server

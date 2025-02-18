@@ -13,6 +13,7 @@ import {
   ScheduleBuilderObject,
 } from "@polylink/shared/types";
 import scheduleBuilder from "./multiAgentHelpers/scheduleBuilder";
+import professorRatings from "./multiAgentHelpers/professorRatings";
 
 type MultiAgentRequest = {
   model: { id: string; title: string };
@@ -22,6 +23,13 @@ type MultiAgentRequest = {
   runningStreams: RunningStreamData;
   chatId: string;
   sections?: ScheduleBuilderSection[];
+};
+
+export type ProfessorRatingsObject = {
+  type: "courses" | "professors" | "both" | "fallback";
+  courses?: string[];
+  professors?: string[];
+  reason?: string;
 };
 
 async function handleMultiAgentModel({
@@ -40,7 +48,7 @@ async function handleMultiAgentModel({
     if (model.title === "Schedule Builder") {
       helperAssistantId = ASST_MAP["schedule_builder_query"] as string;
     } else {
-      helperAssistantId = ASST_MAP["course_helper"] as string;
+      helperAssistantId = ASST_MAP["professor_ratings_query"] as string;
     }
     if (!helperAssistantId) {
       throw new Error("Helper assistant ID not found");
@@ -52,6 +60,7 @@ async function handleMultiAgentModel({
       helperAssistantId
     );
 
+    // Add threadId to runningStreams (this is to allow the user to cancel the run)
     runningStreams[userMessageId].threadId = threadId;
 
     // Add user's message to helper thread
@@ -80,7 +89,8 @@ async function handleMultiAgentModel({
     }
     runningStreams[userMessageId].threadId = threadId;
     // Parse the helper assistant's response (assumes it's a JSON string)
-    let jsonObject: ScheduleBuilderObject | null = null;
+    let jsonObject: ScheduleBuilderObject | ProfessorRatingsObject[] | null =
+      null;
 
     try {
       const completedRun = await openai.beta.threads.runs.retrieve(
@@ -93,10 +103,10 @@ async function handleMultiAgentModel({
         );
       }
 
-      if (helperResponse) {
-        jsonObject = JSON.parse(helperResponse);
-      }
       if (model.title === "Schedule Builder") {
+        if (helperResponse) {
+          jsonObject = JSON.parse(helperResponse) as ScheduleBuilderObject;
+        }
         if (!jsonObject) {
           throw new Error("JSON object not found");
         }
@@ -118,10 +128,22 @@ async function handleMultiAgentModel({
         }));
 
         messageToAdd = await scheduleBuilder(messageToAdd, jsonObject);
+      } else if (model.title === "Professor Ratings") {
+        if (helperResponse) {
+          jsonObject = JSON.parse(helperResponse) as ProfessorRatingsObject[];
+        }
+        if (!jsonObject) {
+          throw new Error("JSON object not found");
+        }
+        messageToAdd = await professorRatings(messageToAdd, jsonObject);
       } else {
         if (environment === "dev") {
           console.log("Do other multi agent model here");
         }
+      }
+
+      if (environment === "dev") {
+        console.log("Message to add: ", messageToAdd);
       }
       // Add user's modified message to the main thread
       await addMessageToThread(
