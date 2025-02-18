@@ -88,4 +88,5 @@ npm run build
 
 Special thanks to our advisor **Franz Kurfess** for guidance throughout the development process. Additionally, we appreciate the contributions and data from [Polyratings](https://polyratings.dev/) and [PolyFlowBuilder](https://polyflowbuilder.io/), which helped enhance our implementation.
 
-For any inquiries or contributions, please E-mail me at please refer to the [CONTRIBUTING.md] file or open an issue on GitHub.
+For any inquiries or contributions, please E-mail me at `help@polylink.dev`
+I will be writing a [CONTRIBUTING.md](CONTRIBUTING.md) file soon.
