@@ -1,7 +1,9 @@
+import { environment } from "../../..";
 import {
   getProfessorRatings,
   getProfessorsByCourseIds,
 } from "../../../db/models/professorRatings/professorRatingServices";
+import { searchProfessors } from "../../qdrant/qdrantQuery";
 import { ProfessorRatingsObject } from "../multiAgent";
 
 /**
@@ -25,7 +27,7 @@ async function professorRatings(
   for (const object of jsonObject) {
     if (object.type === "courses" && object.courses) {
       messageToAdd += await fetchCourses(object.courses, messageToAdd);
-    } else if (object.type === "professors" && object.professors) {
+    } else if (object.type === "professor" && object.professors) {
       messageToAdd += await fetchProfessors(
         object.professors,
         undefined,
@@ -45,16 +47,30 @@ async function professorRatings(
 }
 
 async function fetchProfessors(
-  professorIds: string[],
+  professors: string[],
   courseIds: string[] | undefined,
   messageToAdd: string
 ): Promise<string> {
   // Fetch professors from MongoDB "professors"
   try {
+    const professorIds: string[] = [];
+    try {
+      for (const professor of professors) {
+        const professorId = await searchProfessors(professor, 1);
+        professorIds.push(professorId);
+      }
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error fetching professors: ", error);
+      }
+      return messageToAdd + `\nError fetching professors: ${error}`;
+    }
     const professorRatings = await getProfessorRatings(professorIds, courseIds);
     messageToAdd += `\nProfessor Ratings: ${JSON.stringify(professorRatings)}`;
   } catch (error) {
-    console.error("Error fetching professors: ", error);
+    if (environment === "dev") {
+      console.error("Error fetching professors: ", error);
+    }
     return messageToAdd + `\nError fetching professors: ${error}`;
   }
   return messageToAdd;
@@ -69,7 +85,9 @@ async function fetchCourses(
     const professorRatings = await getProfessorsByCourseIds(courseArray);
     messageToAdd += `\nProfessor Ratings: ${JSON.stringify(professorRatings)}`;
   } catch (error) {
-    console.error("Error fetching courses: ", error);
+    if (environment === "dev") {
+      console.error("Error fetching courses: ", error);
+    }
     return messageToAdd + `\nError fetching courses: ${error}`;
   }
   return messageToAdd;
