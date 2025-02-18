@@ -48,7 +48,7 @@ const SplashPage = () => {
           <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
             <iframe
               className="w-full aspect-video max-w-[800px] rounded-lg shadow-lg"
-              src="https://www.youtube.com/embed/kjRg9rggu_M?si=JLMqb9UMHdnn1GIL"
+              src="https://www.youtube.com/embed/HlPKFzQB5l4?si=2CXaLndC7wTLlHaQ"
               title="YouTube demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
