@@ -1,4 +1,4 @@
-import { environment, openai, queryAssistantId } from "../../index";
+import { environment, openai, ASST_MAP } from "../../index";
 import { z } from "zod";
 
 // Security-focused schema configuration
@@ -48,7 +48,7 @@ export type QueryResponse = {
 export const queryAgent = async (text: string): Promise<QueryResponse> => {
   try {
     const run = await openai.beta.threads.createAndRun({
-      assistant_id: queryAssistantId as string,
+      assistant_id: ASST_MAP["section_query"] as string,
       thread: { messages: [{ role: "user", content: text }] },
     });
 
