@@ -1,4 +1,4 @@
-const aboutText = `# **About PolyLink – Your AI-Powered College Companion**
+const introText = `# **About PolyLink – Your AI-Powered College Companion**
 
 ## **What is PolyLink?**
 
@@ -13,8 +13,8 @@ At PolyLink, our mission is simple:
 🚀 **Empower students with AI-driven insights and tools** to make informed decisions about their education, extracurriculars, and campus experience.
 
 We believe that **access to the right information at the right time** can transform a student’s academic journey—leading to better schedules, smarter course selections, and meaningful connections.
-
----
+`;
+const aboutText = `---
 
 ## **Key Features & How They Solve Student Problems**
 
@@ -41,6 +41,8 @@ const flowchartText = `---
 
 - **Visual roadmap** of required courses, ensuring prerequisites are met.
 
+- **Note**: Big shoutout to [PolyFlowBuilder](https://polyflowbuilder.io/) for the inspiration for this feature and I am also thankful for the data they provided from their [github](https://github.com/polyflowbuilder/polyflowbuilder)! 
+
 `;
 const courseSearchText = `---
 ### **3. Spring 2025 Course Search**
@@ -58,8 +60,6 @@ const courseSearchText = `---
 - Find the **best professors** and **maximize learning potential**.
 
 🔍 **Example Use Case:** _"Find me a Data Structures class with a professors that have a high rating"_ → The app suggests sections with **top-rated instructors**.
-
-- **Note**: Big shoutout to [PolyFlowBuilder](https://polyflowbuilder.io/) for the inspiration for this feature and I am also thankful for the data they provided from their [github](https://github.com/polyflowbuilder/polyflowbuilder)! 
 `;
 const scheduleBuilderText = `---
 ### **4. Schedule Builder – Instant Class Scheduling**
@@ -106,6 +106,7 @@ const conclusionText = `---
 `;
 
 export default {
+  introText,
   aboutText,
   flowchartText,
   courseSearchText,

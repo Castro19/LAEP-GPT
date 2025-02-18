@@ -8,6 +8,7 @@ const md = new MarkdownIt();
 const AboutSection = () => {
   // Create an array of section data
   const sections = [
+    { text: text.introText, videoId: "HlPKFzQB5l4?si=2CXaLndC7wTLlHaQ" },
     { text: text.aboutText, videoId: "zMBJrFnoJRw?si=hjCTai-WQtSg0Go5" },
     { text: text.flowchartText, videoId: "pUXRDrsNco8?si=wPSLEFeZd_x1xH8X" },
     { text: text.courseSearchText, videoId: "MYXE1Yx4MJU?si=6CQh8Etid8jiPIQD" },

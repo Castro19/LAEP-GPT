@@ -1,109 +1,95 @@
-# [LAEP LLM](https://www.youtube.com/watch?v=Dd83CYNRw4k&ab_channel=CristianCastroOliva)
+# [PolyLink](https://polylink.dev)
 
 ## Description
 
-This project is a part of California Polytechnic State University (Cal Poly) in San Luis Obispo under the supervision of Prof. Franz J. Kurfess. It is an open-source repository intended to aid students.
+This project is an AI-powered web app designed to help college students make the most out of their education.It is **built by students for students**.
 
-The motivation behind this project is to allow students to easily be matched with a senior project advisor based on their interests, availability, and other insights.
+We are using the **MERN (MongoDB, Express.js, React, Node.js) stack**, alongside **OpenAI's API** for natural language processing, and leveraing the **Qdrant vector database** for efficient semantic search and retrieval.
 
-This type of idea can be easily applied to other matching assistants such as
+- Promo Video: https://youtu.be/DdeKuY-yxvk?si=Niz1s6W2Il6IfK6b
+- Youtube Demo: https://www.youtube.com/watch?v=HlPKFzQB5l4&ab_channel=CristianCastroOliva
 
-1. **Student → Advisor:** Student will be matched with a CS faculty member based on their interests and availability
-2. **Student → Classes:** Students will be matched with a list of classes to take and what order based on their prerequisites.
-3. **Student → Clubs:** Students will be matched to clubs and events that are upcoming.
-4. **Student → Student:** Once we have multiple users on the app, we can start matching students with other students looking for a mentor, study partner, etc.
+## Features
 
-![](https://live.staticflickr.com/65535/54131410331_69502daa67_c.jpg)
+- **AI Assistant** – Provides real-time responses to academic and student-related inquiries.
+- **Flowchart Creation** – Generates a multi-year academic plan based on major and concentration.
+- **Course Search & Schedule Builder** – Helps users find and organize classes based on availability, professor ratings, and personal preferences.
+- **Student Matching** – Assists in forming study groups, research teams, and roommate connections.
+- **Data-Driven Recommendations** – Uses AI to suggest relevant resources and optimize student experience.
 
-## Table of Contents
+## Demonstrations
 
-- [LAEP LLM](#laep-llm)
-  - [Description](#description)
-  - [Table of Contents](#table-of-contents)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [License](#license)
+### Professor Ratings AI
 
-## Requirements
+Using Polyratings, get instant AI summaries of professor ratings and find the best professors for your classes!
 
-- Node JS
-- npm
-- [Create Open AI account](https://platform.openai.com/signup/)
-- [MongoDB Atlas Account](https://www.mongodb.com/cloud/atlas)
-- [Firebase Account](https://firebase.google.com/)
+![Professor Ratings AI](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTV3NGd2NzR4bHphYWQ1MHM4emMyb3dsaHV2dTJ2bXN1cXIwanV2biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SFSTMMjn0Mx7NCuzWu/giphy.gif)
+
+### Course AI Query
+
+Search naturally for classes and we will create a MongoDB query that finds the sections that fit your query.
+
+![Schedule Builder AI](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDRveWdxZDg1anNheTJ5ejk3aWZpZzFscmIwZjY0ZnRnYWdsaGc3diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GevViQDkax5TKTgRUc/giphy.gif)
+
+### Build Schedules
+
+Add Spring 2025 sections and build all combinations of your weekly calendar the way you want it.
+
+![Build Schedules](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWRvYmdjOGdpanF2cXE0NnMyOXB1OHZ0eXNmY3BkYXA4cTExMmRjbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PqUQ3Qbfeb6ZRjU4zn/giphy.gif)
+
+### Schedule Builder AI
+
+Get instant AI insights on your current weekly calendar and ways to improve it by analyzing workload, professor ratings, time conflicts, and more.
+
+![Schedule Builder AI](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTFlOTY5ZTA3MmJsY29uaThocmVkdHV2NGZpNmxwYzNrZmw2cjl4eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1oDkNJu0oehVTAubbo/giphy.gif)
+
+## Tech Stack
+
+- **Frontend:** React, Tailwind CSS
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **AI Integration:** OpenAI API, Qdrant for vector search
+- **Hosting & Deployment:** TBD (Vercel, AWS, or other services)
 
 ## Installation
 
-1. **Clone the repository**
+1. Clone the repository:
 
-   ```
+   ```sh
    git clone https://github.com/Castro19/LAEP-GPT.git
+   cd LAEP-GPT
    ```
 
-2. **Install client & server dependencies**
-   In the root directory `LAEP-GPT` enter the following:
-
-   ```
+2. Install Client and Server dependencies:
+   ```sh
    npm run install:all
    ```
-
-3. **Install Dependencies for root directory**
-   In the root directory `LAEP-GPT` enter the following:
-
-   ```
+3. Install Root dependencies:
+   ```sh
    npm install
    ```
+4. Set up environment variables (e.g., API keys for OpenAI and Qdrant) in a `.env` file.
 
-4. **Configure Firebase:**
+   - Will release with an instruction list of how to do this seperately. However, if you are onboading, please message me for the .env file and you will be sent your own personal API keys.
 
-- Go to your [firebase console](https://console.firebase.google.com/u/0/)
+## Development
 
-  - Click `add project`
-  - Follow their guidelines
+1. Start the development server:
 
-- Once you create your project, a config file should be ready for you.
+```sh
+npm run dev
+```
 
-- **Client Firebase Setup:**
+**Notes**: If the types are not working, build the shared folder
 
-  - In your newly created Firebase project, click on the left sidebar for the option of `Project Settings`.
-  - Scroll down until you are at the `Your Apps section` where you will `Add app`
-  - Select the web with </> symbols. Click
-  - Here you should get the `SDK setup and configuration`
-  - Copy your firebaseConfig options.
+```sh
+cd shared
+npm run build
+```
 
-- Now that you have your firebase configuration file, go into the `client/sample.env` and update the changes here.
+## Acknowledgments
 
-- Finally rename `sample.env` to be `.env`
+Special thanks to our advisor **Franz Kurfess** for guidance throughout the development process. Additionally, we appreciate the contributions and data from [Polyratings](https://polyratings.dev/) and [PolyFlowBuilder](https://polyflowbuilder.io/), which helped enhance our implementation.
 
-- **Server Firebase Setup:**
-
-  - In project settings, click on the `Service Accounts` tab.
-  - Click `Generate new private key`
-  - A JSON file will be downloaded.
-  - Move this JSON file into the path `server/helpers/firebase`
-  - Rename the file to be `laep-firebase.json`
-
-5. **Get your Open AI API key from [Open AI API Key](https://platform.openai.com/account/api-keys)**:
-
-   - Go into the `server/sample.env` file and set the variable `OPENAI_API_KEY` to the OpenAI key.
-
-6. **Configure MongoDB Compass:**
-
-- Setup MongoDB on MongoDB Atlas
-
-- Go into the `server/sample.env` file and set the variable `ATLAS_URI` to the URI for your MongoDB database.
-
-- Finally rename `sample.env` to be `.env`
-
-## Usage
-
-1. **Start the client and server concurrently**
-
-   ```
-   npm start
-   ```
-
-## License
-
-To be updated.
+For any inquiries or contributions, please E-mail me at `help@polylink.dev`
+I will be writing a [CONTRIBUTING.md](CONTRIBUTING.md) file soon.
