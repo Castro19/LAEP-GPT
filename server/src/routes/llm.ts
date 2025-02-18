@@ -109,17 +109,55 @@ router.post(
     ) {
       if (environment === "dev") {
         console.log("Sections: ", sections);
+        console.log("Type of sections: ", typeof sections);
       }
       try {
-        await handleMultiAgentModel({
-          model,
-          message,
-          res,
-          userMessageId,
-          runningStreams,
-          chatId,
-          sections: JSON.parse(sections as string), // convert str to json object
-        });
+        if (
+          message ===
+          "[CLICK ME TO START] How do I use the Schedule Builder Assistant?"
+        ) {
+          await handleSingleAgentModel({
+            model: {
+              id: "67b42fd0c4f92c0ed9ea73ab",
+              title: "Help Assistant",
+            },
+            chatId,
+            userFile,
+            message,
+            res,
+            userId,
+            userMessageId,
+            runningStreams,
+          });
+        } else if (
+          model.title === "Schedule Builder" &&
+          sections &&
+          JSON.parse(sections).length === 0
+        ) {
+          await handleSingleAgentModel({
+            model: {
+              id: "67b42fd0c4f92c0ed9ea73ab",
+              title: "Help Assistant",
+            },
+            chatId,
+            userFile,
+            message: "No Sections Found",
+            res,
+            userId,
+            userMessageId,
+            runningStreams,
+          });
+        } else {
+          await handleMultiAgentModel({
+            model,
+            message,
+            res,
+            userMessageId,
+            runningStreams,
+            chatId,
+            sections: JSON.parse(sections as string), // convert str to json object
+          });
+        }
       } catch (error) {
         if (environment === "dev") {
           console.error("Error in multi-agent model:", error);

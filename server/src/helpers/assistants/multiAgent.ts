@@ -103,6 +103,9 @@ async function handleMultiAgentModel({
         if (!sections) {
           throw new Error("Sections not found");
         }
+        if (environment === "dev") {
+          console.log("Sections: ", sections);
+        }
         // Add classNumbers to jsonObject.
         jsonObject.fetchSections.classNumbers = sections.map(
           (section) => section.classNumber
