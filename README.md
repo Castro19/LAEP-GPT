@@ -20,29 +20,25 @@ The system utilizes a **MERN (MongoDB, Express.js, React, Node.js) stack**, inte
 
 Using Polyratings, get instant AI summaries of professor ratings and find the best professors for your classes!
 
-![Professor Ratings AI](https://giphy.com/gifs/SFSTMMjn0Mx7NCuzWu)
-
-Search naturally for classes and we will create a MongoDB query that finds the sections that fit your query.
-
-<iframe src="https://giphy.com/embed/GevViQDkax5TKTgRUc" width="480" height="269" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/GevViQDkax5TKTgRUc">via GIPHY</a></p>
-
-### Build Schedules
-
-Add Spring 2025 sections and build all combinations of your weekly calendar the way you want it.
-
-<iframe src="https://giphy.com/embed/PqUQ3Qbfeb6ZRjU4zn" width="480" height="269" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/PqUQ3Qbfeb6ZRjU4zn">via GIPHY</a></p>
-
-### Schedule Builder AI
-
-Get instant AI insights on your current weekly calendar and ways to improve it by analyzing workload, professor ratings, time conflicts, and more.
-
-<iframe src="https://giphy.com/embed/1oDkNJu0oehVTAubbo" width="480" height="250" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/1oDkNJu0oehVTAubbo">via GIPHY</a></p>
+![Professor Ratings AI](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTV3NGd2NzR4bHphYWQ1MHM4emMyb3dsaHV2dTJ2bXN1cXIwanV2biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SFSTMMjn0Mx7NCuzWu/giphy.gif)
 
 ### Course AI Query
 
 Search naturally for classes and we will create a MongoDB query that finds the sections that fit your query.
 
-![Course AI Query](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTV3NGd2NzR4bHphYWQ1MHM4emMyb3dsaHV2dTJ2bXN1cXIwanV2biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SFSTMMjn0Mx7NCuzWu/giphy.gif)
+![Schedule Builder AI](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDRveWdxZDg1anNheTJ5ejk3aWZpZzFscmIwZjY0ZnRnYWdsaGc3diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GevViQDkax5TKTgRUc/giphy.gif)
+
+### Build Schedules
+
+Add Spring 2025 sections and build all combinations of your weekly calendar the way you want it.
+
+![Build Schedules](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWRvYmdjOGdpanF2cXE0NnMyOXB1OHZ0eXNmY3BkYXA4cTExMmRjbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PqUQ3Qbfeb6ZRjU4zn/giphy.gif)
+
+### Schedule Builder AI
+
+Get instant AI insights on your current weekly calendar and ways to improve it by analyzing workload, professor ratings, time conflicts, and more.
+
+![Schedule Builder AI](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTFlOTY5ZTA3MmJsY29uaThocmVkdHV2NGZpNmxwYzNrZmw2cjl4eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1oDkNJu0oehVTAubbo/giphy.gif)
 
 ## Tech Stack
 
