@@ -3,7 +3,7 @@ import { CalendarListItem } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CalendarOptions } from "@/components/calendar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GoPin } from "react-icons/go";
 
 const SavedSchedules = () => {
@@ -46,6 +46,12 @@ const ScheduleItem = ({
   const handleSelectSchedule = () => {
     navigate(`/calendar/${calendar.id}`);
   };
+
+  useEffect(() => {
+    if (isPrimary) {
+      setPrimaryOption(true);
+    }
+  }, [isPrimary]);
 
   return (
     <div className="group flex items-center justify-between px-2 py-2.5 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700">

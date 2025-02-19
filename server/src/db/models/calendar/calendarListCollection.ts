@@ -42,7 +42,7 @@ export const findCalendarListByUserId = async (
 export const createOrUpdateCalendarList = async (
   userId: string,
   calendar: CalendarListItem,
-  isPrimary: boolean
+  primaryCalendarId: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
   if (!calendarCollection) {
     calendarCollection = initializeCollection();
@@ -60,7 +60,7 @@ export const createOrUpdateCalendarList = async (
           },
         },
         $set: {
-          primaryCalendarId: isPrimary ? calendar.id : undefined,
+          primaryCalendarId: primaryCalendarId,
         },
       },
       { upsert: true }
@@ -114,6 +114,27 @@ export const deleteCalendarListItem = async (
     const result = await calendarCollection.updateOne(
       { userId },
       { $pull: { calendars: { id: calendarId } } }
+    );
+    return result;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
+};
+
+export const updateCalendarListPrimaryId = async (
+  userId: string,
+  newPrimaryCalendarId: string
+): Promise<UpdateResult<CalendarListDocument>> => {
+  if (!calendarCollection) {
+    calendarCollection = initializeCollection();
+  }
+  try {
+    const result = await calendarCollection.updateOne(
+      { userId },
+      { $set: { primaryCalendarId: newPrimaryCalendarId } }
     );
     return result;
   } catch (error) {

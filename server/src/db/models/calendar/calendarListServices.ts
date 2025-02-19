@@ -110,26 +110,28 @@ export const createOrUpdateCalendar = async (
       throw new Error("Failed to create calendar");
     }
     const calendars = await calendarListModel.findCalendarListByUserId(userId);
-    if (calendars && calendars.calendars.length === 0) {
-      await calendarListModel.createOrUpdateCalendarList(
-        userId,
-        {
-          id: calendarId,
-          name: calendar.name,
-          updatedAt: calendar.updatedAt,
-        },
-        true // primary calendar
-      );
-    } else {
-      await calendarListModel.createOrUpdateCalendarList(
-        userId,
-        {
-          id: calendarId,
-          name: calendar.name,
-          updatedAt: calendar.updatedAt,
-        },
-        false // not primary calendar
-      );
+    if (calendars) {
+      if (calendars.calendars.length === 0 || !calendars.primaryCalendarId) {
+        await calendarListModel.createOrUpdateCalendarList(
+          userId,
+          {
+            id: calendarId,
+            name: calendar.name,
+            updatedAt: calendar.updatedAt,
+          },
+          calendarId // primary calendar
+        );
+      } else {
+        await calendarListModel.createOrUpdateCalendarList(
+          userId,
+          {
+            id: calendarId,
+            name: calendar.name,
+            updatedAt: calendar.updatedAt,
+          },
+          calendars.primaryCalendarId // not primary calendar
+        );
+      }
     }
     const finalCalendars =
       await calendarListModel.findCalendarListByUserId(userId);
@@ -156,10 +158,28 @@ export const deleteCalendarItem = async (
   primaryCalendarId: string;
 }> => {
   try {
+    const calendarList =
+      await calendarListModel.findCalendarListByUserId(userId);
+    if (!calendarList) {
+      throw new Error("No calendars found for the user");
+    }
+    if (calendarList.primaryCalendarId === calendarId) {
+      // We will need to update the primary calendar id
+      const newPrimaryCalendarId = calendarList.calendars.find(
+        (calendar) => calendar.id !== calendarId
+      )?.id;
+      if (newPrimaryCalendarId) {
+        await calendarListModel.updateCalendarListPrimaryId(
+          userId,
+          newPrimaryCalendarId
+        );
+      }
+    }
     const result = await calendarCollection.deleteCalendar(userId, calendarId);
     if (!result) {
       throw new Error("Calendar not found in calendar collection");
     }
+
     const deletedCalendar = await calendarListModel.deleteCalendarListItem(
       userId,
       calendarId
