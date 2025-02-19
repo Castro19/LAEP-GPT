@@ -31,7 +31,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import QueryAI from "@/components/section/courseFilters/aiClassSearch/QueryAI";
 import { useUserData } from "@/hooks/useUserData";
 import useMobile from "@/hooks/use-mobile";
-import LeftSectionFooter from "@/components/calendar/buildSchedule/layout/BuildScheduleFooter";
+import LeftSectionFooter from "@/components/calendar/buildSchedule/layout/LeftScheduleFooter";
 
 // Define a Zod schema for the filter form.
 
@@ -56,10 +56,10 @@ export function SectionFilters() {
         : [],
       startTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[0]
-        : "07:00",
+        : "",
       endTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[1]
-        : "20:00",
+        : "",
       minInstructorRating: reduxFilters.minInstructorRating || "",
       maxInstructorRating: reduxFilters.maxInstructorRating || "",
       includeUnratedInstructors: reduxFilters.includeUnratedInstructors,

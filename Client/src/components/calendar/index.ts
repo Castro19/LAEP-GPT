@@ -9,7 +9,7 @@ export { default as PaginationFooter } from "./weeklyCalendar/layout/PaginationF
 
 // Build Schedule Components
 export { default as BuildScheduleContainer } from "./buildSchedule/layout/BuildScheduleContainer";
-export { default as LeftSectionFooter } from "./buildSchedule/layout/BuildScheduleFooter";
+export { default as LeftSectionFooter } from "./buildSchedule/layout/LeftScheduleFooter";
 export { default as SelectedSectionContainer } from "./buildSchedule/selectedSections/SelectedSectionContainer";
 export { default as SavedSchedules } from "./buildSchedule/savedSchedules/SavedSchedules";
 export { default as CalendarOptions } from "./buildSchedule/savedSchedules/CalendarOptions";
@@ -19,7 +19,4 @@ export { default as CalendarAIChatContainer } from "./aiChat/CalendarAIChatConta
 
 // Types
 export type { CalendarClassSection } from "./weeklyCalendar/currentCalendar/WeeklyCalendar";
-export type { Schedule } from "./helpers/buildSchedule";
-
-// Utilities
-export { generateAllScheduleCombinations } from "./helpers/buildSchedule";
+export type { Schedule } from "./helpers/generateAllScheduleCombinations";

@@ -1,20 +1,23 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { UseFormReturn } from "react-hook-form";
-import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
-import DoubleSliderFilter from "@/components/section/reusable/filter/DoubleSliderFilter";
 import { z } from "zod";
+import { UseFormReturn } from "react-hook-form";
+
+// My Components
+import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
 import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
-import { FaUser } from "react-icons/fa";
-import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
-import { Switch } from "@/components/ui/switch";
-import { DeletableTags } from "@/components/section/reusable/filter/DeletableTags";
+import {
+  DeletableTags,
+  FormSwitch,
+  InstructorRatingSlider,
+  TitleLabel,
+} from "@/components/section";
 import Searchbar from "@/components/section/reusable/filter/SearchBar";
 import fetchProfessors from "@/components/section/courseFilters/helpers/api/fetchProfessors";
+
+// UI Components
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
+
+// Icons
+import { FaUser } from "react-icons/fa";
 
 const Instructor = ({
   form,
@@ -27,68 +30,12 @@ const Instructor = ({
       icon={FaUser}
       defaultOpen={false}
     >
-      <FormField
-        control={form.control}
-        // We will treat this field as the "main" field
-        name="minInstructorRating"
-        render={({ field }) => {
-          // 1. Get the min from the field
-          const minValue = parseFloat(field.value ?? "0");
-
-          // 2. Watch the max so the component re-renders when it changes
-          const maxValueString = form.watch("maxInstructorRating");
-          const maxValue = parseFloat(maxValueString ?? "4");
-
-          return (
-            <FormItem>
-              <div className="flex flex-col items-start justify-start gap-1">
-                <TitleLabel title="Instructor Rating" />
-                <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
-                  All instructor ratings based on PolyRatings
-                </FormLabel>
-
-                <div className="flex flex-col w-full">
-                  <FormControl className="flex-1 w-full ml-4">
-                    <DoubleSliderFilter
-                      // 3. Pass BOTH min and max to initialRange
-                      initialRange={[minValue, maxValue]}
-                      onRangeChange={([newMin, newMax]) => {
-                        // 4. Write BOTH min and max to the form
-                        field.onChange(newMin.toString());
-                        form.setValue("maxInstructorRating", newMax.toString());
-                      }}
-                    />
-                  </FormControl>
-                </div>
-              </div>
-            </FormItem>
-          );
-        }}
+      <InstructorRatingSlider form={form} />
+      <FormSwitch
+        form={form}
+        label="Include unrated instructors"
+        name="includeUnratedInstructors"
       />
-      <FormItem>
-        <div className="flex items-center justify-between gap-1">
-          <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
-            Include unrated instructors
-          </FormLabel>
-          <FormField
-            control={form.control}
-            name="includeUnratedInstructors"
-            render={({ field }) => {
-              return (
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                      form.setValue("includeUnratedInstructors", checked);
-                    }}
-                  />
-                </FormControl>
-              );
-            }}
-          />
-        </div>
-      </FormItem>
       <FormField
         control={form.control}
         name="instructors"

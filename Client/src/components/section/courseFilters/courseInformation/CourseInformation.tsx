@@ -1,29 +1,35 @@
-import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
-import {
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-} from "@/components/ui/form";
+import { useEffect } from "react";
+import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
+import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
+
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// My Components
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
+import { fetchCourses } from "@/components/flowchart";
+import {
+  FormSwitch,
+  UnitSlider,
+  TitleLabel,
+  DeletableTags,
+} from "@/components/section";
+
+// UI Components
+import { FormField, FormItem, FormControl } from "@/components/ui/form";
+import ReusableDropdown from "@/components/ui/reusable-dropdown";
+import Searchbar from "@/components/section/reusable/filter/SearchBar";
+
+// Icons
 import { FaBook } from "react-icons/fa";
+
+// Constants
 import {
   COURSE_ATTRIBUTES,
   SECTION_FILTERS_SCHEMA,
 } from "@/components/section/courseFilters/helpers/constants";
-import { z } from "zod";
-import { DeletableTags } from "@/components/section/reusable/filter/DeletableTags";
-import ReusableDropdown from "@/components/ui/reusable-dropdown";
-import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
-import Searchbar from "@/components/section/reusable/filter/SearchBar";
-import { fetchCourses } from "@/components/flowchart";
 import SUBJECTS from "@/components/section/courseFilters/helpers/api/subjects";
-import DoubleSliderFilter from "@/components/section/reusable/filter/DoubleSliderFilter";
-import { Switch } from "@/components/ui/switch";
-import { useEffect } from "react";
-import { useUserData } from "@/hooks/useUserData";
-import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
-import { resetConcentrationOptions } from "@/redux/flowSelection/flowSelectionSlice";
 
 const CourseInformation = ({
   form,
@@ -55,7 +61,7 @@ const CourseInformation = ({
         })
       );
     } else {
-      dispatch(resetConcentrationOptions());
+      dispatch(flowSelectionActions.resetConcentrationOptions());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [major, form.watch("techElectives.major"), dispatch]);
@@ -125,37 +131,7 @@ const CourseInformation = ({
           </FormItem>
         )}
       />
-      {/* Minimum Units Slider */}
-      <FormField
-        control={form.control}
-        name="minUnits"
-        render={({ field }) => {
-          // 1. Get the min from the field
-          const minValue = parseFloat(field.value ?? "0");
-
-          // 2. Watch the max so the component re-renders when it changes
-          const maxValueString = form.watch("maxUnits");
-          const maxValue = parseFloat(maxValueString ?? "9");
-
-          return (
-            <FormItem>
-              <TitleLabel title="Units" />
-              <FormControl className="flex-1 w-full ml-4">
-                <DoubleSliderFilter
-                  initialRange={[minValue, maxValue]}
-                  onRangeChange={([newMin, newMax]) => {
-                    field.onChange(newMin.toString());
-                    form.setValue("maxUnits", newMax.toString());
-                  }}
-                  max={9}
-                  step={0.5}
-                  label="Units"
-                />
-              </FormControl>
-            </FormItem>
-          );
-        }}
-      />
+      <UnitSlider form={form} min={0} max={9} />
       <FormField
         control={form.control}
         name="courseAttributes"
@@ -212,19 +188,12 @@ const CourseInformation = ({
           </FormItem>
         )}
       />
-      <FormItem>
-        <div className="flex items-center justify-between gap-1">
-          <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
-            Include only Tech Electives
-          </FormLabel>
-          <Switch
-            checked={form.watch("isTechElective")}
-            onCheckedChange={(checked) => {
-              form.setValue("isTechElective", checked);
-            }}
-          />
-        </div>
-      </FormItem>
+
+      <FormSwitch
+        form={form}
+        label="Include only Tech Electives"
+        name="isTechElective"
+      />
       {form.watch("isTechElective") && (
         <>
           <FormField

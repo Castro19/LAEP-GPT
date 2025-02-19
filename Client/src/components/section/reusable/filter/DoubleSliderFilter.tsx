@@ -15,6 +15,7 @@ interface InstructorRatingRangeFilterProps {
   label?: string;
   max?: number;
   step?: number;
+  showRange?: boolean;
 }
 
 const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
@@ -23,6 +24,7 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
   step = 0.1,
   max = 4,
   onRangeChange,
+  showRange = true,
 }) => {
   const [range, setRange] = useState<[number, number]>(initialRange);
   const labels = Array.from({ length: max + 1 }, (_, i) => i);
@@ -57,13 +59,15 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
       />
 
       {/* Labels for the slider values */}
-      <div className="flex justify-between w-full px-2">
-        {labels.map((value) => (
-          <span key={value} className="text-sm dark:text-gray-400">
-            {value}
-          </span>
-        ))}
-      </div>
+      {showRange && (
+        <div className="flex justify-between w-full px-2">
+          {labels.map((value) => (
+            <span key={value} className="text-sm dark:text-gray-400">
+              {value}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

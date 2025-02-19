@@ -177,6 +177,7 @@ export function transformToSectionDetail(section: Section): SectionDetail {
     courseId: section.courseId,
     courseName: section.courseName,
     classNumber: section.classNumber,
+    units: section.units,
     component: section.component,
     enrollmentStatus: section.enrollmentStatus,
     enrollment: section.enrollment,

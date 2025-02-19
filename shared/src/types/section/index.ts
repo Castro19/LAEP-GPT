@@ -134,6 +134,7 @@ export type SectionDetail = {
   instructors: Instructor[];
   instructorsWithRatings: InstructorWithRatings[] | null;
   pairedSections: number[]; // Array of class numbers this section is paired with
+  units: string;
 };
 
 // Supporting types remain the same

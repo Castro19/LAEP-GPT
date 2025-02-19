@@ -81,7 +81,11 @@ const NoSectionsFound: React.FC = () => {
 
   // Extract and format active filters
   const activeFilters = Object.entries(filters || {})
-    .filter(([, value]) => {
+    .filter(([key, value]) => {
+      if (key === "techElectives") {
+        // Only include techElectives if isTechElective is true
+        return filters.isTechElective;
+      }
       if (Array.isArray(value)) return value.length > 0;
       if (typeof value === "boolean") return value;
       return value !== undefined && value !== null && value !== "";

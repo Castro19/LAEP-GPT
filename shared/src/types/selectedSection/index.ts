@@ -3,6 +3,7 @@ export type SelectedSection = {
   courseName: string;
   classNumber: number;
   component: string;
+  units: string;
   professors: {
     name: string;
     id: string | null;

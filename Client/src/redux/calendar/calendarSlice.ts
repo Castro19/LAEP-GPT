@@ -12,14 +12,32 @@ import {
   getCalendarById,
   updateCalendar,
 } from "./crudCalendar";
+
+export interface Preferences {
+  minUnits?: string;
+  maxUnits?: string;
+  minInstructorRating?: string;
+  maxInstructorRating?: string;
+  timeRange?: string;
+  openOnly: boolean;
+  useCurrentSchedule: boolean;
+  showOverlappingClasses: boolean;
+}
+
 interface calendarState {
   page: number;
   totalPages: number;
-  calendars: { sections: SelectedSection[]; averageRating: number }[];
+  calendars: {
+    sections: SelectedSection[];
+    averageRating: number;
+    withConflicts?: boolean;
+    conflictGroups?: SelectedSection[];
+  }[];
   calendarList: CalendarListItem[];
   currentCalendar: Calendar | null;
   primaryCalendarId: string;
   loading: boolean;
+  preferences: Preferences;
 }
 
 const initialState: calendarState = {
@@ -30,6 +48,16 @@ const initialState: calendarState = {
   currentCalendar: null,
   primaryCalendarId: "",
   loading: false,
+  preferences: {
+    minUnits: "",
+    maxUnits: "",
+    minInstructorRating: "",
+    maxInstructorRating: "",
+    timeRange: "",
+    openOnly: true,
+    useCurrentSchedule: false,
+    showOverlappingClasses: false,
+  },
 };
 
 // When calling fetchSections, pass page and pageSize too.
@@ -138,6 +166,9 @@ const calendarSlice = createSlice({
     setCurrentCalendar(state, action) {
       state.currentCalendar = action.payload;
     },
+    setPreferences(state, action) {
+      state.preferences = action.payload;
+    },
   },
   extraReducers: (builder) => {
     // Fetch Calendar List
@@ -169,7 +200,12 @@ const calendarSlice = createSlice({
   },
 });
 
-export const { setPage, setTotalPages, setCalendars, setCurrentCalendar } =
-  calendarSlice.actions;
+export const {
+  setPage,
+  setTotalPages,
+  setCalendars,
+  setCurrentCalendar,
+  setPreferences,
+} = calendarSlice.actions;
 
 export const calendarReducer = calendarSlice.reducer;

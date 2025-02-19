@@ -1,16 +1,22 @@
-import { FormItem } from "@/components/ui/form";
-import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
-import { RiRobot3Line } from "react-icons/ri";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
 import {
   queryAIAsync,
   setIsInitialState,
   setPage,
 } from "@/redux/section/sectionSlice";
-import { AlertTriangle } from "lucide-react";
+
+// My Components
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
+
+// UI Components
+import { FormItem } from "@/components/ui/form";
+import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+
+// Icons
+import { RiRobot3Line } from "react-icons/ri";
+import { AlertTriangle } from "lucide-react";
 
 const placeholders = [
   "Find CSC 300-500 courses available Mon-Thu",

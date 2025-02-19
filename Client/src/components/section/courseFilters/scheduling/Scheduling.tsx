@@ -1,18 +1,29 @@
-import { FormControl, FormLabel } from "@/components/ui/form";
+import { z } from "zod";
+import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
+
+// My Components
+import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
+import { TimeRange, TitleLabel } from "@/components/section";
+
+// UI Components
+import {
+  FormControl,
+  FormLabel,
+  FormField,
+  FormItem,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import ReusableDropdown from "@/components/ui/reusable-dropdown";
+
+// Icons
+import { FaClock } from "react-icons/fa";
+
+// Constants
 import {
   DAYS,
   HOURS,
+  SECTION_FILTERS_SCHEMA,
 } from "@/components/section/courseFilters/helpers/constants";
-import { FormField } from "@/components/ui/form";
-import { FormItem } from "@/components/ui/form";
-import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
-import { FaClock } from "react-icons/fa";
-import { Button } from "@/components/ui/button";
-import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
-import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
-import { z } from "zod";
-import TitleLabel from "@/components/section/reusable/filter/TitleLabel";
-import ReusableDropdown from "@/components/ui/reusable-dropdown";
 
 const Scheduling = ({
   form,
@@ -38,20 +49,7 @@ const Scheduling = ({
           </FormItem>
         )}
       />
-
-      {/* Time Range Slider */}
-      <FormItem>
-        <TitleLabel title="Time Range" />
-        <div className="flex gap-3 items-center">
-          <div className="w-1/2">
-            <TimeRangeSelector name="startTime" form={form} />
-          </div>
-          <div className="w-1/2">
-            <TimeRangeSelector name="endTime" form={form} />
-          </div>
-        </div>
-      </FormItem>
-
+      <TimeRange form={form} />
       {/* Status Toggle */}
       <FormField
         control={form.control}
@@ -201,7 +199,7 @@ export const TimeRangeSelector = ({
                 selectedItem={selectedLabel}
                 handleChangeItem={handleChangeItem}
                 placeholder="Select a time…"
-                className="w-full mt-2 dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
+                className="w-full mt-1 dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
               />
             </FormControl>
           );
