@@ -131,11 +131,11 @@ const CourseInformation = ({
         name="minUnits"
         render={({ field }) => {
           // 1. Get the min from the field
-          const minValue = parseFloat(field.value ?? "0");
+          const minValue = parseFloat(field.value ?? "0") || 0;
 
           // 2. Watch the max so the component re-renders when it changes
           const maxValueString = form.watch("maxUnits");
-          const maxValue = parseFloat(maxValueString ?? "9");
+          const maxValue = parseFloat(maxValueString ?? "9") || 9;
 
           return (
             <FormItem>

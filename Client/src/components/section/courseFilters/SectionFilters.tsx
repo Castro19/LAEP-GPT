@@ -56,10 +56,10 @@ export function SectionFilters() {
         : [],
       startTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[0]
-        : "07:00",
+        : "",
       endTime: reduxFilters.timeRange
         ? reduxFilters.timeRange.split("-")[1]
-        : "20:00",
+        : "",
       minInstructorRating: reduxFilters.minInstructorRating || "",
       maxInstructorRating: reduxFilters.maxInstructorRating || "",
       includeUnratedInstructors: reduxFilters.includeUnratedInstructors,

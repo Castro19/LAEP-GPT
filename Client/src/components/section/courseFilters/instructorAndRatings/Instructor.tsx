@@ -51,7 +51,7 @@ const Instructor = ({
                   <FormControl className="flex-1 w-full ml-4">
                     <DoubleSliderFilter
                       // 3. Pass BOTH min and max to initialRange
-                      initialRange={[minValue, maxValue]}
+                      initialRange={[minValue || 0, maxValue || 4]}
                       onRangeChange={([newMin, newMax]) => {
                         // 4. Write BOTH min and max to the form
                         field.onChange(newMin.toString());
