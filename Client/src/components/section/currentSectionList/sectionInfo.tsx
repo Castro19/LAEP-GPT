@@ -81,6 +81,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
           {section.enrollmentStatus === "O" ? "Open" : "Closed"}
         </BadgeSection>
       </div>
+
       {section.pairedSections && section.pairedSections.length > 0 ? (
         <Popover
           open={displayAddPairModal}
@@ -88,11 +89,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
         >
           <PopoverTrigger asChild className="flex justify-end">
             <Button
-              variant="secondary"
-              className="text-xs "
+              className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
               onClick={() => setDisplayAddPairModal(true)}
             >
-              Add
+              See Add Options
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-72">
@@ -100,15 +100,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
               {/* Display the class Pair & disclaimer that it is recommend to pair sections. Give option of adding class pair or just adding this single section. */}
               <div className="flex flex-row gap-2">
                 <Button
-                  variant="secondary"
-                  className="text-xs py-0"
+                  className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
                   onClick={() => handleAddPair(section)}
                 >
                   Add Class Pair
                 </Button>
                 <Button
-                  variant="secondary"
-                  className="text-xs py-0"
+                  className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
                   onClick={() => handleAdd(section)}
                 >
                   Add Single Section
@@ -119,11 +117,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
         </Popover>
       ) : (
         <Button
-          variant="secondary"
-          className="text-xs py-0"
+          className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
           onClick={() => handleAdd(section)}
         >
-          Add
+          Add Single Section
         </Button>
       )}
     </div>

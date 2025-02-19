@@ -24,8 +24,8 @@ export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
       {/* The empty star (background) */}
       <svg
         viewBox="0 0 24 24"
-        width="24"
-        height="24"
+        width="22"
+        height="22"
         fill="none"
         stroke="#ccc"
         strokeWidth="2"
@@ -46,8 +46,8 @@ export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
       >
         <svg
           viewBox="0 0 24 24"
-          width="24"
-          height="24"
+          width="22"
+          height="22"
           fill="white"
           stroke="white"
           strokeWidth="1"
