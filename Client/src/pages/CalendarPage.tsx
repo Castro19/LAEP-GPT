@@ -1,28 +1,30 @@
-import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
 import {
   assistantActions,
   calendarActions,
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { sectionSelectionActions } from "@/redux";
 import { useEffect, useRef } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 
+// Components
+import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
+import CalendarBuilderForm from "@/components/calendar/buildSchedule/CalendarBuilderForm";
 import {
   EmptyCalendar,
   CalendarContainer,
   CalendarAIChatContainer,
   PaginationFooter,
 } from "@/components/calendar";
-import { Calendar } from "@polylink/shared/types";
-import { useNavigate, useParams } from "react-router-dom";
-import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { onNewChat } from "@/components/chat";
-
+// Types
+import { Calendar } from "@polylink/shared/types";
+// UI Components
+import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Hooks
 import useMobile from "@/hooks/use-mobile";
-import CalendarBuilderForm from "@/components/calendar/buildSchedule/CalendarBuilderForm";
 
 const CalendarPage = () => {
   const isMobile = useMobile();

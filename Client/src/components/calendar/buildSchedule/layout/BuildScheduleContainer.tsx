@@ -7,7 +7,6 @@ const BuildScheduleContainer = ({
   children,
 }: {
   children: React.ReactNode;
-  onClick: () => void;
 }) => {
   const { loading } = useAppSelector((state) => state.calendar);
 
