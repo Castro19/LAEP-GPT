@@ -13,11 +13,13 @@ import { z } from "zod";
 type InstructorRatingSliderProps = {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
   showDescription?: boolean;
+  label?: string;
 };
 
 const InstructorRatingSlider = ({
   form,
   showDescription = true,
+  label = "Instructor Rating",
 }: InstructorRatingSliderProps) => {
   return (
     <FormField
@@ -35,7 +37,7 @@ const InstructorRatingSlider = ({
         return (
           <FormItem>
             <div className="flex flex-col items-start justify-start gap-1">
-              <TitleLabel title="Instructor Rating" />
+              <TitleLabel title={label} />
               {showDescription && (
                 <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
                   All instructor ratings based on PolyRatings

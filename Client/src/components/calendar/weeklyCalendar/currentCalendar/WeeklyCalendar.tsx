@@ -8,18 +8,28 @@ import { CalendarTimeSlots } from "@/components/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchSingleSection } from "@/redux/section/sectionSlice";
 import { useAppDispatch } from "@/redux";
+import {
+  getConflictGroups,
+  buildBackgroundEventsForGroup,
+} from "@/components/calendar/helpers/weeklyCalendarConflicts";
+import { environment } from "@/helpers/getEnvironmentVars";
+
+type EventType = {
+  courseName: string;
+  classNumber: string;
+  enrollmentStatus: "O" | "C";
+  professor: string[];
+  color: string;
+  days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
+  start_time: string | null;
+  end_time: string | null;
+};
 
 export type CalendarClassSection = {
   title: string;
   start: Date;
   end: Date;
-  extendedProps: {
-    courseName: string;
-    classNumber: string;
-    enrollmentStatus: "O" | "C";
-    professor: string[];
-    color: string;
-  };
+  extendedProps: EventType;
 };
 
 // Define six pastel colors.
@@ -115,11 +125,34 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
           start,
           end,
           color: getColorForCourse(section.courseId),
+          days: meeting.days,
+          start_time: meeting.start_time,
+          end_time: meeting.end_time,
         };
       });
     })
   );
 
+  // 1) Split all normal events into conflict groups
+  const groups = getConflictGroups(events as unknown as EventType[]);
+  console.log("Groups", groups);
+  // 2) Build background events for each group (only if group size > 1? up to you)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let backgroundEvents: any[] = [];
+  for (const group of groups) {
+    // If you only want to highlight if there's at least 2 events in a group:
+    if (group.length > 1) {
+      const bg = buildBackgroundEventsForGroup(group, monday);
+      backgroundEvents = backgroundEvents.concat(bg);
+    }
+  }
+  console.log("Background events", backgroundEvents);
+
+  // 3) Combine
+  const finalEvents = [...backgroundEvents, ...events];
+  if (environment === "dev") {
+    console.log("Final events", finalEvents);
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
@@ -157,7 +190,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             slotMinTime="07:00:00"
             slotMaxTime="21:00:00"
             hiddenDays={[0, 6]}
-            events={events}
+            events={finalEvents}
             contentHeight={height}
             titleFormat={{}} // (Empty: no title text on top)
             dayHeaderContent={(args) => {
@@ -175,11 +208,20 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             dayCellClassNames="border border-slate-200 dark:border-slate-700"
             stickyHeaderDates={true}
             eventColor="#334155"
-            eventContent={(arg) =>
-              CalendarTimeSlots({
+            eventClassNames={(arg) => {
+              if (arg.event.extendedProps.isOverlay) {
+                return ["conflict-overlay-event"];
+              }
+              return [];
+            }}
+            eventContent={(arg) => {
+              if (arg.event.extendedProps.isOverlay) {
+                return null; // no text
+              }
+              return CalendarTimeSlots({
                 event: arg.event as unknown as CalendarClassSection,
-              })
-            }
+              });
+            }}
             eventClick={handleEventClick}
             nowIndicator={false}
           />

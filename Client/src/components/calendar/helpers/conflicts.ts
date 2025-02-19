@@ -3,8 +3,8 @@ import { SelectedSection } from "@polylink/shared/types";
 /**
  * Converts a time string "HH:MM" to minutes since midnight.
  */
-function parseTime(timeStr: string): number {
-  const [hours, minutes] = timeStr.split(":").map(Number);
+export function parseTime(timeStr: string): number {
+  const [hours, minutes] = timeStr ? timeStr.split(":").map(Number) : [0, 0];
   return hours * 60 + minutes;
 }
 

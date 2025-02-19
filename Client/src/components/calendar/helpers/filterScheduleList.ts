@@ -1,6 +1,7 @@
 import { SelectedSection } from "@polylink/shared/types";
 import { CalendarPreferencesForm } from "../buildSchedule/CalendarBuilderForm";
 import { Schedule } from "./";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 function filterSchedules(
   allSchedules: SelectedSection[][],
@@ -15,17 +16,30 @@ function filterSchedules(
     const seenCourses = new Set<string>();
 
     for (const section of schedule) {
+      const unitList = section.units ? section.units.split(" - ") : [];
+      const unitNumber =
+        unitList.length > 1
+          ? (parseInt(unitList[0]) + parseInt(unitList[1])) / 2
+          : parseInt(unitList[0]);
       if (!seenCourses.has(section.courseId)) {
         seenCourses.add(section.courseId);
-        unitCount += Number(section.units);
+        unitCount += Number(unitNumber);
         ratingCount += section.rating;
 
         if (section.rating > 0) {
           professorWithRatingCount++;
         }
       } else {
-        unitCount += Number(section.units);
+        unitCount += Number(unitNumber);
       }
+    }
+    if (environment === "dev") {
+      console.log("--------------------------------");
+      console.log("PREFERENCES: ", preferences);
+      console.log("UNIT COUNT: ", unitCount);
+      console.log("RATING COUNT: ", ratingCount);
+      console.log("PROFESSOR WITH RATING COUNT: ", professorWithRatingCount);
+      console.log("--------------------------------");
     }
     // Check the preferences to see if the schedule fits
     if (preferences.minUnits && unitCount < Number(preferences.minUnits)) {

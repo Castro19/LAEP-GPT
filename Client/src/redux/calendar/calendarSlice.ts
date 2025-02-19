@@ -27,7 +27,12 @@ export interface Preferences {
 interface calendarState {
   page: number;
   totalPages: number;
-  calendars: { sections: SelectedSection[]; averageRating: number }[];
+  calendars: {
+    sections: SelectedSection[];
+    averageRating: number;
+    withConflicts?: boolean;
+    conflictGroups?: SelectedSection[];
+  }[];
   calendarList: CalendarListItem[];
   currentCalendar: Calendar | null;
   primaryCalendarId: string;
