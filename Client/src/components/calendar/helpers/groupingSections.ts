@@ -22,7 +22,8 @@ function arePaired(
  * - A pair of sections that are linked (i.e. one’s classPair includes the other’s classNumber).
  */
 function getValidSelectionsForCourse(
-  sections: SelectedSection[]
+  sections: SelectedSection[],
+  isOpenOnly: boolean | undefined
 ): SelectedSection[][] {
   const validSelections: SelectedSection[][] = [];
   const standaloneSections: SelectedSection[] = [];
@@ -39,7 +40,28 @@ function getValidSelectionsForCourse(
       const sectionA = sections[i];
       const sectionB = sections[j];
       if (arePaired(sectionA, sectionB)) {
-        validSelections.push([sectionA, sectionB]);
+        if (isOpenOnly) {
+          if (
+            sectionA.enrollmentStatus === "O" &&
+            sectionB.enrollmentStatus === "O"
+          ) {
+            validSelections.push([sectionA, sectionB]);
+          } else if (
+            sectionA.enrollmentStatus === "O" &&
+            sectionB.enrollmentStatus !== "O"
+          ) {
+            validSelections.push([sectionA]);
+          } else if (
+            sectionA.enrollmentStatus !== "O" &&
+            sectionB.enrollmentStatus === "O"
+          ) {
+            validSelections.push([sectionB]);
+          } else {
+            validSelections.push([sectionA, sectionB]);
+          }
+        } else {
+          validSelections.push([sectionA, sectionB]);
+        }
       }
     }
   }
@@ -49,7 +71,13 @@ function getValidSelectionsForCourse(
       otherSection.classPair.includes(section.classNumber)
     );
     if (!isPaired) {
-      validSelections.push([section]);
+      if (isOpenOnly) {
+        if (section.enrollmentStatus === "O") {
+          validSelections.push([section]);
+        }
+      } else {
+        validSelections.push([section]);
+      }
     }
   }
   return validSelections;

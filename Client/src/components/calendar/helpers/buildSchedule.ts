@@ -85,21 +85,17 @@ export function generateAllScheduleCombinations(
   // A valid selection is itself an array of SelectedSection (either one section or a pair).
   const courseGroups: SelectedSection[][][] = [];
   for (const [, courseSections] of coursesMap.entries()) {
-    const validSelections = getValidSelectionsForCourse(courseSections);
-    // If no valid selection exists for a required course, then no complete schedule is possible.
-    if (validSelections.length === 0) {
-      return []; // Alternatively, you might want to throw an error or skip this course.
-    }
+    const validSelections = getValidSelectionsForCourse(
+      courseSections,
+      preferences.openOnly
+    );
     courseGroups.push(validSelections);
   }
 
-  const isValid = courseGroups.every(
-    (group) => group.length > 0 && group.every((sel) => sel.length > 0)
-  );
-  if (!isValid) return [];
   if (environment === "dev") {
     console.log("COURSE GROUPS", courseGroups);
   }
+
   const allSchedules: SelectedSection[][] = [];
   for (
     let courseGroupIndex = 0;
