@@ -152,50 +152,46 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
   return (
     <Collapsible defaultOpen={false}>
       <CollapsibleTrigger asChild>
-        <div className="rounded-lg rounded-b-none bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer bg-opacity-80">
+        <div className="rounded-lg rounded-b-none bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <h3 className="text-xl font-semibold text-gray-300">
                 {group.instructor.name}
               </h3>
-              {group.instructor.id !== "none" && (
-                <span>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(
-                        `https://polyratings.dev/professor/${group.instructor.id}`,
-                        "_blank"
-                      );
-                    }}
-                    variant="link"
-                    className="text-sm font-sm dark:text-gray-400 "
-                  >
-                    (View Ratings)
-                  </Button>
-                </span>
-              )}
+              {group.instructor.id !== "none"}
             </div>
 
-            {/* Right side - added height spacer */}
-            {group.instructor.id !== "none" ? (
-              <StarRating group={group} />
-            ) : (
-              <div className="flex items-center gap-2 font-sans h-[34px]">
-                <div className="flex items-center">No Ratings</div>
-              </div>
-            )}
+            {/* Right side - Ratings & PolyRatings Icon */}
+            <div className="flex items-center gap-6">
+              {group.instructor.id !== "none" ? (
+                <>
+                  <a
+                    href={`https://polyratings.dev/professor/${group.instructor.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()} // Prevents collapsible from opening
+                  >
+                    <img
+                      src="/polyratings.ico"
+                      alt="PolyRatings"
+                      className="w-5 h-5 cursor-pointer hover:opacity-80"
+                    />
+                  </a>
+                  <StarRating group={group} />
+                </>
+              ) : (
+                <div className="flex items-center text-gray-400">
+                  No Ratings
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Rating details section - add hidden spacer for no-ratings */}
           {group.instructor.id !== "none" ? (
             <div className="flex justify-end items-center pr-2 ">
               <div className="text-sm text-gray-300 flex items-center">
-                <strong className="text-lg text-white">
-                  {group.overallRating.toFixed(1)}
-                </strong>
-                <span className="text-gray-400 ml-1">/ 4</span>
-                <span className="ml-3 text-slate-500">
+                <span className="ml-3 text-slate-500 mt-2">
                   {group.instructor.numEvals} evals
                 </span>
               </div>
@@ -208,36 +204,44 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="flex flex-col justify-center items-between"></div>
+        {/* 🔹 Gray Box Wraps All Sections */}
+        <div className="bg-slate-800 p-4 space-y-4">
+          {/* 🔹 Render Paired Sections (Lecture + Lab Side-by-Side) */}
+          {pairedCards.length > 0 && (
+            <div className="flex flex-col space-y-4">
+              {pairedCards.map((pair, index) => (
+                <div key={index} className="flex gap-4">
+                  {/* Lecture Section */}
+                  {pair.lecture && (
+                    <div className="bg-slate-900 p-4 rounded-lg flex-1">
+                      <LectureSectionCard section={pair.lecture} />
+                    </div>
+                  )}
 
-        {pairedCards.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {pairedCards.map((pair, index) => (
-              <React.Fragment key={index}>
-                {pair.lecture && (
-                  <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
-                    <LectureSectionCard section={pair.lecture} />
-                  </div>
-                )}
-                {pair.lab && (
-                  <div className="border border-gray-300 dark:border-slate-600 rounded-lg">
-                    <LabSectionCard section={pair.lab} />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-4">
-          {singleSections.map((section) => (
-            <div
-              key={section.classNumber}
-              className="border border-gray-300 dark:border-slate-600 rounded-lg"
-            >
-              <SectionCard section={section} />
+                  {/* Lab Section */}
+                  {pair.lab && (
+                    <div className="bg-slate-900 p-4 rounded-lg flex-1">
+                      <LabSectionCard section={pair.lab} />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
+          {/* 🔹 Render Standalone Sections Inside the Same Gray Box */}
+          {singleSections.length > 0 && (
+            <div className="flex flex-col space-y-4">
+              {singleSections.map((section) => (
+                <div
+                  key={section.classNumber}
+                  className="bg-slate-900 p-4 rounded-lg"
+                >
+                  <SectionCard section={section} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>
