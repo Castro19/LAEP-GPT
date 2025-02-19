@@ -1,8 +1,6 @@
-import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 
 // My Components
-import { SECTION_FILTERS_SCHEMA } from "../../courseFilters/helpers/constants";
 
 // UI Components
 import {
@@ -13,11 +11,11 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 
-// Types
 type FormSwitchProps = {
-  form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
   label: string;
-  name: keyof z.infer<typeof SECTION_FILTERS_SCHEMA>;
+  name: string;
 };
 
 const FormSwitch = ({ form, label, name }: FormSwitchProps) => {
@@ -35,10 +33,7 @@ const FormSwitch = ({ form, label, name }: FormSwitchProps) => {
               <FormControl>
                 <Switch
                   checked={field.value as boolean}
-                  onCheckedChange={(checked) => {
-                    field.onChange(checked);
-                    form.setValue(name, checked);
-                  }}
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
             );

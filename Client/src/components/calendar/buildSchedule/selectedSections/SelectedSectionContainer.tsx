@@ -1,8 +1,10 @@
 import { SavedSchedules } from "@/components/calendar";
 import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
-
-import { FaBook, FaCalendar } from "react-icons/fa";
 import SectionsChosen from "./SectionsChosen";
+import CalendarBuilderForm from "../preferences/CalendarBuilderForm";
+// Icons
+import { FaBook, FaCalendar } from "react-icons/fa";
+
 const SelectedSectionContainer = () => {
   return (
     <div className="flex flex-col h-full">
@@ -12,6 +14,9 @@ const SelectedSectionContainer = () => {
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
           <SavedSchedules />
+        </CollapsibleContentWrapper>
+        <CollapsibleContentWrapper title="Preferences" icon={FaCalendar}>
+          <CalendarBuilderForm />
         </CollapsibleContentWrapper>
       </div>
     </div>

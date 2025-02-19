@@ -41,3 +41,14 @@ export const SECTION_FILTERS_SCHEMA = z.object({
     })
     .optional(),
 });
+
+export const CALENDAR_PREFERENCES_SCHEMA = z.object({
+  minUnits: z.string().optional(),
+  maxUnits: z.string().optional(),
+  minInstructorRating: z.string().optional(),
+  maxInstructorRating: z.string().optional(),
+  openOnly: z.boolean().optional(),
+  showOverlappingClasses: z.boolean().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+});

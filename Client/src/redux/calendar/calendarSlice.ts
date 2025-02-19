@@ -19,7 +19,7 @@ export interface Preferences {
   minInstructorRating: string;
   maxInstructorRating: string;
   timeRange: string;
-  showOnlyOpenClasses?: boolean;
+  openOnly?: boolean;
   useCurrentSchedule?: boolean;
   showOverlappingClasses?: boolean;
 }
@@ -49,7 +49,7 @@ const initialState: calendarState = {
     minInstructorRating: "",
     maxInstructorRating: "",
     timeRange: "",
-    showOnlyOpenClasses: undefined,
+    openOnly: undefined,
     useCurrentSchedule: undefined,
     showOverlappingClasses: undefined,
   },
