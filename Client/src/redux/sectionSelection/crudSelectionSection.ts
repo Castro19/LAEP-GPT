@@ -92,6 +92,7 @@ export function transformSectionToSelectedSection(
     courseId: section.courseId,
     courseName: section.courseName,
     classNumber: section.classNumber,
+    units: section.units,
     component: section.component,
     enrollmentStatus: section.enrollmentStatus,
     meetings: section.meetings.map((meeting) => ({

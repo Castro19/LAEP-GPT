@@ -14,14 +14,14 @@ import {
 } from "./crudCalendar";
 
 export interface Preferences {
-  minUnits: string;
-  maxUnits: string;
-  minInstructorRating: string;
-  maxInstructorRating: string;
-  timeRange: string;
-  openOnly?: boolean;
-  useCurrentSchedule?: boolean;
-  showOverlappingClasses?: boolean;
+  minUnits?: string;
+  maxUnits?: string;
+  minInstructorRating?: string;
+  maxInstructorRating?: string;
+  timeRange?: string;
+  openOnly: boolean;
+  useCurrentSchedule: boolean;
+  showOverlappingClasses: boolean;
 }
 
 interface calendarState {
@@ -49,9 +49,9 @@ const initialState: calendarState = {
     minInstructorRating: "",
     maxInstructorRating: "",
     timeRange: "",
-    openOnly: undefined,
-    useCurrentSchedule: undefined,
-    showOverlappingClasses: undefined,
+    openOnly: true,
+    useCurrentSchedule: false,
+    showOverlappingClasses: false,
   },
 };
 

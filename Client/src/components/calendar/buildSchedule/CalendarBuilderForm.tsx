@@ -50,9 +50,14 @@ const CalendarBuilderForm = () => {
     if (environment === "dev") {
       console.log("Building schedule...");
       console.log("FORM PREFERENCES", form.getValues());
+      console.log("SELECTED SECTIONS", selectedSections);
+      console.log("CURRENT CALENDAR", currentCalendar);
     }
     // Create all combinations of sections
-    const allCombinations = generateAllScheduleCombinations(selectedSections);
+    const allCombinations = generateAllScheduleCombinations(
+      selectedSections,
+      form.getValues()
+    );
     dispatch(calendarActions.setCalendars(allCombinations));
     dispatch(calendarActions.setPage(1));
     dispatch(calendarActions.setTotalPages(allCombinations.length));
