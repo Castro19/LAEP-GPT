@@ -1,6 +1,6 @@
 import { SelectedSection } from "@polylink/shared/types";
 import { CalendarPreferencesForm } from "../buildSchedule/CalendarBuilderForm";
-import { Schedule } from "./buildSchedule";
+import { Schedule } from "./";
 
 function filterSchedules(
   allSchedules: SelectedSection[][],

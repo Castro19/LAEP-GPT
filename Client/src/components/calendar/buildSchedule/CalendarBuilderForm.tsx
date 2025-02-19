@@ -5,11 +5,8 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
 import { CALENDAR_PREFERENCES_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
-import {
-  BuildScheduleContainer,
-  generateAllScheduleCombinations,
-  SelectedSectionContainer,
-} from "..";
+import { BuildScheduleContainer, SelectedSectionContainer } from "..";
+import { buildSchedule } from "@/components/calendar/helpers";
 import { LeftSectionFooter } from "..";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { useNavigate } from "react-router-dom";
@@ -54,10 +51,7 @@ const CalendarBuilderForm = () => {
       console.log("CURRENT CALENDAR", currentCalendar);
     }
     // Create all combinations of sections
-    const allCombinations = generateAllScheduleCombinations(
-      selectedSections,
-      form.getValues()
-    );
+    const allCombinations = buildSchedule(selectedSections, form.getValues());
     dispatch(calendarActions.setCalendars(allCombinations));
     dispatch(calendarActions.setPage(1));
     dispatch(calendarActions.setTotalPages(allCombinations.length));

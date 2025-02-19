@@ -19,7 +19,4 @@ export { default as CalendarAIChatContainer } from "./aiChat/CalendarAIChatConta
 
 // Types
 export type { CalendarClassSection } from "./weeklyCalendar/currentCalendar/WeeklyCalendar";
-export type { Schedule } from "./helpers/buildSchedule";
-
-// Utilities
-export { generateAllScheduleCombinations } from "./helpers/buildSchedule";
+export type { Schedule } from "./helpers/generateAllScheduleCombinations";
