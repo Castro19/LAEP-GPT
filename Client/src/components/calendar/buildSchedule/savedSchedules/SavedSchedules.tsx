@@ -48,7 +48,9 @@ const ScheduleItem = ({
   };
 
   useEffect(() => {
-    setPrimaryOption(isPrimary);
+    if (isPrimary) {
+      setPrimaryOption(true);
+    }
   }, [isPrimary]);
 
   return (

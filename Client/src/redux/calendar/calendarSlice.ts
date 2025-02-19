@@ -173,8 +173,20 @@ const calendarSlice = createSlice({
   extraReducers: (builder) => {
     // Fetch Calendar List
     builder.addCase(fetchCalendarsAsync.fulfilled, (state, action) => {
-      state.calendarList = action.payload.calendars;
       state.primaryCalendarId = action.payload.primaryCalendarId;
+      const calendarList = action.payload.calendars;
+      const primaryCalendar = calendarList.find(
+        (calendar) => calendar.id === state.primaryCalendarId
+      );
+      if (primaryCalendar) {
+        // Put the primary calendar at the top of the list
+        const otherCalendars = calendarList.filter(
+          (calendar) => calendar.id !== state.primaryCalendarId
+        );
+        state.calendarList = [primaryCalendar, ...otherCalendars];
+      } else {
+        state.calendarList = calendarList;
+      }
     });
     // Create or Update Calendar
     builder.addCase(createOrUpdateCalendarAsync.fulfilled, (state, action) => {
@@ -196,6 +208,16 @@ const calendarSlice = createSlice({
     builder.addCase(updateCalendarAsync.fulfilled, (state, action) => {
       state.calendarList = action.payload.calendars;
       state.primaryCalendarId = action.payload.primaryCalendarId;
+      const primaryCalendar = state.calendarList.find(
+        (calendar) => calendar.id === action.payload.primaryCalendarId
+      );
+      if (primaryCalendar) {
+        // Re order the calendar list
+        const otherCalendars = state.calendarList.filter(
+          (calendar) => calendar.id !== action.payload.primaryCalendarId
+        );
+        state.calendarList = [primaryCalendar, ...otherCalendars];
+      }
     });
   },
 });
