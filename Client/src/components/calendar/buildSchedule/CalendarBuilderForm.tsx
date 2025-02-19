@@ -70,7 +70,7 @@ const CalendarBuilderForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <BuildScheduleContainer onClick={handleBuildSchedule}>
+        <BuildScheduleContainer>
           <SelectedSectionContainer form={form} />
         </BuildScheduleContainer>
         <LeftSectionFooter
