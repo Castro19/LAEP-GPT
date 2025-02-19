@@ -41,6 +41,7 @@ export const updateCalendarListItem = async ({
   userId,
   calendarId,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  calendar,
   primaryCalendarId,
   name,
 }: {
