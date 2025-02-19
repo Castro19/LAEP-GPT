@@ -126,12 +126,5 @@ export function generateAllScheduleCombinations(
 
   const filteredSchedules = filterSchedules(allSchedules, preferences);
 
-  const schedules: Schedule[] = filteredSchedules.map((sections) => ({
-    sections: sections.flat(),
-    averageRating:
-      sections.flat().reduce((sum, section) => sum + section.rating, 0) /
-      sections.flat().length,
-  }));
-
-  return schedules;
+  return filteredSchedules;
 }

@@ -12,27 +12,29 @@ const CalendarAverageRating: React.FC = () => {
 
   // Get the current calendar using the page value
   const currentCalendar = calendars[page - 1];
-
-  // Compute the overall and average rating from the calendar sections
-  const overallRating = currentCalendar.sections.reduce(
-    (acc, section) => acc + section.rating,
-    0
-  );
-  const averageRating = overallRating / currentCalendar.sections.length;
-
+  const calculatedAverageRating = currentCalendar.averageRating.toFixed(1);
+  const averageRating =
+    calculatedAverageRating === "NaN" ? null : calculatedAverageRating;
   const stars = Array.from({ length: 4 }, (_, index) => {
-    const fillPercentage = Math.max(0, Math.min(1, averageRating - index));
+    const fillPercentage = Math.max(
+      0,
+      Math.min(1, currentCalendar.averageRating - index)
+    );
     return <Star key={index} fillPercentage={fillPercentage} />;
   });
   return (
     <Card className="p-1 border-gray-300 border-2">
       <h2 className="text-lg font-semibold">Schedule Average Rating</h2>
       <div className="flex justify-start gap-1">
-        <div className="flex items-center">{stars}</div>
-        <strong className="text-md text-white">
-          {averageRating.toFixed(1)}
-        </strong>
-        <span className="text-gray-400">/ 4</span>
+        {averageRating ? (
+          <>
+            <div className="flex items-center">{stars}</div>
+            <strong className="text-md text-white">{averageRating}</strong>
+            <span className="text-gray-400">/ 4</span>
+          </>
+        ) : (
+          <span className="text-gray-400">No rating available</span>
+        )}
       </div>
     </Card>
   );

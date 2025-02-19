@@ -1,11 +1,12 @@
 import { SelectedSection } from "@polylink/shared/types";
 import { CalendarPreferencesForm } from "../buildSchedule/CalendarBuilderForm";
+import { Schedule } from "./buildSchedule";
 
 function filterSchedules(
   allSchedules: SelectedSection[][],
   preferences: CalendarPreferencesForm
-): SelectedSection[][] {
-  const filteredSchedules: SelectedSection[][] = [];
+): Schedule[] {
+  const filteredSchedules: Schedule[] = [];
   //   Loop thru every schedule and identify which one to keep
   for (const schedule of allSchedules) {
     let unitCount = 0;
@@ -17,12 +18,13 @@ function filterSchedules(
       if (!seenCourses.has(section.courseId)) {
         seenCourses.add(section.courseId);
         unitCount += Number(section.units);
-      } else {
-        unitCount += Number(section.units);
         ratingCount += section.rating;
+
         if (section.rating > 0) {
           professorWithRatingCount++;
         }
+      } else {
+        unitCount += Number(section.units);
       }
     }
     // Check the preferences to see if the schedule fits
@@ -46,7 +48,12 @@ function filterSchedules(
     ) {
       continue;
     }
-    filteredSchedules.push(schedule);
+
+    const scheduleToAdd: Schedule = {
+      sections: schedule.flat(),
+      averageRating: ratingCount / professorWithRatingCount,
+    };
+    filteredSchedules.push(scheduleToAdd);
   }
 
   return filteredSchedules;
