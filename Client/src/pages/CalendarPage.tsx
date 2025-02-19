@@ -8,13 +8,10 @@ import {
 import { sectionSelectionActions } from "@/redux";
 import { useEffect, useRef } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { generateAllScheduleCombinations } from "@/components/calendar";
+
 import {
   EmptyCalendar,
   CalendarContainer,
-  BuildScheduleContainer,
-  SelectedSectionContainer,
-  LeftSectionFooter,
   CalendarAIChatContainer,
   PaginationFooter,
 } from "@/components/calendar";
@@ -25,6 +22,7 @@ import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { onNewChat } from "@/components/chat";
 
 import useMobile from "@/hooks/use-mobile";
+import CalendarBuilderForm from "@/components/calendar/buildSchedule/CalendarBuilderForm";
 
 const CalendarPage = () => {
   const isMobile = useMobile();
@@ -122,32 +120,10 @@ const CalendarPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, navigate]);
 
-  // Handle the build schedule button click
-  const handleBuildSchedule = () => {
-    if (environment === "dev") {
-      console.log("Building schedule...");
-    }
-    // Create all combinations of sections
-    const allCombinations = generateAllScheduleCombinations(selectedSections);
-    dispatch(calendarActions.setCalendars(allCombinations));
-    dispatch(calendarActions.setPage(1));
-    dispatch(calendarActions.setTotalPages(allCombinations.length));
-    dispatch(calendarActions.setCurrentCalendar(allCombinations[0]));
-    navigate("/calendar");
-  };
-
-  const handleSaveSchedule = () => {
-    if (currentCalendar) {
-      dispatch(
-        calendarActions.createOrUpdateCalendarAsync(currentCalendar.sections)
-      );
-    }
-  };
-
   return (
     <CalendarPageLayout>
       {isMobile ? (
-        <CalendarMobile handleBuildSchedule={handleBuildSchedule} />
+        <CalendarMobile />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
           <div className="col-span-1">
@@ -162,15 +138,7 @@ const CalendarPage = () => {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="Build Schedule">
-                <BuildScheduleContainer onClick={handleBuildSchedule}>
-                  <SelectedSectionContainer />
-                </BuildScheduleContainer>
-                <LeftSectionFooter
-                  formText="New Schedule"
-                  buttonText="Save Schedule"
-                  onFormSubmit={handleBuildSchedule}
-                  onClick={handleSaveSchedule}
-                />
+                <CalendarBuilderForm />
               </TabsContent>
               <TabsContent value="AI Chat">
                 <CalendarAIChatContainer />
@@ -193,11 +161,7 @@ const CalendarPage = () => {
   );
 };
 
-type CalendarMobileProps = {
-  handleBuildSchedule: () => void;
-};
-
-const CalendarMobile = ({ handleBuildSchedule }: CalendarMobileProps) => {
+const CalendarMobile = () => {
   const { currentCalendar } = useAppSelector((state) => state.calendar);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
@@ -217,16 +181,7 @@ const CalendarMobile = ({ handleBuildSchedule }: CalendarMobileProps) => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Build Schedule">
-        <BuildScheduleContainer onClick={handleBuildSchedule}>
-          <SelectedSectionContainer />
-        </BuildScheduleContainer>
-
-        <LeftSectionFooter
-          formText="Build Schedule"
-          buttonText="Save Schedule"
-          onClick={handleBuildSchedule}
-          onFormSubmit={handleBuildSchedule}
-        />
+        <CalendarBuilderForm />
       </TabsContent>
       <TabsContent value="Calendar">
         <CalendarContainer />

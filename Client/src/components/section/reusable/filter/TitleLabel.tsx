@@ -1,8 +1,14 @@
 import { FormLabel } from "@/components/ui/form";
 
-const TitleLabel = ({ title }: { title: string }) => {
+const TitleLabel = ({
+  title,
+  size = "md",
+}: {
+  title: string;
+  size?: "lg" | "md" | "sm";
+}) => {
   return (
-    <FormLabel className="text-md font-sans dark:text-gray-300">
+    <FormLabel className={`text-${size} font-sans dark:text-gray-300`}>
       {title}
     </FormLabel>
   );

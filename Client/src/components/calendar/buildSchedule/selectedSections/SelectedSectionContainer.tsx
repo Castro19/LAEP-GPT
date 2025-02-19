@@ -1,22 +1,37 @@
 import { SavedSchedules } from "@/components/calendar";
 import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
 import SectionsChosen from "./SectionsChosen";
-import CalendarBuilderForm from "../preferences/CalendarBuilderForm";
+
 // Icons
 import { FaBook, FaCalendar } from "react-icons/fa";
-
-const SelectedSectionContainer = () => {
+import Preferences from "../preferences/Preferences";
+import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
+import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
+const SelectedSectionContainer = ({
+  form,
+}: {
+  form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
+}) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col gap-4">
-        <CollapsibleContentWrapper title="Classes" icon={FaBook}>
+        <CollapsibleContentWrapper
+          defaultOpen={false}
+          title="Classes"
+          icon={FaBook}
+        >
           <SectionsChosen />
         </CollapsibleContentWrapper>
-        <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
+        <CollapsibleContentWrapper
+          defaultOpen={false}
+          title="Schedules"
+          icon={FaCalendar}
+        >
           <SavedSchedules />
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Preferences" icon={FaCalendar}>
-          <CalendarBuilderForm />
+          <Preferences form={form} />
         </CollapsibleContentWrapper>
       </div>
     </div>

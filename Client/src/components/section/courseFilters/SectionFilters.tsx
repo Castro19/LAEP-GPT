@@ -31,7 +31,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import QueryAI from "@/components/section/courseFilters/aiClassSearch/QueryAI";
 import { useUserData } from "@/hooks/useUserData";
 import useMobile from "@/hooks/use-mobile";
-import LeftSectionFooter from "@/components/calendar/buildSchedule/layout/BuildScheduleFooter";
+import LeftSectionFooter from "@/components/calendar/buildSchedule/layout/LeftScheduleFooter";
 
 // Define a Zod schema for the filter form.
 

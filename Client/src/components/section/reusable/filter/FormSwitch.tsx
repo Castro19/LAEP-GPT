@@ -16,13 +16,19 @@ type FormSwitchProps = {
   form: UseFormReturn<any>;
   label: string;
   name: string;
+  defaultChecked?: boolean;
 };
 
-const FormSwitch = ({ form, label, name }: FormSwitchProps) => {
+const FormSwitch = ({
+  form,
+  label,
+  name,
+  defaultChecked = false,
+}: FormSwitchProps) => {
   return (
     <FormItem>
       <div className="flex items-center justify-between gap-1">
-        <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
+        <FormLabel className="font-medium dark:text-gray-400 flex items-center text-md">
           {label}
         </FormLabel>
         <FormField
@@ -34,6 +40,7 @@ const FormSwitch = ({ form, label, name }: FormSwitchProps) => {
                 <Switch
                   checked={field.value as boolean}
                   onCheckedChange={field.onChange}
+                  defaultChecked={defaultChecked}
                 />
               </FormControl>
             );

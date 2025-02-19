@@ -199,7 +199,7 @@ export const TimeRangeSelector = ({
                 selectedItem={selectedLabel}
                 handleChangeItem={handleChangeItem}
                 placeholder="Select a time…"
-                className="w-full mt-2 dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
+                className="w-full mt-1 dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
               />
             </FormControl>
           );
