@@ -260,15 +260,14 @@ type SectionCardProps = {
 
 const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className="border border-gray-300 dark:border-slate-600 rounded-lg p-3 bg-white dark:bg-slate-900">
+    <div className=" rounded-lg p-3 bg-white dark:bg-slate-900">
       <SectionHeader section={section} />
-      <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <SectionEnrollment section={section} />
         </div>
         <div className="flex-1">
-          <SectionSchedule meetings={section.meetings} />
+          <SectionSchedule meetings={section.meetings} section={section} />
         </div>
       </div>
     </div>
@@ -279,10 +278,9 @@ const LectureSectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
     <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-white dark:bg-slate-900 dark:bg-opacity-30">
       <SectionHeader section={section} />
-      <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
       <div className="flex flex-row gap-2">
-        <SectionSchedule meetings={section.meetings} />
+        <SectionSchedule meetings={section.meetings} section={section} />
       </div>
     </div>
   );
@@ -292,10 +290,9 @@ const LabSectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
     <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-gray-100 dark:bg-slate-900 dark:bg-opacity-30">
       <SectionHeader section={section} />
-      <div className="border-b border-gray-300 dark:border-slate-600 my-2"></div>
       <SectionEnrollment section={section} />
       <div className="flex flex-row gap-2">
-        <SectionSchedule meetings={section.meetings} />
+        <SectionSchedule meetings={section.meetings} section={section} />
       </div>
     </div>
   );
