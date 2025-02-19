@@ -4,7 +4,6 @@ import {
   ProfessorGroup,
   SectionDetail,
 } from "@polylink/shared/types";
-import { Button } from "../../ui/button";
 import StarRating from "../reusable/sectionInfo/StarRating";
 import {
   Collapsible,
