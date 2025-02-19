@@ -93,10 +93,14 @@ export const createOrUpdateCalendar = async (
 }> => {
   try {
     const calendarId = uuidv4();
+    const calendarList =
+      await calendarListModel.findCalendarListByUserId(userId);
     const calendar = {
       id: calendarId,
       userId,
-      name: "New Calendar",
+      name: calendarList
+        ? `Schedule ${calendarList.calendars.length + 1}`
+        : "Schedule 1",
       createdAt: new Date(),
       updatedAt: new Date(),
       sections,

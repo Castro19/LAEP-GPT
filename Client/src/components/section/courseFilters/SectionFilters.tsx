@@ -16,7 +16,6 @@ import Instructor from "@/components/section/courseFilters/instructorAndRatings/
 import Scheduling from "@/components/section/courseFilters/scheduling/Scheduling";
 // UI
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -32,6 +31,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import QueryAI from "@/components/section/courseFilters/aiClassSearch/QueryAI";
 import { useUserData } from "@/hooks/useUserData";
 import useMobile from "@/hooks/use-mobile";
+import LeftSectionFooter from "@/components/calendar/buildSchedule/layout/BuildScheduleFooter";
 
 // Define a Zod schema for the filter form.
 
@@ -203,18 +203,10 @@ export function SectionFilters() {
         onSubmit={form.handleSubmit(onSubmit)}
         className={`flex flex-col ${isMobile ? "h-[85%]" : "h-full"}`}
       >
-        <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[83%]">
-          <div className="overflow-auto flex-1 no-scroll">
+        <Card className="flex flex-col border-0 shadow-lg no-scroll h-[80%]">
+          <div className="overflow-auto flex-0 no-scroll">
             <ScrollArea className="h-full min-w-full mb-1">
-              <div className="p-4">
-                <div className="flex items-center justify-center space-x-2">
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                    Course Filters
-                  </h2>
-                </div>
-              </div>
-
-              <div className="px-6 space-y-4 pb-4">
+              <div className="my-4 px-6 space-y-4 pb-4">
                 <CourseInformation form={form} />
                 {/* Border with pop up effect*/}
                 <div className="border-t border-slate-600" />
@@ -230,26 +222,16 @@ export function SectionFilters() {
           </div>
         </Card>
         {/* Divider */}
-        <div className="border-t border-gray-200 p-2" />
-        {/* Sticky footer with Reset and Apply */}
-        <div className="sticky bottom-0 mx-6 bg-background/95 backdrop-blur flex gap-2 shadow-lg">
-          {/* Reset Filters button */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              // Resets the entire form to its initial defaultValues.
-              form.reset();
-            }}
-            className="w-full shadow-lg"
-          >
-            Reset Filters
-          </Button>
-          {/* Apply Filters button */}
-          <Button type="submit" className="w-full shadow-lg">
-            Apply Filters
-          </Button>
-        </div>
+        <LeftSectionFooter
+          formText="Apply Filters"
+          buttonText="Reset Filters"
+          onFormSubmit={() => {
+            onSubmit(form.getValues());
+          }}
+          onClick={() => {
+            form.reset();
+          }}
+        />
       </form>
     </Form>
   );

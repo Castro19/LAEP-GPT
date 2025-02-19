@@ -14,7 +14,7 @@ import {
   CalendarContainer,
   BuildScheduleContainer,
   SelectedSectionContainer,
-  BuildScheduleFooter,
+  LeftSectionFooter,
   CalendarAIChatContainer,
   PaginationFooter,
 } from "@/components/calendar";
@@ -165,9 +165,11 @@ const CalendarPage = () => {
                 <BuildScheduleContainer onClick={handleBuildSchedule}>
                   <SelectedSectionContainer />
                 </BuildScheduleContainer>
-                <BuildScheduleFooter
-                  onClick={handleBuildSchedule}
-                  onSaveSchedule={handleSaveSchedule}
+                <LeftSectionFooter
+                  formText="New Schedule"
+                  buttonText="Save Schedule"
+                  onFormSubmit={handleBuildSchedule}
+                  onClick={handleSaveSchedule}
                 />
               </TabsContent>
               <TabsContent value="AI Chat">
@@ -219,9 +221,11 @@ const CalendarMobile = ({ handleBuildSchedule }: CalendarMobileProps) => {
           <SelectedSectionContainer />
         </BuildScheduleContainer>
 
-        <BuildScheduleFooter
+        <LeftSectionFooter
+          formText="Build Schedule"
+          buttonText="Save Schedule"
           onClick={handleBuildSchedule}
-          onSaveSchedule={() => {}}
+          onFormSubmit={handleBuildSchedule}
         />
       </TabsContent>
       <TabsContent value="Calendar">
