@@ -31,6 +31,17 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
     )
   );
 
+  // Calculate total sections across all courses
+  const totalSections = courses.reduce(
+    (acc, course) =>
+      acc +
+      course.professorGroups.reduce(
+        (groupAcc, group) => groupAcc + group.sections.length,
+        0
+      ),
+    0
+  );
+
   // Collapse All / Expand All toggle
   const toggleAll = () => {
     const allCollapsed = Object.values(expandedCourses).every(
@@ -55,13 +66,21 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
             <h2 className="text-white text-xl font-semibold">
               Currently Viewing
             </h2>
+
+            {/* Courses Count */}
             <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium">
-              {courses.length} courses
+              {courses.length} {courses.length > 1 ? "Courses" : "Course"}
+            </span>
+
+            {/* Sections Count */}
+            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium">
+              {totalSections} {totalSections > 1 ? "Sections" : "Section"}
             </span>
           </div>
 
+          {/* Expand / Collapse All Button */}
           <button
-            className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium hover:bg-opacity-90 transition"
+            className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium hover:bg-opacity-60 transition"
             onClick={toggleAll}
           >
             {Object.values(expandedCourses).every((state) => !state)
@@ -115,7 +134,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({
       <CollapsibleTrigger asChild>
         <div
           className={`flex justify-between items-center bg-gray-900 px-4 py-3 transition-all cursor-pointer shadow-lg
-          hover:shadow-indigo-500/10 transition-shadow
+          hover:shadow-indigo-500/10 
           ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -134,6 +153,11 @@ const CourseSection: React.FC<CourseSectionProps> = ({
             <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-lg text-gray-400">
               {course.units} Units
             </span>
+
+            {/* Sections Count for This Course */}
+            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-lg text-gray-400">
+              {length} {length > 1 ? "Sections" : "Section"}
+            </span>
           </div>
         </div>
       </CollapsibleTrigger>
@@ -144,7 +168,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({
           ${isOpen ? "rounded-b-lg" : "rounded-none"}`}
         >
           {/* Course Description */}
-          <p className="text-gray-300 mb-5">{course.description}</p>
+          <p className="text-[#C6C6C6] mb-5">{course.description}</p>
 
           {/* Sections List */}
           {course.professorGroups.map((group) => (
