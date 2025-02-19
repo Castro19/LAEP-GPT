@@ -195,6 +195,21 @@ const calendarSlice = createSlice({
     });
     // Remove Calendar
     builder.addCase(removeCalendarAsync.fulfilled, (state, action) => {
+      const calendarList = action.payload.calendars;
+      const primaryCalendarId = action.payload.primaryCalendarId;
+      const primaryCalendar = calendarList.find(
+        (calendar) => calendar.id === primaryCalendarId
+      );
+      if (primaryCalendar) {
+        // Put the primary calendar at the top of the list
+        const otherCalendars = calendarList.filter(
+          (calendar) => calendar.id !== primaryCalendarId
+        );
+        state.calendarList = [primaryCalendar, ...otherCalendars];
+      } else {
+        state.calendarList = calendarList;
+      }
+
       state.calendarList = state.calendarList.filter(
         (calendar) => calendar.id !== action.payload.calendarId
       );

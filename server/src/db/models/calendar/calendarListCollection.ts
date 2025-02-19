@@ -123,3 +123,24 @@ export const deleteCalendarListItem = async (
     throw error;
   }
 };
+
+export const updateCalendarListPrimaryId = async (
+  userId: string,
+  newPrimaryCalendarId: string
+): Promise<UpdateResult<CalendarListDocument>> => {
+  if (!calendarCollection) {
+    calendarCollection = initializeCollection();
+  }
+  try {
+    const result = await calendarCollection.updateOne(
+      { userId },
+      { $set: { primaryCalendarId: newPrimaryCalendarId } }
+    );
+    return result;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
+};
