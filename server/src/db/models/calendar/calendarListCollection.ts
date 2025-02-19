@@ -42,7 +42,7 @@ export const findCalendarListByUserId = async (
 export const createOrUpdateCalendarList = async (
   userId: string,
   calendar: CalendarListItem,
-  isPrimary: boolean
+  primaryCalendarId: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
   if (!calendarCollection) {
     calendarCollection = initializeCollection();
@@ -60,7 +60,7 @@ export const createOrUpdateCalendarList = async (
           },
         },
         $set: {
-          primaryCalendarId: isPrimary ? calendar.id : undefined,
+          primaryCalendarId: primaryCalendarId,
         },
       },
       { upsert: true }

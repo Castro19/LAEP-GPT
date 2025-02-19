@@ -110,26 +110,28 @@ export const createOrUpdateCalendar = async (
       throw new Error("Failed to create calendar");
     }
     const calendars = await calendarListModel.findCalendarListByUserId(userId);
-    if (calendars && calendars.calendars.length === 0) {
-      await calendarListModel.createOrUpdateCalendarList(
-        userId,
-        {
-          id: calendarId,
-          name: calendar.name,
-          updatedAt: calendar.updatedAt,
-        },
-        true // primary calendar
-      );
-    } else {
-      await calendarListModel.createOrUpdateCalendarList(
-        userId,
-        {
-          id: calendarId,
-          name: calendar.name,
-          updatedAt: calendar.updatedAt,
-        },
-        false // not primary calendar
-      );
+    if (calendars) {
+      if (calendars.calendars.length === 0 || !calendars.primaryCalendarId) {
+        await calendarListModel.createOrUpdateCalendarList(
+          userId,
+          {
+            id: calendarId,
+            name: calendar.name,
+            updatedAt: calendar.updatedAt,
+          },
+          calendarId // primary calendar
+        );
+      } else {
+        await calendarListModel.createOrUpdateCalendarList(
+          userId,
+          {
+            id: calendarId,
+            name: calendar.name,
+            updatedAt: calendar.updatedAt,
+          },
+          calendars.primaryCalendarId // not primary calendar
+        );
+      }
     }
     const finalCalendars =
       await calendarListModel.findCalendarListByUserId(userId);
