@@ -133,17 +133,3 @@ body {
 .fc-header-toolbar {
   margin-bottom: 0px !important;
 }
-
-.conflict-overlay-event {
-  /* Transparent red */
-  background-color: rgba(255, 99, 132, 0.3) !important;
-
-  /* Remove the default FullCalendar event border if you like */
-  border: none !important;
-
-  /* Raise above normal events */
-  z-index: 9999 !important;
-
-  /* Let clicks pass through so user can still click events under it */
-  pointer-events: none;
-}

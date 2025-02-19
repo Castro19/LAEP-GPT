@@ -224,6 +224,15 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             }}
             eventClick={handleEventClick}
             nowIndicator={false}
+            eventDidMount={(info) => {
+              // If this is a background event, style it on the fly
+              if (info.event.display === "background") {
+                console.log("Background event", info.event);
+                info.el.style.zIndex = "9999";
+                info.el.style.pointerEvents = "none";
+                info.el.style.backgroundColor = info.event.extendedProps.color;
+              }
+            }}
           />
         </ScrollArea>
       </div>

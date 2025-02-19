@@ -151,9 +151,8 @@ function buildBackgroundEventsForGroup(
     backgroundEvents.push({
       start: rangeStart,
       end: rangeEnd,
-      extendedProps: {
-        isOverlay: true,
-      },
+      display: "background",
+      color: "#DF6D6D", // make it darker red
     });
   }
 
