@@ -7,10 +7,10 @@ const SelectedSectionContainer = () => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col gap-4">
-        <CollapsibleContentWrapper title="Selected Sections" icon={FaBook}>
+        <CollapsibleContentWrapper title="Classes" icon={FaBook}>
           <SectionsChosen />
         </CollapsibleContentWrapper>
-        <CollapsibleContentWrapper title="Saved Schedules" icon={FaCalendar}>
+        <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
           <SavedSchedules />
         </CollapsibleContentWrapper>
       </div>
