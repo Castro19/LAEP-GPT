@@ -68,15 +68,11 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <BadgeSection variant="default" className="text-xs">
-          {section.classNumber}
-        </BadgeSection>
-        <BadgeSection variant="secondary" className="text-xs">
-          {section.component}
-        </BadgeSection>
+        <BadgeSection variant="classNumber">{section.classNumber}</BadgeSection>
+
+        <BadgeSection variant="outlined">{section.component}</BadgeSection>
         <BadgeSection
-          variant={section.enrollmentStatus === "O" ? "default" : "destructive"}
-          className="text-xs"
+          variant={section.enrollmentStatus === "O" ? "open" : "closed"}
         >
           {section.enrollmentStatus === "O" ? "Open" : "Closed"}
         </BadgeSection>

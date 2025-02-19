@@ -1,5 +1,13 @@
 type BadgeProps = {
-  variant: "default" | "destructive" | "secondary" | "content";
+  variant:
+    | "default"
+    | "destructive"
+    | "secondary"
+    | "content"
+    | "outlined"
+    | "open"
+    | "closed"
+    | "classNumber";
   className?: string;
   children: React.ReactNode;
 };
@@ -11,6 +19,7 @@ const BadgeSection: React.FC<BadgeProps> = ({
 }) => {
   const baseStyles = "px-2 py-1 rounded text-xs font-medium";
   let variantStyles = "";
+
   if (variant === "destructive") {
     variantStyles = "bg-red-500 text-white";
   } else if (variant === "secondary") {
@@ -19,10 +28,19 @@ const BadgeSection: React.FC<BadgeProps> = ({
   } else if (variant === "default") {
     variantStyles =
       "bg-gray-200 text-gray-800 dark:bg-slate-500 dark:text-gray-100";
+  } else if (variant === "outlined") {
+    variantStyles = "border border-white text-white bg-[#1E293B] px-3 py-1";
+  } else if (variant === "open") {
+    variantStyles = "text-[#5EB752] bg-[#334155] px-3 py-1";
+  } else if (variant === "closed") {
+    variantStyles = "text-[#EC8B8B] bg-[#334155] px-3 py-1";
+  } else if (variant === "classNumber") {
+    variantStyles = "bg-[#334155] text-white px-3 py-1";
   } else {
     variantStyles =
       "bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-gray-300 p-1";
   }
+
   return (
     <span className={`${baseStyles} ${variantStyles} ${className}`}>
       {children}
