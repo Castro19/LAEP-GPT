@@ -23,3 +23,5 @@ export function DeletableTags({ tags, onRemove }: DeletableTagsProps) {
     </div>
   );
 }
+
+export default DeletableTags;
