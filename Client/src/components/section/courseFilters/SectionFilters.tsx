@@ -201,11 +201,11 @@ export function SectionFilters() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={`flex flex-col ${isMobile ? "h-[90%]" : "h-full"}`}
+        className={`flex flex-col ${isMobile ? "h-[85%]" : "h-full"}`}
       >
         <Card className="flex flex-col border-0 shadow-lg no-scroll max-h-[83%]">
           <div className="overflow-auto flex-1 no-scroll">
-            <ScrollArea className="h-full min-w-full mb-4">
+            <ScrollArea className="h-full min-w-full mb-1">
               <div className="p-4">
                 <div className="flex items-center justify-center space-x-2">
                   <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -230,7 +230,7 @@ export function SectionFilters() {
           </div>
         </Card>
         {/* Divider */}
-        <div className="border-t border-gray-200 p-4" />
+        <div className="border-t border-gray-200 p-2" />
         {/* Sticky footer with Reset and Apply */}
         <div className="sticky bottom-0 mx-6 bg-background/95 backdrop-blur flex gap-2 shadow-lg">
           {/* Reset Filters button */}
