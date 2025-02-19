@@ -87,11 +87,11 @@ const CourseSection: React.FC<CourseSectionProps> = ({ course }) => {
 
           <CollapsibleContent className="overflow-hidden transition-all duration-300 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
             <p className="text-gray-300 my-6 px-2">{course.description}</p>
-            <div className="space-y-6">
+            <div className="space-y-2">
               {course.professorGroups.map((group) => (
                 <React.Fragment key={group.instructor.id}>
                   <ProfessorGroupComponent group={group} />
-                  <div className="border-t border-gray-700 my-4" />
+                  {/* <div className="border-t border-gray-700 my-4" /> */}
                 </React.Fragment>
               ))}
             </div>
@@ -150,9 +150,12 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
   });
 
   return (
-    <Collapsible defaultOpen={false}>
+    <Collapsible defaultOpen={false} className="group">
       <CollapsibleTrigger asChild>
-        <div className="rounded-lg rounded-b-none bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer">
+        <div
+          className="rounded-lg bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer pt-5 
+          group-data-[state=open]:rounded-b-none"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <h3 className="text-xl font-semibold text-gray-300">
@@ -189,7 +192,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
 
           {/* Rating details section - add hidden spacer for no-ratings */}
           {group.instructor.id !== "none" ? (
-            <div className="flex justify-end items-center pr-2 ">
+            <div className="flex justify-end items-center pr-2">
               <div className="text-sm text-gray-300 flex items-center">
                 <span className="ml-3 text-slate-500 mt-2">
                   {group.instructor.numEvals} evals
@@ -205,7 +208,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
 
       <CollapsibleContent>
         {/* 🔹 Gray Box Wraps All Sections */}
-        <div className="bg-slate-800 p-4 space-y-4">
+        <div className="bg-slate-800 p-4 space-y-4 rounded-b-lg">
           {/* 🔹 Render Paired Sections (Lecture + Lab Side-by-Side) */}
           {pairedCards.length > 0 && (
             <div className="flex flex-col space-y-4">
