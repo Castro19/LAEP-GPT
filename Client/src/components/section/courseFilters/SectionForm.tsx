@@ -14,7 +14,6 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import { useUserData } from "@/hooks/useUserData";
 
 // Components
-import SectionContainer from "@/components/section/layout/SectionContainer";
 import SectionFilters from "@/components/section/courseFilters/SectionFilters";
 import {
   BuildScheduleContainer,
@@ -208,30 +207,23 @@ const SectionForm = () => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
-        <div className="col-span-1">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <BuildScheduleContainer>
-                <SectionFilters form={form} />
-              </BuildScheduleContainer>
-              <LeftSectionFooter
-                formText="Apply Filters"
-                buttonText="Reset Filters"
-                onFormSubmit={() => {
-                  onSubmit(form.getValues());
-                }}
-                onClick={() => {
-                  form.reset();
-                }}
-              />
-            </form>
-          </Form>
-        </div>
-        <div className="col-span-2">
-          <SectionContainer />
-        </div>
-      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <BuildScheduleContainer>
+            <SectionFilters form={form} />
+          </BuildScheduleContainer>
+          <LeftSectionFooter
+            formText="Apply Filters"
+            buttonText="Reset Filters"
+            onFormSubmit={() => {
+              onSubmit(form.getValues());
+            }}
+            onClick={() => {
+              form.reset();
+            }}
+          />
+        </form>
+      </Form>
     </div>
   );
 };
