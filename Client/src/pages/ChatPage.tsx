@@ -89,7 +89,6 @@ const ChatPage = () => {
       }
     };
     fetchLog();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, dispatch]);
 
   useEffect(() => {
