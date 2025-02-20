@@ -68,19 +68,19 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
             </h2>
 
             {/* Courses Count */}
-            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium">
+            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium flex-wrap">
               {courses.length} {courses.length > 1 ? "Courses" : "Course"}
             </span>
 
             {/* Sections Count */}
-            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium">
+            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium flex-wrap">
               {totalSections} {totalSections > 1 ? "Sections" : "Section"}
             </span>
           </div>
 
           {/* Expand / Collapse All Button */}
           <button
-            className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium hover:bg-opacity-60 transition"
+            className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium hover:bg-opacity-60 transition flex-wrap"
             onClick={toggleAll}
           >
             {Object.values(expandedCourses).every((state) => !state)
@@ -112,6 +112,8 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
 // CourseSection: Displays course-level info and professor groups.
 // In light mode the section has a white background, in dark mode a slate background.
 // -----------------------------------------------------------------------------
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type CourseSectionProps = {
   course: CourseInfo;
   isOpen: boolean;
@@ -138,7 +140,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({
           ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="px-4 py-2 rounded-full bg-slate-700 bg-opacity-20 text-gray-200 font-semibold text-xl">
               <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 {course.subject} {course.catalogNumber}
@@ -149,7 +151,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({
               {course.courseName}
             </h2>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-lg text-gray-400">
               {course.units} Units
             </span>
@@ -341,7 +343,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
     <div className=" rounded-lg p-3 bg-white dark:bg-gray-900">
       <SectionHeader section={section} />
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4 flex-wrap">
         <div className="flex-1">
           <SectionEnrollment section={section} />
         </div>
