@@ -261,11 +261,23 @@ export async function getSectionsByFilter(
     let query = buildSectionsQuery(filter);
     if (filter.withNoConflicts) {
       const calendar = await fetchPrimaryCalendar(userId);
+
       if (calendar) {
-        query = {
-          ...query,
-          ...buildNonConflictingQuery(calendar),
-        };
+        // 1) Build the “no‐conflict” portion
+        const noConflictQuery = buildNonConflictingQuery(calendar);
+
+        // 2) If the user actually has meeting times (i.e. noConflictQuery isn’t empty),
+        //    then combine the two queries under $and
+        if (Object.keys(noConflictQuery).length > 0) {
+          query = {
+            $and: [query, noConflictQuery],
+          };
+        } else {
+          query = {
+            ...query,
+            ...noConflictQuery,
+          };
+        }
       }
     }
 
