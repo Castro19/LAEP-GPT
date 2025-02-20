@@ -214,37 +214,20 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
       <div className="flex justify-end mt-4">
         {section &&
           (section.pairedSections && section.pairedSections.length > 0 ? (
-            <Popover
-              open={displayAddPairModal}
-              onOpenChange={setDisplayAddPairModal}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
-                  onClick={() => setDisplayAddPairModal(true)}
-                >
-                  See Add Options
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-72">
-                <div className="grid gap-2">
-                  <div className="flex flex-row gap-2">
-                    <Button
-                      className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
-                      onClick={() => handleAddPair(section)}
-                    >
-                      Add Class Pair
-                    </Button>
-                    <Button
-                      className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
-                      onClick={() => handleAdd(section)}
-                    >
-                      Add Single Section
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <div className="flex flex-row gap-2">
+              <Button
+                className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
+                onClick={() => handleAddPair(section)}
+              >
+                Add Class Pair
+              </Button>
+              <Button
+                className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
+                onClick={() => handleAdd(section)}
+              >
+                Add Single Section
+              </Button>
+            </div>
           ) : (
             <Button
               className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
