@@ -40,6 +40,7 @@ export const SECTION_FILTERS_SCHEMA = z.object({
       concentration: z.string(),
     })
     .optional(),
+  withNoConflicts: z.boolean().optional(),
 });
 
 export const CALENDAR_PREFERENCES_SCHEMA = z.object({

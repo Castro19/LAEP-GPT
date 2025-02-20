@@ -9,6 +9,8 @@ import {
 import * as sectionCollection from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
+import { buildNonConflictingQuery } from "../../../helpers/queryBuilders/scheduling";
+import { fetchPrimaryCalendar } from "../calendar/calendarListServices";
 
 /**
  * Build a filter object that can be passed to the collection query.
@@ -251,11 +253,22 @@ function buildSectionsQuery(
  */
 export async function getSectionsByFilter(
   filter: SectionsFilterParams,
+  userId: string,
   skip = 0,
   limit = 25
 ): Promise<{ sections: Section[]; total: number }> {
   try {
-    const query = buildSectionsQuery(filter);
+    let query = buildSectionsQuery(filter);
+    if (filter.withNoConflicts) {
+      const calendar = await fetchPrimaryCalendar(userId);
+      if (calendar) {
+        query = {
+          ...query,
+          ...buildNonConflictingQuery(calendar),
+        };
+      }
+    }
+
     if (environment === "dev") {
       console.log("query", query);
     }

@@ -28,6 +28,7 @@ interface CustomRequest extends Request {
     "techElectives.major"?: string;
     "techElectives.concentration"?: string;
     isTechElective?: string;
+    withNoConflicts?: string;
     page?: string;
   };
 }

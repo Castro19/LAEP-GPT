@@ -206,14 +206,15 @@ const calendarSlice = createSlice({
           (calendar) => calendar.id !== primaryCalendarId
         );
         state.calendarList = [primaryCalendar, ...otherCalendars];
+
+        state.calendarList = state.calendarList.filter(
+          (calendar) => calendar.id !== action.payload.calendarId
+        );
+        state.primaryCalendarId = action.payload.primaryCalendarId;
       } else {
         state.calendarList = calendarList;
+        state.primaryCalendarId = "";
       }
-
-      state.calendarList = state.calendarList.filter(
-        (calendar) => calendar.id !== action.payload.calendarId
-      );
-      state.primaryCalendarId = action.payload.primaryCalendarId;
     });
     // Get Calendar By Id
     builder.addCase(getCalendarByIdAsync.fulfilled, (state, action) => {

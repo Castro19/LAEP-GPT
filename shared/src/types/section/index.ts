@@ -35,12 +35,7 @@ export type Section = {
     "GE D" | "USCP" | "GE C" | "GWR" | "GE E" | "GE B" | "GE F" | "GE A"
   >; // course attributes the section fulfills (e.g. ["GE D", "USCP"])
 
-  meetings: Array<{
-    days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
-    start_time: string | null; // start time of the meeting (e.g. "10:00 AM")
-    end_time: string | null; // end time of the meeting (e.g. "11:00 AM")
-    location: string; // location of the meeting (e.g. "TBA")
-  }>;
+  meetings: Meeting[];
 
   instructors: Array<{
     name: string; // name of the instructor (e.g. "John Doe")
@@ -88,6 +83,7 @@ export type SectionsFilterParams = {
     major: string;
     concentration: string;
   };
+  withNoConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
 };
 
 // ------------------------------------------------------------

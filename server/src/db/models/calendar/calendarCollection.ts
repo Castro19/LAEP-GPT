@@ -45,7 +45,7 @@ export const getCalendarById = async (
       { projection: { _id: 0 } }
     );
     if (!result) {
-      throw new Error("Calendar not found");
+      return null;
     }
     return result;
   } catch (error) {

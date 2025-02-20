@@ -36,6 +36,7 @@ router.get("/", async (req: Request, res: any) => {
       includeUnratedInstructors, // e.g., true or false
       page = "1", // Default to page 1 if not provided
       isTechElective, // e.g., true or false
+      withNoConflicts, // e.g., true or false
     } = req.query;
 
     // Access the flattened techElectives values from the query.
@@ -89,11 +90,13 @@ router.get("/", async (req: Request, res: any) => {
       includeUnratedInstructors: includeUnratedInstructors === "true", // convert str to boolean
       techElectives, // Use the flattened object values here
       isTechElective: isTechElective === "true", // Converts the string "true" to boolean true, any other value becomes false
+      withNoConflicts: withNoConflicts === "true", // convert str to boolean
     };
 
     // Call the service with the parsed query object
     const { sections, total } = await getSectionsByFilter(
       filterParams,
+      userId,
       skip,
       PAGE_SIZE
     );
