@@ -4,14 +4,12 @@ import {
   useAppSelector,
   sectionSelectionActions,
 } from "@/redux";
-import { useState } from "react";
 import BadgeSection from "../helpers/BadgeSection";
 import LabelSection from "../helpers/LabelSection";
 import { convertTo12HourFormat } from "../helpers/timeFormatter";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Button } from "../../ui/button";
 import { transformToSectionDetail } from "@/helpers/transformSection";
-import { environment } from "@/helpers/getEnvironmentVars";
+// import { environment } from "@/helpers/getEnvironmentVars";
 import { toast } from "../../ui/use-toast";
 
 // -----------------------------------------------------------------------------
@@ -22,110 +20,23 @@ type SectionHeaderProps = {
 };
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
-  const dispatch = useAppDispatch();
-  const [displayAddPairModal, setDisplayAddPairModal] = useState(false);
-  const { sections } = useAppSelector((state) => state.section);
-
-  const handleAddPair = async (section: SectionDetail) => {
-    handleAdd(section);
-    // Get the paired section from its class number
-    const pairedSection = sections.find(
-      (s) => s.classNumber === section.pairedSections[0]
-    );
-    // Convert to sectionDetail
-    if (pairedSection) {
-      const pairedSectionDetail = transformToSectionDetail(pairedSection);
-      handleAdd(pairedSectionDetail);
-    }
-  };
-
   // Handler for the Add button
-  const handleAdd = async (section: SectionDetail) => {
-    // Implement your add functionality here
-    if (environment === "dev") {
-      console.log("Add button clicked for meeting:", section);
-    }
-    const { payload } = await dispatch(
-      sectionSelectionActions.createOrUpdateSelectedSectionAsync(section)
-    );
-    const { message } = payload as { message: string };
-    if (
-      message ===
-      `Try adding a different section for course ${section.courseId}`
-    ) {
-      toast({
-        title: `Section ${section.classNumber} Already Exists in schedule`,
-        description: message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: `${section.courseId} Added`,
-        description: message,
-      });
-    }
-  };
   return (
     <div className="flex items-center justify-between">
+      {/* Left Side - Component Type (Lab/Lec) + Enrollment Status */}
       <div className="flex items-center gap-2">
-        <BadgeSection variant="default" className="text-xs">
-          {section.classNumber}
-        </BadgeSection>
-        <BadgeSection variant="secondary" className="text-xs">
-          {section.component}
-        </BadgeSection>
+        <BadgeSection variant="outlined">{section.component}</BadgeSection>
         <BadgeSection
-          variant={section.enrollmentStatus === "O" ? "default" : "destructive"}
-          className="text-xs"
+          variant={section.enrollmentStatus === "O" ? "open" : "closed"}
         >
           {section.enrollmentStatus === "O" ? "Open" : "Closed"}
         </BadgeSection>
       </div>
-      {section.pairedSections && section.pairedSections.length > 0 ? (
-        <Popover
-          open={displayAddPairModal}
-          onOpenChange={setDisplayAddPairModal}
-        >
-          <PopoverTrigger asChild className="flex justify-end">
-            <Button
-              variant="secondary"
-              className="text-xs "
-              onClick={() => setDisplayAddPairModal(true)}
-            >
-              Add
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72">
-            <div className="grid gap-2">
-              {/* Display the class Pair & disclaimer that it is recommend to pair sections. Give option of adding class pair or just adding this single section. */}
-              <div className="flex flex-row gap-2">
-                <Button
-                  variant="secondary"
-                  className="text-xs py-0"
-                  onClick={() => handleAddPair(section)}
-                >
-                  Add Class Pair
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="text-xs py-0"
-                  onClick={() => handleAdd(section)}
-                >
-                  Add Single Section
-                </Button>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      ) : (
-        <Button
-          variant="secondary"
-          className="text-xs py-0"
-          onClick={() => handleAdd(section)}
-        >
-          Add
-        </Button>
-      )}
+
+      {/* Right Side - Section Number */}
+      <div>
+        <BadgeSection variant="classNumber">{section.classNumber}</BadgeSection>
+      </div>
     </div>
   );
 };
@@ -197,31 +108,56 @@ export const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({
 type SectionScheduleProps = {
   meetings: Meeting[];
   hideLocation?: boolean;
+  section?: SectionDetail; // New prop to access section info
 };
 
 export const SectionSchedule: React.FC<SectionScheduleProps> = ({
   meetings,
   hideLocation = false,
+  section,
 }) => {
-  const getDayName = (dayCode: string): string => {
-    switch (dayCode) {
-      case "Mo":
-        return "Mon";
-      case "Tu":
-        return "Tue";
-      case "We":
-        return "Wed";
-      case "Th":
-        return "Thu";
-      case "Fr":
-        return "Fri";
-      default:
-        return "N/A";
+  const dispatch = useAppDispatch();
+  const { sections } = useAppSelector((state) => state.section);
+
+  // Function to handle adding a section
+  const handleAdd = async (section: SectionDetail) => {
+    const { payload } = await dispatch(
+      sectionSelectionActions.createOrUpdateSelectedSectionAsync(section)
+    );
+    const { message } = payload as { message: string };
+
+    if (
+      message ===
+      `Try adding a different section for course ${section.courseId}`
+    ) {
+      toast({
+        title: `Section ${section.classNumber} Already Exists in schedule`,
+        description: message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: `${section.courseId} Added`,
+        description: message,
+      });
+    }
+  };
+
+  // Function to handle adding a class pair
+  const handleAddPair = async (section: SectionDetail) => {
+    handleAdd(section);
+    // Get the paired section
+    const pairedSection = sections.find(
+      (s) => s.classNumber === section.pairedSections[0]
+    );
+    if (pairedSection) {
+      const pairedSectionDetail = transformToSectionDetail(pairedSection);
+      handleAdd(pairedSectionDetail);
     }
   };
 
   return (
-    <div className="flex flex-col gap-2 mt-3">
+    <div className="flex flex-col gap-2 mt-3 w-full">
       {meetings.map((meeting, index) => (
         <div key={index} className="flex flex-col gap-3">
           {!hideLocation && (
@@ -238,7 +174,7 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
               {meeting.days.length > 0 ? (
                 meeting.days.map((day: string) => (
                   <BadgeSection key={day} variant="content">
-                    {getDayName(day)}
+                    {day}
                   </BadgeSection>
                 ))
               ) : (
@@ -246,11 +182,10 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
               )}
             </div>
           </div>
-          {/* Stack on top of each other if hideLocation is true */}
+
+          {/* Start Time & End Time */}
           <div
-            className={`flex flex-row gap-4  ${
-              hideLocation ? "flex-col justify-start" : "items-center"
-            }`}
+            className={`flex flex-row gap-4 ${hideLocation ? "flex-col justify-start" : "items-center"}`}
           >
             <div className="flex flex-row gap-2 items-center">
               <LabelSection>Start Time</LabelSection>
@@ -271,6 +206,37 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
           </div>
         </div>
       ))}
+
+      {/* Add Section Button (Placed at the Bottom Right) */}
+      <div className="flex justify-end mt-4">
+        {section &&
+          (section.pairedSections && section.pairedSections.length > 0 ? (
+            <div className="flex flex-row gap-2">
+              <Button
+                className="bg-white text-slate-900 hover:bg-gray-300 text-xs dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
+                onClick={() => handleAddPair(section)}
+              >
+                Add Class Pair
+              </Button>
+              <Button
+                className="inline-flex items-center justify-center rounded-md text-xs font-medium 
+    transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 
+    disabled:opacity-50 bg-white text-slate-900 hover:bg-gray-100 
+    h-10 px-4 py-2 w-full shadow-lg dark:bg-slate-500/50 dark:hover:bg-slate-700/70 hover:bg-slate-100/80 dark:text-slate-50"
+                onClick={() => handleAdd(section)}
+              >
+                Add Single Section
+              </Button>
+            </div>
+          ) : (
+            <Button
+              className="bg-white text-slate-900 hover:bg-gray-300 text-xs dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
+              onClick={() => handleAdd(section)}
+            >
+              Add Single Section
+            </Button>
+          ))}
+      </div>
     </div>
   );
 };
