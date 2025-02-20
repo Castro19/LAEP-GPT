@@ -22,25 +22,49 @@ import {
 import { UserAvatar } from "../userProfile/UserAvatar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { assistantActions, useAppDispatch, useAppSelector } from "@/redux";
 import { signOutUser } from "@/redux/auth/authSlice";
+import { onNewChat } from "../chat/helpers/newChatHandler";
 
 function OuterSidebar() {
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
   const { currentCalendar } = useAppSelector((state) => state.calendar);
-
+  const { error, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
+  const { assistantList } = useAppSelector((state) => state.assistant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [isProfileHovered, setIsProfileHovered] = useState(false);
 
+  const handleChatClick = () => {
+    if (assistantList.length > 0) {
+      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+    }
+
+    onNewChat(
+      currentChatId,
+      dispatch,
+      navigate,
+      error,
+      loading,
+      messagesByChatId
+    );
+    if (currentChatId) {
+      navigate(`/chat/${currentChatId}`);
+    } else {
+      navigate("/chat");
+    }
+  };
+
   const handleNavigation = (path: string) => {
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
-    } else if (path === "/chat" && currentChatId) {
-      navigate(`/chat/${currentChatId}`);
+    } else if (path === "/chat") {
+      handleChatClick();
     } else if (path === "/calendar" && currentCalendar && currentCalendar.id) {
       navigate(`/calendar/${currentCalendar.id}`);
     } else {

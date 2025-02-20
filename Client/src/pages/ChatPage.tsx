@@ -86,8 +86,6 @@ const ChatPage = () => {
             console.error("Error fetching log: ", error);
           }
         }
-      } else {
-        dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
       }
     };
     fetchLog();
