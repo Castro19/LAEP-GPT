@@ -126,7 +126,7 @@ export const deleteCalendarListItem = async (
 
 export const updateCalendarListPrimaryId = async (
   userId: string,
-  newPrimaryCalendarId: string
+  newPrimaryCalendarId?: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
   if (!calendarCollection) {
     calendarCollection = initializeCollection();

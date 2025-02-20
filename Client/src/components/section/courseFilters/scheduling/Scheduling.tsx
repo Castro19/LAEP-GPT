@@ -3,7 +3,7 @@ import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
 
 // My Components
 import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
-import { TimeRange, TitleLabel } from "@/components/section";
+import { FormSwitch, TimeRange, TitleLabel } from "@/components/section";
 
 // UI Components
 import {
@@ -24,12 +24,15 @@ import {
   HOURS,
   SECTION_FILTERS_SCHEMA,
 } from "@/components/section/courseFilters/helpers/constants";
+import { useNavigate } from "react-router-dom";
 
 const Scheduling = ({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
+  const navigate = useNavigate();
+
   return (
     <CollapsibleContentWrapper
       title="Scheduling"
@@ -120,6 +123,41 @@ const Scheduling = ({
                 ))}
               </div>
             </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="withNoConflicts"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <FormSwitch
+                form={form}
+                label="No Time Conflicts"
+                name="withNoConflicts"
+                defaultChecked={field.value}
+              />
+            </FormControl>
+            {field.value && (
+              <div className="flex flex-col gap-1">
+                <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm">
+                  Only show sections with no time conflicts with your primary
+                  schedule.
+                </FormLabel>
+                <FormLabel className="font-medium dark:text-gray-400 flex items-center text-sm mr-1">
+                  Set your primary schedule in{"  "}
+                  <span
+                    className="text-blue-500 cursor-pointer ml-1"
+                    onClick={() => {
+                      navigate("/calendar");
+                    }}
+                  >
+                    {"  "} Calendar
+                  </span>
+                </FormLabel>
+              </div>
+            )}
           </FormItem>
         )}
       />

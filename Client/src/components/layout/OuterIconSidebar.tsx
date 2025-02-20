@@ -41,7 +41,7 @@ function OuterSidebar() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat" && currentChatId) {
       navigate(`/chat/${currentChatId}`);
-    } else if (path === "/calendar" && currentCalendar) {
+    } else if (path === "/calendar" && currentCalendar && currentCalendar.id) {
       navigate(`/calendar/${currentCalendar.id}`);
     } else {
       navigate(path);
@@ -56,7 +56,7 @@ function OuterSidebar() {
       );
     } else if (path === "/chat" && currentChatId) {
       return location.pathname === `/chat/${currentChatId}`;
-    } else if (path === "/calendar" && currentCalendar) {
+    } else if (path === "/calendar" && currentCalendar && currentCalendar.id) {
       return location.pathname === `/calendar/${currentCalendar.id}`;
     } else {
       return location.pathname === path;

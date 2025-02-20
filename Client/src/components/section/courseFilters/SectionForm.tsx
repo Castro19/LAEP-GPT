@@ -72,6 +72,7 @@ const SectionForm = () => {
         major: major,
         concentration: concentration,
       },
+      withNoConflicts: reduxFilters.withNoConflicts || false,
     },
   });
 
@@ -106,6 +107,7 @@ const SectionForm = () => {
         major: "",
         concentration: "",
       },
+      withNoConflicts: watchedValues.withNoConflicts || false,
     };
 
     // Only dispatch if something actually changed.
@@ -140,6 +142,7 @@ const SectionForm = () => {
         concentration: "",
       },
       isTechElective: data.isTechElective || false,
+      withNoConflicts: data.withNoConflicts || false,
     };
 
     // For example, build query string:
@@ -189,6 +192,9 @@ const SectionForm = () => {
       "techElectives.concentration",
       filters.techElectives?.concentration || ""
     );
+    if (filters.withNoConflicts) {
+      params.append("withNoConflicts", "true");
+    }
 
     return params.toString();
   }
