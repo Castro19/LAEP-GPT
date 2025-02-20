@@ -213,13 +213,16 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
           (section.pairedSections && section.pairedSections.length > 0 ? (
             <div className="flex flex-row gap-2">
               <Button
-                className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
+                className="bg-white text-slate-900 hover:bg-gray-300 text-xs dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
                 onClick={() => handleAddPair(section)}
               >
                 Add Class Pair
               </Button>
               <Button
-                className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
+                className="inline-flex items-center justify-center rounded-md text-xs font-medium 
+    transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 
+    disabled:opacity-50 bg-white text-slate-900 hover:bg-gray-100 
+    h-10 px-4 py-2 w-full shadow-lg dark:bg-slate-500/50 dark:hover:bg-slate-700/70 hover:bg-slate-100/80 dark:text-slate-50"
                 onClick={() => handleAdd(section)}
               >
                 Add Single Section
@@ -227,7 +230,7 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
             </div>
           ) : (
             <Button
-              className="bg-white text-slate-900 hover:bg-gray-100 text-xs"
+              className="bg-white text-slate-900 hover:bg-gray-300 text-xs dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
               onClick={() => handleAdd(section)}
             >
               Add Single Section

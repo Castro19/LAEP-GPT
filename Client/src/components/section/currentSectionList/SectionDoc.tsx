@@ -113,10 +113,10 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
 // In light mode the section has a white background, in dark mode a slate background.
 // -----------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type CourseSectionProps = {
   course: CourseInfo;
   isOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
   setIsOpen: (isOpen: boolean) => void;
 };
 
