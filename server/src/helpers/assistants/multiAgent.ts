@@ -42,12 +42,14 @@ async function handleMultiAgentModel({
   sections,
 }: MultiAgentRequest): Promise<void> {
   try {
-    let messageToAdd =
-      message + "\nHere are the sections: " + JSON.stringify(sections);
+    let messageToAdd = message + "\n";
     // First assistant: process the user's message and return JSON object
     let helperAssistantId: string | null = null;
     if (model.title === "Schedule Builder") {
-      helperAssistantId = ASST_MAP["schedule_builder_query"] as string;
+      helperAssistantId = ASST_MAP["enhanced_schedule_builder_query"] as string;
+      messageToAdd +=
+        "Here is my current schedule sections: " +
+        `${JSON.stringify(sections)}`;
     } else {
       helperAssistantId = ASST_MAP["professor_ratings_query"] as string;
     }
@@ -64,6 +66,12 @@ async function handleMultiAgentModel({
     // Add threadId to runningStreams (this is to allow the user to cancel the run)
     runningStreams[userMessageId].threadId = threadId;
 
+    if (environment === "dev") {
+      console.log(
+        `Message to add for helper assistant ${model.title}: `,
+        messageToAdd
+      );
+    }
     // Add user's message to helper thread
     await addMessageToThread(threadId, "user", messageToAdd, null, model.title);
 
@@ -116,18 +124,8 @@ async function handleMultiAgentModel({
         }
         if (environment === "dev") {
           console.log("Sections: ", sections);
+          console.log(`Message to add for schedule builder: ${messageToAdd}`);
         }
-        // Add classNumbers to jsonObject.
-        jsonObject.fetchSections.classNumbers = sections.map(
-          (section) => section.classNumber
-        );
-        // Add sectionInfo to jsonObject.
-        jsonObject.fetchProfessors.sectionInfo = sections.map((section) => ({
-          courseId: section.courseId,
-          classNumber: section.classNumber,
-          professors: section.professors,
-        }));
-
         messageToAdd = await scheduleBuilder(messageToAdd, jsonObject);
       } else if (model.title === "Professor Ratings") {
         if (helperResponse) {
@@ -136,6 +134,7 @@ async function handleMultiAgentModel({
         if (!jsonObject) {
           throw new Error("JSON object not found");
         }
+        console.log(`Message to add for professor ratings: ${message}`);
         messageToAdd = await professorRatings(messageToAdd, jsonObject);
       } else {
         if (environment === "dev") {
@@ -162,7 +161,6 @@ async function handleMultiAgentModel({
             "with message: ",
             messageToAdd
           );
-          console.log("ASST ID: ", assistantId);
         }
         // Run the assistant and stream response
         await runAssistantAndStreamResponse(
