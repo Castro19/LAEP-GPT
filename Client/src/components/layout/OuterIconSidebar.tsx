@@ -11,7 +11,7 @@ import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 // (Use your icons or lucide-react icons, e.g. Home, User, etc.)
 
 import { IoMdChatboxes } from "react-icons/io";
-import { IoHomeSharp, IoLogOutOutline } from "react-icons/io5";
+import { IoArrowBack, IoLogOutOutline } from "react-icons/io5";
 
 import {
   Tooltip,
@@ -67,6 +67,25 @@ function OuterSidebar() {
     }
   };
 
+  const goBack = () => {
+    // Check if history length is sufficient for navigating back
+    if (window.history.length > 2) {
+      navigate(-1);
+    }
+    // Check if they landed on this page directly (no referrer)
+    else if (!document.referrer || document.referrer === "") {
+      navigate("/");
+    }
+    // Edge case: Ensure they are not navigating outside your domain
+    else if (!document.referrer.startsWith(window.location.origin)) {
+      navigate("/");
+    }
+    // Default case: Go back if safe
+    else {
+      navigate(-1);
+    }
+  };
+
   const handleNavigation = (path: string) => {
     dispatch(sectionActions.setIsInitialState(true));
 
@@ -111,17 +130,17 @@ function OuterSidebar() {
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    onClick={() => handleNavigation("/")}
+                    onClick={() => goBack()}
                     className={`${
                       isActive("/")
                         ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                         : "hover:text-slate-600"
                     }`}
                   >
-                    <IoHomeSharp className="m-auto w-5 h-5" />
+                    <IoArrowBack className="m-auto w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Home Page</TooltipContent>
+                <TooltipContent>Go Back</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </SidebarHeader>
