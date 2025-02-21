@@ -85,7 +85,8 @@ export const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({
           <span>
             <BadgeSection variant="content">
               {section.enrollment.enrollmentAvailable} /{" "}
-              {section.enrollment.enrollmentTotal}
+              {section.enrollment.enrollmentTotal +
+                section.enrollment.enrollmentAvailable}
             </BadgeSection>
           </span>
         </div>
