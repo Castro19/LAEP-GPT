@@ -190,89 +190,100 @@ const CourseInformation = ({
           </FormItem>
         )}
       />
-
-      <FormSwitch
-        form={form}
-        label="Include only Tech Electives"
+      <FormField
+        control={form.control}
         name="isTechElective"
-      />
-      {form.watch("isTechElective") && (
-        <>
-          <FormField
-            control={form.control}
-            name="techElectives.major"
-            render={({ field }) => {
-              return (
-                <FormControl>
-                  <ReusableDropdown
-                    name="Major"
-                    dropdownItems={majorOptions}
-                    handleChangeItem={(_, value) => {
-                      console.log("VALUE", value);
-                      // Retrieve the current techElectives values, defaulting concentration to an empty string if undefined.
-                      const currentTechElectives = form.getValues(
-                        "techElectives"
-                      ) || { major: "", concentration: "" };
-                      form.setValue("techElectives", {
-                        ...currentTechElectives,
-                        major: value,
-                        // Ensure concentration is always a string.
-                        concentration: currentTechElectives.concentration ?? "",
-                      });
-                    }}
-                    selectedItem={field.value || major || ""}
-                    className="w-full border rounded-lg hover:border-blue-300 transition-colors dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
-                  />
-                </FormControl>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="techElectives.concentration"
-            render={({ field }) => {
-              return (
-                <FormControl>
-                  <ReusableDropdown
-                    name="Concentration"
-                    dropdownItems={concentrationOptions.map(
-                      (item) => item.concName
-                    )}
-                    handleChangeItem={(_, value) => {
-                      console.log("VALUE", value);
-                      const selectedConc = concentrationOptions.find(
-                        (item) => item.concName === value
-                      );
-                      if (selectedConc) {
-                        const currentTechElectives = form.getValues(
-                          "techElectives"
-                        ) || { major: "", concentration: "" };
-                        form.setValue("techElectives", {
-                          ...currentTechElectives,
-                          // Update concentration using the code from your options.
-                          concentration: selectedConc.code,
-                        });
-                      }
-                    }}
-                    /* Convert the saved concentration code to its concName label,
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <FormSwitch
+                form={form}
+                label="Include only Tech Electives"
+                name="isTechElective"
+                defaultChecked={field.value}
+              />
+            </FormControl>
+            {field.value && (
+              <div className="flex flex-col gap-2">
+                <FormField
+                  control={form.control}
+                  name="techElectives.major"
+                  render={({ field }) => {
+                    return (
+                      <FormControl>
+                        <ReusableDropdown
+                          name="Major"
+                          dropdownItems={majorOptions}
+                          handleChangeItem={(_, value) => {
+                            console.log("VALUE", value);
+                            // Retrieve the current techElectives values, defaulting concentration to an empty string if undefined.
+                            const currentTechElectives = form.getValues(
+                              "techElectives"
+                            ) || { major: "", concentration: "" };
+                            form.setValue("techElectives", {
+                              ...currentTechElectives,
+                              major: value,
+                              // Ensure concentration is always a string.
+                              concentration:
+                                currentTechElectives.concentration ?? "",
+                            });
+                          }}
+                          selectedItem={field.value || major || ""}
+                          className="w-full border rounded-lg hover:border-blue-300 transition-colors dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
+                        />
+                      </FormControl>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="techElectives.concentration"
+                  render={({ field }) => {
+                    return (
+                      <FormControl>
+                        <ReusableDropdown
+                          name="Concentration"
+                          dropdownItems={concentrationOptions.map(
+                            (item) => item.concName
+                          )}
+                          handleChangeItem={(_, value) => {
+                            console.log("VALUE", value);
+                            const selectedConc = concentrationOptions.find(
+                              (item) => item.concName === value
+                            );
+                            if (selectedConc) {
+                              const currentTechElectives = form.getValues(
+                                "techElectives"
+                              ) || { major: "", concentration: "" };
+                              form.setValue("techElectives", {
+                                ...currentTechElectives,
+                                // Update concentration using the code from your options.
+                                concentration: selectedConc.code,
+                              });
+                            }
+                          }}
+                          /* Convert the saved concentration code to its concName label,
                        falling back on the default concentration (from your selector) if needed. */
-                    selectedItem={
-                      field.value
-                        ? concentrationOptions.find(
-                            (option) => option.code === field.value
-                          )?.concName ?? ""
-                        : concentrationOptions.find(
-                            (option) => option.code === concentration
-                          )?.concName ?? ""
-                    }
-                    className="w-full border rounded-lg hover:border-blue-300 transition-colors dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
-                  />
-                </FormControl>
-              );
-            }}
-          />
-        </>
-      )}
+                          selectedItem={
+                            field.value
+                              ? concentrationOptions.find(
+                                  (option) => option.code === field.value
+                                )?.concName ?? ""
+                              : concentrationOptions.find(
+                                  (option) => option.code === concentration
+                                )?.concName ?? ""
+                          }
+                          className="w-full border rounded-lg hover:border-blue-300 transition-colors dark:bg-zinc-950 dark:text-slate-200 text-sm font-medium"
+                        />
+                      </FormControl>
+                    );
+                  }}
+                />
+              </div>
+            )}
+          </FormItem>
+        )}
+      />
     </CollapsibleContentWrapper>
   );
 };

@@ -22,7 +22,12 @@ import {
 import { UserAvatar } from "../userProfile/UserAvatar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
-import { assistantActions, useAppDispatch, useAppSelector } from "@/redux";
+import {
+  assistantActions,
+  sectionActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
 import { signOutUser } from "@/redux/auth/authSlice";
 import { onNewChat } from "../chat/helpers/newChatHandler";
 
@@ -41,6 +46,8 @@ function OuterSidebar() {
   const [isProfileHovered, setIsProfileHovered] = useState(false);
 
   const handleChatClick = () => {
+    dispatch(sectionActions.setIsInitialState(true));
+
     if (assistantList.length > 0) {
       dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
     }
@@ -61,6 +68,8 @@ function OuterSidebar() {
   };
 
   const handleNavigation = (path: string) => {
+    dispatch(sectionActions.setIsInitialState(true));
+
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat") {
