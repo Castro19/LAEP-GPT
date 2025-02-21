@@ -14,6 +14,7 @@ type CollapsibleContentWrapperProps = {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   defaultOpen?: boolean;
+  triggerRef?: React.RefObject<HTMLButtonElement>;
 };
 
 const CollapsibleContentWrapper = ({
@@ -21,8 +22,10 @@ const CollapsibleContentWrapper = ({
   title,
   icon: Icon,
   defaultOpen = true,
+  triggerRef,
 }: CollapsibleContentWrapperProps) => {
   const [open, setOpen] = useState(defaultOpen);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,6 +38,7 @@ const CollapsibleContentWrapper = ({
           <Button
             variant="outline"
             className="w-full justify-between items-center p-2 dark:bg-transparent dark:text-white rounded-lg shadow-lg dark:bg-slate-950"
+            ref={triggerRef}
           >
             <div className="flex items-center space-x-2">
               <Icon className="w-5 h-5" />

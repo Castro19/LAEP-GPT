@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/redux";
+import { useEffect, useRef, useState } from "react";
+import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
   queryAIAsync,
   setIsInitialState,
@@ -34,6 +34,9 @@ const QueryAI = () => {
   const { loading, AIQuery, queryError } = useAppSelector(
     (state) => state.section
   );
+  const menuOpen = useAppSelector((state) => state.layout.toggleMenu);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
   const [query, setQuery] = useState("");
 
   const handleQuerySearch = async () => {
@@ -43,11 +46,20 @@ const QueryAI = () => {
     dispatch(queryAIAsync(query));
   };
 
+  useEffect(() => {
+    if (menuOpen) {
+      triggerRef.current?.click();
+      dispatch(layoutActions.setScrollTrigger(true));
+      dispatch(layoutActions.setInputFieldFocus(true));
+    }
+  }, [dispatch, menuOpen]);
+
   return (
     <CollapsibleContentWrapper
       title="AI Class Search"
       icon={RiRobot3Line}
       defaultOpen={false}
+      triggerRef={triggerRef}
     >
       {/* This could be <form> if you have a bigger form going on */}
       <FormItem>

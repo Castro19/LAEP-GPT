@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 // Optional spinner icon for loading
 import { Loader2 } from "lucide-react";
+import { useAppSelector } from "@/redux";
 
 interface PlaceholdersAndVanishInputProps {
   placeholders: string[];
@@ -31,6 +32,9 @@ export function PlaceholdersAndVanishInput({
   interval = 3000,
   loading = false,
 }: PlaceholdersAndVanishInputProps) {
+  const inputFieldFocus = useAppSelector(
+    (state) => state.layout.inputFieldFocus
+  );
   // Track the index of the placeholder that’s currently displayed
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -63,6 +67,12 @@ export function PlaceholdersAndVanishInput({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeholders]);
+
+  useEffect(() => {
+    if (inputFieldFocus) {
+      inputRef.current?.focus();
+    }
+  }, [inputFieldFocus]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const newDataRef = useRef<any[]>([]);
