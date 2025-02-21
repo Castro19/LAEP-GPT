@@ -132,8 +132,8 @@ const CourseInformation = ({
           </FormItem>
         )}
       />
-      <UnitSlider form={form} min={0} max={9} />
       <CatalogNumberSlider form={form} min={100} max={600} />
+      <UnitSlider form={form} min={0} max={9} />
       <FormField
         control={form.control}
         name="courseAttributes"

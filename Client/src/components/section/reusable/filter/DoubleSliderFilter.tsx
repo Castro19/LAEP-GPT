@@ -16,6 +16,7 @@ interface InstructorRatingRangeFilterProps {
   min?: number;
   max?: number;
   step?: number;
+  showLabel?: boolean;
   showRange?: boolean;
   toFixed?: number;
   labelStep?: number;
@@ -28,6 +29,7 @@ const DoubleSliderFilter: React.FC<InstructorRatingRangeFilterProps> = ({
   min = 0,
   max = 4,
   onRangeChange,
+  showLabel = true,
   showRange = true,
   toFixed = 1,
   labelStep = 1,
@@ -53,11 +55,15 @@ const DoubleSliderFilter: React.FC<InstructorRatingRangeFilterProps> = ({
   return (
     <div className="flex flex-col items-center space-y-2 w-full mt-2">
       {/* You can display the current values, star icons, etc. */}
-      <div className="flex items-center space-x-2 text-xs dark:text-gray-400">
-        <span>
-          {range[0].toFixed(toFixed)} - {range[1].toFixed(toFixed)} {label}
-        </span>
-      </div>
+      {showLabel ? (
+        <div className="flex items-center space-x-2 text-xs dark:text-gray-400">
+          <span>
+            {range[0].toFixed(toFixed)} - {range[1].toFixed(toFixed)} {label}
+          </span>
+        </div>
+      ) : (
+        <div className="h-1 bg-gray-300 rounded-full dark:bg-gray-300" />
+      )}
 
       <DoubleSlider
         value={range}

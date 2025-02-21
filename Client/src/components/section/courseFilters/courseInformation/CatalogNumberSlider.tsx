@@ -38,7 +38,7 @@ const CatalogNumberSlider = ({ form, min, max }: CatalogNumberSlider) => {
                 max={max}
                 step={100}
                 toFixed={0}
-                label="Catalog Number"
+                showLabel={false}
                 labelStep={100}
               />
             </FormControl>
