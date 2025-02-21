@@ -17,6 +17,7 @@ import {
   CalendarContainer,
   CalendarAIChatContainer,
   PaginationFooter,
+  NoSelectedSections,
 } from "@/components/calendar";
 import { onNewChat } from "@/components/chat";
 // Types
@@ -147,9 +148,15 @@ const CalendarPage = () => {
               </TabsContent>
             </Tabs>
           </div>
-          <div className="col-span-3">
-            {calendars.length === 0 && currentCalendar === null ? (
-              <EmptyCalendar />
+          <div className="col-span-3 items-start justify-start">
+            {currentCalendar === null || calendars.length === 0 ? (
+              <div className="items-start justify-start">
+                {!selectedSections || selectedSections.length === 0 ? (
+                  <NoSelectedSections />
+                ) : (
+                  <EmptyCalendar />
+                )}
+              </div>
             ) : (
               <>
                 <CalendarContainer />

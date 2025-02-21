@@ -10,6 +10,8 @@ import { buildSchedule } from "@/components/calendar/helpers";
 import { LeftSectionFooter } from "..";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export type CalendarPreferencesForm = z.infer<
   typeof CALENDAR_PREFERENCES_SCHEMA
@@ -44,6 +46,25 @@ const CalendarBuilderForm = () => {
 
   // Handle the build schedule button click
   const handleBuildSchedule = () => {
+    if (!selectedSections || selectedSections.length === 0) {
+      toast({
+        title: "No sections found",
+        description: "Please add at least one section to build a schedule",
+        variant: "destructive",
+        action: (
+          <ToastAction
+            className="bg-black border-white border-2"
+            altText="Add Sections"
+            onClick={() => {
+              navigate("/section");
+            }}
+          >
+            Add Sections
+          </ToastAction>
+        ),
+      });
+      return;
+    }
     if (environment === "dev") {
       console.log("Building schedule...");
       console.log("FORM PREFERENCES", form.getValues());
