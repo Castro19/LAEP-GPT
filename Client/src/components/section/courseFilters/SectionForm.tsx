@@ -120,6 +120,18 @@ const SectionForm = () => {
     }
   }, [watchedValues, dispatch, reduxFilters]);
 
+  useEffect(() => {
+    dispatch(flowSelectionActions.fetchMajorOptions("2022-2026"));
+    if (major) {
+      dispatch(
+        flowSelectionActions.fetchConcentrationOptions({
+          catalog: "2022-2026",
+          major: major,
+        })
+      );
+    }
+  }, [dispatch, major]);
+
   // onSubmit is now used only to trigger the API call.
   const onSubmit = (data: SectionFiltersForm) => {
     dispatch(sectionActions.setIsInitialState(false));
@@ -191,13 +203,19 @@ const SectionForm = () => {
     if (filters.instructors && filters.instructors.length > 0) {
       params.append("instructors", filters.instructors.join(","));
     }
-
+    if (filters.isTechElective) {
+      params.append("isTechElective", "true");
+    }
     // For techElectives, flatten it to two query parameters.
-    params.append("techElectives.major", filters.techElectives?.major || "");
-    params.append(
-      "techElectives.concentration",
-      filters.techElectives?.concentration || ""
-    );
+    if (filters.techElectives?.major) {
+      params.append("techElectives.major", filters.techElectives?.major);
+    }
+    if (filters.techElectives?.concentration) {
+      params.append(
+        "techElectives.concentration",
+        filters.techElectives?.concentration
+      );
+    }
     if (filters.withNoConflicts) {
       params.append("withNoConflicts", "true");
     }
@@ -205,17 +223,10 @@ const SectionForm = () => {
     return params.toString();
   }
 
-  useEffect(() => {
-    dispatch(flowSelectionActions.fetchMajorOptions("2022-2026"));
-    if (major) {
-      dispatch(
-        flowSelectionActions.fetchConcentrationOptions({
-          catalog: "2022-2026",
-          major: major,
-        })
-      );
-    }
-  }, [dispatch, major]);
+  const onFormReset = () => {
+    form.reset();
+    dispatch(sectionActions.setIsInitialState(true));
+  };
 
   return (
     <div>
@@ -230,9 +241,7 @@ const SectionForm = () => {
             onFormSubmit={() => {
               onSubmit(form.getValues());
             }}
-            onClick={() => {
-              form.reset();
-            }}
+            onClick={onFormReset}
           />
         </form>
       </Form>
