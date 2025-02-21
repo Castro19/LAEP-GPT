@@ -18,20 +18,42 @@ async function scheduleBuilder(
   jsonObject: ScheduleBuilderObject
 ): Promise<string> {
   if (jsonObject.queryType === "schedule") {
-    messageToAdd += await fetchSections(jsonObject, messageToAdd);
+    const sections = await fetchSections(jsonObject);
+    messageToAdd +=
+      "\nHere are the sections for the class numbers " +
+      jsonObject.fetchSections.classNumbers +
+      ": " +
+      JSON.stringify(sections);
   } else if (jsonObject.queryType === "professors") {
-    messageToAdd += await fetchProfessors(jsonObject, messageToAdd);
+    const professors = await fetchProfessors(jsonObject);
+    messageToAdd +=
+      "\nHere are the professors for the class numbers " +
+      jsonObject.fetchProfessors.sectionInfo.map(
+        (section) => section.classNumber
+      ) +
+      ": " +
+      JSON.stringify(professors);
   } else if (jsonObject.queryType === "both") {
-    messageToAdd += await fetchSections(jsonObject, messageToAdd);
-    messageToAdd += await fetchProfessors(jsonObject, messageToAdd);
+    const sections = await fetchSections(jsonObject);
+    const professors = await fetchProfessors(jsonObject);
+    messageToAdd +=
+      "\nHere are the sections for the class numbers " +
+      jsonObject.fetchSections.classNumbers +
+      ": " +
+      JSON.stringify(sections) +
+      "\nHere are the professors for the class numbers " +
+      jsonObject.fetchProfessors.sectionInfo.map(
+        (section) => section.classNumber
+      ) +
+      ": " +
+      JSON.stringify(professors);
   }
   return messageToAdd;
 }
 
 async function fetchProfessors(
-  jsonObject: ScheduleBuilderObject,
-  messageToAdd: string
-): Promise<string> {
+  jsonObject: ScheduleBuilderObject
+): Promise<Partial<ProfessorRatingDocument>[]> {
   // Fetch professors from MongoDB "professors"
   const professorRatingsProjection = jsonObject.fetchProfessors.fields.reduce(
     (acc, field) => {
@@ -52,20 +74,12 @@ async function fetchProfessors(
     professorRatingsProjection as unknown as Partial<ProfessorRatingDocument>
   );
 
-  if (environment === "dev") {
-    console.log("Professors: ", professors);
-  }
-
-  messageToAdd += `Here are the professors for the class numbers ${jsonObject.fetchSections.classNumbers}: ${JSON.stringify(
-    professors
-  )}`;
-  return messageToAdd;
+  return professors;
 }
 
 async function fetchSections(
-  jsonObject: ScheduleBuilderObject,
-  messageToAdd: string
-): Promise<string> {
+  jsonObject: ScheduleBuilderObject
+): Promise<Partial<SectionDocument>[]> {
   // Fetch schedule from MongoDB "sectionsSpring"
   const fields = jsonObject.fetchSections.fields;
   if (environment === "dev") {
@@ -99,13 +113,7 @@ async function fetchSections(
 
   const combinedSections = combineDuplicateSections(sections);
 
-  messageToAdd += `Here are the sections for the class numbers ${jsonObject.fetchSections.classNumbers}: ${JSON.stringify(
-    combinedSections
-  )}`;
-  if (environment === "dev") {
-    console.log("MESSAGE TO ADD: ", messageToAdd);
-  }
-  return messageToAdd;
+  return combinedSections;
 }
 /**
  * Combines sections with identical properties (excluding `_id` and `meetings`)
