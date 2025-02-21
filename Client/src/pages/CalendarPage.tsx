@@ -35,9 +35,7 @@ const CalendarPage = () => {
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-  const { calendars, currentCalendar } = useAppSelector(
-    (state) => state.calendar
-  );
+  const { currentCalendar } = useAppSelector((state) => state.calendar);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -149,7 +147,7 @@ const CalendarPage = () => {
             </Tabs>
           </div>
           <div className="col-span-3 items-start justify-start">
-            {currentCalendar === null || calendars.length === 0 ? (
+            {currentCalendar === null ? (
               <div className="items-start justify-start">
                 {!selectedSections || selectedSections.length === 0 ? (
                   <NoSelectedSections />
