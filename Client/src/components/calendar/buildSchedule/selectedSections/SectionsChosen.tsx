@@ -9,14 +9,27 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { removeSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
+import { useNavigate } from "react-router-dom";
 
 const SectionsChosen = () => {
+  const navigate = useNavigate();
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
   // Group sections by courseId and professor
   if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
-    return <div>No sections chosen</div>;
+    return (
+      <div className="p-2 text-gray-500 dark:text-gray-400 text-sm">
+        The sections you select from the{" "}
+        <strong
+          className="text-blue-300/80 cursor-pointer"
+          onClick={() => navigate("/section")}
+        >
+          Class Search
+        </strong>{" "}
+        page will appear here
+      </div>
+    );
   }
 
   const groupedSections = selectedSections.reduce(
