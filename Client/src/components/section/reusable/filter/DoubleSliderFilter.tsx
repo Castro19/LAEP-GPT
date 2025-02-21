@@ -13,21 +13,31 @@ interface InstructorRatingRangeFilterProps {
   // eslint-disable-next-line no-unused-vars
   onRangeChange: (range: [number, number]) => void;
   label?: string;
+  min?: number;
   max?: number;
   step?: number;
   showRange?: boolean;
+  toFixed?: number;
+  labelStep?: number;
 }
 
-const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
+const DoubleSliderFilter: React.FC<InstructorRatingRangeFilterProps> = ({
   initialRange = [0, 4],
   label = "Stars",
   step = 0.1,
+  min = 0,
   max = 4,
   onRangeChange,
   showRange = true,
+  toFixed = 1,
+  labelStep = 1,
 }) => {
   const [range, setRange] = useState<[number, number]>(initialRange);
-  const labels = Array.from({ length: max + 1 }, (_, i) => i);
+  // start at min
+  const labels = Array.from(
+    { length: Math.ceil((max - min) / labelStep) + 1 },
+    (_, i) => min + i * labelStep
+  );
   // Keep local state in sync if the form resets/updates from outside
   useEffect(() => {
     setRange(initialRange);
@@ -45,14 +55,14 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
       {/* You can display the current values, star icons, etc. */}
       <div className="flex items-center space-x-2 text-xs dark:text-gray-400">
         <span>
-          {range[0].toFixed(1)} - {range[1].toFixed(1)} {label}
+          {range[0].toFixed(toFixed)} - {range[1].toFixed(toFixed)} {label}
         </span>
       </div>
 
       <DoubleSlider
         value={range}
         onValueChange={handleSliderChange}
-        min={0}
+        min={min}
         max={max}
         step={step}
         className="w-full h-1 bg-gray-300 rounded-full dark:bg-gray-300"
@@ -60,9 +70,9 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
 
       {/* Labels for the slider values */}
       {showRange && (
-        <div className="flex justify-between w-full px-2">
+        <div className="flex justify-between w-full">
           {labels.map((value) => (
-            <span key={value} className="text-sm dark:text-gray-400">
+            <span key={value} className="text-sm dark:text-gray-400 ml-1">
               {value}
             </span>
           ))}
@@ -72,4 +82,4 @@ const InstructorRatingFilter: React.FC<InstructorRatingRangeFilterProps> = ({
   );
 };
 
-export default InstructorRatingFilter;
+export default DoubleSliderFilter;

@@ -33,6 +33,8 @@ router.get("/", async (req: Request, res: any) => {
       instructors, // e.g., ["John Doe", "Jane Doe"]
       minInstructorRating, // e.g., "3.5"
       maxInstructorRating, // e.g., "4.0"
+      minCatalogNumber, // e.g., "100"
+      maxCatalogNumber, // e.g., "600"
       includeUnratedInstructors, // e.g., true or false
       page = "1", // Default to page 1 if not provided
       isTechElective, // e.g., true or false
@@ -87,6 +89,8 @@ router.get("/", async (req: Request, res: any) => {
           : (instructors as string[]),
       minInstructorRating: minInstructorRating as string,
       maxInstructorRating: maxInstructorRating as string,
+      minCatalogNumber: minCatalogNumber as string,
+      maxCatalogNumber: maxCatalogNumber as string,
       includeUnratedInstructors: includeUnratedInstructors === "true", // convert str to boolean
       techElectives, // Use the flattened object values here
       isTechElective: isTechElective === "true", // Converts the string "true" to boolean true, any other value becomes false

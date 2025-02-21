@@ -77,9 +77,6 @@ function buildSectionsQuery(
     }
   }
 
-  if (environment === "dev") {
-    console.log("FILTER", filter);
-  }
   // 6) instructorRating
   //    e.g. ">=3.5" or "3.5"? For simplicity, let's assume it's always "3.5" meaning ">= 3.5".
   // 6a. Parse min/max rating if provided.
@@ -241,10 +238,40 @@ function buildSectionsQuery(
       query.techElectives = { $in: [filter.techElectives.concentration] };
     }
   }
-
+  // 12) classNumber
   if (filter.classNumber) {
     query.classNumber = parseInt(filter.classNumber, 10);
   }
+  console.log("filter.minCatalogNumber", filter.minCatalogNumber);
+  // 13) minCatalogNumber (e.g. "100")
+  // 12) classNumber
+  if (filter.classNumber) {
+    query.classNumber = parseInt(filter.classNumber, 10);
+  }
+
+  // 13 & 14) minCatalogNumber and maxCatalogNumber
+  if (filter.minCatalogNumber || filter.maxCatalogNumber) {
+    query.$expr = { $and: [] };
+
+    if (filter.minCatalogNumber) {
+      query.$expr.$and.push({
+        $gte: [
+          { $toInt: { $trim: { input: "$catalogNumber" } } },
+          parseInt(filter.minCatalogNumber, 10),
+        ],
+      });
+    }
+
+    if (filter.maxCatalogNumber) {
+      query.$expr.$and.push({
+        $lte: [
+          { $toInt: { $trim: { input: "$catalogNumber" } } },
+          parseInt(filter.maxCatalogNumber, 10),
+        ],
+      });
+    }
+  }
+
   return query;
 }
 
@@ -263,10 +290,10 @@ export async function getSectionsByFilter(
       const calendar = await fetchPrimaryCalendar(userId);
 
       if (calendar) {
-        // 1) Build the “no‐conflict” portion
+        // 1) Build the "no-conflict" portion
         const noConflictQuery = buildNonConflictingQuery(calendar);
 
-        // 2) If the user actually has meeting times (i.e. noConflictQuery isn’t empty),
+        // 2) If the user actually has meeting times (i.e. noConflictQuery isn't empty),
         //    then combine the two queries under $and
         if (Object.keys(noConflictQuery).length > 0) {
           query = {

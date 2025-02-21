@@ -49,6 +49,8 @@ const initialState: SectionState = {
     includeUnratedInstructors: undefined,
     minUnits: "",
     maxUnits: "",
+    minCatalogNumber: "",
+    maxCatalogNumber: "",
     courseAttribute: [],
     instructionMode: "",
     techElectives: { major: "", concentration: "" },

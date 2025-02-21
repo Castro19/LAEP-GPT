@@ -30,6 +30,7 @@ import {
   SECTION_FILTERS_SCHEMA,
 } from "@/components/section/courseFilters/helpers/constants";
 import SUBJECTS from "@/components/section/courseFilters/helpers/api/subjects";
+import CatalogNumberSlider from "./CatalogNumberSlider";
 
 const CourseInformation = ({
   form,
@@ -132,6 +133,7 @@ const CourseInformation = ({
         )}
       />
       <UnitSlider form={form} min={0} max={9} />
+      <CatalogNumberSlider form={form} min={100} max={600} />
       <FormField
         control={form.control}
         name="courseAttributes"
