@@ -29,6 +29,8 @@ export const SECTION_FILTERS_SCHEMA = z.object({
   includeUnratedInstructors: z.boolean().optional(),
   minUnits: z.string().optional(),
   maxUnits: z.string().optional(),
+  minCatalogNumber: z.string().optional(),
+  maxCatalogNumber: z.string().optional(),
   // Allow multiple course attributes
   courseAttributes: z.array(z.enum(COURSE_ATTRIBUTES)).optional(),
   instructionMode: z.string(z.enum(["P", "A"])).optional(),

@@ -61,6 +61,8 @@ const SectionForm = () => {
       includeUnratedInstructors: reduxFilters.includeUnratedInstructors,
       minUnits: reduxFilters.minUnits || "",
       maxUnits: reduxFilters.maxUnits || "",
+      minCatalogNumber: reduxFilters.minCatalogNumber || "",
+      maxCatalogNumber: reduxFilters.maxCatalogNumber || "",
       // Convert the stored string of attributes into an array
       courseAttributes:
         (reduxFilters.courseAttribute as (typeof COURSE_ATTRIBUTES)[number][]) ||
@@ -98,6 +100,8 @@ const SectionForm = () => {
       includeUnratedInstructors: watchedValues.includeUnratedInstructors,
       minUnits: watchedValues.minUnits || "",
       maxUnits: watchedValues.maxUnits || "",
+      minCatalogNumber: watchedValues.minCatalogNumber || "",
+      maxCatalogNumber: watchedValues.maxCatalogNumber || "",
       // Join the array of attributes into a comma-separated string.
       courseAttribute: watchedValues.courseAttributes || [],
       instructionMode: watchedValues.instructionMode || "",
@@ -135,6 +139,8 @@ const SectionForm = () => {
       instructionMode: data.instructionMode || "",
       minInstructorRating: data.minInstructorRating || "",
       maxInstructorRating: data.maxInstructorRating || "",
+      minCatalogNumber: data.minCatalogNumber || "",
+      maxCatalogNumber: data.maxCatalogNumber || "",
       includeUnratedInstructors: data.includeUnratedInstructors,
       instructors: data.instructors || [],
       techElectives: data.techElectives || {

@@ -72,6 +72,8 @@ export type SectionsFilterParams = {
   maxInstructorRating?: string;
   minUnits?: string;
   maxUnits?: string;
+  minCatalogNumber?: string;
+  maxCatalogNumber?: string;
   courseAttribute?: Array<
     "GE D" | "USCP" | "GE C" | "GWR" | "GE E" | "GE B" | "GE F" | "GE A"
   >;
