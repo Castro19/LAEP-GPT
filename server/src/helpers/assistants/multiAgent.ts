@@ -129,7 +129,8 @@ async function handleMultiAgentModel({
         messageToAdd = await scheduleBuilder(messageToAdd, jsonObject);
       } else if (model.title === "Professor Ratings") {
         if (helperResponse) {
-          jsonObject = JSON.parse(helperResponse) as ProfessorRatingsObject[];
+          jsonObject = JSON.parse(helperResponse)
+            .results as ProfessorRatingsObject[];
         }
         if (!jsonObject) {
           throw new Error("JSON object not found");
