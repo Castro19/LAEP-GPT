@@ -41,8 +41,9 @@ async function handleMultiAgentModel({
   chatId,
   sections,
 }: MultiAgentRequest): Promise<void> {
-  let messageToAdd = message;
   try {
+    let messageToAdd =
+      message + "\nHere are the sections: " + JSON.stringify(sections);
     // First assistant: process the user's message and return JSON object
     let helperAssistantId: string | null = null;
     if (model.title === "Schedule Builder") {
