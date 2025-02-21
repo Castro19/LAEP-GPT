@@ -137,7 +137,7 @@ const CourseInformation = ({
       <FormField
         control={form.control}
         name="courseAttributes"
-        render={({ field }) => (
+        render={() => (
           <FormItem>
             <TitleLabel title="Course Attributes" />
             <FormControl>
@@ -175,12 +175,12 @@ const CourseInformation = ({
                 <div className="w-1/2 ml-4">
                   {/* Display currently selected attributes as deletable tags */}
                   <DeletableTags
-                    tags={field.value || []}
+                    tags={form.getValues("courseAttributes") || []}
                     onRemove={(itemToRemove) => {
                       // Filter out the removed item
-                      const updated = (field.value || []).filter(
-                        (val: string) => val !== itemToRemove
-                      );
+                      const updated = (
+                        form.getValues("courseAttributes") || []
+                      ).filter((val: string) => val !== itemToRemove);
                       form.setValue("courseAttributes", updated);
                     }}
                   />
