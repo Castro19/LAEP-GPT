@@ -67,6 +67,20 @@ const CourseInformation = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [major, form.watch("techElectives.major"), dispatch]);
 
+  useEffect(() => {
+    if (concentrationOptions.length > 0 && concentrationOptions[0].code) {
+      const currentTechElectives = form.getValues("techElectives") || {
+        major: "",
+        concentration: "",
+      };
+      form.setValue("techElectives", {
+        ...currentTechElectives,
+        // Update concentration using the code from your options.
+        concentration: concentrationOptions[0].code,
+      });
+    }
+  }, [concentrationOptions, form]);
+
   return (
     <CollapsibleContentWrapper title="Course Information" icon={FaBook}>
       <FormField
@@ -215,7 +229,6 @@ const CourseInformation = ({
                           name="Major"
                           dropdownItems={majorOptions}
                           handleChangeItem={(_, value) => {
-                            console.log("VALUE", value);
                             // Retrieve the current techElectives values, defaulting concentration to an empty string if undefined.
                             const currentTechElectives = form.getValues(
                               "techElectives"
@@ -247,7 +260,6 @@ const CourseInformation = ({
                             (item) => item.concName
                           )}
                           handleChangeItem={(_, value) => {
-                            console.log("VALUE", value);
                             const selectedConc = concentrationOptions.find(
                               (item) => item.concName === value
                             );
