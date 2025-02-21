@@ -23,7 +23,8 @@ const SavedSchedules = () => {
           ))
         ) : (
           <div className="p-2 text-gray-500 dark:text-gray-400 text-sm">
-            No schedules available
+            Create a new schedule & Press the &quot;Save Schedule&quot; button
+            to save your schedule
           </div>
         )}
       </div>

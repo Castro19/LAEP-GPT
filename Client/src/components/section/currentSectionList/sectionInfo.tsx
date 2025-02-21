@@ -11,6 +11,8 @@ import { Button } from "../../ui/button";
 import { transformToSectionDetail } from "@/helpers/transformSection";
 // import { environment } from "@/helpers/getEnvironmentVars";
 import { toast } from "../../ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useNavigate } from "react-router-dom";
 
 // -----------------------------------------------------------------------------
 // SectionHeader: Renders a badge for the component type, meeting days, and enrollment status.
@@ -116,6 +118,7 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
   hideLocation = false,
   section,
 }) => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.section);
 
@@ -139,6 +142,11 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
       toast({
         title: `${section.courseId} Added`,
         description: message,
+        action: (
+          <ToastAction altText="calendar" onClick={() => navigate("/calendar")}>
+            Go to Calendar
+          </ToastAction>
+        ),
       });
     }
   };
