@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { useAppDispatch, layoutActions } from "@/redux";
 import { motion } from "framer-motion";
 import { FiSearch, FiInfo } from "react-icons/fi";
 
@@ -28,6 +29,11 @@ const COPY = {
 };
 
 const InitialSectionState: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const onAIFeatureClick = () => {
+    dispatch(layoutActions.toggleMenu(true));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
