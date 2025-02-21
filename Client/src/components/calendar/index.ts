@@ -1,7 +1,8 @@
 // Weekly Calendar Components
 export { default as WeeklyCalendar } from "./weeklyCalendar/currentCalendar/WeeklyCalendar";
 export { default as CalendarContainer } from "./weeklyCalendar/layout/CalendarContainer";
-export { default as EmptyCalendar } from "./weeklyCalendar/layout/EmptyCalendar";
+export { default as EmptyCalendar } from "./weeklyCalendar/instructionNotes/EmptyCalendar";
+export { default as NoSelectedSections } from "./weeklyCalendar/instructionNotes/NoSelectedSections";
 export { default as CalendarAverageRating } from "./weeklyCalendar/currentCalendar/CalendarAverageRating";
 export { default as CalendarTimeSlots } from "./weeklyCalendar/currentCalendar/CalendarTimeSlots";
 export { default as CalendarSectionInfo } from "./weeklyCalendar/currentCalendar/CalendarSectionInfo";
