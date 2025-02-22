@@ -2,7 +2,8 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { Meeting, SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { SectionSchedule } from "@/components/section/currentSectionList/sectionInfo";
-import { ChevronDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { convertTo12HourFormat } from "@/components/section/helpers/timeFormatter";
 import {
   Collapsible,
   CollapsibleContent,
@@ -55,8 +56,9 @@ const SectionsChosen = () => {
         <Collapsible key={courseId} className="group/collapsible">
           <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
             <CollapsibleTrigger asChild>
-              <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+              <div className="bg-slate-800 flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors cursor-pointer rounded-lg">
                 <div className="flex items-center gap-3">
+                  <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                   <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
                     {courseId}
                   </h2>
@@ -64,7 +66,6 @@ const SectionsChosen = () => {
                     {Object.values(professorGroups).flat().length} sections
                   </span>
                 </div>
-                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
               </div>
             </CollapsibleTrigger>
 
@@ -80,8 +81,15 @@ const SectionsChosen = () => {
                       <div className="border-t border-gray-100 dark:border-slate-700 pt-3">
                         <CollapsibleTrigger asChild>
                           <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 px-2 py-1 rounded">
-                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              {professor}
+                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                              {professor
+                                .split(" ")
+                                .map(
+                                  (name) =>
+                                    name.charAt(0).toUpperCase() +
+                                    name.slice(1).toLowerCase()
+                                )
+                                .join(" ")}
                             </h3>
                           </div>
                         </CollapsibleTrigger>
@@ -111,42 +119,78 @@ const SectionsChosen = () => {
 
 const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
   const dispatch = useAppDispatch();
-
   const handleRemove = () => {
     dispatch(removeSelectedSectionAsync(section.classNumber));
   };
 
+  // Extract and format start & end time
+  const { meetings } = section;
+  const startTime = meetings?.[0]?.start_time
+    ? convertTo12HourFormat(meetings[0].start_time)
+    : "N/A";
+  const endTime = meetings?.[0]?.end_time
+    ? convertTo12HourFormat(meetings[0].end_time)
+    : "N/A";
+
   return (
-    <div className="border border-gray-200 dark:border-slate-700 rounded-md p-2 bg-gray-50/50 dark:bg-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-      <div className="flex justify-between items-start gap-2">
-        <div className="space-y-1 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {section.classNumber}
-            </span>
-            <span
-              className={`text-xs px-1.5 py-0.5 rounded ${
-                section.enrollmentStatus === "O"
-                  ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
-              }`}
-            >
-              {section.enrollmentStatus === "O" ? "Open" : "Closed"}
-            </span>
-          </div>
-          <SectionSchedule
-            meetings={section.meetings as Meeting[]}
-            hideLocation={true}
-          />
+    <div className="border border-gray-200 dark:border-slate-700 rounded-md p-2 bg-transparent transition-colors flex flex-col">
+      <div className="space-y-1 flex-1">
+        {/* First Row: Format as 'LAB 3500' */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {`${section.component.toUpperCase()} ${section.classNumber}`}
+          </span>
+
+          {/* Enrollment Status (Open/Closed) */}
+          <span
+            className={`text-xxs px-1.5 py-0.5 rounded ${
+              section.enrollmentStatus === "O"
+                ? "bg-[#204139] text-green-800 dark:bg-[#204139] dark:text-[#5EB752]"
+                : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+            }`}
+          >
+            {section.enrollmentStatus === "O" ? "Open" : "Closed"}
+          </span>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleRemove}
-          className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-        >
-          Remove
-        </Button>
+
+        {/* Days - Bubble Style */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500 dark:text-gray-400">Days</span>
+          <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+            {meetings?.[0]?.days || "N/A"}
+          </span>
+        </div>
+
+        {/* Time & Remove Button - On the Same Line */}
+        <div className="flex justify-between items-center">
+          {/* Time - Bubble Style */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Time
+            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+                {startTime}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                to
+              </span>
+              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+                {endTime}
+              </span>
+            </div>
+          </div>
+
+          {/* Remove Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRemove}
+            className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+          >
+            Remove
+          </Button>
+        </div>
       </div>
     </div>
   );
