@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { Meeting, SelectedSection } from "@polylink/shared/types";
+import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
-import { SectionSchedule } from "@/components/section/currentSectionList/sectionInfo";
+// import { SectionSchedule } from "@/components/section/currentSectionList/sectionInfo";
 import { ChevronRight } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/section/helpers/timeFormatter";
 import {
@@ -54,9 +54,9 @@ const SectionsChosen = () => {
     <div className="grid grid-cols-1 gap-2">
       {Object.entries(groupedSections).map(([courseId, professorGroups]) => (
         <Collapsible key={courseId} className="group/collapsible">
-          <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-700">
             <CollapsibleTrigger asChild>
-              <div className="bg-slate-800 flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors cursor-pointer rounded-lg">
+              <div className="bg-slate-800 flex justify-between items-center p-2 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors cursor-pointer rounded-md">
                 <div className="flex items-center gap-3">
                   <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                   <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
@@ -70,7 +70,7 @@ const SectionsChosen = () => {
             </CollapsibleTrigger>
 
             <CollapsibleContent>
-              <div className="px-3 pb-3 space-y-3">
+              <div className="px-3 pb-3 ">
                 {Object.entries(professorGroups).map(
                   ([professor, sections]) => (
                     <Collapsible
@@ -78,7 +78,7 @@ const SectionsChosen = () => {
                       defaultOpen
                       className="group/collapsible"
                     >
-                      <div className="border-t border-gray-100 dark:border-slate-700 pt-3">
+                      <div className=" border-gray-100 dark:border-slate-700 pt-2">
                         <CollapsibleTrigger asChild>
                           <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 px-2 py-1 rounded">
                             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
