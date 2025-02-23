@@ -91,7 +91,7 @@ export function transformSectionsToCatalog(sections: Section[]): CourseInfo[] {
         // Fallback: use the plain instructor info with default ratings.
         instructors = detail.instructors.map((instr) => ({
           name: instr.name,
-          id: "none", // using email as a unique identifier
+          id: instr.name, // using name as a unique identifier
           courseId: courseId,
           overallRating: 0,
           numEvals: 0,
