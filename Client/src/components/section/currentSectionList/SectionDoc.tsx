@@ -246,7 +246,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
 
             {/* Right side - Ratings & PolyRatings Icon */}
             <div className="flex items-center gap-6">
-              {group.instructor.id !== "none" ? (
+              {group.instructor.name !== group.instructor.id ? (
                 <>
                   <a
                     href={`https://polyratings.dev/professor/${group.instructor.id}`}
@@ -263,9 +263,23 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
                   <StarRating group={group} />
                 </>
               ) : (
-                <div className="flex items-center text-gray-400">
-                  No Ratings
-                </div>
+                <>
+                  <a
+                    href={`https://polyratings.dev/search/name?term=${encodeURIComponent(
+                      group.instructor.name
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()} // Prevents collapsible from opening
+                  >
+                    <img
+                      src="/polyratings.ico"
+                      alt="PolyRatings"
+                      className="w-5 h-5 cursor-pointer hover:opacity-80"
+                    />
+                  </a>
+                  <StarRating group={group} />
+                </>
               )}
             </div>
           </div>
