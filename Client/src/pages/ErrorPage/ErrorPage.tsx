@@ -23,14 +23,14 @@ const ErrorPage = () => {
           </div>
           
           <p className="text-sm lg:text-base text-gray-600 dark:text-gray-300">
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
           
           <div className="flex flex-col lg:flex-row gap-3 justify-center pt-5">
             <Button 
               variant="default" 
               onClick={() => navigate(-1)}
-              className="w-full lg:w-auto hover:bg-slate-800"
+              className="w-full lg:w-auto hover:bg-slate-800 text-xl py-8 px-12"
               aria-label="Go back to previous page"
             >
               Go Back
@@ -38,7 +38,7 @@ const ErrorPage = () => {
             <Button 
               variant="default" 
               onClick={() => navigate("/chat")}
-              className="w-full lg:w-auto hover:bg-slate-700"
+              className="w-full lg:w-auto hover:bg-slate-700 text-xl py-8 px-12"
               aria-label="Go to home page"
             >
               Home

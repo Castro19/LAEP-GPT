@@ -9,6 +9,8 @@ import {
   RouterProvider,
   useLocation,
   useNavigationType,
+  Routes,
+  Route,
 } from "react-router-dom";
 // Pages
 import Register from "./pages/register/Register.tsx";
