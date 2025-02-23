@@ -79,9 +79,24 @@ export function transformSectionsToCatalog(sections: Section[]): CourseInfo[] {
 
     sectionDetails.forEach((detail) => {
       let instructors: InstructorWithRatings[] = [];
+      // If there are multiple instructors with ratings, we need to map them to the instructors array.
       if (
         detail.instructorsWithRatings &&
-        detail.instructorsWithRatings.length > 0
+        detail.instructorsWithRatings.length > 1
+      ) {
+        instructors = detail.instructorsWithRatings.map((instr) => ({
+          ...instr,
+          name:
+            detail.instructors.find(
+              (instructor) =>
+                instructor.name.toLowerCase() === instr.name.toLowerCase()
+            )?.name ?? instr.name,
+        }));
+      }
+      // If there is only one instructor with ratings, we can use that directly.
+      else if (
+        detail.instructorsWithRatings &&
+        detail.instructorsWithRatings.length === 1
       ) {
         instructors = detail.instructorsWithRatings.map((instr) => ({
           ...instr,
