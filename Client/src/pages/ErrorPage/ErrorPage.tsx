@@ -4,48 +4,54 @@ import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 
 const ErrorPage = () => {
   const navigate = useNavigate();
+  const ERROR_TEXT = {
+    title: "404",
+    subtitle: "Page Not Found",
+    description: "The page you're looking for doesn't exist or has been moved.",
+    homeButtonText: "Go Home",
+    backButtonText: "Go Back",
+  }
 
   return (
     <SplashLayout>
-      <main 
+      <div 
         className="bg-slate-900 dark:bg-slate-900 min-h-screen flex items-center justify-center -mt-20"
-        role="main"
       >
-        <div className="text-center space-y-4 w-full max-w-[17.5rem] lg:max-w-[36rem] pr-4 pl-4">
-          <div className="space-y-2">
-            <h1 className="text-5xl font-extrabold text-gray-700 dark:text-gray-500" 
+        <div className="text-center space-y-4 w-full max-w-[40rem] px-6">
+          <div className="space-y-4">
+            <h1 className="text-8xl font-extrabold text-gray-700 dark:text-gray-500" 
                 aria-label="404 error">
-              404
+              {ERROR_TEXT.title}
             </h1>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-              Page Not Found
+            <h2 className="text-2xl lg:text-3xl font-semibold text-gray-800 dark:text-gray-200">
+              {ERROR_TEXT.subtitle}
             </h2>
           </div>
           
           <p className="text-sm lg:text-base text-gray-600 dark:text-gray-300">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
+            {ERROR_TEXT.description}
           </p>
           
           <div className="flex flex-col lg:flex-row gap-3 justify-center pt-5">
             <Button 
               variant="default" 
               onClick={() => navigate(-1)}
-              className="w-full lg:w-auto hover:bg-slate-800 text-xl py-8 px-12"
+              className="w-full lg:w-[20rem] hover:bg-slate-800 text-xl lg:text-2xl py-8 lg:py-10 px-12"
               aria-label="Go back to previous page"
             >
-              Go Back
+              {ERROR_TEXT.backButtonText}
             </Button>
             <Button 
               variant="default" 
               onClick={() => navigate("/chat")}
-              className="w-full lg:w-auto hover:bg-slate-700 text-xl py-8 px-12"
+              className="w-full lg:w-[20rem] hover:bg-slate-700 text-xl lg:text-2xl py-8 lg:py-10 px-12"
               aria-label="Go to home page"
             >
-              Home
+              {ERROR_TEXT.homeButtonText}
             </Button>
           </div>
         </div>
-      </main>
+      </div>
     </SplashLayout>
   );
 };
