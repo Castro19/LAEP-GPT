@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -13,6 +13,7 @@ import {
   buildBackgroundEventsForGroup,
 } from "@/components/calendar/helpers/weeklyCalendarConflicts";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { useSidebar } from "@/components/ui/sidebar";
 
 type EventType = {
   courseName: string;
@@ -61,7 +62,31 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   sections,
   height = "80vh",
 }) => {
+  const calendarRef = useRef<FullCalendar>(null);
+
+  const { open } = useSidebar();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const handleTransitionEnd = () => {
+      if (calendarRef.current) {
+        calendarRef.current.getApi().updateSize();
+      }
+    };
+
+    // Replace #sidebar with whatever your sidebar’s ID or ref is
+    const sidebarEl = document.querySelector("#calendar-sidebar");
+    if (sidebarEl) {
+      sidebarEl.addEventListener("transitionend", handleTransitionEnd);
+    }
+
+    return () => {
+      if (sidebarEl) {
+        sidebarEl.removeEventListener("transitionend", handleTransitionEnd);
+      }
+    };
+  }, [open]);
+
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
   const dayIndexMap: Record<
@@ -178,8 +203,9 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         overflow-auto flex-1 no-scroll
       "
       >
-        <ScrollArea className="h-full min-w-full mb-4 pb-12">
+        <ScrollArea className="h-full min-w-full mb-4 pb-12 flex-1">
           <FullCalendar
+            ref={calendarRef}
             plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
             initialView="timeGridWeek"
             initialDate={monday}

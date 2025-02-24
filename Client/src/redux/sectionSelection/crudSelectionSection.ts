@@ -1,5 +1,5 @@
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
-import { SectionDetail, SelectedSection } from "@polylink/shared/types";
+import { SelectedSection } from "@polylink/shared/types";
 
 export async function fetchSections(): Promise<{
   selectedSections: SelectedSection[];
@@ -77,33 +77,4 @@ export async function removeSection(sectionId: number): Promise<{
     }
     throw error;
   }
-}
-
-export function transformSectionToSelectedSection(
-  section: SectionDetail
-): SelectedSection {
-  const professorRatings = section.instructorsWithRatings?.map(
-    (instructor) => ({
-      name: instructor.name,
-      id: instructor.id,
-    })
-  );
-  return {
-    courseId: section.courseId,
-    courseName: section.courseName,
-    classNumber: section.classNumber,
-    units: section.units,
-    component: section.component,
-    enrollmentStatus: section.enrollmentStatus,
-    meetings: section.meetings.map((meeting) => ({
-      ...meeting,
-      days: meeting.days.filter((day) => day),
-    })),
-    classPair: section.pairedSections,
-    professors: professorRatings ?? [],
-    rating:
-      section.instructorsWithRatings?.[0]?.overallRating ||
-      section.instructorsWithRatings?.[1]?.overallRating ||
-      0,
-  };
 }

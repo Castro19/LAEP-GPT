@@ -9,7 +9,6 @@ import LabelSection from "../helpers/LabelSection";
 import { convertTo12HourFormat } from "../helpers/timeFormatter";
 import { Button } from "../../ui/button";
 import { transformToSectionDetail } from "@/helpers/transformSection";
-// import { environment } from "@/helpers/getEnvironmentVars";
 import { toast } from "../../ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +21,8 @@ type SectionHeaderProps = {
 };
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
-  // Handler for the Add button
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between text-xs sm:text-sm md:text-base">
       {/* Left Side - Component Type (Lab/Lec) + Enrollment Status */}
       <div className="flex items-center gap-2">
         <BadgeSection variant="outlined">{section.component}</BadgeSection>
@@ -50,23 +48,13 @@ type SectionEnrollmentProps = {
   section: SectionDetail;
 };
 
-/**
- * Instruction modes:
- * - PA (Synchronous)
- * - SM (Sync/Async Hybrid)
- * - P (In Person/Async Hybrid)
- * - PS (In Person)
- * - AM (In Person/Sync Hybrid)
- * - SA (Asynchronous)
- */
-
 export const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({
   section,
 }) => {
   const modes = section.instructionMode.split(";");
 
   return (
-    <div className="flex flex-col gap-3 mt-4">
+    <div className="flex flex-col gap-3 mt-4 text-xs sm:text-sm md:text-base">
       <div className="flex flex-row gap-2 items-center align-items-center">
         <LabelSection>Instruction Mode</LabelSection>
         <span>
@@ -79,6 +67,7 @@ export const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({
           </div>
         </span>
       </div>
+
       <div className="flex flex-row gap-6">
         <div className="flex flex-row gap-2 items-center align-items-center">
           <LabelSection>Seats Available</LabelSection>
@@ -111,7 +100,7 @@ export const SectionEnrollment: React.FC<SectionEnrollmentProps> = ({
 type SectionScheduleProps = {
   meetings: Meeting[];
   hideLocation?: boolean;
-  section?: SectionDetail; // New prop to access section info
+  section?: SectionDetail; // to access section info
 };
 
 export const SectionSchedule: React.FC<SectionScheduleProps> = ({
@@ -123,7 +112,7 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.section);
 
-  // Function to handle adding a section
+  // Handler to add a section
   const handleAdd = async (section: SectionDetail) => {
     const { payload } = await dispatch(
       sectionSelectionActions.createOrUpdateSelectedSectionAsync(section)
@@ -152,12 +141,12 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
     }
   };
 
-  // Function to handle adding a class pair
+  // Handler to add a paired section (if any)
   const handleAddPair = async (section: SectionDetail) => {
     handleAdd(section);
     // Get the paired section
     const pairedSection = sections.find(
-      (s) => s.classNumber === section.pairedSections[0]
+      (s) => s.classNumber === section.pairedSections?.[0]
     );
     if (pairedSection) {
       const pairedSectionDetail = transformToSectionDetail(pairedSection);
@@ -166,17 +155,18 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 mt-3 w-full">
+    <div className="flex flex-col gap-2 mt-3 w-full text-xs sm:text-sm md:text-base">
       {meetings.map((meeting, index) => (
         <div key={index} className="flex flex-col gap-3">
           {!hideLocation && (
             <div className="flex flex-row gap-2 items-center">
               <LabelSection>Location</LabelSection>
-              <span className="text-sm text-gray-800 dark:text-gray-300">
+              <span className="text-gray-800 dark:text-gray-300">
                 {meeting.location || "N/A"}
               </span>
             </div>
           )}
+
           <div className="flex flex-row gap-2 items-center">
             <LabelSection>Days</LabelSection>
             <div className="flex flex-row gap-2">
@@ -192,9 +182,11 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
             </div>
           </div>
 
-          {/* Start Time & End Time */}
+          {/* Start & End Time */}
           <div
-            className={`flex flex-row gap-4 ${hideLocation ? "flex-col justify-start" : "items-center"}`}
+            className={`flex flex-row gap-4 ${
+              hideLocation ? "flex-col justify-start" : "items-center"
+            }`}
           >
             <div className="flex flex-row gap-2 items-center">
               <LabelSection>Start Time</LabelSection>
@@ -216,22 +208,25 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
         </div>
       ))}
 
-      {/* Add Section Button (Placed at the Bottom Right) */}
+      {/* Add Section Button */}
       <div className="flex justify-end mt-4">
         {section &&
           (section.pairedSections && section.pairedSections.length > 0 ? (
             <div className="flex flex-row gap-2">
               <Button
-                className="bg-white text-slate-900 hover:bg-gray-300 text-xs dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
+                className="bg-white text-slate-900 hover:bg-gray-300 text-xs
+                           dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300
+                           dark:hover:bg-opacity-90"
                 onClick={() => handleAddPair(section)}
               >
                 Add Class Pair
               </Button>
               <Button
                 className="inline-flex items-center justify-center rounded-md text-xs font-medium 
-    transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 
-    disabled:opacity-50 bg-white text-slate-900 hover:bg-gray-100 
-    h-10 px-4 py-2 w-full shadow-lg dark:bg-slate-500/50 dark:hover:bg-slate-700/70 hover:bg-slate-100/80 dark:text-slate-50"
+                           transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 
+                           disabled:opacity-50 bg-white text-slate-900 hover:bg-gray-100 
+                           h-10 px-4 py-2 w-full shadow-lg dark:bg-slate-500/50
+                           dark:hover:bg-slate-700/70 hover:bg-slate-100/80 dark:text-slate-50"
                 onClick={() => handleAdd(section)}
               >
                 Add Single Section
@@ -239,7 +234,9 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
             </div>
           ) : (
             <Button
-              className="bg-white text-slate-900 hover:bg-gray-300 text-xs dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
+              className="bg-white text-slate-900 hover:bg-gray-300 text-xs
+                         dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300
+                         dark:hover:bg-opacity-90"
               onClick={() => handleAdd(section)}
             >
               Add Single Section

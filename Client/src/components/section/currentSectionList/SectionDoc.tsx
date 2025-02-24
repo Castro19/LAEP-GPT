@@ -260,7 +260,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
                       className="w-5 h-5 cursor-pointer hover:opacity-80"
                     />
                   </a>
-                  <StarRating group={group} />
+                  <StarRating overallRating={group.overallRating} />
                 </>
               ) : (
                 <>
@@ -278,7 +278,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
                       className="w-5 h-5 cursor-pointer hover:opacity-80"
                     />
                   </a>
-                  <StarRating group={group} />
+                  <StarRating overallRating={group.overallRating} />
                 </>
               )}
             </div>
@@ -307,7 +307,10 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
           {pairedCards.length > 0 && (
             <div className="flex flex-col space-y-4">
               {pairedCards.map((pair, index) => (
-                <div key={index} className="flex gap-4">
+                <div
+                  key={index}
+                  className="flex flex-col md:flex-row gap-4 w-full"
+                >
                   {/* Lecture Section */}
                   {pair.lecture && (
                     <div className="bg-gray-900 p-4 rounded-lg flex-1">

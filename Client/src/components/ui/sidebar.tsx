@@ -19,7 +19,9 @@ import {
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 //const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
+const SIDEBAR_WIDTH_CALENDAR = "22rem";
 const SIDEBAR_WIDTH_FLOATING = "36rem";
+
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 //const SIDEBAR_KEYBOARD_SHORTCUT = "b";
@@ -134,6 +136,7 @@ const SidebarProvider = React.forwardRef<
                 "--sidebar-width": SIDEBAR_WIDTH,
                 "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
                 "--sidebar-width-floating": SIDEBAR_WIDTH_FLOATING,
+                "--sidebar-width-calendar": SIDEBAR_WIDTH_CALENDAR,
                 ...style,
               } as React.CSSProperties
             }
@@ -158,7 +161,7 @@ const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     side?: "left" | "right";
-    variant?: "sidebar" | "floating" | "inset";
+    variant?: "sidebar" | "floating" | "inset" | "calendar";
     collapsible?: "offcanvas" | "icon" | "none" | "icon-offcanvas";
     resizable?: boolean;
   }
@@ -224,7 +227,9 @@ const Sidebar = React.forwardRef<
           {
             "--sidebar-width": resizable
               ? SIDEBAR_WIDTH_FLOATING
-              : SIDEBAR_WIDTH,
+              : variant === "calendar"
+                ? SIDEBAR_WIDTH_CALENDAR
+                : SIDEBAR_WIDTH,
           } as React.CSSProperties
         }
       >
@@ -235,7 +240,9 @@ const Sidebar = React.forwardRef<
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[collapsible=icon-offcanvas]:w-0", // same as offcanvas
             "group-data-[side=right]:rotate-180",
-            variant === "floating" || variant === "inset"
+            variant === "floating" ||
+              variant === "inset" ||
+              variant === "calendar"
               ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
           )}
@@ -261,7 +268,9 @@ const Sidebar = React.forwardRef<
                 "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
 
             // Floating/inset logic
-            variant === "floating" || variant === "inset"
+            variant === "floating" ||
+              variant === "inset" ||
+              variant === "calendar"
               ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)] group-data-[collapsible=icon-offcanvas]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[collapsible=icon-offcanvas]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
@@ -270,7 +279,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow group-data-[variant=calendar]:w-[--sidebar-width-calendar]"
           >
             {children}
           </div>

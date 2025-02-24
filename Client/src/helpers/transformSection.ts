@@ -262,3 +262,50 @@ export function transformSectionsToScheduleBuilderSections(
     })),
   }));
 }
+
+export function transformSectionToSelectedSection(
+  section: SectionDetail
+): SelectedSection {
+  let professorRatings: {
+    name: string;
+    id: string;
+  }[] = [];
+  if (
+    "instructorsWithRatings" in section &&
+    section.instructorsWithRatings &&
+    section.instructorsWithRatings.length > 0
+  ) {
+    professorRatings = section.instructorsWithRatings.map((instructor) => ({
+      name: instructor.name,
+      id: instructor.id,
+    }));
+  } else if (
+    "instructors" in section &&
+    section.instructors &&
+    section.instructors.length > 0
+  ) {
+    professorRatings = section.instructors.map((instructor) => ({
+      name: instructor.name,
+      id: "none",
+    }));
+  }
+
+  return {
+    courseId: section.courseId,
+    courseName: section.courseName,
+    classNumber: section.classNumber,
+    units: section.units,
+    component: section.component,
+    enrollmentStatus: section.enrollmentStatus,
+    meetings: section.meetings.map((meeting) => ({
+      ...meeting,
+      days: meeting.days.filter((day) => day),
+    })),
+    classPair: section.pairedSections,
+    professors: professorRatings ?? section.instructors ?? [],
+    rating:
+      section.instructorsWithRatings?.[0]?.overallRating ||
+      section.instructorsWithRatings?.[1]?.overallRating ||
+      0,
+  };
+}

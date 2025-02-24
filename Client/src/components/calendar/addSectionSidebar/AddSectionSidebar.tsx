@@ -5,7 +5,7 @@ import {
 } from "@/redux";
 import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/section/helpers/timeFormatter";
 import {
   Collapsible,
@@ -13,23 +13,23 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useSidebar } from "@/components/ui/sidebar";
+  transformSectionToSelectedSection,
+  transformToSectionDetail,
+} from "@/helpers/transformSection";
+import StarRating from "@/components/section/reusable/sectionInfo/StarRating";
 
-const SectionsChosen = () => {
+const AddSectionSidebar = () => {
   const navigate = useNavigate();
-  const { setOpen } = useSidebar();
-  const dispatch = useAppDispatch();
-  const { selectedSections, sidebarCourseIds } = useAppSelector(
-    (state) => state.sectionSelection
-  );
+
+  const { sidebarSections } = useAppSelector((state) => state.sectionSelection);
+  const sidebarSectionsList = sidebarSections.map((section) => {
+    const sectionDetail = transformToSectionDetail(section);
+    return transformSectionToSelectedSection(sectionDetail);
+  });
   // Group sections by courseId and professor
-  if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
+  if (sidebarSectionsList.length === 0 || !Array.isArray(sidebarSectionsList)) {
     return (
       <div className="p-2 text-gray-500 dark:text-gray-400 text-sm">
         The sections you select from the{" "}
@@ -44,11 +44,10 @@ const SectionsChosen = () => {
     );
   }
 
-  const groupedSections = selectedSections.reduce(
+  const groupedSections = sidebarSectionsList.reduce(
     (acc, section) => {
       const courseKey = section.courseId;
       const professorKey = section.professors.map((p) => p.name).join(", ");
-
       if (!acc[courseKey]) {
         acc[courseKey] = {};
       }
@@ -61,21 +60,6 @@ const SectionsChosen = () => {
     {} as Record<string, Record<string, SelectedSection[]>>
   );
 
-  const handleAddSections = (
-    courseId: string,
-    e: React.MouseEvent<HTMLSpanElement>
-  ) => {
-    e.preventDefault();
-    // Trigger the sidebar to open
-    dispatch(sectionSelectionActions.addSidebarCourseId(courseId));
-    dispatch(
-      sectionSelectionActions.setSidebarSections([
-        ...sidebarCourseIds,
-        courseId,
-      ])
-    );
-    setOpen(true);
-  };
   return (
     <div className="grid grid-cols-1 gap-2">
       {Object.entries(groupedSections).map(([courseId, professorGroups]) => (
@@ -95,38 +79,18 @@ const SectionsChosen = () => {
                   </div>
                 </div>
               </CollapsibleTrigger>
-              <span
-                className="text-xs text-gray-500 dark:text-gray-400"
-                onClick={(e) => handleAddSections(courseId, e)}
-              >
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Plus className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        Add{" "}
-                        <span className="text-base font-semibold text-gray-800 dark:text-gray-200">
-                          {courseId}
-                        </span>{" "}
-                        Sections
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </span>
             </div>
 
             <CollapsibleContent>
               <div className="px-3 pb-3 ">
-                {Object.entries(professorGroups).map(
-                  ([professor, sections]) => (
-                    <Collapsible
-                      key={professor}
-                      defaultOpen
-                      className="group/collapsible"
-                    >
+                {Object.entries(professorGroups)
+                  .sort(([, sectionsA], [, sectionsB]) => {
+                    const ratingA = sectionsA[0]?.rating || 0;
+                    const ratingB = sectionsB[0]?.rating || 0;
+                    return ratingB - ratingA; // Sort in descending order
+                  })
+                  .map(([professor, sections]) => (
+                    <Collapsible key={professor} className="group/collapsible">
                       <div className=" border-gray-100 dark:border-slate-700 pt-2">
                         <CollapsibleTrigger asChild>
                           <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 px-2 py-1 rounded">
@@ -140,6 +104,40 @@ const SectionsChosen = () => {
                                 )
                                 .join(" ")}
                             </h3>
+                            <div className="flex items-center gap-6">
+                              {sections[0]?.professors[0]?.id && (
+                                <a
+                                  href={`https://polyratings.dev/professor/${sections[0].professors[0].id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <img
+                                    src="/polyratings.ico"
+                                    alt="PolyRatings"
+                                    className="w-3 h-3 cursor-pointer hover:opacity-80"
+                                  />
+                                </a>
+                              )}
+                              {!sections[0]?.professors[0]?.id && (
+                                <a
+                                  href={`https://polyratings.dev/search/name?term=${encodeURIComponent(professor)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <img
+                                    src="/polyratings.ico"
+                                    alt="PolyRatings"
+                                    className="w-3 h-3 cursor-pointer hover:opacity-80"
+                                  />
+                                </a>
+                              )}
+                              <StarRating
+                                overallRating={sections[0]?.rating || 0}
+                                size={12}
+                              />
+                            </div>
                           </div>
                         </CollapsibleTrigger>
 
@@ -155,8 +153,7 @@ const SectionsChosen = () => {
                         </CollapsibleContent>
                       </div>
                     </Collapsible>
-                  )
-                )}
+                  ))}
               </div>
             </CollapsibleContent>
           </div>
@@ -168,10 +165,33 @@ const SectionsChosen = () => {
 
 const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
   const dispatch = useAppDispatch();
-  const handleRemove = () => {
-    dispatch(
-      sectionSelectionActions.removeSelectedSectionAsync(section.classNumber)
+  const sidebarSection = useAppSelector((state) =>
+    state.sectionSelection.sidebarSections.find(
+      (s) => s.classNumber === section.classNumber
+    )
+  );
+
+  // Handler to add a section
+  const handleAdd = async () => {
+    if (!sidebarSection) {
+      return;
+    }
+    const sectionDetail = transformToSectionDetail(sidebarSection);
+    const { payload } = await dispatch(
+      sectionSelectionActions.createOrUpdateSelectedSectionAsync(sectionDetail)
     );
+    const { message } = payload as { message: string };
+
+    if (
+      message ===
+      `Try adding a different section for course ${section.courseId}`
+    ) {
+      toast({
+        title: `Section ${section.classNumber} Already Exists in schedule`,
+        description: message,
+        variant: "destructive",
+      });
+    }
   };
 
   // Extract and format start & end time
@@ -236,10 +256,10 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleRemove}
-            className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+            onClick={() => handleAdd()}
+            className=""
           >
-            Remove
+            Add
           </Button>
         </div>
       </div>
@@ -247,4 +267,4 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
   );
 };
 
-export default SectionsChosen;
+export default AddSectionSidebar;
