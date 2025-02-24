@@ -33,7 +33,7 @@ export type ScheduleBuilderFields =
   | "description" // Description of the course (e.g. "This course introduces students to the principles of computer organization and design.")
   | "prerequisites" // Prerequisites for the course (e.g. ["CSC108", "CSC110"])
   | "units" // Units of the course (e.g. "3", "1-4", "0", "1-6")
-  | "enrollmentStatus" // Enrollment status of the course (e.g. "Open" | "Closed")
+  | "enrollmentStatus" // Enrollment status of the course (e.g. "Open" | "Closed" | "Waitlist")
   | "enrollment" // Enrollment information of the course (e.g. {waitTotal: 100, waitCap: 100, classCapacity: 100, enrollmentTotal: 100, enrollmentAvailable: 100, enrollmentStatusDescription: "Open"})
   | "instructionMode" // Instruction mode of the course (e.g. "PA" | "SM" | "P" | "PS" | "AM" | "SA")
   | "courseAttributes" // Course attributes of the course (e.g. ["GE D", "USCP"])

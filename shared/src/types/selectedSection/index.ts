@@ -8,7 +8,7 @@ export type SelectedSection = {
     name: string;
     id: string | null;
   }[];
-  enrollmentStatus: "O" | "C";
+  enrollmentStatus: "O" | "C" | "W";
   meetings: Array<{
     days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
     start_time: string | null;

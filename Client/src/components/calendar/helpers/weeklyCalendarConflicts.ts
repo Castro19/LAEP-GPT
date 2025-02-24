@@ -4,7 +4,7 @@ import { parseTime } from "./conflicts";
 type EventType = {
   courseName: string;
   classNumber: string;
-  enrollmentStatus: "O" | "C";
+  enrollmentStatus: "O" | "C" | "W";
   professor: string[];
   color: string;
   days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;

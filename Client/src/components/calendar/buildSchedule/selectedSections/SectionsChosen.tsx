@@ -141,15 +141,21 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
             {`${section.component.toUpperCase()} ${section.classNumber}`}
           </span>
 
-          {/* Enrollment Status (Open/Closed) */}
+          {/* Enrollment Status (Open/Closed/Waitlist) */}
           <span
             className={`text-xxs px-1.5 py-0.5 rounded ${
               section.enrollmentStatus === "O"
-                ? "bg-[#204139] text-green-800 dark:bg-[#204139] dark:text-[#5EB752]"
-                : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                ? "bg-[#204139] text-green-800 dark:bg-[#204139] dark:text-[#5EB752]" // Open
+                : section.enrollmentStatus === "W"
+                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400" // Waitlist
+                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400" // Closed
             }`}
           >
-            {section.enrollmentStatus === "O" ? "Open" : "Closed"}
+            {section.enrollmentStatus === "O"
+              ? "Open"
+              : section.enrollmentStatus === "W"
+                ? "Waitlist"
+                : "Closed"}
           </span>
         </div>
 

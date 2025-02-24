@@ -7,7 +7,8 @@ type BadgeProps = {
     | "outlined"
     | "open"
     | "closed"
-    | "classNumber";
+    | "classNumber"
+    | "waitlist";
   className?: string;
   children: React.ReactNode;
 };
@@ -36,6 +37,8 @@ const BadgeSection: React.FC<BadgeProps> = ({
     variantStyles = "text-[#EC8B8B] bg-[#334155] px-3 py-1";
   } else if (variant === "classNumber") {
     variantStyles = "bg-[#334155] text-white px-3 py-1";
+  } else if (variant === "waitlist") {
+    variantStyles = "text-[#FACC15] bg-[#334155] px-3 py-1";
   } else {
     variantStyles =
       "bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-gray-300 p-1";
