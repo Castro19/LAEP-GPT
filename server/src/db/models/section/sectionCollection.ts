@@ -5,7 +5,7 @@ import { Collection, Filter } from "mongodb";
 let sectionCollection: Collection<SectionDocument>;
 
 const initializeCollection = (): Collection<SectionDocument> => {
-  return getDb().collection("sections");
+  return getDb().collection("sectionsSpring");
 };
 
 export const findSectionsByFilter = async (

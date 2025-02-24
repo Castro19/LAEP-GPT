@@ -43,6 +43,7 @@ export const SECTION_FILTERS_SCHEMA = z.object({
     })
     .optional(),
   withNoConflicts: z.boolean().optional(),
+  isCreditNoCredit: z.boolean().optional(),
 });
 
 export const CALENDAR_PREFERENCES_SCHEMA = z.object({

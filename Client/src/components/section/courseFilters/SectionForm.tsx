@@ -75,6 +75,7 @@ const SectionForm = () => {
         concentration: concentration,
       },
       withNoConflicts: reduxFilters.withNoConflicts || false,
+      isCreditNoCredit: reduxFilters.isCreditNoCredit || false,
     },
   });
 
@@ -112,6 +113,7 @@ const SectionForm = () => {
         concentration: "",
       },
       withNoConflicts: watchedValues.withNoConflicts || false,
+      isCreditNoCredit: watchedValues.isCreditNoCredit || false,
     };
 
     // Only dispatch if something actually changed.
@@ -161,6 +163,7 @@ const SectionForm = () => {
       },
       isTechElective: data.isTechElective || false,
       withNoConflicts: data.withNoConflicts || false,
+      isCreditNoCredit: data.isCreditNoCredit || false,
     };
 
     // For example, build query string:
@@ -219,7 +222,9 @@ const SectionForm = () => {
     if (filters.withNoConflicts) {
       params.append("withNoConflicts", "true");
     }
-
+    if (filters.isCreditNoCredit) {
+      params.append("isCreditNoCredit", "true");
+    }
     return params.toString();
   }
 

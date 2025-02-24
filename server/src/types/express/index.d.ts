@@ -31,6 +31,7 @@ interface CustomRequest extends Request {
     maxCatalogNumber?: string;
     isTechElective?: string;
     withNoConflicts?: string;
+    isCreditNoCredit?: string;
     page?: string;
   };
 }

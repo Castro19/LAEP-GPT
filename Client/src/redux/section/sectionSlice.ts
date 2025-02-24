@@ -56,6 +56,7 @@ const initialState: SectionState = {
     techElectives: { major: "", concentration: "" },
     isTechElective: false,
     withNoConflicts: false,
+    isCreditNoCredit: false,
   },
   AIQuery: null,
 };
