@@ -206,6 +206,22 @@ const CourseInformation = ({
       />
       <FormField
         control={form.control}
+        name="isCreditNoCredit"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <FormSwitch
+                form={form}
+                label="Credit / No Credit"
+                name="isCreditNoCredit"
+                defaultChecked={field.value}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="isTechElective"
         render={({ field }) => (
           <FormItem>

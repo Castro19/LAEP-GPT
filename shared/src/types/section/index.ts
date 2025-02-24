@@ -54,6 +54,7 @@ export type Section = {
   techElectives: string[];
 
   classPair: number | null; // class number of the section paired with (e.g. 1002)
+  isCreditNoCredit: boolean;
 };
 
 export type SectionDocument = Section & {
@@ -86,6 +87,7 @@ export type SectionsFilterParams = {
     concentration: string;
   };
   withNoConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
+  isCreditNoCredit?: boolean;
 };
 
 // ------------------------------------------------------------

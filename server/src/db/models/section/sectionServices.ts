@@ -272,6 +272,10 @@ function buildSectionsQuery(
     }
   }
 
+  // 15) isCreditNoCredit
+  if (filter.isCreditNoCredit) {
+    query.isCreditNoCredit = filter.isCreditNoCredit;
+  }
   return query;
 }
 
