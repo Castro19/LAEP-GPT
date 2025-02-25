@@ -33,6 +33,12 @@ const Scheduling = ({
 }) => {
   const navigate = useNavigate();
 
+  const statusOptions = [
+    { label: "Open", value: "open" },
+    { label: "Waitlist", value: "waitlist" },
+    { label: "Closed", value: "closed" },
+  ];
+
   return (
     <CollapsibleContentWrapper
       title="Scheduling"
@@ -62,32 +68,24 @@ const Scheduling = ({
             <TitleLabel title="Enrollment Status" />
             <FormControl>
               <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant={field.value === "open" ? "default" : "outline"}
-                  onClick={() =>
-                    form.setValue(
-                      "status",
-                      field.value === "open" ? undefined : "open"
-                    )
-                  }
-                  className="px-4 py-2"
-                >
-                  Open
-                </Button>
-                <Button
-                  type="button"
-                  variant={field.value === "closed" ? "default" : "outline"}
-                  onClick={() =>
-                    form.setValue(
-                      "status",
-                      field.value === "closed" ? undefined : "closed"
-                    )
-                  }
-                  className="px-4 py-2"
-                >
-                  Closed
-                </Button>
+                {statusOptions.map((option) => (
+                  <Button
+                    key={option.value}
+                    type="button"
+                    className="w-1/4"
+                    variant={
+                      field.value === option.value ? "default" : "outline"
+                    }
+                    onClick={() =>
+                      form.setValue(
+                        "status",
+                        field.value === option.value ? undefined : option.value
+                      )
+                    }
+                  >
+                    {option.label}
+                  </Button>
+                ))}
               </div>
             </FormControl>
           </FormItem>
