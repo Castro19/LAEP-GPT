@@ -32,12 +32,17 @@ function buildSectionsQuery(
 
   // 3) status (open/closed → O/C)
   if (filter.status) {
-    if (filter.status.toLowerCase() === "open") {
+    const status = filter.status.toLowerCase();
+    
+    if (status === "open") {
       query.enrollmentStatus = "O";
-    } else if (filter.status.toLowerCase() === "closed") {
+    } else if (status === "closed") {
       query.enrollmentStatus = "C";
+    } else if (status === "waitlist" || status === "waitlisted") {
+      query.enrollmentStatus = "W";
     }
   }
+  
 
   // 4) days (e.g. "Mo,Tu,We")
   if (filter.days) {

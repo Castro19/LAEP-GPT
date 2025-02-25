@@ -17,6 +17,28 @@ const instructionModeMap = {
   SA: "Asynchronous",
 };
 
+const enrollmentStatusDesc = (enrollStatus: "O" | "C" | "W") => {
+  if (enrollStatus === "O") {
+    return (
+      <BadgeSection variant="open" className="text-sm">
+        Open
+      </BadgeSection>
+    );
+  } else if (enrollStatus === "W") {
+    return (
+      <BadgeSection variant="waitlist" className="text-sm">
+        Waitlist
+      </BadgeSection>
+    );
+  } else {
+    return (
+      <BadgeSection variant="closed" className="text-sm">
+        Closed
+      </BadgeSection>
+    );
+  }
+};
+
 const CalendarSectionInfo = () => {
   const { calendarSelectedSection, loading } = useAppSelector(
     (state) => state.section
@@ -52,16 +74,7 @@ const CalendarSectionInfo = () => {
             </BadgeSection>
           </div>
         </div>
-        <BadgeSection
-          variant={
-            calendarSelectedSection.enrollmentStatus === "O"
-              ? "default"
-              : "destructive"
-          }
-          className="text-sm"
-        >
-          {calendarSelectedSection.enrollmentStatus === "O" ? "Open" : "Closed"}
-        </BadgeSection>
+        {enrollmentStatusDesc(calendarSelectedSection.enrollmentStatus)}
       </div>
 
       {/* Course Details Grid */}

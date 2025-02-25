@@ -9,7 +9,7 @@ export type Section = {
   prerequisites: string[] | null; // prerequisites for the course (e.g. ["CSC108", "CSC110"])
   units: string; // units of the course (e.g. "3", "1-4", "0", "1-6")
 
-  enrollmentStatus: "O" | "C"; // enrollment status of the section (e.g. "O" | "C")
+  enrollmentStatus: "O" | "C" | "W"; // enrollment status of the section (e.g. "O" | "C")
 
   enrollment: {
     waitTotal: number; // total waitlist capacity (e.g. 100)
@@ -127,7 +127,7 @@ export type SectionDetail = {
   courseName: string;
   classNumber: number;
   component: string;
-  enrollmentStatus: "O" | "C";
+  enrollmentStatus: "O" | "C" | "W";
   enrollment: EnrollmentInfo;
   instructionMode: string;
   meetings: Meeting[];

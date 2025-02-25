@@ -29,9 +29,19 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
       <div className="flex items-center gap-2">
         <BadgeSection variant="outlined">{section.component}</BadgeSection>
         <BadgeSection
-          variant={section.enrollmentStatus === "O" ? "open" : "closed"}
+          variant={
+            section.enrollmentStatus === "O"
+              ? "open"
+              : section.enrollmentStatus === "W"
+                ? "waitlist"
+                : "closed"
+          }
         >
-          {section.enrollmentStatus === "O" ? "Open" : "Closed"}
+          {section.enrollmentStatus === "O"
+            ? "Open"
+            : section.enrollmentStatus === "W"
+              ? "Waitlist"
+              : "Closed"}
         </BadgeSection>
       </div>
 
