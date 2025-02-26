@@ -182,7 +182,7 @@ function OuterSidebar() {
                         <FaSearch className="m-auto w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Course Search</TooltipContent>
+                    <TooltipContent>Class Search</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </SidebarMenu>
@@ -202,7 +202,7 @@ function OuterSidebar() {
                         <FaCalendarAlt className="m-auto w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Weekly Calendar</TooltipContent>
+                    <TooltipContent>Schedule Builder</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </SidebarMenu>
