@@ -6,7 +6,7 @@ import {
 } from "@/redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { sectionSelectionActions } from "@/redux";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 // Components
@@ -139,7 +139,7 @@ const CalendarPage = () => {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="Build Schedule">
-                <CalendarBuilderForm />
+                <CalendarBuilderForm onSwitchTab={() => {}} />
               </TabsContent>
               <TabsContent value="AI Chat">
                 <CalendarAIChatContainer />
@@ -173,9 +173,14 @@ const CalendarMobile = () => {
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
+  const [tabValue, setTabValue] = useState("Build Schedule");
 
   return (
-    <Tabs defaultValue="Build Schedule">
+    <Tabs
+      value={tabValue}
+      onValueChange={(value) => setTabValue(value)}
+      defaultValue="Build Schedule"
+    >
       <TabsList className="grid w-full grid-cols-3 dark:bg-gray-900">
         <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
         <TabsTrigger value="Calendar">Calendar</TabsTrigger>
@@ -188,7 +193,7 @@ const CalendarMobile = () => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Build Schedule">
-        <CalendarBuilderForm />
+        <CalendarBuilderForm onSwitchTab={() => setTabValue("Calendar")} />
       </TabsContent>
       <TabsContent value="Calendar">
         <CalendarContainer />

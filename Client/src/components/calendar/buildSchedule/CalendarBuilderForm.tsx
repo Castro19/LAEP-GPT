@@ -17,7 +17,12 @@ export type CalendarPreferencesForm = z.infer<
   typeof CALENDAR_PREFERENCES_SCHEMA
 >;
 
-const CalendarBuilderForm = () => {
+const CalendarBuilderForm = ({
+  onSwitchTab,
+}: {
+  // eslint-disable-next-line no-unused-vars
+  onSwitchTab: (tab: string) => void;
+}) => {
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
@@ -78,6 +83,7 @@ const CalendarBuilderForm = () => {
     dispatch(calendarActions.setTotalPages(allCombinations.length));
     dispatch(calendarActions.setCurrentCalendar(allCombinations[0]));
     navigate("/calendar");
+    onSwitchTab("Calendar");
   };
 
   const handleSaveSchedule = () => {
