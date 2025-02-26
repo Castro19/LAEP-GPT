@@ -30,11 +30,18 @@ import {
   DAYS,
 } from "@/components/section/courseFilters/helpers/constants";
 import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
+import useIsMobile from "@/hooks/use-mobile";
 
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 
-const SectionForm = () => {
+const SectionForm = ({
+  onSwitchTab,
+}: {
+  // eslint-disable-next-line no-unused-vars
+  onSwitchTab: (tab: string) => void;
+}) => {
   const dispatch = useAppDispatch();
+  const isMobile = useIsMobile();
 
   const reduxFilters = useAppSelector((state) => state.section.filters);
   const { userData } = useUserData();
@@ -174,6 +181,10 @@ const SectionForm = () => {
     // You can then use queryString in your API call.
     dispatch(sectionActions.setFilters(updatedFilters));
     dispatch(sectionActions.fetchSectionsAsync());
+    if (isMobile) {
+      // Trigger tab switch
+      onSwitchTab("sections");
+    }
   };
 
   function buildQueryString(filters: SectionsFilterParams): string {
