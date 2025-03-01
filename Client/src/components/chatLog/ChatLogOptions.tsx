@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   logActions,
   messageActions,
@@ -18,19 +18,15 @@ import { Label } from "@radix-ui/react-label";
 import { LogListType } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 
-const ChatLogOptions = ({
-  log,
-}: {
-  log: LogListType;
-}) => {
+const ChatLogOptions = ({ log }: { log: LogListType }) => {
   const { userId } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [open, setOpen] = useState(false); 
+  const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(log.title);
 
-   // Reset input value when popover is closed without saving
-   const handlePopoverClose = () => {
+  // Reset input value when popover is closed without saving
+  const handlePopoverClose = () => {
     setInputValue(log.title);
   };
 
@@ -38,7 +34,6 @@ const ChatLogOptions = ({
   useEffect(() => {
     setInputValue(log.title);
   }, [log.title]);
-
 
   const isDeleting = useAppSelector((state) =>
     state.log.deletingLogIds.includes(log.logId)
@@ -55,7 +50,7 @@ const ChatLogOptions = ({
             dispatch(messageActions.resetMsgList(log.logId));
             dispatch(messageActions.toggleNewChat(true));
             dispatch(messageActions.setCurrentChatId(null));
-            setOpen(false); 
+            setOpen(false);
           })
           .catch((error) => {
             if (environment === "dev") {
@@ -73,7 +68,7 @@ const ChatLogOptions = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setInputValue(newName);
-  }
+  };
   const handleUpdateData = async () => {
     try {
       await dispatch(
@@ -92,11 +87,13 @@ const ChatLogOptions = ({
   };
 
   return (
-    <Popover open={open} onOpenChange={(open) => {
-      setOpen(open);
-      if(!open) handlePopoverClose();
-    }}
- >
+    <Popover
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        if (!open) handlePopoverClose();
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
