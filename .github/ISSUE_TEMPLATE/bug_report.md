@@ -1,31 +1,41 @@
 ---
 name: 🐛 Bug Report
-about: Report a problem to help us improve PolyLink
+about: Report a bug in PolyLink
 title: "[Bug]: <short description>"
 labels: bug
 assignees: ""
 ---
 
-### 🐞 Describe the Bug
+## **🐞 Bug Description**
 
-A clear and concise description of the issue.
+_A clear and concise description of the issue._
 
-### ✅ Steps to Reproduce
+## **✅ Steps to Reproduce**
 
 1. Go to '...'
 2. Click on '...'
-3. See error '...'
+3. See error: '...'
 
-### 📸 Screenshots (if applicable)
+## **🔍 Expected Behavior**
 
-Attach screenshots to help explain the issue.
+_What should have happened instead?_
 
-### 🖥️ Your Environment (if applicable)
+## **🖥️ System Information**
 
-- OS: [e.g., Windows 11, macOS Monterey]
-- Browser: [e.g., Chrome, Firefox]
-- PolyLink Version: [e.g., v1.0]
+- **OS:** [e.g., Windows, macOS]
+- **Browser:** [e.g., Chrome, Firefox]
+- **PolyLink Version:** [e.g., v1.0]
 
-### Additional Context (if applicable)
+## **📸 Screenshots (If applicable)**
 
-Add any other context or logs related to the issue.
+_Add screenshots or logs if available._
+
+## **📌 Acceptance Criteria**
+
+- [ ] ✅ Fix should prevent future occurrences.
+- [ ] ✅ Should be tested in different environments.
+
+## **📎 Related Issues**
+
+- [ ] Depends on #XX
+- [ ] Related to #XX
