@@ -19,13 +19,6 @@ export type AssistantSliceType = {
   lastCreatedGpt?: string; // The assistant that was created last (used to undo the creatinon)
 };
 
-export type CurrentModelType =
-  | "General Assistant"
-  | "Ethics Assistant"
-  | "Social Justice Assistant"
-  | "Enhanced ESJ Assistant"
-  | "Matching Assistant";
-
 export type AssistantDocument = AssistantType & {
   _id: ObjectId;
 };
