@@ -33,7 +33,7 @@ function buildSectionsQuery(
   // 3) status (open/closed → O/C)
   if (filter.status) {
     const status = filter.status.toLowerCase();
-    
+
     if (status === "open") {
       query.enrollmentStatus = "O";
     } else if (status === "closed") {
@@ -42,7 +42,6 @@ function buildSectionsQuery(
       query.enrollmentStatus = "W";
     }
   }
-  
 
   // 4) days (e.g. "Mo,Tu,We")
   if (filter.days) {
