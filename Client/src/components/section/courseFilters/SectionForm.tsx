@@ -246,18 +246,18 @@ const SectionForm = ({
   };
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          {isMobile ? (
-            <BuildScheduleContainerMobile>
-              <SectionFilters form={form} />
-            </BuildScheduleContainerMobile>
-          ) : (
-            <BuildScheduleContainer>
-              <SectionFilters form={form} />
-            </BuildScheduleContainer>
-          )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        {isMobile ? (
+          <BuildScheduleContainerMobile>
+            <SectionFilters form={form} />
+          </BuildScheduleContainerMobile>
+        ) : (
+          <BuildScheduleContainer>
+            <SectionFilters form={form} />
+          </BuildScheduleContainer>
+        )}
+        {!isMobile && (
           <LeftSectionFooter
             formText="Apply Filters"
             buttonText="Reset Filters"
@@ -266,9 +266,9 @@ const SectionForm = ({
             }}
             onClick={onFormReset}
           />
-        </form>
-      </Form>
-    </div>
+        )}
+      </form>
+    </Form>
   );
 };
 
