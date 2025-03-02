@@ -2,8 +2,6 @@ import React from "react";
 
 // My components
 import SectionPageHeader from "./SectionPageHeader";
-import MobileHeader from "@/components/layout/MobileHeader";
-
 // Hooks
 import useMobile from "@/hooks/use-mobile";
 import OuterSidebar from "../OuterIconSidebar";
@@ -18,13 +16,13 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex">
-        {isMobile ? null : <OuterSidebar />}
+        <OuterSidebar />
         <div
           className={`bg-slate-900 text-white flex flex-col no-scroll w-full ${
             isMobile ? "ml-0" : "ml-2"
           }`}
         >
-          {isMobile ? <MobileHeader /> : <SectionPageHeader />}
+          <SectionPageHeader />
           <div className="flex-1">{children}</div>
         </div>
       </div>

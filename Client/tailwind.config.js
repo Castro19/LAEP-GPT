@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontSize: {
-        xxs: "10px"
+        xxs: "10px",
       },
       boxShadow: {
         input:
@@ -59,7 +59,25 @@ export default {
       },
     },
   },
-  plugins: [typography, require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [
+    typography,
+    require("tailwindcss-animate"),
+    addVariablesForColors,
+    function ({ addUtilities }) {
+      addUtilities({
+        ".safe-bottom-inset": {
+          "padding-bottom": "16px",
+          "padding-bottom": "calc(16px + env(safe-area-inset-bottom))",
+          "padding-bottom": "calc(16px + constant(safe-area-inset-bottom))",
+        },
+        ".safe-top-inset": {
+          "padding-top": "16px",
+          "padding-top": "calc(16px + env(safe-area-inset-top))",
+          "padding-top": "calc(16px + constant(safe-area-inset-top))",
+        },
+      });
+    },
+  ],
 };
 
 function addVariablesForColors({ addBase, theme }) {

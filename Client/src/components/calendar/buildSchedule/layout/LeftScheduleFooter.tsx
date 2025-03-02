@@ -13,10 +13,23 @@ const LeftSectionFooter = ({
 }) => {
   return (
     <>
+      {/* Divider above */}
       <div className="border-t border-gray-200" />
 
-      <div className="sticky bottom-0 mx-4 bg-background/95 backdrop-blur flex gap-2 shadow-lg p-4 h-[20%]">
-        {/* Apply Filters button */}
+      <div
+        className="
+        sticky
+        bottom-0
+        mx-4
+        bg-background/95
+        backdrop-blur
+        flex
+        gap-2
+        shadow-lg
+        p-4
+        safe-bottom-inset
+      "
+      >
         <Button
           type="submit"
           className="w-full shadow-lg dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
@@ -24,6 +37,7 @@ const LeftSectionFooter = ({
         >
           {formText}
         </Button>
+
         <Button
           onClick={onClick}
           variant="secondary"
