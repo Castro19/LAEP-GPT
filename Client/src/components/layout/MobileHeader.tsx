@@ -51,7 +51,7 @@ function MobileHeader() {
   };
 
   return (
-    <div className="relative z-50 w-full">
+    <div className="relative z-50 w-full bg-slate-900">
       <div className="flex justify-around py-2">
         <TooltipProvider>
           <Tooltip>
@@ -65,7 +65,7 @@ function MobileHeader() {
                     : "hover:text-slate-600"
                 }`}
               >
-                <IoMdChatboxes className="w-5 h-5" />
+                <IoMdChatboxes className="w-5 h-5 text-white" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>AI Chat</TooltipContent>
@@ -84,7 +84,7 @@ function MobileHeader() {
                     : "hover:text-slate-600"
                 }`}
               >
-                <FaSearch className="w-5 h-5" />
+                <FaSearch className="w-5 h-5 text-white" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Course Search</TooltipContent>
@@ -103,7 +103,7 @@ function MobileHeader() {
                     : "hover:text-slate-600"
                 }`}
               >
-                <FaCalendarAlt className="w-5 h-5" />
+                <FaCalendarAlt className="w-5 h-5 text-white" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Weekly Calendar</TooltipContent>
@@ -122,7 +122,7 @@ function MobileHeader() {
                     : "hover:text-slate-600"
                 }`}
               >
-                <HiOutlineAcademicCap className="w-5 h-5" />
+                <HiOutlineAcademicCap className="w-5 h-5 text-white" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Flowchart</TooltipContent>
@@ -132,7 +132,11 @@ function MobileHeader() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" onClick={() => navigate("/profile/edit")}>
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/profile/edit")}
+                className="text-white"
+              >
                 <UserAvatar />
               </Button>
             </TooltipTrigger>

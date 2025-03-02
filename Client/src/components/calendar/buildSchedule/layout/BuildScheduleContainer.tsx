@@ -39,4 +39,26 @@ const BuildScheduleContainer = ({
   );
 };
 
+export const BuildScheduleContainerMobile = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  return (
+    <AnimateWrapper>
+      {/* Use full screen height, minus safe area insets */}
+      <div className="flex flex-col min-h-screen safe-bottom-inset">
+        <Card className="flex flex-col border-0 shadow-lg flex-1 h-full">
+          {/* We want the main content to scroll, so we keep overflow on the container */}
+          <div className="overscroll-contain flex-1 no-scroll">
+            <ScrollArea className="h-full min-w-full mb-4">
+              <div className="px-6 space-y-4 pb-4">{children}</div>
+            </ScrollArea>
+          </div>
+        </Card>
+      </div>
+    </AnimateWrapper>
+  );
+};
+
 export default BuildScheduleContainer;

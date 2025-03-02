@@ -17,6 +17,7 @@ import { useUserData } from "@/hooks/useUserData";
 import SectionFilters from "@/components/section/courseFilters/SectionFilters";
 import {
   BuildScheduleContainer,
+  BuildScheduleContainerMobile,
   LeftSectionFooter,
 } from "@/components/calendar";
 import { Form } from "@/components/ui/form";
@@ -248,9 +249,15 @@ const SectionForm = ({
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <BuildScheduleContainer>
-            <SectionFilters form={form} />
-          </BuildScheduleContainer>
+          {isMobile ? (
+            <BuildScheduleContainerMobile>
+              <SectionFilters form={form} />
+            </BuildScheduleContainerMobile>
+          ) : (
+            <BuildScheduleContainer>
+              <SectionFilters form={form} />
+            </BuildScheduleContainer>
+          )}
           <LeftSectionFooter
             formText="Apply Filters"
             buttonText="Reset Filters"

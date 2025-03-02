@@ -1,6 +1,7 @@
 import useMobile from "@/hooks/use-mobile";
 
 // My Components
+import MobileSectionPageLayout from "@/components/layout/SectionPage/MobileSectionPageLayout";
 import SectionPageLayout from "@/components/layout/SectionPage/SectionPageLayout";
 import SectionContainer from "@/components/section/layout/SectionContainer";
 import SectionForm from "@/components/section/courseFilters/SectionForm";
@@ -13,22 +14,26 @@ const SectionPage = () => {
   const isMobile = useMobile();
 
   return (
-    <SectionPageLayout>
+    <>
       {isMobile ? (
-        <SectionMobile />
+        <MobileSectionPageLayout>
+          <SectionMobile />
+        </MobileSectionPageLayout>
       ) : (
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
-            <div className="col-span-1">
-              <SectionForm onSwitchTab={() => {}} />
-            </div>
-            <div className="col-span-2">
-              <SectionContainer />
+        <SectionPageLayout>
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
+              <div className="col-span-1">
+                <SectionForm onSwitchTab={() => {}} />
+              </div>
+              <div className="col-span-2">
+                <SectionContainer />
+              </div>
             </div>
           </div>
-        </div>
+        </SectionPageLayout>
       )}
-    </SectionPageLayout>
+    </>
   );
 };
 
