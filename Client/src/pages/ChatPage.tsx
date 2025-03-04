@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { ChatContainer } from "@/components/chat";
 import {
   useAppSelector,
   useAppDispatch,
@@ -8,17 +7,32 @@ import {
   calendarActions,
 } from "@/redux";
 import { useParams } from "react-router-dom";
-import { fetchLogById } from "@/redux/log/crudLog";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
-import { LogData } from "@polylink/shared/types";
-import { environment } from "@/helpers/getEnvironmentVars";
-import OuterSidebar from "@/components/layout/OuterIconSidebar";
+
+// Hooks
 import useMobile from "@/hooks/use-mobile";
+import useDeviceType from "@/hooks/useDeviceType";
+
+// My components
+import { ChatContainer } from "@/components/chat";
+import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
+import OuterSidebar from "@/components/layout/OuterIconSidebar";
+import MobileChatPageLayout from "@/components/layout/ChatPage/MobileChatPageLayout";
+import MobileChatContainer from "@/components/chat/chatBody/MobileChatContainer";
+
+// UI components
+import { SidebarProvider } from "@/components/ui/sidebar";
+
+// Types
+import { LogData } from "@polylink/shared/types";
+
+// Helpers
+import { fetchLogById } from "@/redux/log/crudLog";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
   const isMobile = useMobile();
+  const deviceType = useDeviceType();
   const { chatId } = useParams();
 
   const userId = useAppSelector((state) => state.auth.userId);
@@ -113,14 +127,30 @@ const ChatPage = () => {
   return (
     <>
       <div className="flex">
-        {isMobile ? null : <OuterSidebar />}
-        <SidebarProvider className="dark:bg-slate-900">
-          <ChatPageLayout>
-            <ChatContainer />
-          </ChatPageLayout>
-        </SidebarProvider>
+        {deviceType !== "desktop" ? (
+          <MobileChatPage />
+        ) : (
+          <>
+            {isMobile ? null : <OuterSidebar />}
+            <SidebarProvider className="dark:bg-slate-900">
+              <ChatPageLayout>
+                <ChatContainer />
+              </ChatPageLayout>
+            </SidebarProvider>
+          </>
+        )}
       </div>
     </>
+  );
+};
+
+const MobileChatPage = () => {
+  return (
+    <SidebarProvider className="dark:bg-slate-900">
+      <MobileChatPageLayout>
+        <MobileChatContainer />
+      </MobileChatPageLayout>
+    </SidebarProvider>
   );
 };
 
