@@ -18,9 +18,12 @@ import {
   SidebarMenu,
   useSidebar,
 } from "@/components/ui/sidebar";
+import useDeviceType from "@/hooks/useDeviceType";
 
 export function ChatPageSidebar() {
   const isMobile = useMobile();
+  const deviceType = useDeviceType();
+
   const dispatch = useAppDispatch();
   const logList = useAppSelector((state) => state.log.logList);
   const userId = useAppSelector((state) => state.auth.userId);
@@ -48,7 +51,7 @@ export function ChatPageSidebar() {
         `}
       >
         <SidebarHeader className="border-b-2 border-sidebar-border dark:border-slate-700 flex-none">
-          {isMobile ? (
+          {isMobile || deviceType !== "desktop" ? (
             <MobileHeader />
           ) : (
             <div className="flex items-center justify-center">

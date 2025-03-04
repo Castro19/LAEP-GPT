@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 //const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -69,6 +70,7 @@ const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile();
+    const deviceType = useDeviceType();
     const [openMobile, setOpenMobile] = React.useState(false);
 
     // Get sidebar state from localStorage or default to true
@@ -97,10 +99,10 @@ const SidebarProvider = React.forwardRef<
     );
 
     const toggleSidebar = React.useCallback(() => {
-      return isMobile
+      return isMobile || deviceType !== "desktop"
         ? setOpenMobile((prev) => !prev)
         : setOpen((prev) => !prev);
-    }, [isMobile, setOpen, setOpenMobile]);
+    }, [isMobile, setOpen, setOpenMobile, deviceType]);
 
     // Effect to sync state from localStorage
     React.useEffect(() => {
@@ -176,6 +178,7 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const deviceType = useDeviceType();
 
     if (collapsible === "none") {
       return (
@@ -192,7 +195,7 @@ const Sidebar = React.forwardRef<
       );
     }
 
-    if (isMobile) {
+    if (isMobile || deviceType !== "desktop") {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -580,6 +583,7 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const Comp = asChild ? Slot : "button";
     const { isMobile, state } = useSidebar();
+    const deviceType = useDeviceType();
 
     const button = (
       <Comp
@@ -608,7 +612,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile}
+          hidden={state !== "collapsed" || isMobile || deviceType !== "desktop"}
           {...tooltip}
         />
       </Tooltip>

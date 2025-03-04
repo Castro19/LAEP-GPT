@@ -40,7 +40,7 @@ const SectionContainer = () => {
               <NoSectionsFound />
             )}
           </ScrollArea>
-          {courses.length > 0 ? <PaginationFooter /> : null}
+          {courses.length > 0 ? <PaginationFooter /> : <PaginationFooter />}
         </div>
       )}
     </div>
