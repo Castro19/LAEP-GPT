@@ -27,7 +27,7 @@ const SectionPage = () => {
             <div>
               <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
                 <div className="col-span-1">
-                  <SectionForm onSwitchTab={() => {}} />
+                  <SectionForm />
                 </div>
                 <div className="col-span-2">
                   <SectionContainer />
