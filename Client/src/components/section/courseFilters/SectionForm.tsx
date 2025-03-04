@@ -31,7 +31,8 @@ import {
 } from "@/components/section/courseFilters/helpers/constants";
 import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
 import useIsMobile from "@/hooks/use-mobile";
-
+import useDeviceType from "@/hooks/useDeviceType";
+import MobileBuildScheduleContainer from "@/components/calendar/buildSchedule/layout/MobileBuildScheduleContainer";
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 
 const SectionForm = ({
@@ -42,6 +43,7 @@ const SectionForm = ({
 }) => {
   const dispatch = useAppDispatch();
   const isMobile = useIsMobile();
+  const deviceType = useDeviceType();
 
   const reduxFilters = useAppSelector((state) => state.section.filters);
   const { userData } = useUserData();
@@ -248,17 +250,28 @@ const SectionForm = ({
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <BuildScheduleContainer>
-            <SectionFilters form={form} />
-          </BuildScheduleContainer>
-          <LeftSectionFooter
-            formText="Apply Filters"
-            buttonText="Reset Filters"
-            onFormSubmit={() => {
-              onSubmit(form.getValues());
-            }}
-            onClick={onFormReset}
-          />
+          {deviceType !== "desktop" ? (
+            <MobileBuildScheduleContainer
+              onFormSubmit={() => onSubmit(form.getValues())}
+              onClick={onFormReset}
+            >
+              <SectionFilters form={form} />
+            </MobileBuildScheduleContainer>
+          ) : (
+            <>
+              <BuildScheduleContainer>
+                <SectionFilters form={form} />
+              </BuildScheduleContainer>
+              <LeftSectionFooter
+                formText="Apply Filters"
+                buttonText="Reset Filters"
+                onFormSubmit={() => {
+                  onSubmit(form.getValues());
+                }}
+                onClick={onFormReset}
+              />
+            </>
+          )}
         </form>
       </Form>
     </div>
