@@ -4,12 +4,14 @@ import { openai } from "../../../index"; // or wherever your OpenAI client is se
 import { FilterSectionsSchema } from "./sectionQuerySchema";
 import { systemInstructions } from "./sectionQuerySyststemInstructions"; // import system instructions
 
-export type QueryResponse = {
+export type SectionQueryResponse = {
   query: unknown;
   explanation?: string;
 } | null;
 
-export const queryAgent = async (text: string): Promise<QueryResponse> => {
+export const sectionQueryAssistant = async (
+  text: string
+): Promise<SectionQueryResponse> => {
   try {
     // 1. Call the Chat Completion API with system + user messages
     const response = await openai.chat.completions.create({

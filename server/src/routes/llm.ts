@@ -11,7 +11,7 @@ import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio";
-import { queryAgent } from "../helpers/assistants/mongoSectionQuery/sectionQueryAssistant";
+import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
 import { Filter } from "mongodb";
@@ -306,7 +306,7 @@ router.post(
     try {
       const { message } = req.body;
 
-      const response = await queryAgent(message);
+      const response = await sectionQueryAssistant(message);
       if (environment === "dev") {
         console.log("Query response:", response);
       }
