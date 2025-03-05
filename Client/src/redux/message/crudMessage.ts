@@ -47,7 +47,7 @@ export default async function sendMessage(
     if (currentChatId) {
       formData.append("chatId", currentChatId);
     }
-    if (sections && currentModel.title === "Schedule Builder") {
+    if (sections && currentModel.title === "Schedule Analysis") {
       if (environment === "dev") {
         console.log("Adding sections to form data: ", sections);
       }

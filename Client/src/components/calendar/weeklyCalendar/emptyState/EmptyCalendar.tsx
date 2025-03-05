@@ -32,7 +32,7 @@ const COPY = {
       },
       {
         startText: "Chat with our ",
-        strongText: "Schedule Builder AI Assistant",
+        strongText: "Schedule Analysis AI Assistant",
         endText: " to get help finding the best schedule for you.",
       },
     ],

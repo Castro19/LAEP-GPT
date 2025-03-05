@@ -62,10 +62,10 @@ const courseSearchText = `---
 🔍 **Example Use Case:** _"Find me a Data Structures class with a professors that have a high rating"_ → The app suggests sections with **top-rated instructors**.
 `;
 const scheduleBuilderText = `---
-### **4. Schedule Builder – Instant Class Scheduling**
+### **4. Schedule Analysis – Instant Class Scheduling**
 
 🛑 **Problem:** Students struggle to create the **perfect class schedule** that fits their preferences and avoids conflicts.  
-✅ **Solution:** Our **schedule builder** generates **optimal class schedules** based on:  
+✅ **Solution:** Our **Schedule Analysis** generates **optimal class schedules** based on:  
 ✔️ **Course requirements**  
 ✔️ **Preferred professors**  
 ✔️ **Time preferences (morning vs. evening classes)**
