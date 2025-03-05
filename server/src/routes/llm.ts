@@ -11,7 +11,7 @@ import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio";
-import { queryAgent } from "../helpers/assistants/queryAgent";
+import { queryAgent } from "../helpers/assistants/mongoSectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
 import { Filter } from "mongodb";
