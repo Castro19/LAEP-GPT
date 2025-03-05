@@ -113,7 +113,7 @@ const ChatInput = ({
             userMessageId,
             botMessageId,
             sections:
-              currentModel.title === "Schedule Builder" &&
+              currentModel.title === "Schedule Analysis" &&
               currentCalendar &&
               currentCalendar.sections
                 ? transformSectionsToScheduleBuilderSections(

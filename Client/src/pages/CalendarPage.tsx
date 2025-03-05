@@ -100,10 +100,10 @@ const CalendarPage = () => {
     fetchassistantList();
   }, [assistantList.length, dispatch, userId]);
 
-  // Set the Assistant to the Schedule Builder
+  // Set the Assistant to the Schedule Analysis
   useEffect(() => {
     if (assistantList.length > 0) {
-      dispatch(assistantActions.setAssistantByTitle("Schedule Builder"));
+      dispatch(assistantActions.setAssistantByTitle("Schedule Analysis"));
     }
   }, [assistantList, dispatch]);
 

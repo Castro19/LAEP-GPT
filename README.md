@@ -13,7 +13,7 @@ We are using the **MERN (MongoDB, Express.js, React, Node.js) stack**, alongside
 
 - **AI Assistant** – Provides real-time responses to academic and student-related inquiries.
 - **Flowchart Creation** – Generates a multi-year academic plan based on major and concentration.
-- **Course Search & Schedule Builder** – Helps users find and organize classes based on availability, professor ratings, and personal preferences.
+- **Course Search & Schedule Analysis** – Helps users find and organize classes based on availability, professor ratings, and personal preferences.
 - **Student Matching** – Assists in forming study groups, research teams, and roommate connections.
 - **Data-Driven Recommendations** – Uses AI to suggest relevant resources and optimize student experience.
 
@@ -29,7 +29,7 @@ Using Polyratings, get instant AI summaries of professor ratings and find the be
 
 Search naturally for classes and we will create a MongoDB query that finds the sections that fit your query.
 
-![Schedule Builder AI](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDRveWdxZDg1anNheTJ5ejk3aWZpZzFscmIwZjY0ZnRnYWdsaGc3diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GevViQDkax5TKTgRUc/giphy.gif)
+![Schedule Analysis AI](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDRveWdxZDg1anNheTJ5ejk3aWZpZzFscmIwZjY0ZnRnYWdsaGc3diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GevViQDkax5TKTgRUc/giphy.gif)
 
 ### Build Schedules
 
@@ -37,11 +37,11 @@ Add Spring 2025 sections and build all combinations of your weekly calendar the 
 
 ![Build Schedules](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWRvYmdjOGdpanF2cXE0NnMyOXB1OHZ0eXNmY3BkYXA4cTExMmRjbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PqUQ3Qbfeb6ZRjU4zn/giphy.gif)
 
-### Schedule Builder AI
+### Schedule Analysis AI
 
 Get instant AI insights on your current weekly calendar and ways to improve it by analyzing workload, professor ratings, time conflicts, and more.
 
-![Schedule Builder AI](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTFlOTY5ZTA3MmJsY29uaThocmVkdHV2NGZpNmxwYzNrZmw2cjl4eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1oDkNJu0oehVTAubbo/giphy.gif)
+![Schedule Analysis AI](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTFlOTY5ZTA3MmJsY29uaThocmVkdHV2NGZpNmxwYzNrZmw2cjl4eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1oDkNJu0oehVTAubbo/giphy.gif)
 
 ## Tech Stack
 

@@ -23,7 +23,7 @@ const content = [
   {
     title: "Build Your Perfect Schedule!",
     description:
-      "You've picked your classes—now let Schedule Builder handle the rest! Generate multiple schedule options, resolve conflicts, and customize with ease. Say goodbye to scheduling stress!",
+      "You've picked your classes—now let Schedule Analysis handle the rest! Generate multiple schedule options, resolve conflicts, and customize with ease. Say goodbye to scheduling stress!",
     content: (
       <DivStyle>
         <img

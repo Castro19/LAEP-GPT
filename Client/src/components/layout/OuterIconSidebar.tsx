@@ -202,7 +202,7 @@ function OuterSidebar() {
                         <FaCalendarAlt className="m-auto w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Schedule Builder</TooltipContent>
+                    <TooltipContent>Schedule Analysis</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </SidebarMenu>
