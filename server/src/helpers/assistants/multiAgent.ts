@@ -13,7 +13,12 @@ import {
 } from "@polylink/shared/types";
 import scheduleBuilder from "./multiAgentHelpers/scheduleBuilder";
 import professorRatings from "./multiAgentHelpers/professorRatings";
-import { professorRatingsHelperAssistant } from "./professorRatings/professorRatingsHelperAssistant";
+import {
+  professorRatingsHelperAssistant,
+  ProfessorRatingsResponse,
+} from "./professorRatings/professorRatingsHelperAssistant";
+import scheduleAnalysisHelperAssistant from "./scheduleAnalysis/scheduleAnalysisHelperAssistant";
+import { ScheduleAnalysisHelperResponse } from "./scheduleAnalysis/scheduleAnalysisHelperAssistant";
 
 type MultiAgentRequest = {
   model: { id: string; title: string };
@@ -132,8 +137,23 @@ async function handleMultiAgentModel({
   try {
     // Append a newline to the original message
     let messageToAdd = message + "\n";
+    let helperResponse:
+      | ScheduleAnalysisHelperResponse
+      | ProfessorRatingsResponse
+      | null = null;
 
-    const helperResponse = await professorRatingsHelperAssistant(messageToAdd);
+    if (model.title === "Schedule Builder") {
+      messageToAdd =
+        messageToAdd +
+        "Here are my current schedule sections: " +
+        JSON.stringify(sections);
+      if (environment === "dev") {
+        console.log("Message to add for Schedule Builders: ", messageToAdd);
+      }
+      helperResponse = await scheduleAnalysisHelperAssistant(messageToAdd);
+    } else {
+      helperResponse = await professorRatingsHelperAssistant(messageToAdd);
+    }
 
     if (!helperResponse) {
       throw new Error("Helper response is empty for Professor Ratings");
