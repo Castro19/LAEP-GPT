@@ -1,44 +1,8 @@
-import { environment, openai, ASST_MAP } from "../../index";
-import { z } from "zod";
+// queryAgent.ts
 
-// Security-focused schema configuration
-const ForbiddenPatterns = z.string().refine(
-  // eslint-disable-next-line no-control-regex
-  (val) => !/[;$\\|<>\\/\x00-\x1F]/.test(val),
-  "Contains forbidden characters"
-);
-
-const MaxDepthSchema = z.any().superRefine((val, ctx) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const checkDepth = (obj: any, depth = 0): void => {
-    if (depth > 5) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Object nesting too deep (max 5 levels)",
-      });
-    }
-
-    if (typeof obj === "object" && obj !== null) {
-      Object.values(obj).forEach((v) => checkDepth(v, depth + 1));
-    }
-  };
-
-  checkDepth(val);
-});
-
-export const SafeQuerySchema = z
-  .union([
-    z.object({}).passthrough().and(MaxDepthSchema).and(ForbiddenPatterns),
-    z.array(z.any()).max(100),
-    z.record(z.any()),
-  ])
-  .refine(
-    (data) => {
-      const json = JSON.stringify(data);
-      return json.length <= 5000 && !/(\\u0000|\\u001b|\\u009b)/.test(json);
-    },
-    { message: "Query exceeds security limits" }
-  );
+import { openai } from "../../index"; // or wherever your OpenAI client is set up
+import { FilterSectionsSchema } from "./mongoSectionQuery/sectionQuerySchema";
+import { systemInstructions } from "./mongoSectionQuery/sectionQuerySyststemInstructions"; // import system instructions
 
 export type QueryResponse = {
   query: unknown;
@@ -47,72 +11,46 @@ export type QueryResponse = {
 
 export const queryAgent = async (text: string): Promise<QueryResponse> => {
   try {
-    const run = await openai.beta.threads.createAndRun({
-      assistant_id: ASST_MAP["section_query"] as string,
-      thread: { messages: [{ role: "user", content: text }] },
+    // 1. Call the Chat Completion API with system + user messages
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemInstructions },
+        { role: "user", content: text },
+      ],
+      temperature: 0.7, // or your desired parameter
     });
 
-    let currentRun = run;
-    let attempts = 0;
-    const maxAttempts = 20;
-
-    while (
-      attempts < maxAttempts &&
-      !["completed", "failed", "cancelled"].includes(currentRun.status)
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      currentRun = await openai.beta.threads.runs.retrieve(
-        run.thread_id,
-        currentRun.id
-      );
-      attempts++;
-      if (environment === "dev") {
-        console.log(`Polling attempt ${attempts}: ${currentRun.status}`);
-      }
-    }
-
-    if (currentRun.status !== "completed") {
-      console.error(`Run failed with status: ${currentRun.status}`);
+    // 2. Extract the assistant's raw text output
+    const message = response.choices[0].message.content;
+    if (!message) {
+      // If there's no content, we can't parse anything
       return null;
     }
 
-    const messages = await openai.beta.threads.messages.list(run.thread_id);
-    await openai.beta.threads.del(run.thread_id);
+    // 3. Strip out ```json fences if present
+    const jsonString = message
+      .replace(/```json\s*/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-    for (const message of messages.data.reverse()) {
-      if (message.role === "assistant" && message.content[0].type === "text") {
-        const content = message.content[0].text.value;
+    // 4. Convert to JS object
+    const parsed = JSON.parse(jsonString);
 
-        try {
-          // Flexible JSON extraction
-          const jsonString = content
-            .replace(/```json/g, "")
-            .replace(/```/g, "")
-            .trim();
+    // 5. Validate against your improved schema
+    const validated = FilterSectionsSchema.parse(parsed);
 
-          const parsed = JSON.parse(jsonString);
-
-          // Security validation
-          const safeData = SafeQuerySchema.parse(parsed);
-
-          // Extract query from common patterns
-          return {
-            query: safeData.query ?? safeData.filter ?? safeData,
-            explanation: safeData.explanation || safeData.description || "",
-          };
-        } catch (error) {
-          console.error("Processing failed:", error);
-          return {
-            query: null,
-            explanation: "Failed to parse response",
-          };
-        }
-      }
-    }
-
-    return null;
+    // 6. Return the query + explanation
+    return {
+      query: validated.arguments.query,
+      explanation: validated.arguments.explanation,
+    };
   } catch (error) {
     console.error("Query agent error:", error);
-    return null;
+    // If anything fails (invalid JSON, schema mismatch, etc.), return null or a fallback
+    return {
+      query: null,
+      explanation: "Failed to parse or validate AI response",
+    };
   }
 };

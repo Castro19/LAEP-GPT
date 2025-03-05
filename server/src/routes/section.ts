@@ -5,7 +5,7 @@ import { SectionDocument, SectionsFilterParams } from "@polylink/shared/types";
 import { environment } from "../index";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import { Filter } from "mongodb";
-import { SafeQuerySchema } from "../helpers/assistants/queryAgent";
+import { SafeQuerySchema } from "../helpers/assistants/mongoSectionQuery/sectionQuerySchema";
 
 const router = express.Router();
 
