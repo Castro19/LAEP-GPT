@@ -100,7 +100,7 @@ const FetchProfessorsSchema = z
 // --------------------------------------------
 
 /**
- * The main schedule builder schema:
+ * The main Schedule Analysis schema:
  * - queryType (enum) - required
  * - fetchScheduleSections, fetchAlternativeSections, fetchProfessors
  *   are optional. If present, must match the sub-schema.

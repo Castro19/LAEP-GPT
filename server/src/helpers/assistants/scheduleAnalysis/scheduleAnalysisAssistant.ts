@@ -8,7 +8,7 @@ import { ScheduleAnalysisHelperResponse } from "./scheduleAnalysisHelperAssistan
 import { environment } from "../../..";
 
 /**
- * Handles the schedule builder flow.
+ * Handles the Schedule Analysis flow.
  * - Appends schedule sections to the message.
  * - Calls the schedule helper assistant.
  * - Processes its JSON response using scheduleBuilder.
@@ -22,13 +22,13 @@ async function handleScheduleBuilderFlow(
   messageToAdd +=
     "Here are my current schedule sections: " + JSON.stringify(sections);
   if (environment === "dev") {
-    console.log("Message to add for Schedule Builder:", messageToAdd);
+    console.log("Message to add for Schedule Analysis:", messageToAdd);
   }
 
   const helperResponse: ScheduleAnalysisHelperResponse | null =
     await scheduleAnalysisHelperAssistant(messageToAdd);
   if (!helperResponse) {
-    throw new Error("Helper response is empty for Schedule Builder");
+    throw new Error("Helper response is empty for Schedule Analysis");
   }
 
   // Convert and parse the helper response into the expected JSON object.
@@ -36,11 +36,11 @@ async function handleScheduleBuilderFlow(
   const jsonObject = JSON.parse(helperResponseString) as ScheduleBuilderObject;
   if (!jsonObject) {
     throw new Error(
-      "JSON object not found in Schedule Builder helper response"
+      "JSON object not found in Schedule Analysis helper response"
     );
   }
   if (!sections) {
-    throw new Error("Sections not provided for Schedule Builder");
+    throw new Error("Sections not provided for Schedule Analysis");
   }
 
   // Update the message using the scheduleBuilder helper function.

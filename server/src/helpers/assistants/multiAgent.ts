@@ -38,7 +38,7 @@ type MultiAgentRequest = {
  * Main function to process the multi-agent model.
  *
  * Workflow:
- * 1. Delegates to the Schedule Builder or Professor Ratings flow based on the model title.
+ * 1. Delegates to the Schedule Analysis or Professor Ratings flow based on the model title.
  * 2. Retrieves the main assistant's ID.
  * 3. Initializes (or fetches) the thread and adds the updated message.
  * 4. Runs the main assistant and streams the response back to the client.
@@ -56,7 +56,7 @@ async function handleMultiAgentModel({
     let messageToAdd: string;
 
     // Delegate to the appropriate flow based on the model title.
-    if (model.title === "Schedule Builder") {
+    if (model.title === "Schedule Analysis") {
       messageToAdd = await handleScheduleBuilderFlow(message, sections);
     } else if (model.title === "Professor Ratings") {
       messageToAdd = await handleProfessorRatingsFlow(message);
