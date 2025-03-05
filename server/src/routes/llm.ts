@@ -105,7 +105,7 @@ router.post(
     if (
       model.title === "Professor Ratings" ||
       model.title === "Spring Planner Assistant" ||
-      model.title === "Schedule Builder"
+      model.title === "Schedule Analysis"
     ) {
       if (environment === "dev") {
         console.log("Sections: ", sections);
@@ -114,7 +114,7 @@ router.post(
       try {
         if (
           message ===
-          "[CLICK ME TO START] How do I use the Schedule Builder Assistant?"
+          "[CLICK ME TO START] How do I use the Schedule Analysis Assistant?"
         ) {
           await handleSingleAgentModel({
             model: {
@@ -130,7 +130,7 @@ router.post(
             runningStreams,
           });
         } else if (
-          model.title === "Schedule Builder" &&
+          model.title === "Schedule Analysis" &&
           sections &&
           JSON.parse(sections).length === 0
         ) {
