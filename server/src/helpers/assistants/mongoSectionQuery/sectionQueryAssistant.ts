@@ -1,8 +1,8 @@
 // queryAgent.ts
 
-import { openai } from "../../index"; // or wherever your OpenAI client is set up
-import { FilterSectionsSchema } from "./mongoSectionQuery/sectionQuerySchema";
-import { systemInstructions } from "./mongoSectionQuery/sectionQuerySyststemInstructions"; // import system instructions
+import { openai } from "../../../index"; // or wherever your OpenAI client is set up
+import { FilterSectionsSchema } from "./sectionQuerySchema";
+import { systemInstructions } from "./sectionQuerySyststemInstructions"; // import system instructions
 
 export type QueryResponse = {
   query: unknown;
