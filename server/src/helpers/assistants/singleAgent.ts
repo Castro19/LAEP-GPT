@@ -5,7 +5,7 @@ import { getAssistantById } from "../../db/models/assistant/assistantServices";
 import { setupVectorStoreAndUpdateAssistant } from "../openAI/vectorStoreFunctions";
 import { initializeOrFetchIds } from "../openAI/threadFunctions";
 import { formatAvailability } from "../formatters/availabilityFormatter";
-import { runAssistantAndStreamResponse } from "./streamResponse";
+import { runAssistantAndStreamResponse } from "./multiAgentHelpers/streamResponse";
 import { searchCourses } from "../qdrant/qdrantQuery";
 import { getCourseInfo } from "../../db/models/courses/courseServices";
 import flowchartHelper from "../flowchart/flowchart";

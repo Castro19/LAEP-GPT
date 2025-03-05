@@ -10,7 +10,7 @@ import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
 import { FileObject } from "openai/resources/index";
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
-import { createBio } from "../helpers/assistants/createBio";
+import { createBio } from "../helpers/assistants/createBio/createBio";
 import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
