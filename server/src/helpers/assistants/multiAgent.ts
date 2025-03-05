@@ -1,11 +1,10 @@
-import { ASST_MAP, environment, openai } from "../../index";
+import { environment } from "../../index";
 import { Response } from "express";
+import { runAssistantAndStreamResponse } from "./streamResponse";
 import {
-  runAssistantAndStreamResponse,
-  runAssistantAndCollectResponse,
-} from "./streamResponse";
-import { addMessageToThread } from "../openAI/threadFunctions";
-import { initializeOrFetchIds } from "../openAI/threadFunctions";
+  addMessageToThread,
+  initializeOrFetchIds,
+} from "../openAI/threadFunctions";
 import { getAssistantById } from "../../db/models/assistant/assistantServices";
 import {
   RunningStreamData,
@@ -14,6 +13,7 @@ import {
 } from "@polylink/shared/types";
 import scheduleBuilder from "./multiAgentHelpers/scheduleBuilder";
 import professorRatings from "./multiAgentHelpers/professorRatings";
+import { professorRatingsHelperAssistant } from "./professorRatings/professorRatingsHelperAssistant";
 
 type MultiAgentRequest = {
   model: { id: string; title: string };
@@ -32,6 +32,94 @@ export type ProfessorRatingsObject = {
   reason?: string;
 };
 
+/**
+ * Fetches the main assistant's assistantId using the provided model id.
+ */
+async function fetchMainAssistant(modelId: string): Promise<string> {
+  const assistant = await getAssistantById(modelId);
+  if (!assistant) {
+    throw new Error("Assistant not found");
+  }
+  const assistantId = assistant.assistantId;
+  if (!assistantId) {
+    throw new Error("Assistant ID not found");
+  }
+  return assistantId;
+}
+
+/**
+ * Processes the helper assistant's JSON response based on the model title.
+ * Calls the appropriate helper function (scheduleBuilder or professorRatings) to update the message.
+ */
+async function processHelperResponse(
+  modelTitle: string,
+  currentMessage: string,
+  helperResponse: string,
+  sections?: ScheduleBuilderSection[]
+): Promise<string> {
+  let jsonObject: ScheduleBuilderObject | ProfessorRatingsObject[] | null =
+    null;
+
+  if (modelTitle === "Schedule Builder") {
+    if (!helperResponse) {
+      throw new Error("Helper response is empty for Schedule Builder");
+    }
+    jsonObject = JSON.parse(helperResponse) as ScheduleBuilderObject;
+    if (!jsonObject) {
+      throw new Error("JSON object not found in helper response");
+    }
+    if (!sections) {
+      throw new Error("Sections not provided for Schedule Builder");
+    }
+    // Use the scheduleBuilder helper to update the message
+    return await scheduleBuilder(currentMessage, jsonObject);
+  } else if (modelTitle === "Professor Ratings") {
+    if (!helperResponse) {
+      throw new Error("Helper response is empty for Professor Ratings");
+    }
+    jsonObject = JSON.parse(helperResponse).results as ProfessorRatingsObject[];
+    if (!jsonObject) {
+      throw new Error("JSON object not found in helper response");
+    }
+    // Use the professorRatings helper to update the message
+    return await professorRatings(currentMessage, jsonObject);
+  } else {
+    // For other model titles, return the original message unmodified.
+    if (environment === "dev") {
+      console.log("No specific helper function for model title:", modelTitle);
+    }
+    return currentMessage;
+  }
+}
+
+/**
+ * Handles error responses and sends the proper HTTP response back to the client.
+ */
+function handleErrors(error: unknown, res: Response): void {
+  if (error instanceof Error && error.message === "Response canceled") {
+    if (!res.headersSent) {
+      res.status(200).end("Run canceled");
+    }
+  } else {
+    if (!res.headersSent) {
+      res.status(500).end("Failed to process request.");
+    }
+  }
+  if (!res.headersSent) {
+    res.end();
+  }
+}
+
+/**
+ * Main function to process the multi-agent model.
+ *
+ * Workflow:
+ * 1. Prepares the message and helper assistant based on model title.
+ * 2. Initializes a thread and adds the user message.
+ * 3. Runs the helper assistant and collects its JSON response.
+ * 4. Validates the helper run and processes the response via the appropriate helper.
+ * 5. Appends the processed message to the main thread and streams the response from the main assistant.
+ */
 async function handleMultiAgentModel({
   model,
   message,
@@ -42,156 +130,63 @@ async function handleMultiAgentModel({
   sections,
 }: MultiAgentRequest): Promise<void> {
   try {
+    // Append a newline to the original message
     let messageToAdd = message + "\n";
-    // First assistant: process the user's message and return JSON object
-    let helperAssistantId: string | null = null;
-    if (model.title === "Schedule Builder") {
-      helperAssistantId = ASST_MAP["enhanced_schedule_builder_query"] as string;
-      messageToAdd +=
-        "Here is my current schedule sections: " +
-        `${JSON.stringify(sections)}`;
-    } else {
-      helperAssistantId = ASST_MAP["professor_ratings_query"] as string;
-    }
-    if (!helperAssistantId) {
-      throw new Error("Helper assistant ID not found");
-    }
-    // Creates from OpenAI API & Stores in DB if not already created
-    const { threadId } = await initializeOrFetchIds(
-      chatId,
-      null,
-      helperAssistantId
-    );
 
-    // Add threadId to runningStreams (this is to allow the user to cancel the run)
-    runningStreams[userMessageId].threadId = threadId;
+    const helperResponse = await professorRatingsHelperAssistant(messageToAdd);
+
+    if (!helperResponse) {
+      throw new Error("Helper response is empty for Professor Ratings");
+    }
+
+    try {
+      const helperResponseString = JSON.stringify(helperResponse);
+      // Process the helper assistant's JSON response and update the message accordingly
+      messageToAdd = await processHelperResponse(
+        model.title,
+        messageToAdd,
+        helperResponseString,
+        sections
+      );
+    } catch (error) {
+      console.error("Error in processHelperResponse:", error);
+    }
+
+    if (environment === "dev") {
+      console.log("Modified message to add: ", messageToAdd);
+    }
+
+    const assistantId = await fetchMainAssistant(model.id);
+    const { threadId } = await initializeOrFetchIds(chatId, null, assistantId);
+    // Add the modified message to the main thread
+    await addMessageToThread(
+      threadId,
+      "assistant",
+      messageToAdd,
+      null,
+      model.title
+    );
 
     if (environment === "dev") {
       console.log(
-        `Message to add for helper assistant ${model.title}: `,
+        `Running main assistant (${model.title}) with message: `,
         messageToAdd
       );
     }
-    // Add user's message to helper thread
-    await addMessageToThread(threadId, "user", messageToAdd, null, model.title);
 
-    // Run the helper assistant and collect response
-    const { assistantResponse: helperResponse, runId } =
-      await runAssistantAndCollectResponse(
-        threadId,
-        helperAssistantId,
-        userMessageId,
-        runningStreams
-      );
-
-    if (environment === "dev") {
-      console.log("Helper Response: ", helperResponse);
-    }
-    // Setup assistant
-    const assistant = await getAssistantById(model.id);
-    if (!assistant) {
-      throw new Error("Assistant not found");
-    }
-    const assistantId = assistant?.assistantId;
-    if (!assistantId) {
-      throw new Error("Assistant ID not found");
-    }
-    runningStreams[userMessageId].threadId = threadId;
-    // Parse the helper assistant's response (assumes it's a JSON string)
-    let jsonObject: ScheduleBuilderObject | ProfessorRatingsObject[] | null =
-      null;
-
-    try {
-      const completedRun = await openai.beta.threads.runs.retrieve(
-        threadId,
-        runId
-      );
-      if (completedRun.status !== "completed") {
-        throw new Error(
-          `Helper run failed with status: ${completedRun.status}`
-        );
-      }
-
-      if (model.title === "Schedule Builder") {
-        if (helperResponse) {
-          jsonObject = JSON.parse(helperResponse) as ScheduleBuilderObject;
-        }
-        if (!jsonObject) {
-          throw new Error("JSON object not found");
-        }
-        if (!sections) {
-          throw new Error("Sections not found");
-        }
-        if (environment === "dev") {
-          console.log("Sections: ", sections);
-          console.log(`Message to add for schedule builder: ${messageToAdd}`);
-        }
-        messageToAdd = await scheduleBuilder(messageToAdd, jsonObject);
-      } else if (model.title === "Professor Ratings") {
-        if (helperResponse) {
-          jsonObject = JSON.parse(helperResponse)
-            .results as ProfessorRatingsObject[];
-        }
-        if (!jsonObject) {
-          throw new Error("JSON object not found");
-        }
-        console.log(`Message to add for professor ratings: ${message}`);
-        messageToAdd = await professorRatings(messageToAdd, jsonObject);
-      } else {
-        if (environment === "dev") {
-          console.log("Do other multi agent model here");
-        }
-      }
-
-      if (environment === "dev") {
-        console.log("Message to add: ", messageToAdd);
-      }
-      // Add user's modified message to the main thread
-      await addMessageToThread(
-        threadId,
-        "assistant",
-        messageToAdd,
-        null,
-        model.title
-      );
-      if (assistantId) {
-        if (environment === "dev") {
-          console.log(
-            "Running assistant: ",
-            model.title,
-            "with message: ",
-            messageToAdd
-          );
-        }
-        // Run the assistant and stream response
-        await runAssistantAndStreamResponse(
-          threadId,
-          assistantId,
-          res,
-          userMessageId,
-          runningStreams
-        );
-      }
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to parse JSON from helper assistant:", error);
-      }
-      throw new Error("Failed to parse JSON from helper assistant");
-    }
+    // Run the main assistant and stream the response back to the client
+    await runAssistantAndStreamResponse(
+      threadId,
+      assistantId,
+      res,
+      userMessageId,
+      runningStreams
+    );
   } catch (error) {
-    if (error instanceof Error && error.message === "Response canceled") {
-      if (!res.headersSent) {
-        res.status(200).end("Run canceled");
-      }
-    } else {
-      if (!res.headersSent) {
-        res.status(500).end("Failed to process request.");
-      }
+    if (environment === "dev") {
+      console.error("Error in handleMultiAgentModel:", error);
     }
-    // Ensure the response is ended
-    if (!res.headersSent) {
-      res.end();
-    }
+    handleErrors(error, res);
   }
 }
 
