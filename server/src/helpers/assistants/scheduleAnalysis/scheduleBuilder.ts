@@ -4,7 +4,7 @@ import {
   scheduleAnalysis,
   scheduleReview,
   sectionOptimization,
-} from "./ScheduleBuilderFunctions/queryType";
+} from "./helpers/queryType";
 
 /**
  *

@@ -1,5 +1,5 @@
-import { getUserByFirebaseId } from "../../db/models/user/userServices";
-import { openai } from "../../index";
+import { getUserByFirebaseId } from "../../../db/models/user/userServices";
+import { openai } from "../../../index";
 export const createBio = async (userId: string): Promise<string> => {
   const user = await getUserByFirebaseId(userId);
   if (!user) {
