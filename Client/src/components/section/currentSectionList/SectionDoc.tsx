@@ -13,6 +13,7 @@ import {
 import { SectionEnrollment } from "./sectionInfo";
 import { SectionHeader } from "./sectionInfo";
 import { SectionSchedule } from "./sectionInfo";
+import { FormatPrerequisites } from "../helpers/FormatPrereq";
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
 // The overall page background is assumed to be bg-slate-800 in dark mode.
@@ -170,7 +171,19 @@ const CourseSection: React.FC<CourseSectionProps> = ({
           <p className="text-[#C6C6C6] mb-5 text-sm sm:text-base">
             {course.description}
           </p>
-
+          {course.prerequisites ? (
+            Array.isArray(course.prerequisites) &&
+            course.prerequisites.length === 1 &&
+            course.prerequisites[0] === "" ? (
+              <p className="text-[#C6C6C6] mb-5 text-sm sm:text-base">
+                No prerequisites
+              </p>
+            ) : (
+              <p className="text-[#C6C6C6] mb-5 text-sm sm:text-base">
+                <FormatPrerequisites prerequisites={course.prerequisites} />
+              </p>
+            )
+          ) : null}
           {course.professorGroups.map((group) => (
             <ProfessorGroupComponent key={group.instructor.id} group={group} />
           ))}
