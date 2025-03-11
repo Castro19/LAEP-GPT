@@ -6,7 +6,7 @@ import {
 } from "../../../section/currentSectionList/sectionInfo";
 import { transformToSectionDetail } from "@/helpers/transformSection";
 import BadgeSection from "../../../section/helpers/BadgeSection";
-import { FormatPrerequisites } from "../../../section/helpers/FormatPrereq";
+import { FormatPrerequisites } from "@/components/section/helpers/FormatPrereq";
 
 const instructionModeMap = {
   PA: "Synchronous",
