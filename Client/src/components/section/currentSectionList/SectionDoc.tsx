@@ -58,29 +58,29 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
   };
 
   return (
-    <div className="space-y-8 p-4 bg-transparent min-h-screen">
-      <div className="bg-[#1E293B] p-4 rounded-xl shadow-lg">
+    <div className="space-y-8 p-2 sm:p-4 bg-transparent min-h-screen">
+      <div className="bg-[#1E293B] p-3 sm:p-4 rounded-xl shadow-lg">
         {/* "Currently Viewing" Header Section */}
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-3">
-            <h2 className="text-white text-xl font-semibold">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h2 className="text-white text-lg sm:text-xl font-semibold">
               Currently Viewing
             </h2>
 
             {/* Courses Count */}
-            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium flex-wrap">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium">
               {courses.length} {courses.length > 1 ? "Courses" : "Course"}
             </span>
 
             {/* Sections Count */}
-            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium flex-wrap">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium">
               {totalSections} {totalSections > 1 ? "Sections" : "Section"}
             </span>
           </div>
 
           {/* Expand / Collapse All Button */}
           <button
-            className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-lg font-medium hover:bg-opacity-60 transition flex-wrap"
+            className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium hover:bg-opacity-60 transition w-full sm:w-auto"
             onClick={toggleAll}
           >
             {Object.values(expandedCourses).every((state) => !state)
@@ -132,32 +132,30 @@ const CourseSection: React.FC<CourseSectionProps> = ({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4">
-      {/* Make the Entire Title Bar Clickable with Hover Effect */}
       <CollapsibleTrigger asChild>
         <div
-          className={`flex justify-between items-center bg-gray-900 px-4 py-3 transition-all cursor-pointer shadow-lg
+          className={`flex justify-between items-center bg-gray-900 px-2 sm:px-4 py-2 sm:py-3 transition-all cursor-pointer shadow-lg
           hover:shadow-indigo-500/10 
           ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}
           onClick={() => setIsOpen(!isOpen)}
         >
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="px-4 py-2 rounded-full bg-slate-700 bg-opacity-20 text-gray-200 font-semibold text-xl">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span className="px-2 sm:px-4 py-1 sm:py-2 rounded-full bg-slate-700 bg-opacity-20 text-gray-200 font-semibold text-base sm:text-xl">
               <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 {course.subject} {course.catalogNumber}
               </span>
             </span>
 
-            <h2 className="text-xl font-medium text-white">
+            <h2 className="text-base sm:text-xl font-medium text-white">
               {course.courseName}
             </h2>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-lg text-gray-400">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-sm sm:text-lg text-gray-400">
               {course.units} Units
             </span>
 
-            {/* Sections Count for This Course */}
-            <span className="px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-lg text-gray-400">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-sm sm:text-lg text-gray-400">
               {length} {length > 1 ? "Sections" : "Section"}
             </span>
           </div>
@@ -166,13 +164,13 @@ const CourseSection: React.FC<CourseSectionProps> = ({
 
       <CollapsibleContent className="overflow-hidden transition-all duration-300 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
         <div
-          className={`bg-[#182133] p-6 shadow-md transition-all
+          className={`bg-[#182133] p-3 sm:p-6 shadow-md transition-all
           ${isOpen ? "rounded-b-lg" : "rounded-none"}`}
         >
-          {/* Course Description */}
-          <p className="text-[#C6C6C6] mb-5">{course.description}</p>
+          <p className="text-[#C6C6C6] mb-5 text-sm sm:text-base">
+            {course.description}
+          </p>
 
-          {/* Sections List */}
           {course.professorGroups.map((group) => (
             <ProfessorGroupComponent key={group.instructor.id} group={group} />
           ))}
@@ -301,13 +299,12 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        {/* 🔹 Gray Box Wraps All Sections */}
         <div className="bg-slate-800 p-4 space-y-4 rounded-b-lg">
-          {/* 🔹 Render Paired Sections (Lecture + Lab Side-by-Side) */}
+          {/* Render Paired Sections */}
           {pairedCards.length > 0 && (
             <div className="flex flex-col space-y-4">
               {pairedCards.map((pair, index) => (
-                <div key={index} className="flex gap-4">
+                <div key={index} className="flex flex-col md:flex-row gap-4">
                   {/* Lecture Section */}
                   {pair.lecture && (
                     <div className="bg-gray-900 p-4 rounded-lg flex-1">
@@ -326,7 +323,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
             </div>
           )}
 
-          {/* 🔹 Render Standalone Sections Inside the Same Gray Box */}
+          {/* Render Standalone Sections */}
           {singleSections.length > 0 && (
             <div className="flex flex-col space-y-4">
               {singleSections.map((section) => (
