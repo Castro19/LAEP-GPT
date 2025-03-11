@@ -13,7 +13,8 @@ import {
 import { SectionEnrollment } from "./sectionInfo";
 import { SectionHeader } from "./sectionInfo";
 import { SectionSchedule } from "./sectionInfo";
-import { FormatPrerequisites } from "../helpers/FormatPrereq";
+import { FormatPrerequisites } from "@/components/section/helpers/FormatPrereq";
+
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
 // The overall page background is assumed to be bg-slate-800 in dark mode.
