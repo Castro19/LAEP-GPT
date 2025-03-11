@@ -1,9 +1,9 @@
 import React from "react";
 import BadgeSection from "./BadgeSection";
 
-export const formatPrerequisites = (prerequisites: string[] | undefined) => {
+export const FormatPrerequisites = (prerequisites: string[] | undefined) => {
   if (!prerequisites || prerequisites.length === 0) return null;
-
+  console.log("PREQ", prerequisites);
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-slate-400">Prerequisites</h3>
@@ -22,11 +22,11 @@ export const formatPrerequisites = (prerequisites: string[] | undefined) => {
 
           const courses = cleanedReq.split(" ");
           return (
-            <li key={index} className="flex items-baseline gap-2">
+            <li key={`prereq-${index}`} className="flex items-baseline gap-2">
               <span className="text-slate-300">•</span>
               <div className="flex flex-wrap items-center gap-2">
                 {courses.map((course, courseIndex) => (
-                  <React.Fragment key={course}>
+                  <React.Fragment key={`${index}-${courseIndex}-${course}`}>
                     <BadgeSection variant="content" className="font-mono">
                       {course}
                     </BadgeSection>
