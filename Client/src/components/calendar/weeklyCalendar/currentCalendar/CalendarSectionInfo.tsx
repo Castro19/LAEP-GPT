@@ -6,7 +6,7 @@ import {
 } from "../../../section/currentSectionList/sectionInfo";
 import { transformToSectionDetail } from "@/helpers/transformSection";
 import BadgeSection from "../../../section/helpers/BadgeSection";
-import { formatPrerequisites } from "../../../section/helpers/formatPrereq";
+import { FormatPrerequisites } from "@/components/section/helpers/FormatPrereq";
 
 const instructionModeMap = {
   PA: "Synchronous",
@@ -151,7 +151,9 @@ const CalendarSectionInfo = () => {
         )}
         {calendarSelectedSection.prerequisites && (
           <div className="space-y-2">
-            {formatPrerequisites(calendarSelectedSection.prerequisites)}
+            <FormatPrerequisites
+              prerequisites={calendarSelectedSection.prerequisites}
+            />
           </div>
         )}
 
