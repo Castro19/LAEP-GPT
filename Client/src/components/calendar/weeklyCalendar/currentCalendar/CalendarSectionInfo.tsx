@@ -151,7 +151,9 @@ const CalendarSectionInfo = () => {
         )}
         {calendarSelectedSection.prerequisites && (
           <div className="space-y-2">
-            {FormatPrerequisites(calendarSelectedSection.prerequisites)}
+            <FormatPrerequisites
+              prerequisites={calendarSelectedSection.prerequisites}
+            />
           </div>
         )}
 
