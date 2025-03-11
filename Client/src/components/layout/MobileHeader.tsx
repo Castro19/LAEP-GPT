@@ -1,6 +1,12 @@
 import { UserAvatar } from "@/components/userProfile/UserAvatar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "@/redux";
+import {
+  useAppSelector,
+  assistantActions,
+  sectionActions,
+  useAppDispatch,
+} from "@/redux";
+import { onNewChat } from "../chat/helpers/newChatHandler";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -16,18 +22,48 @@ import { FaCalendarAlt, FaSearch } from "react-icons/fa";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
 
 function MobileHeader() {
+  const dispatch = useAppDispatch();
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
   const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { error, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
+  const { assistantList } = useAppSelector((state) => state.assistant);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleChatClick = () => {
+    dispatch(sectionActions.setIsInitialState(true));
+
+    if (assistantList.length > 0) {
+      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+    }
+
+    onNewChat(
+      currentChatId,
+      dispatch,
+      navigate,
+      error,
+      loading,
+      messagesByChatId
+    );
+
+    if (currentChatId) {
+      navigate(`/chat/${currentChatId}`);
+    } else {
+      navigate("/chat");
+    }
+  };
+
   const handleNavigation = (path: string) => {
+    dispatch(sectionActions.setIsInitialState(true));
+
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
-    } else if (path === "/chat" && currentChatId) {
-      navigate(`/chat/${currentChatId}`);
+    } else if (path === "/chat") {
+      handleChatClick();
     } else if (path === "/calendar" && currentCalendar) {
       navigate(`/calendar/${currentCalendar.id}`);
     } else {
