@@ -5,7 +5,7 @@ import SectionPageHeader from "./SectionPageHeader";
 import MobileHeader from "@/components/layout/MobileHeader";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import OuterSidebar from "../OuterIconSidebar";
 
 type SectionPageLayoutProps = {
@@ -13,7 +13,7 @@ type SectionPageLayoutProps = {
 };
 
 const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
 
   return (
     <div className="flex flex-col h-full">

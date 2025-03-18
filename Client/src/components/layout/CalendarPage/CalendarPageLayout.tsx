@@ -1,7 +1,7 @@
 import React from "react";
 import CalendarPageHeader from "./CalendarPageHeader";
 import OuterSidebar from "../OuterIconSidebar";
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileHeader from "../MobileHeader";
 
 type SectionPageLayoutProps = {
@@ -9,7 +9,7 @@ type SectionPageLayoutProps = {
 };
 
 const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   return (
     <div className="flex flex-col h-full">
       <div className="flex">

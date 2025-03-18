@@ -25,10 +25,10 @@ import { Calendar } from "@polylink/shared/types";
 // UI Components
 import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const CalendarPage = () => {
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

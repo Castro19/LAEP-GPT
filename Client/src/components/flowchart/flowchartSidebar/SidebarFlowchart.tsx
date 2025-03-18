@@ -20,7 +20,7 @@ import MobileHeader from "@/components/layout/MobileHeader";
 
 // Hooks
 import { useUserData } from "@/hooks/useUserData";
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // Env vars
 import { environment } from "@/helpers/getEnvironmentVars";
@@ -54,7 +54,7 @@ export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { open } = useSidebar();
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   const { flowchartList } = useAppSelector((state) => state.flowchart);
   const { selections } = useAppSelector((state) => state.flowSelection);
   const { userData, handleChangeFlowchartInformation, handleSave } =

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
+const useIsNarrowScreen = () => {
+  const [isNarrow, setIsNarrow] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768); // Adjust breakpoint as needed
+      setIsNarrow(window.innerWidth <= 768); // Adjust breakpoint as needed
     };
 
     handleResize(); // Check on initial render
@@ -14,7 +14,7 @@ const useIsMobile = () => {
     return () => window.removeEventListener("resize", handleResize); // Cleanup
   }, []);
 
-  return isMobile;
+  return isNarrow;
 };
 
-export default useIsMobile;
+export default useIsNarrowScreen;

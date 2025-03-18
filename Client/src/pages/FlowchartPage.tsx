@@ -10,11 +10,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   const { flowchartId } = useParams();
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart

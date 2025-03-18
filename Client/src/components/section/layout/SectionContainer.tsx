@@ -4,7 +4,7 @@ import { useAppSelector } from "@/redux";
 import { CourseCatalog } from "@/components/section/currentSectionList/SectionDoc";
 import InitialSectionState from "@/components/section/emptyState/InitialSectionState";
 import SectionLoading from "@/components/section/emptyState/SectionLoading";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { PaginationFooter } from "@/components/section/layout/PaginationFooter";
 import NoSectionsFound from "@/components/section/emptyState/NoSectionsFound";
 
@@ -15,7 +15,7 @@ import { transformSectionsToCatalog } from "@/helpers/transformSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const SectionContainer = () => {
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
   const { sections, isInitialState, loading } = useAppSelector(
     (state) => state.section
   );

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -69,7 +69,7 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    const isMobile = useIsMobile();
+    const isMobile = useIsNarrowScreen();
     const deviceType = useDeviceType();
     const [openMobile, setOpenMobile] = React.useState(false);
 

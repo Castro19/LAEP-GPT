@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, authActions } from "@/redux";
 // Hooks
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { useUserData } from "@/hooks/useUserData";
 // Components
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ const signInFlowSteps = [
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
   const { handleSave, userData } = useUserData();
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

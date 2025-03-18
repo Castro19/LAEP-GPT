@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { logActions, useAppDispatch, useAppSelector } from "@/redux";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // My components
 import ChatLogList from "@/components/chatLog/ChatLogList";
@@ -21,7 +21,7 @@ import {
 import useDeviceType from "@/hooks/useDeviceType";
 
 export function ChatPageSidebar() {
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   const deviceType = useDeviceType();
 
   const dispatch = useAppDispatch();

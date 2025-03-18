@@ -9,7 +9,7 @@ import {
 import { useParams } from "react-router-dom";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import useDeviceType from "@/hooks/useDeviceType";
 
 // My components
@@ -31,7 +31,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 
 const ChatPage = () => {
   const dispatch = useAppDispatch();
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   const deviceType = useDeviceType();
   const { chatId } = useParams();
 

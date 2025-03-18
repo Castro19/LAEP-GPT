@@ -1,12 +1,12 @@
 // HomePage.tsx
 import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 import TitleCard from "@/components/register/TitleCard";
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Register = () => {
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
 
   return (
     <SplashLayout>

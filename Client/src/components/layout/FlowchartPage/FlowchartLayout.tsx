@@ -7,14 +7,14 @@ import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
 import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // Redux
 import { useAppSelector } from "@/redux";
 
 const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   const { flowchartData } = useAppSelector((state) => state.flowchart);
-  const isMobile = useMobile();
+  const isMobile = useIsNarrowScreen();
   return (
     <DragDropContextWrapper>
       <SidebarFlowchart />

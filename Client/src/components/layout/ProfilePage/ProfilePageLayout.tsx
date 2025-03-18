@@ -10,13 +10,13 @@ import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Hooks
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 type ProfilePageLayoutProps = {
   children: ReactNode;
 };
 const ProfilePageLayout = ({ children }: ProfilePageLayoutProps) => {
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
 
   return (
     <div className="min-h-screen">
