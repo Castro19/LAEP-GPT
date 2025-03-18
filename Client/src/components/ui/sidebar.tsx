@@ -33,7 +33,7 @@ type SidebarContext = {
   openMobile: boolean;
   // eslint-disable-next-line no-unused-vars
   setOpenMobile: (open: boolean) => void;
-  isMobile: boolean;
+  isNarrowScreen: boolean;
   toggleSidebar: () => void;
 };
 
@@ -119,7 +119,7 @@ const SidebarProvider = React.forwardRef<
         state,
         open,
         setOpen,
-        isMobile: isNarrowScreen,
+        isNarrowScreen,
         openMobile,
         setOpenMobile,
         toggleSidebar,
@@ -177,7 +177,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const { isNarrowScreen, state, openMobile, setOpenMobile } = useSidebar();
     const deviceType = useDeviceType();
 
     if (collapsible === "none") {
@@ -195,7 +195,7 @@ const Sidebar = React.forwardRef<
       );
     }
 
-    if (isMobile || deviceType !== "desktop") {
+    if (isNarrowScreen || deviceType !== "desktop") {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -582,7 +582,7 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const { isNarrowScreen, state } = useSidebar();
     const deviceType = useDeviceType();
 
     const button = (
@@ -612,7 +612,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile || deviceType !== "desktop"}
+          hidden={state !== "collapsed" || isNarrowScreen || deviceType !== "desktop"}
           {...tooltip}
         />
       </Tooltip>
