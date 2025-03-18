@@ -1,4 +1,4 @@
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // TitleCard.tsx
 type TitleCardProps = {
@@ -7,7 +7,7 @@ type TitleCardProps = {
 };
 
 const TitleCard = ({ title, description }: TitleCardProps) => {
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
 
   return (
     <div className="relative w-full h-full">
@@ -32,7 +32,7 @@ const TitleCard = ({ title, description }: TitleCardProps) => {
       {/* Main content */}
       <div
         className={`${
-          isMobile ? "w-full" : "w-full h-full"
+          isNarrowScreen ? "w-full" : "w-full h-full"
         } relative z-10 flex flex-col justify-center items-start bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white p-8 border-b border-slate-600/50`}
       >
         <div className="max-w-md">

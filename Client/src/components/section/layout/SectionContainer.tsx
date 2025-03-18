@@ -4,7 +4,7 @@ import { useAppSelector } from "@/redux";
 import { CourseCatalog } from "@/components/section/currentSectionList/SectionDoc";
 import InitialSectionState from "@/components/section/emptyState/InitialSectionState";
 import SectionLoading from "@/components/section/emptyState/SectionLoading";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { PaginationFooter } from "@/components/section/layout/PaginationFooter";
 import NoSectionsFound from "@/components/section/emptyState/NoSectionsFound";
 
@@ -15,7 +15,7 @@ import { transformSectionsToCatalog } from "@/helpers/transformSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const SectionContainer = () => {
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
   const { sections, isInitialState, loading } = useAppSelector(
     (state) => state.section
   );
@@ -28,7 +28,7 @@ const SectionContainer = () => {
       ) : (
         <div className="overflow-auto flex-1 no-scroll">
           <ScrollArea
-            className={`${isMobile ? "h-[75%]" : "h-[85%]"} min-w-full pb-12`}
+            className={`${isNarrowScreen ? "h-[75%]" : "h-[85%]"} min-w-full pb-12`}
           >
             {courses.length > 0 ? (
               <>

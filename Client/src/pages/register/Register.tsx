@@ -1,12 +1,12 @@
 // HomePage.tsx
 import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 import TitleCard from "@/components/register/TitleCard";
-import useMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Register = () => {
-  const isMobile = useMobile();
+  const isNarrowScreen = useIsNarrowScreen();
 
   return (
     <SplashLayout>
@@ -58,11 +58,11 @@ const Register = () => {
         >
           <div
             className={`flex w-full ${
-              isMobile ? "max-w-lg" : "max-w-6xl"
+              isNarrowScreen ? "max-w-lg" : "max-w-6xl"
             } bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-lg shadow-2xl overflow-hidden border border-slate-600/50`}
           >
             {/* Left Side: Title and Description Component */}
-            {!isMobile && (
+            {!isNarrowScreen && (
               <div className="w-1/2 border-r border-slate-600/50">
                 <TitleCard
                   title="Welcome!"
@@ -71,7 +71,7 @@ const Register = () => {
               </div>
             )}
             {/* Right Side: Login or Signup Form based on route */}
-            <div className={`${isMobile ? "w-full" : "w-1/2"} p-8`}>
+            <div className={`${isNarrowScreen ? "w-full" : "w-1/2"} p-8`}>
               <Outlet />
             </div>
           </div>

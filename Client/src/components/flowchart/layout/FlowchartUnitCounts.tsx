@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux";
 import { UnitCounts } from "@polylink/shared/types";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const FlowchartUnitCounts = () => {
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
 
   const { flowchartData } = useAppSelector((state) => state.flowchart);
   const [units, setUnits] = useState<UnitCounts>({
@@ -70,39 +70,39 @@ const FlowchartUnitCounts = () => {
   return (
     <div className="dark:bg-gray-900 sticky bottom-0">
       <div
-        className={`flex ${isMobile ? "flex-col" : "items-center justify-between"} m-4 text-lg`}
+        className={`flex ${isNarrowScreen ? "flex-col" : "items-center justify-between"} m-4 text-lg`}
       >
         <div
-          className={`flex ${isMobile ? "flex-col space-y-2" : "items-center gap-4"}`}
+          className={`flex ${isNarrowScreen ? "flex-col space-y-2" : "items-center gap-4"}`}
         >
           {/* Major Units */}
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#FEFD9A]"></div>
-            {!isMobile && <span>Major:</span>}
+            {!isNarrowScreen && <span>Major:</span>}
             <span>{units.major.toFixed(1)}</span>
           </div>
           {/* Support Units */}
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#FCD09E]"></div>
-            {!isMobile && <span>Support:</span>}
+            {!isNarrowScreen && <span>Support:</span>}
             <span>{units.support.toFixed(1)}</span>
           </div>
           {/* GE Units */}
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#DCFDD2]"></div>
-            {!isMobile && <span>GE:</span>}
+            {!isNarrowScreen && <span>GE:</span>}
             <span>{units.ge.toFixed(1)}</span>
           </div>
           {/* Other Units */}
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-[#F5F5DC]"></div>
-            {!isMobile && <span>Other:</span>}
+            {!isNarrowScreen && <span>Other:</span>}
             <span>{units.other.toFixed(1)}</span>
           </div>
         </div>
         <div
           className={`flex items-center gap-2 font-bold ${
-            isMobile ? "mt-2" : ""
+            isNarrowScreen ? "mt-2" : ""
           }`}
         >
           <span className="font-medium">Total Units:</span>

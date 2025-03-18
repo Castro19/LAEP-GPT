@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -33,7 +33,7 @@ type SidebarContext = {
   openMobile: boolean;
   // eslint-disable-next-line no-unused-vars
   setOpenMobile: (open: boolean) => void;
-  isMobile: boolean;
+  isNarrowScreen: boolean;
   toggleSidebar: () => void;
 };
 
@@ -69,7 +69,7 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    const isMobile = useIsMobile();
+    const isNarrowScreen = useIsNarrowScreen();
     const deviceType = useDeviceType();
     const [openMobile, setOpenMobile] = React.useState(false);
 
@@ -99,10 +99,10 @@ const SidebarProvider = React.forwardRef<
     );
 
     const toggleSidebar = React.useCallback(() => {
-      return isMobile || deviceType !== "desktop"
+      return isNarrowScreen || deviceType !== "desktop"
         ? setOpenMobile((prev) => !prev)
         : setOpen((prev) => !prev);
-    }, [isMobile, setOpen, setOpenMobile, deviceType]);
+    }, [isNarrowScreen, setOpen, setOpenMobile, deviceType]);
 
     // Effect to sync state from localStorage
     React.useEffect(() => {
@@ -119,12 +119,12 @@ const SidebarProvider = React.forwardRef<
         state,
         open,
         setOpen,
-        isMobile,
+        isNarrowScreen,
         openMobile,
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isNarrowScreen, openMobile, setOpenMobile, toggleSidebar]
     );
 
     return (
@@ -177,7 +177,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const { isNarrowScreen, state, openMobile, setOpenMobile } = useSidebar();
     const deviceType = useDeviceType();
 
     if (collapsible === "none") {
@@ -195,7 +195,7 @@ const Sidebar = React.forwardRef<
       );
     }
 
-    if (isMobile || deviceType !== "desktop") {
+    if (isNarrowScreen || deviceType !== "desktop") {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -582,7 +582,7 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const { isNarrowScreen, state } = useSidebar();
     const deviceType = useDeviceType();
 
     const button = (
@@ -612,7 +612,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile || deviceType !== "desktop"}
+          hidden={state !== "collapsed" || isNarrowScreen || deviceType !== "desktop"}
           {...tooltip}
         />
       </Tooltip>
