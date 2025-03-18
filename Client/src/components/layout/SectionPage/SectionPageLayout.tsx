@@ -5,7 +5,7 @@ import SectionPageHeader from "./SectionPageHeader";
 import MobileHeader from "@/components/layout/MobileHeader";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 import OuterSidebar from "../OuterIconSidebar";
 
 type SectionPageLayoutProps = {

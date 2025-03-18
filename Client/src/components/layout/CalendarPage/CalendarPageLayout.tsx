@@ -1,7 +1,7 @@
 import React from "react";
 import CalendarPageHeader from "./CalendarPageHeader";
 import OuterSidebar from "../OuterIconSidebar";
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 import MobileHeader from "../MobileHeader";
 
 type SectionPageLayoutProps = {

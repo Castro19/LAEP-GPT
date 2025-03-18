@@ -4,10 +4,10 @@ import {
   WeeklyCalendar,
 } from "@/components/calendar";
 import { useAppSelector } from "@/redux";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const CalendarContainer = () => {
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
   const { calendars, currentCalendar } = useAppSelector(
     (state) => state.calendar
   );

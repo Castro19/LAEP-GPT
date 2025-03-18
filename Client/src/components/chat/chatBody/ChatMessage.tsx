@@ -8,7 +8,7 @@ import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import { putUserReaction } from "@/redux/message/messageSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { Skeleton } from "@/components/ui/skeleton";
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 
 const md = new MarkdownIt();
 

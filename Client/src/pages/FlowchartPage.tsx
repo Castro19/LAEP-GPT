@@ -10,7 +10,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterSidebar from "@/components/layout/OuterIconSidebar";
 import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();

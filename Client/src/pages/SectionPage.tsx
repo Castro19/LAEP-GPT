@@ -1,4 +1,4 @@
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 
 // My Components
 import SectionPageLayout from "@/components/layout/SectionPage/SectionPageLayout";

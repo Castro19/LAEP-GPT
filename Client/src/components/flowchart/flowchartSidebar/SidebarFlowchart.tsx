@@ -20,7 +20,7 @@ import MobileHeader from "@/components/layout/MobileHeader";
 
 // Hooks
 import { useUserData } from "@/hooks/useUserData";
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 
 // Env vars
 import { environment } from "@/helpers/getEnvironmentVars";

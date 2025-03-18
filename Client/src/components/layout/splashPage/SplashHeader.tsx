@@ -1,4 +1,4 @@
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const SplashHeader = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLinkClick = (path: string) => {

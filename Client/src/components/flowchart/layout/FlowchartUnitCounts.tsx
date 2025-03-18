@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux";
 import { UnitCounts } from "@polylink/shared/types";
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const FlowchartUnitCounts = () => {
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
 
   const { flowchartData } = useAppSelector((state) => state.flowchart);
   const [units, setUnits] = useState<UnitCounts>({

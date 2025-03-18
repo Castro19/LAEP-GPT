@@ -1,4 +1,4 @@
-import useIsMobile from "@/hooks/use-mobile";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // TitleCard.tsx
 type TitleCardProps = {
@@ -7,7 +7,7 @@ type TitleCardProps = {
 };
 
 const TitleCard = ({ title, description }: TitleCardProps) => {
-  const isMobile = useIsMobile();
+  const isMobile = useIsNarrowScreen();
 
   return (
     <div className="relative w-full h-full">

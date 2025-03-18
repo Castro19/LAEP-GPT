@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { logActions, useAppDispatch, useAppSelector } from "@/redux";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 
 // My components
 import ChatLogList from "@/components/chatLog/ChatLogList";

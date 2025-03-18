@@ -9,7 +9,7 @@ import {
 import { useParams } from "react-router-dom";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 import useDeviceType from "@/hooks/useDeviceType";
 
 // My components

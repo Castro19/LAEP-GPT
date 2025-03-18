@@ -7,7 +7,7 @@ import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
 import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
 
 // Hooks
-import useMobile from "@/hooks/use-mobile";
+import useMobile from "@/hooks/useIsNarrowScreen";
 
 // Redux
 import { useAppSelector } from "@/redux";
