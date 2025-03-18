@@ -7,7 +7,7 @@ import { useAppSelector } from "@/redux";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const CalendarContainer = () => {
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const { calendars, currentCalendar } = useAppSelector(
     (state) => state.calendar
   );
@@ -30,7 +30,7 @@ const CalendarContainer = () => {
         <CalendarAverageRating />
         <WeeklyCalendar
           sections={currentCalendar.sections}
-          height={isMobile ? "70vh" : "80vh"}
+          height={isNarrowScreen ? "70vh" : "80vh"}
         />
       </div>
     </div>

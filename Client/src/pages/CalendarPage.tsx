@@ -28,7 +28,7 @@ import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const CalendarPage = () => {
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -123,7 +123,7 @@ const CalendarPage = () => {
 
   return (
     <CalendarPageLayout>
-      {isMobile ? (
+      {isNarrowScreen ? (
         <CalendarMobile />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">

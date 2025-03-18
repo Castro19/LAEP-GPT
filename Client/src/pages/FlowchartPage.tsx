@@ -14,7 +14,7 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const FlowChatPage = () => {
   const dispatch = useAppDispatch();
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const { flowchartId } = useParams();
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
@@ -70,7 +70,7 @@ const FlowChatPage = () => {
   return (
     <>
       <div className="flex overflow-hidden no-scroll">
-        {isMobile ? null : <OuterSidebar />}
+        {isNarrowScreen ? null : <OuterSidebar />}
         <SidebarProvider className="dark:bg-slate-900">
           <FlowchartLayout>
             {flowchartData ? (

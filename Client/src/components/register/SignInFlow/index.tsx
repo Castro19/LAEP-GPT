@@ -23,7 +23,7 @@ const signInFlowSteps = [
 const SignInFlow = () => {
   const dispatch = useAppDispatch();
   const { handleSave, userData } = useUserData();
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -149,11 +149,11 @@ const SignInFlow = () => {
 
         {/* Main content container */}
         <div
-          className={`relative z-10 flex ${isMobile ? "flex-col h-auto" : ""} border border-slate-500 
-          ${isMobile ? "w-[95%]" : "w-3/4"} ${isMobile ? "min-h-[80vh]" : "h-[80vh]"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
+          className={`relative z-10 flex ${isNarrowScreen ? "flex-col h-auto" : ""} border border-slate-500 
+          ${isNarrowScreen ? "w-[95%]" : "w-3/4"} ${isNarrowScreen ? "min-h-[80vh]" : "h-[80vh]"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
         >
           {/* Left Side: Title Card */}
-          {!isMobile && (
+          {!isNarrowScreen && (
             <div className="w-1/2 h-full">
               <TitleCard title={title} description={description} />
             </div>
@@ -162,10 +162,10 @@ const SignInFlow = () => {
           {/* Right Side: Content */}
           <div
             className={`${
-              isMobile ? "w-full flex-1" : "w-1/2"
+              isNarrowScreen ? "w-full flex-1" : "w-1/2"
             } h-full flex flex-col justify-between bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white`}
           >
-            {isMobile && <TitleCard title={title} description={description} />}
+            {isNarrowScreen && <TitleCard title={title} description={description} />}
 
             <ScrollArea className="flex-1 relative p-6">
               <Outlet context={{ choice, handleChoice: setChoice }} />
@@ -179,7 +179,7 @@ const SignInFlow = () => {
                   <button
                     onClick={handlePrevious}
                     className={`flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
-                      isMobile ? "text-sm" : ""
+                      isNarrowScreen ? "text-sm" : ""
                     }`}
                   >
                     <FaArrowLeft className="mr-2" />
@@ -195,7 +195,7 @@ const SignInFlow = () => {
                     <button
                       onClick={handleNext}
                       className={`flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
-                        isMobile ? "text-sm" : ""
+                        isNarrowScreen ? "text-sm" : ""
                       }`}
                     >
                       Next
@@ -213,7 +213,7 @@ const SignInFlow = () => {
                 ) : isTermsAccepted ? (
                   <button
                     onClick={handleCompleteProfile}
-                    className={`px-4 py-2 rounded-md border transition-all duration-200 bg-green-900/80 hover:bg-green-900 border-green-800/50 text-white ${isMobile ? "text-sm" : ""}`}
+                    className={`px-4 py-2 rounded-md border transition-all duration-200 bg-green-900/80 hover:bg-green-900 border-green-800/50 text-white ${isNarrowScreen ? "text-sm" : ""}`}
                   >
                     Finish
                   </button>

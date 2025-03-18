@@ -12,7 +12,7 @@ import MobileSectionPageLayout from "@/components/layout/SectionPage/MobileSecti
 import useDeviceType from "@/hooks/useDeviceType";
 
 const SectionPage = () => {
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const deviceType = useDeviceType();
 
   return (
@@ -21,7 +21,7 @@ const SectionPage = () => {
         <MobileSectionPage />
       ) : (
         <SectionPageLayout>
-          {isMobile ? (
+          {isNarrowScreen ? (
             <SectionMobile />
           ) : (
             <div>

@@ -54,7 +54,7 @@ export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { open } = useSidebar();
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const { flowchartList } = useAppSelector((state) => state.flowchart);
   const { selections } = useAppSelector((state) => state.flowSelection);
   const { userData, handleChangeFlowchartInformation, handleSave } =
@@ -155,7 +155,7 @@ export function SidebarFlowchart() {
     `}
     >
       <SidebarHeader className="border-b border-sidebar-border dark:border-slate-700 flex-none">
-        {isMobile ? (
+        {isNarrowScreen ? (
           <MobileHeader />
         ) : (
           <div className="flex items-center justify-center mt-1">

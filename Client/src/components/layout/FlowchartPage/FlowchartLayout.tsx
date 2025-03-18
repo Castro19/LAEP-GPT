@@ -14,13 +14,13 @@ import { useAppSelector } from "@/redux";
 
 const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   const { flowchartData } = useAppSelector((state) => state.flowchart);
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   return (
     <DragDropContextWrapper>
       <SidebarFlowchart />
       <div
         className={`bg-slate-900 text-white min-h-screen flex flex-col overflow-hidden no-scroll w-full ${
-          isMobile ? "mr-8" : "mr-16"
+          isNarrowScreen ? "mr-8" : "mr-16"
         }`}
       >
         <FlowchartHeader />

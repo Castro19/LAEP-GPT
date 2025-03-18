@@ -11,7 +11,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const SplashHeader = () => {
   const navigate = useNavigate();
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLinkClick = (path: string) => {
@@ -35,7 +35,7 @@ const SplashHeader = () => {
     <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2  border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-between">
         <SplashHeaderButton />
-        {isMobile ? (
+        {isNarrowScreen ? (
           <>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}

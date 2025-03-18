@@ -16,15 +16,15 @@ type ProfilePageLayoutProps = {
   children: ReactNode;
 };
 const ProfilePageLayout = ({ children }: ProfilePageLayoutProps) => {
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
 
   return (
     <div className="min-h-screen">
       <div className="flex">
-        {isMobile ? null : <OuterSidebar />}
+        {isNarrowScreen ? null : <OuterSidebar />}
         <DragDropContextWrapper>
           <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full oveflow-hidden">
-            {isMobile ? <MobileHeader /> : <ProfilePageHeader />}
+            {isNarrowScreen ? <MobileHeader /> : <ProfilePageHeader />}
             <ScrollArea className="overflow-y-auto">
               <div className="flex-1 h-[95vh]">{children}</div>
             </ScrollArea>

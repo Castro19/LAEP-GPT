@@ -69,7 +69,7 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    const isMobile = useIsNarrowScreen();
+    const isNarrowScreen = useIsNarrowScreen();
     const deviceType = useDeviceType();
     const [openMobile, setOpenMobile] = React.useState(false);
 
@@ -99,10 +99,10 @@ const SidebarProvider = React.forwardRef<
     );
 
     const toggleSidebar = React.useCallback(() => {
-      return isMobile || deviceType !== "desktop"
+      return isNarrowScreen || deviceType !== "desktop"
         ? setOpenMobile((prev) => !prev)
         : setOpen((prev) => !prev);
-    }, [isMobile, setOpen, setOpenMobile, deviceType]);
+    }, [isNarrowScreen, setOpen, setOpenMobile, deviceType]);
 
     // Effect to sync state from localStorage
     React.useEffect(() => {
@@ -119,12 +119,12 @@ const SidebarProvider = React.forwardRef<
         state,
         open,
         setOpen,
-        isMobile,
+        isMobile: isNarrowScreen,
         openMobile,
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isNarrowScreen, openMobile, setOpenMobile, toggleSidebar]
     );
 
     return (

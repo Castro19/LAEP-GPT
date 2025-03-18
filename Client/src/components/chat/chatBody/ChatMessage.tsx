@@ -35,7 +35,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   const dispatch = useAppDispatch();
   const { currentChatId } = useAppSelector((state) => state.message);
   const { trackUserReaction } = useTrackAnalytics();
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   const isUserMessage = msg.sender === "user";
 
   // Convert Markdown to HTML and sanitize
@@ -45,7 +45,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   });
 
   const isScreenWidthSmall =
-    isMobile ||
+    isNarrowScreen ||
     location.pathname.includes("/section") ||
     location.pathname.includes("/calendar");
 

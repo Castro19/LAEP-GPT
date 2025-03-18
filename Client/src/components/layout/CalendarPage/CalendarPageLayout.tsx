@@ -9,17 +9,17 @@ type SectionPageLayoutProps = {
 };
 
 const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
-  const isMobile = useIsNarrowScreen();
+  const isNarrowScreen = useIsNarrowScreen();
   return (
     <div className="flex flex-col h-full">
       <div className="flex">
-        {isMobile ? null : <OuterSidebar />}
+        {isNarrowScreen ? null : <OuterSidebar />}
         <div
           className={`bg-slate-900 text-white flex flex-col no-scroll w-full ${
-            isMobile ? "ml-0" : "ml-2"
+            isNarrowScreen ? "ml-0" : "ml-2"
           }`}
         >
-          {isMobile ? <MobileHeader /> : <CalendarPageHeader />}
+          {isNarrowScreen ? <MobileHeader /> : <CalendarPageHeader />}
           <div className="flex-1">{children}</div>
         </div>
       </div>
