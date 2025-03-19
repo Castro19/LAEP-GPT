@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector, flowSelectionActions } from "@/redux";
 import { useUserData } from "@/hooks/useUserData";
 
 // Environment variables
-import { MAJORS } from "@/calpolyData/majors";
+import { MAJORS } from "@/constants/majors";
 
 // Components
 import { Card } from "@/components/ui/card";

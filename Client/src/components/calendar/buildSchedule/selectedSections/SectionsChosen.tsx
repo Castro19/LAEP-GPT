@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
-// import { SectionSchedule } from "@/components/section/currentSectionList/sectionInfo";
+
 import { ChevronRight } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/section/helpers/timeFormatter";
 import {

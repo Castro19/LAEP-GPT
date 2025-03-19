@@ -1,7 +1,7 @@
 import React from "react";
 
 // My components
-import MobileHeader from "@/components/layout/MobileHeader";
+import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
 
 type MobileSectionPageLayoutProps = {
   children: React.ReactNode;

@@ -10,10 +10,10 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "../../ui/collapsible";
-import { SectionEnrollment } from "./sectionInfo";
-import { SectionHeader } from "./sectionInfo";
-import { SectionSchedule } from "./sectionInfo";
-import { FormatPrerequisites } from "@/components/section/helpers/FormatPrereq";
+import { SectionEnrollment } from "./SectionInfo";
+import { SectionHeader } from "./SectionInfo";
+import { SectionSchedule } from "./SectionInfo";
+import { FormatPrerequisites } from "@/components/section/reusable/sectionInfo/FormatPrereq";
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)

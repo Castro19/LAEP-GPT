@@ -4,14 +4,13 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
-import { Label } from "../components/ui/label";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserData } from "@/hooks/useUserData";
-// import Terms from "@/components/register/SignInFlow/Terms";
 import { toast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AnimatedModalDemo } from "@/components/layout/CustomModal";
+import CustomModal from "@/components/ui/CustomModal";
 import Interest from "@/components/userProfile/Interest";
 import { Flowchart } from "@/components/flowchart";
 import { useEffect, useRef } from "react";
@@ -23,6 +22,7 @@ import ProfileEmptyState from "@/components/userProfile/ProfileEmptyState";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { WeeklyCalendar } from "@/components/calendar";
 import { HiOutlineAcademicCap, HiOutlineCalendar } from "react-icons/hi2";
+import ProfilePageLayout from "@/components/layout/ProfilePage/ProfilePageLayout";
 
 export const labelStyle = "text-lg self-center";
 
@@ -57,7 +57,7 @@ const weeklyCalendarEmptyState = {
   icon: <HiOutlineCalendar className="text-slate-300" size={48} />,
 };
 
-export function ProfilePage() {
+function ProfilePage() {
   const dispatch = useAppDispatch();
   const { userType } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
@@ -150,163 +150,165 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-auto border-3 min-h-screen overflow-auto">
-      <GridItemContainer>
-        <CardContent>
-          <div className="flex flex-col justify-around items-center my-2">
-            <Avatar className="w-32 h-32 mb-4">
-              <AvatarFallback className="bg-slate-300">
-                {userData?.name?.charAt(0) || "N/A"}
-              </AvatarFallback>
-            </Avatar>
-            <h3 className="text-3xl font-bold text-center my-2">
-              {userData?.name || "N/A"}
-            </h3>
-            <p className="text-lg text-center">{userData?.email || "N/A"}</p>
-            <p className="text-lg text-center mt-2">
-              {yearMapping(userData?.year || "N/A")}{" "}
-              {userData?.flowchartInformation.major || ""}{" "}
-              {userType || "Student"}
-            </p>
-            {!userData?.flowchartInformation.major && (
+    <ProfilePageLayout>
+      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-auto border-3 min-h-screen overflow-auto">
+        <GridItemContainer>
+          <CardContent>
+            <div className="flex flex-col justify-around items-center my-2">
+              <Avatar className="w-32 h-32 mb-4">
+                <AvatarFallback className="bg-slate-300">
+                  {userData?.name?.charAt(0) || "N/A"}
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="text-3xl font-bold text-center my-2">
+                {userData?.name || "N/A"}
+              </h3>
+              <p className="text-lg text-center">{userData?.email || "N/A"}</p>
               <p className="text-lg text-center mt-2">
-                Please update your major to to create a flowchart
+                {yearMapping(userData?.year || "N/A")}{" "}
+                {userData?.flowchartInformation.major || ""}{" "}
+                {userType || "Student"}
               </p>
-            )}
-          </div>
-          <SilverLine />
-        </CardContent>
-        <div className="flex flex-col items-center ">
-          <AnimatedModalDemo
-            onSave={handleSaveDegreeInfo}
-            title="Change Major"
-            excludeRefs={[flowchartOptionsRef]}
-            disableOutsideClick={true}
-            className="w-3/4"
-          >
-            <BasicInformation />
-          </AnimatedModalDemo>
-        </div>
-      </GridItemContainer>
-      <GridItemContainer>
-        <div className="flex flex-col items-center justify-between h-full">
-          <div className="flex flex-col  w-full">
-            <Label className="text-2xl font-bold mb-4 block text-center w-full">
-              Bio
-            </Label>
-            <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
-          </div>
-          <div className="w-3/4">
-            <AnimatedModalDemo onSave={handleSave} title="Modify Bio">
-              <AboutMe />
-            </AnimatedModalDemo>
-          </div>
-        </div>
-      </GridItemContainer>
-      <GridItemContainer>
-        <div className="flex flex-col justify-center items-center gap-8">
-          {/* Interest Areas Section */}
-          {userData.interestAreas.length > 0 && (
-            <div className="w-full max-w-2xl hadow-sm">
-              <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
-                Interests
-              </Label>
-              <Interest
-                interestAreas={
-                  userData.interestAreas.filter(
-                    (interest) => interest !== "Other"
-                  ) ?? []
-                }
-              />
+              {!userData?.flowchartInformation.major && (
+                <p className="text-lg text-center mt-2">
+                  Please update your major to to create a flowchart
+                </p>
+              )}
             </div>
-          )}
-
-          {/* Preferred Activities Section */}
-          {userData.preferredActivities.length > 0 && (
-            <div className="w-full max-w-2xl p-6 shadow-sm">
-              <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
-                Preferred Activities
+            <SilverLine />
+          </CardContent>
+          <div className="flex flex-col items-center ">
+            <CustomModal
+              onSave={handleSaveDegreeInfo}
+              title="Change Major"
+              excludeRefs={[flowchartOptionsRef]}
+              disableOutsideClick={true}
+              className="w-3/4"
+            >
+              <BasicInformation />
+            </CustomModal>
+          </div>
+        </GridItemContainer>
+        <GridItemContainer>
+          <div className="flex flex-col items-center justify-between h-full">
+            <div className="flex flex-col  w-full">
+              <Label className="text-2xl font-bold mb-4 block text-center w-full">
+                Bio
               </Label>
-              <Interest
-                interestAreas={
-                  userData.preferredActivities.filter(
-                    (activity) => activity !== "Other"
-                  ) ?? []
-                }
-              />
+              <ProfileBio bio={userData?.bio} handleSave={handleSaveToast} />
             </div>
-          )}
-
-          {/* Goals Section */}
-          {userData.goals.length > 0 && (
-            <div className="w-full max-w-2xl p-6  shadow-sm">
-              <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
-                Goals
-              </Label>
-              <Interest
-                interestAreas={
-                  userData.goals.filter((goal) => goal !== "Other") ?? []
-                }
-              />
+            <div className="w-3/4">
+              <CustomModal onSave={handleSave} title="Modify Bio">
+                <AboutMe />
+              </CustomModal>
             </div>
-          )}
-        </div>
-
-        {/* Edit Button Section */}
-        <div className="flex justify-center items-center mt-8">
-          <AnimatedModalDemo
-            onSave={handleSaveToast}
-            title="Modify Interests"
-            excludeRefs={[interestDropdownRef]}
-            disableOutsideClick={true}
-            className="w-3/4 max-w-2xl"
-          >
-            <Interests />
-          </AnimatedModalDemo>
-        </div>
-      </GridItemContainer>
-      <div className="border border-slate-500 md:col-span-3 md:row-span-auto p-4">
-        <Tabs defaultValue="flowchart">
-          <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
-            <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
-            <TabsTrigger value="weekly-calendar">Weekly Calendar</TabsTrigger>
-          </TabsList>
-          <TabsContent value="flowchart">
-            {flowchartData ? (
-              <Card className="h-full">
-                <div className="flex flex-col w-full gap-4 mb-2">
-                  <Flowchart flowchartData={flowchartData} />
-                </div>
-              </Card>
-            ) : (
-              <ProfileEmptyState
-                title={flowchartEmptyState.title}
-                description={flowchartEmptyState.description}
-                icon={flowchartEmptyState.icon}
-                type="flowchart"
-              />
-            )}
-          </TabsContent>
-          <TabsContent value="weekly-calendar">
-            {currentCalendar ? (
-              <WeeklyCalendar
-                sections={currentCalendar.sections}
-                height="100vh"
-              />
-            ) : (
-              <div className="flex flex-col justify-center items-center">
-                <ProfileEmptyState
-                  title={weeklyCalendarEmptyState.title}
-                  description={weeklyCalendarEmptyState.description}
-                  icon={weeklyCalendarEmptyState.icon}
-                  type="calendar"
+          </div>
+        </GridItemContainer>
+        <GridItemContainer>
+          <div className="flex flex-col justify-center items-center gap-8">
+            {/* Interest Areas Section */}
+            {userData.interestAreas.length > 0 && (
+              <div className="w-full max-w-2xl hadow-sm">
+                <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
+                  Interests
+                </Label>
+                <Interest
+                  interestAreas={
+                    userData.interestAreas.filter(
+                      (interest) => interest !== "Other"
+                    ) ?? []
+                  }
                 />
               </div>
             )}
-          </TabsContent>
-        </Tabs>
+
+            {/* Preferred Activities Section */}
+            {userData.preferredActivities.length > 0 && (
+              <div className="w-full max-w-2xl p-6 shadow-sm">
+                <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
+                  Preferred Activities
+                </Label>
+                <Interest
+                  interestAreas={
+                    userData.preferredActivities.filter(
+                      (activity) => activity !== "Other"
+                    ) ?? []
+                  }
+                />
+              </div>
+            )}
+
+            {/* Goals Section */}
+            {userData.goals.length > 0 && (
+              <div className="w-full max-w-2xl p-6  shadow-sm">
+                <Label className="text-2xl font-bold mb-4 border-b pb-4 border-slate-700 block text-center">
+                  Goals
+                </Label>
+                <Interest
+                  interestAreas={
+                    userData.goals.filter((goal) => goal !== "Other") ?? []
+                  }
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Edit Button Section */}
+          <div className="flex justify-center items-center mt-8">
+            <CustomModal
+              onSave={handleSaveToast}
+              title="Modify Interests"
+              excludeRefs={[interestDropdownRef]}
+              disableOutsideClick={true}
+              className="w-3/4 max-w-2xl"
+            >
+              <Interests />
+            </CustomModal>
+          </div>
+        </GridItemContainer>
+        <div className="border border-slate-500 md:col-span-3 md:row-span-auto p-4">
+          <Tabs defaultValue="flowchart">
+            <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+              <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
+              <TabsTrigger value="weekly-calendar">Weekly Calendar</TabsTrigger>
+            </TabsList>
+            <TabsContent value="flowchart">
+              {flowchartData ? (
+                <Card className="h-full">
+                  <div className="flex flex-col w-full gap-4 mb-2">
+                    <Flowchart flowchartData={flowchartData} />
+                  </div>
+                </Card>
+              ) : (
+                <ProfileEmptyState
+                  title={flowchartEmptyState.title}
+                  description={flowchartEmptyState.description}
+                  icon={flowchartEmptyState.icon}
+                  type="flowchart"
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="weekly-calendar">
+              {currentCalendar ? (
+                <WeeklyCalendar
+                  sections={currentCalendar.sections}
+                  height="100vh"
+                />
+              ) : (
+                <div className="flex flex-col justify-center items-center">
+                  <ProfileEmptyState
+                    title={weeklyCalendarEmptyState.title}
+                    description={weeklyCalendarEmptyState.description}
+                    icon={weeklyCalendarEmptyState.icon}
+                    type="calendar"
+                  />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </ProfilePageLayout>
   );
 }
 
@@ -326,3 +328,5 @@ const GridItemContainer = ({ children }: { children: React.ReactNode }) => (
     </Card>
   </div>
 );
+
+export default ProfilePage;

@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppSelector } from "@/redux";
-import { Star } from "../../../section/reusable/sectionInfo/StarRating";
-import { Card } from "../../../ui/card";
+import { Star } from "@/components/section/reusable/sectionInfo/StarRating";
+import { Card } from "@/components/ui/card";
 
 const CalendarAverageRating: React.FC = () => {
   const { calendars, page } = useAppSelector((state) => state.calendar);

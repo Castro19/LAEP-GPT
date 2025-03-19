@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 
 // My components
-import MobileHeader from "@/components/layout/MobileHeader";
-import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
+import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
+import DragDropContextWrapper from "@/components/layout/dnd/DragDropContextWrapper";
 import ProfilePageHeader from "@/components/layout/ProfilePage/ProfilePageHeader";
-import OuterSidebar from "@/components/layout/OuterIconSidebar";
+import OuterIconSidebar from "@/components/layout/dynamicLayouts/OuterIconSidebar";
 
 // UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,7 +21,7 @@ const ProfilePageLayout = ({ children }: ProfilePageLayoutProps) => {
   return (
     <div className="min-h-screen">
       <div className="flex">
-        {isNarrowScreen ? null : <OuterSidebar />}
+        {isNarrowScreen ? null : <OuterIconSidebar />}
         <DragDropContextWrapper>
           <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full oveflow-hidden">
             {isNarrowScreen ? <MobileHeader /> : <ProfilePageHeader />}

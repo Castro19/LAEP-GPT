@@ -17,7 +17,7 @@ export { default as CourseDropdown } from "./flowchartSidebar/courses/CourseDrop
 export { default as CourseSearchbar } from "./flowchartSidebar/courses/CourseSearchbar";
 export { default as SidebarCourse } from "./flowchartSidebar/courses/SidebarCourse";
 // Utilities and Helpers
-export { default as defaultTermData } from "./exampleData/flowPlaceholder";
+export { default as defaultTermData } from "@/constants/flowPlaceholder";
 export {
   fetchCoursesBySubjectAPI,
   fetchSubjectNamesAPI,

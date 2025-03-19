@@ -6,7 +6,7 @@ import {
   sectionActions,
   useAppDispatch,
 } from "@/redux";
-import { onNewChat } from "../chat/helpers/newChatHandler";
+import { onNewChat } from "../../chat/helpers/newChatHandler";
 
 // UI Components
 import { Button } from "@/components/ui/button";

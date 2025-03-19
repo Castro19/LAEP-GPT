@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useUserData } from "@/hooks/useUserData";
 import { UserData } from "@polylink/shared/types";
 import { useState } from "react";
-import { ITEMS } from "@/calpolyData/items";
+import { ITEMS } from "@/constants/items";
 import { motion } from "framer-motion";
 
 type CheckboxSurveyProps = {

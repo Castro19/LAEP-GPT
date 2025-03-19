@@ -3,7 +3,7 @@ import React from "react";
 
 // My components
 import { SidebarFlowchart, FlowchartUnitCounts } from "@/components/flowchart";
-import DragDropContextWrapper from "@/components/layout/DragDropContxtWrapper";
+import DragDropContextWrapper from "@/components/layout/dnd/DragDropContextWrapper";
 import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
 
 // Hooks
