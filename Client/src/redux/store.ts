@@ -8,7 +8,6 @@ import { userReducer } from "./user/userSlice";
 import { flowchartReducer } from "./flowchart/flowchartSlice";
 import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 import { sectionReducer } from "./section/sectionSlice";
-import { panelLayoutReducer } from "./panelLayout/panelLayoutSlice";
 import { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice";
 import { calendarReducer } from "./calendar/calendarSlice";
 
@@ -23,7 +22,6 @@ const store = configureStore({
     flowchart: flowchartReducer,
     flowSelection: flowSelectionReducer,
     section: sectionReducer,
-    panelLayout: panelLayoutReducer,
     sectionSelection: sectionSelectionReducer,
     calendar: calendarReducer,
   },

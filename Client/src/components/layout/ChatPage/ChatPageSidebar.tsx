@@ -6,7 +6,7 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // My components
 import ChatLogList from "@/components/chatLog/ChatLogList";
-import MobileHeader from "@/components/layout/MobileHeader";
+import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
 
 // UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";

@@ -1,6 +1,6 @@
 import React from "react";
 import BadgeSection from "./BadgeSection";
-import parseAdvancedPrereqString from "./parseAdvcancedPrereqString";
+import parseAdvancedPrereqString from "@/components/section/helpers/parseAdvcancedPrereqString";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 type FormatPrerequisitesProps = {

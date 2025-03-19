@@ -1,4 +1,4 @@
-import { environment, serverUrl } from "./getEnvironmentVars";
+import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { TeamDocument } from "@polylink/shared/types";
 
 export const getTeamMembers = async (): Promise<TeamDocument[]> => {

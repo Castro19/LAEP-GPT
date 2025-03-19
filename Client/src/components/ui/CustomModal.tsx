@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/animated-modal";
 import { ReactNode } from "react";
 
-export function AnimatedModalDemo({
+export function CustomModal({
   children,
   onSave,
   title,
@@ -40,3 +40,5 @@ export function AnimatedModalDemo({
     </div>
   );
 }
+
+export default CustomModal;

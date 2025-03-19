@@ -15,8 +15,8 @@ import {
   CourseDropdown,
   CourseSearchbar,
 } from "@/components/flowchart";
-import { AnimatedModalDemo } from "@/components/layout/CustomModal";
-import MobileHeader from "@/components/layout/MobileHeader";
+import CustomModal from "@/components/ui/CustomModal";
+import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
 
 // Hooks
 import { useUserData } from "@/hooks/useUserData";
@@ -192,13 +192,13 @@ export function SidebarFlowchart() {
                     </SidebarMenuSub>
                     <div className="flex items-center justify-center">
                       <div className="w-11/12 my-4">
-                        <AnimatedModalDemo
+                        <CustomModal
                           onSave={handleSaveFlowchart}
                           title="Create Flowchart"
                           disableOutsideClick={true}
                         >
                           <FlowchartOptions type="flowchart" />
-                        </AnimatedModalDemo>
+                        </CustomModal>
                       </div>
                     </div>
                   </CollapsibleContent>

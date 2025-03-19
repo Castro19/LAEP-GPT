@@ -1,7 +1,5 @@
 import * as Sentry from "@sentry/react";
 import React, { useEffect } from "react";
-import { authActions, useAppDispatch } from "./redux/index.ts";
-import { ProfilePage } from "./pages/ProfilePage.tsx";
 import {
   createBrowserRouter,
   createRoutesFromChildren,
@@ -10,38 +8,53 @@ import {
   useLocation,
   useNavigationType,
 } from "react-router-dom";
-// Pages
-import Register from "./pages/register/Register.tsx";
-import ChatPage from "./pages/ChatPage.tsx";
-import ErrorPage from "./pages/ErrorPage/ErrorPage.tsx";
-// Page Layout
-// Auth
-import ProtectedRoute from "./components/security/ProtectedRoute.tsx";
+import { authActions, useAppDispatch } from "@/redux/index.ts";
 import "./index.css";
-// import SignInFlow from "./components/register/SignInFlow";
-import Terms from "./components/register/SignInFlow/Terms.tsx";
-import { Toaster } from "./components/ui/toaster.tsx";
-import NewUserRoute from "./components/security/NewUserRoute.tsx";
-import SplashPage from "./pages/SplashPage.tsx";
-import ProfilePageLayout from "./components/layout/ProfilePage/ProfilePageLayout.tsx";
-import FlowChatPage from "./pages/FlowchartPage.tsx";
-import { Flowchart } from "./components/flowchart";
-import SignUpForm from "./pages/register/SignUpForm.tsx";
-import LoginForm from "./pages/register/LoginForm.tsx";
-import { VerifyEmail } from "./pages/register/VerifyEmail.tsx";
-import ResetPassword from "./pages/register/ResetPassword.tsx";
-import FirebaseAuth from "./pages/register/FirebaseAuth.tsx";
-import ComingSoonPage from "./pages/ComingSoonPage.tsx";
-import { environment } from "./helpers/getEnvironmentVars.ts";
-import TeamPage from "./pages/TeamPage.tsx";
-import AboutPage from "./pages/AboutPage.tsx";
-import { getTeamMembers } from "./helpers/getTeamMembers.ts";
-import { Demographics } from "./components/register/SignInFlow/Demographics.tsx";
-import { Interests } from "./components/register/SignInFlow/Interests.tsx";
-import SectionPage from "./pages/SectionPage.tsx";
-import CalendarPage from "./pages/CalendarPage.tsx";
-import BasicInformation from "./components/register/SignInFlow/BasicInformation.tsx";
-import InputInformation from "./components/register/SignInFlow/InputInformation.tsx";
+
+// Wrappers
+import ProtectedRoute from "@/components/security/ProtectedRoute.tsx";
+import NewUserRoute from "@/components/security/NewUserRoute.tsx";
+
+// Pages
+import SplashPage from "@/pages/SplashPage.tsx";
+import Register from "@/pages/register/Register.tsx";
+import ChatPage from "@/pages/ChatPage.tsx";
+import ProfilePage from "@/pages/ProfilePage.tsx";
+import TeamPage from "@/pages/TeamPage.tsx";
+import AboutPage from "@/pages/AboutPage.tsx";
+import ComingSoonPage from "@/pages/ComingSoonPage.tsx";
+import FlowChartPage from "@/pages/FlowchartPage.tsx";
+import SectionPage from "@/pages/SectionPage.tsx";
+import CalendarPage from "@/pages/CalendarPage.tsx";
+import ErrorPage from "@/pages/ErrorPage/ErrorPage.tsx";
+
+// Auth
+import FirebaseAuth from "@/pages/register/FirebaseAuth.tsx";
+import SignUpForm from "@/pages/register/SignUpForm.tsx";
+import LoginForm from "@/pages/register/LoginForm.tsx";
+import { VerifyEmail } from "@/pages/register/VerifyEmail.tsx";
+import ResetPassword from "@/pages/register/ResetPassword.tsx";
+
+// Register
+import { Demographics } from "@/components/register/SignInFlow/Demographics.tsx";
+import { Interests } from "@/components/register/SignInFlow/Interests.tsx";
+import BasicInformation from "@/components/register/SignInFlow/BasicInformation.tsx";
+import InputInformation from "@/components/register/SignInFlow/InputInformation.tsx";
+
+// Loaders
+import { getTeamMembers } from "@/components/splashPage/team/helpers/getTeamMembers.ts";
+
+// UI Components
+import { Toaster } from "@/components/ui/toaster.tsx";
+
+// My Components
+import { Flowchart } from "@/components/flowchart";
+
+// Environment
+import { environment } from "@/helpers/getEnvironmentVars.ts";
+
+// Constants
+import Terms from "@/components/register/SignInFlow/Terms.tsx";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
@@ -88,15 +101,11 @@ const router = routerChosen([
       },
       {
         path: "profile/edit",
-        element: (
-          <ProfilePageLayout>
-            <ProfilePage />
-          </ProfilePageLayout>
-        ),
+        element: <ProfilePage />,
       },
       {
         path: "flowchart",
-        element: <FlowChatPage />,
+        element: <FlowChartPage />,
         children: [
           {
             path: ":flowchartId",

@@ -15,7 +15,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 // My components
 import { ChatContainer } from "@/components/chat";
 import ChatPageLayout from "@/components/layout/ChatPage/ChatPageLayout";
-import OuterSidebar from "@/components/layout/OuterIconSidebar";
+import OuterIconSidebar from "@/components/layout/dynamicLayouts/OuterIconSidebar";
 import MobileChatPageLayout from "@/components/layout/ChatPage/MobileChatPageLayout";
 import MobileChatContainer from "@/components/chat/chatBody/MobileChatContainer";
 
@@ -131,7 +131,7 @@ const ChatPage = () => {
           <MobileChatPage />
         ) : (
           <>
-            {isNarrowScreen ? null : <OuterSidebar />}
+            {isNarrowScreen ? null : <OuterIconSidebar />}
             <SidebarProvider className="dark:bg-slate-900">
               <ChatPageLayout>
                 <ChatContainer />

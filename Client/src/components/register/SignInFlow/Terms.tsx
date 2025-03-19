@@ -9,7 +9,7 @@ import { useAppSelector } from "@/redux";
 import { useUserData } from "@/hooks/useUserData";
 
 // Environment variables
-import terms from "@/calpolyData/terms";
+import terms from "@/constants/terms";
 
 // UI Components
 import { Card } from "@/components/ui/card";

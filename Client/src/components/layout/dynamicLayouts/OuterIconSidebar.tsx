@@ -19,9 +19,9 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { UserAvatar } from "../userProfile/UserAvatar";
+import { UserAvatar } from "../../userProfile/UserAvatar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import {
   assistantActions,
   sectionActions,
@@ -29,9 +29,9 @@ import {
   useAppSelector,
 } from "@/redux";
 import { signOutUser } from "@/redux/auth/authSlice";
-import { onNewChat } from "../chat/helpers/newChatHandler";
+import { onNewChat } from "../../chat/helpers/newChatHandler";
 
-function OuterSidebar() {
+function OuterIconSidebar() {
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
   const { currentCalendar } = useAppSelector((state) => state.calendar);
@@ -271,4 +271,4 @@ function OuterSidebar() {
   );
 }
 
-export default OuterSidebar;
+export default OuterIconSidebar;

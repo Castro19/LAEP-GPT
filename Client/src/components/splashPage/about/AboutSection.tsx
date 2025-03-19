@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
-import text from "./aboutText";
+import text from "@/components/splashPage/about/aboutText";
 
 const md = new MarkdownIt();
 

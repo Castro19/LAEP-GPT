@@ -4,13 +4,12 @@ import {
   useAppSelector,
   sectionSelectionActions,
 } from "@/redux";
-import BadgeSection from "../helpers/BadgeSection";
-import LabelSection from "../helpers/LabelSection";
-import { convertTo12HourFormat } from "../helpers/timeFormatter";
-import { Button } from "../../ui/button";
+import BadgeSection from "@/components/section/reusable/sectionInfo/BadgeSection";
+import LabelSection from "@/components/section/reusable/sectionInfo/LabelSection";
+import { convertTo12HourFormat } from "@/components/section/helpers/timeFormatter";
+import { Button } from "@/components/ui/button";
 import { transformToSectionDetail } from "@/helpers/transformSection";
-// import { environment } from "@/helpers/getEnvironmentVars";
-import { toast } from "../../ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useNavigate } from "react-router-dom";
 

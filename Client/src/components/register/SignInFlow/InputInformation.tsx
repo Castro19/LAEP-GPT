@@ -7,8 +7,6 @@ import { Card } from "@/components/ui/card";
 // Icons
 import { RiAtLine, RiUserSearchLine, RiTimeLine } from "react-icons/ri";
 
-// Hooks
-
 const InputInformation = () => {
   // Get choice and handleChoice from outlet context
   const { choice, handleChoice } = useOutletContext<{
