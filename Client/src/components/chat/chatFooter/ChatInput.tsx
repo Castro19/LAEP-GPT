@@ -205,7 +205,7 @@ const ChatInput = ({
   }, [currentModel]);
   return (
     <div
-      className="w-full p-5 bg-slate-900 fixed bottom-0 left-0 right-0 border-t dark:border-slate-700 z-50"
+      className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
