@@ -2,6 +2,9 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
 
+// Hooks
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+
 // My components
 import { TermContainer, defaultTermData } from "@/components/flowchart";
 
@@ -32,7 +35,7 @@ const Flowchart = ({
 }) => {
   const dispatch = useAppDispatch();
   const userData = useAppSelector((state) => state.user.userData);
-
+  const isNarrowScreen = useIsNarrowScreen();
   const flowchartRef = useRef<HTMLDivElement>(null);
   const startYear = useMemo(() => {
     return userData.flowchartInformation.startingYear
@@ -115,7 +118,7 @@ const Flowchart = ({
               selectedYear === index
                 ? "dark:bg-slate-700 text-white"
                 : "text-white hover:dark:bg-slate-800"
-            }`}
+            } ${isNarrowScreen ? "text-xs size-8 px-6" : "text-lg"}`}
           >
             Year {index + 1}
           </Button>

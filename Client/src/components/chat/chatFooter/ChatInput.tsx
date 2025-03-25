@@ -204,7 +204,10 @@ const ChatInput = ({
     }
   }, [currentModel]);
   return (
-    <div className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700">
+    <div
+      className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
       {msg.length > 1500 && (
         <div className="text-yellow-500 text-sm">
@@ -262,6 +265,9 @@ const ChatInput = ({
           </Button>
         )}
       </form>
+      <div className="flex justify-center text-sm text-gray-500 px-2 pt-2">
+        AI-generated responses may contain inaccuracies
+      </div>
     </div>
   );
 };

@@ -213,7 +213,10 @@ export function SignupFormDemo() {
               </Link>
             </p>
           </div>
-
+          {/* Disclaimer: Do not use the same password for multiple accounts and do not use the same passwword for PolyLink as your Cal Poly account */}
+          <div className="flex justify-center text-neutral-500 text-sm">
+            Do not use the same password for PolyLink as your Cal Poly account.
+          </div>
           {registerError && <ErrorMessage text={registerError} />}
         </form>
       </motion.div>

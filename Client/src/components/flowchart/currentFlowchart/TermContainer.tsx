@@ -14,6 +14,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import useDeviceType from "@/hooks/useDeviceType";
 
 interface TermContainerProps {
   term: Term;
@@ -40,6 +41,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const deviceType = useDeviceType();
   const handleTermClick = (action: "add" | "remove") => {
     if (!flowchartData) return;
     const updatedCourses = term.courses.map((course) => ({
@@ -94,7 +96,9 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </div>
       <ScrollArea className="h-full min-w-full mb-4">
         {/* Body */}
-        <div className="h-[40rem]">
+        <div
+          className={`${deviceType === "desktop" ? "h-[40rem]" : "h-[60vh]"}`}
+        >
           <Droppable droppableId={`term-${term.tIndex}`}>
             {(provided) => (
               <div

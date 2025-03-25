@@ -26,7 +26,7 @@ const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
         <FlowchartHeader />
         <div className="flex-1">{children}</div>
         {/* Sticky footer */}
-        {flowchartData && <FlowchartUnitCounts />}
+        {flowchartData && !isNarrowScreen && <FlowchartUnitCounts />}
       </div>
     </DragDropContextWrapper>
   );
