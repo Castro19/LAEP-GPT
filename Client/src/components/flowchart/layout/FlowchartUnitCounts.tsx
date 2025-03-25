@@ -68,7 +68,10 @@ const FlowchartUnitCounts = () => {
   }, [flowchartData]);
 
   return (
-    <div className="dark:bg-gray-900 sticky bottom-0">
+    <div
+      className="dark:bg-gray-900 sticky bottom-0"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       <div
         className={`flex ${isNarrowScreen ? "flex-col" : "items-center justify-between"} m-4 text-lg`}
       >
@@ -101,13 +104,15 @@ const FlowchartUnitCounts = () => {
           </div>
         </div>
         <div
-          className={`flex items-center gap-2 font-bold ${
-            isNarrowScreen ? "mt-2" : ""
-          }`}
+          className={`flex items-center gap-2 font-bold ${isNarrowScreen ? "mt-2" : ""}`}
         >
           <span className="font-medium">Total Units:</span>
           <span>{units.total.toFixed(1)}</span>
         </div>
+      </div>
+      {/* Disclaimer */}
+      <div className="flex justify-center text-sm text-gray-500 p-2">
+        Consult an advisor for accurate academic progress.
       </div>
     </div>
   );
