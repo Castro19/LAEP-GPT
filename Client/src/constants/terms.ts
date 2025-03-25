@@ -28,7 +28,7 @@ A violation of these Terms may result in the suspension or termination of your a
 
 2. Personalized AI Advice
 
-PolyLink provides academic and extracurricular recommendations using AI algorithms. While we strive for accuracy and relevance, the advice provided by PolyLink is intended as a supplemental resource. Decisions based on recommendations from PolyLink should be made at your discretion, and we are not liable for any outcomes resulting from the use of the platform.
+PolyLink provides academic and extracurricular recommendations using AI. While we strive for accuracy and relevance, the advice provided by PolyLink is intended as a supplemental resource. Decisions based on recommendations from PolyLink should be made at your discretion, and we are not liable for any outcomes resulting from the use of the platform.
 
 ---
 
@@ -80,7 +80,7 @@ Email: support@polylink.com
 PRIVACY POLICY
 
 PolyLink  
-Last Updated: 12/11/2024
+Last Updated: 03/25/2025
 
 This Privacy Policy describes how PolyLink (“the Site,” “we,” “us,” or “our”) collects, uses, and discloses your personal information when you visit, use our services, or otherwise communicate with us (collectively, the “Services”). For purposes of this Privacy Policy, “you” and “your” refer to you as a user of the Services, whether as a member, event participant, or other individual whose information we process.
 
@@ -114,7 +114,7 @@ When you interact with our Services, you may provide information such as:
 
 - Contact Information: Name, email address, phone number.
 - Profile Details: Academic institution, interests, skills, activity preferences.
-- Account Information: Username, email, and any preferences set through your account.
+- Account Information: Name, email, and any preferences set through your account.
 - Event Details: Activities you’ve registered for, feedback you’ve shared, or messages sent through the platform.
 - Optional Information: Dietary restrictions or accessibility needs for events (if applicable).
 
@@ -130,9 +130,7 @@ When you use the Services, we may collect information such as:
 
 We may obtain personal information from third parties, such as:
 
-- Authentication Services: If you register using services like Google or university credentials.
-- Service Providers: For payment processing or technical support.
-- Marketing Partners: For tailored outreach or promotions.
+- Authentication Services: If you register using services like Outlook or university credentials.
 
 ---
 
@@ -162,12 +160,15 @@ You may control or disable cookies through your browser settings. Note, however,
 
 We may share your personal information with:
 
-- Service Providers: For tasks such as hosting or technical support.
-- Group Participants: With other users who are matched with you for activities or events.
-- Marketing Partners: For advertising campaigns (with your consent).
-- Legal Entities: If required to comply with legal obligations, enforce our terms, or protect our rights.
+- **Service Providers**: We use trusted third-party services—including **MongoDB (for data storage)**, **Firebase (for authentication and messaging)**, and **OpenAI (for AI-powered responses)**—to operate key features of the platform. Any data shared with these providers is done solely to provide PolyLink’s core services.
 
-We do not sell personal information.
+- **Data Handling by Third Parties**: While we transmit your input to these services to enable platform functionality, **we do not allow these third parties to use your data for their own purposes**, such as advertising or model training. For example, **OpenAI does not use your data submitted through PolyLink to train its models**, in accordance with their API usage policy.
+
+- **Group Participants**: With your consent, we may share limited profile information with other students for the purpose of matching you into events or study groups.
+
+- **Legal Entities**: If required to comply with legal obligations, enforce our terms, or protect our rights.
+
+We do **not sell** your personal information.
 
 ---
 
