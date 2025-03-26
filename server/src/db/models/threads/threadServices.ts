@@ -5,14 +5,12 @@ import { environment } from "../../../index";
 export const addThreadToDB = async (
   chatId: string,
   threadId: string,
-  vectorStoreId: string | null,
   assistantId: string
 ): Promise<{ message: string; threadId: string }> => {
   try {
     const result = await ThreadModel.createThread(
       chatId,
       threadId,
-      vectorStoreId,
       assistantId
     );
     return {
@@ -34,7 +32,6 @@ export const fetchIds = async (chatId: string): Promise<ThreadData | null> => {
     if (!ids) return null;
     return {
       threadId: ids.threadId,
-      vectorStoreId: ids.vectorStoreId,
       assistantId: ids.assistantId,
     };
   } catch (error) {

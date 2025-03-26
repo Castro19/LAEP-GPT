@@ -76,33 +76,8 @@ export const deleteLog = async (
     // Get IDs first
     const ids = (await fetchIds(logId)) as {
       threadId: string;
-      vectorStoreId: string;
     } | null;
-    const { threadId, vectorStoreId } = ids || {};
-
-    // Try to delete vector store and its files
-    if (vectorStoreId) {
-      try {
-        const vectorStoreFiles =
-          await openai.beta.vectorStores.files.list(vectorStoreId);
-        for (const file of vectorStoreFiles.data) {
-          try {
-            await openai.files.del(file.id);
-          } catch (error) {
-            console.warn(
-              `Failed to delete file ${file.id}:`,
-              (error as Error).message
-            );
-          }
-        }
-        await openai.beta.vectorStores.del(String(vectorStoreId));
-      } catch (error) {
-        console.warn(
-          "Failed to delete vector store:",
-          (error as Error).message
-        );
-      }
-    }
+    const { threadId } = ids || {};
 
     // Try to delete thread
     if (threadId) {

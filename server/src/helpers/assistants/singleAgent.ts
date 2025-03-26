@@ -2,23 +2,14 @@ import { addMessageToThread } from "../openAI/threadFunctions";
 import { getUserByFirebaseId } from "../../db/models/user/userServices";
 import { fetchFlowchart } from "../../db/models/flowchart/flowchartServices";
 import { getAssistantById } from "../../db/models/assistant/assistantServices";
-import { setupVectorStoreAndUpdateAssistant } from "../openAI/vectorStoreFunctions";
 import { initializeOrFetchIds } from "../openAI/threadFunctions";
-import { formatAvailability } from "../formatters/availabilityFormatter";
 import { runAssistantAndStreamResponse } from "./multiAgentHelpers/streamResponse";
 import { searchCourses } from "../qdrant/qdrantQuery";
 import { getCourseInfo } from "../../db/models/courses/courseServices";
 import flowchartHelper from "../flowchart/flowchart";
 import { RunningStreamData, UserData } from "@polylink/shared/types";
-import { FileObject } from "openai/resources/index";
 import { Response } from "express";
 import { environment } from "../../index";
-
-const matchingAssistant = (user: UserData, message: string): string => {
-  const availability = formatAvailability(user.availability);
-  const interests = user.interestAreas.join(", ");
-  return `My availability: ${availability}\nMy interests: ${interests}\n${message}`;
-};
 
 const flowchartAssistant = async (
   user: UserData,
@@ -69,7 +60,6 @@ const calpolyClubsAssistant = (user: UserData, message: string): string => {
 type SingleAgentRequestBody = {
   model: { id: string; title: string };
   chatId: string;
-  userFile: FileObject | null;
   message: string;
   res: Response;
   userId: string;
@@ -80,7 +70,6 @@ type SingleAgentRequestBody = {
 async function handleSingleAgentModel({
   model,
   chatId,
-  userFile,
   message,
   res,
   userId,
@@ -97,31 +86,17 @@ async function handleSingleAgentModel({
     throw new Error("Assistant ID not found");
   }
   // Creates from OpenAI API & Stores in DB if not already created
-  const { threadId, vectorStoreId } = await initializeOrFetchIds(
-    chatId,
-    userFile ? userFile.id : null,
-    model.id
-  );
+  const { threadId } = await initializeOrFetchIds(chatId, model.id);
   // Add threadId to runningStreams
   runningStreams[userMessageId].threadId = threadId;
 
-  // Setup vector store and update assistant
-  if (userFile && vectorStoreId) {
-    await setupVectorStoreAndUpdateAssistant(
-      vectorStoreId,
-      assistantId,
-      userFile.id
-    );
-  }
   const user = await getUserByFirebaseId(userId);
 
   if (!user) {
     throw new Error("User not found");
   }
 
-  if (model.title === "Matching Assistant") {
-    messageToAdd = matchingAssistant(user, message);
-  } else if (model.title === "Flowchart Assistant") {
+  if (model.title === "Flowchart Assistant") {
     messageToAdd = await flowchartAssistant(user, message);
   } else if (model.title === "Course Catalog") {
     messageToAdd = await courseCatalogAssistant(user, message);
@@ -143,13 +118,7 @@ async function handleSingleAgentModel({
     );
 
     // Add user message to thread
-    await addMessageToThread(
-      threadId,
-      "user",
-      messageToAdd,
-      userFile ? userFile.id : null,
-      model.title
-    );
+    await addMessageToThread(threadId, "user", messageToAdd);
   } catch (error) {
     if (environment === "dev") {
       console.error("Error in single-agent model:", error);

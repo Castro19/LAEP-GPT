@@ -14,6 +14,7 @@ export default async function createLogTitle(msg: string, modelTitle: string) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg, AssistantType: modelTitle }),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);

@@ -58,6 +58,9 @@ export default async function sendMessage(
       method: "POST",
       body: formData,
       credentials: "include",
+      headers: {
+        Accept: "text/event-stream",
+      },
     });
 
     const response: Response = await Promise.race([
