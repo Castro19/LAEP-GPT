@@ -6,7 +6,6 @@ export type MessageAnalyticsDocument = {
   botMessageId: string;
   logId: string;
   assistantId: string;
-  hadFile: boolean;
   createdAt: Date;
   //   The rest added after completion
   completionCost: number;

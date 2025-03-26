@@ -15,14 +15,8 @@ router.post("/", (async (req, res) => {
     if (!userId) {
       return res.status(401).send("No user found in request");
     }
-    const {
-      userMessageId,
-      botMessageId,
-      logId,
-      assistantId,
-      hadFile,
-      createdAt,
-    } = req.body;
+    const { userMessageId, botMessageId, logId, assistantId, createdAt } =
+      req.body;
 
     const messageAnalyticsData: MessageAnalyticsCreate = {
       _id: userMessageId,
@@ -31,7 +25,6 @@ router.post("/", (async (req, res) => {
       botMessageId,
       logId,
       assistantId,
-      hadFile,
       createdAt,
     };
 
