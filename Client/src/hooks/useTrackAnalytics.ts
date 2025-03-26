@@ -10,7 +10,6 @@ const useTrackAnalytics = () => {
     botMessageId,
     logId,
     assistantId,
-    hadFile,
     createdAt,
   }: MessageAnalyticsCreate) => {
     try {
@@ -26,7 +25,6 @@ const useTrackAnalytics = () => {
           botMessageId,
           logId,
           assistantId,
-          hadFile,
           createdAt,
         }),
       });

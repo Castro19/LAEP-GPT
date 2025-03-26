@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoSend, IoStopCircleOutline } from "react-icons/io5";
-
-import { FileUpload } from "@/components/ui/file-upload";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
@@ -42,7 +40,6 @@ const ChatInput = ({
   const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -55,13 +52,6 @@ const ChatInput = ({
     if (msg.length <= 0) return;
     dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
-
-    const fileInput = document.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
-    }
 
     // Generate a new unique chatId
     const newLogId = uuidv4();
@@ -86,7 +76,6 @@ const ChatInput = ({
         botMessageId: botMessageId,
         logId,
         assistantId: currentModel.id,
-        hadFile: selectedFile ? true : false,
         createdAt,
       });
     } catch (error) {
@@ -95,7 +84,6 @@ const ChatInput = ({
       }
     }
     try {
-      setSelectedFile(null);
       const logId = isNewChat ? newLogId : currentChatId;
       dispatch(messageActions.setCurrentChatId(logId));
       if (!logId) {
@@ -106,7 +94,6 @@ const ChatInput = ({
         await dispatch(
           messageActions.fetchBotResponse({
             currentModel,
-            file: selectedFile, //add pdf file
             msg,
             currentChatId: logId,
             userId: userId ? userId : "",
@@ -198,11 +185,6 @@ const ChatInput = ({
     }
   };
 
-  useEffect(() => {
-    if (currentModel.title === "Matching Assistant") {
-      setSelectedFile(null);
-    }
-  }, [currentModel]);
   return (
     <div
       className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700"
@@ -220,12 +202,6 @@ const ChatInput = ({
         }
         className="flex items-end gap-2"
       >
-        {currentModel.title === "Will NOT Allow File Uploads for right now" && (
-          <FileUpload
-            onChange={(file) => setSelectedFile(file)}
-            selectedFile={selectedFile}
-          />
-        )}
         <textarea
           ref={textareaRef}
           id="ChatInput"

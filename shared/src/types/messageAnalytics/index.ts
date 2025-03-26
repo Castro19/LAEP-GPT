@@ -47,7 +47,6 @@ export type MessageAnalyticsCreate = {
   botMessageId: string;
   logId: string;
   assistantId: string;
-  hadFile: boolean;
   createdAt: Date | number;
 };
 
