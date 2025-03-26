@@ -12,7 +12,6 @@ const initializeCollection = (): void => {
 export const createThread = async (
   chatId: string,
   threadId: string,
-  vectorStoreId: string | null,
   assistantId: string
 ): Promise<InsertOneResult<ThreadDocument>> => {
   if (!threadCollection) initializeCollection();
@@ -21,7 +20,6 @@ export const createThread = async (
     const newThread = {
       _id: chatId, // TODO: FIX So we add the chatId as a new property and let mongoDB handle the ID ?
       threadId,
-      vectorStoreId,
       assistantId,
     };
     const result = await threadCollection.insertOne(newThread);
@@ -45,7 +43,6 @@ export const getIds = async (
     return {
       _id: thread._id,
       threadId: thread.threadId,
-      vectorStoreId: thread.vectorStoreId,
       assistantId: thread.assistantId,
     };
   } catch (error) {

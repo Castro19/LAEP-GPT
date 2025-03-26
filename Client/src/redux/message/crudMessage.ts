@@ -2,7 +2,6 @@ import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { AssistantType, ScheduleBuilderSection } from "@polylink/shared/types";
 export default async function sendMessage(
   currentModel: AssistantType,
-  file: File | null, //include file as arguement
   msg: string,
   currentChatId: string | null,
   userId: string,
@@ -28,7 +27,7 @@ export default async function sendMessage(
   });
 
   try {
-    //create FormData to send data + file to backend
+    //create FormData to send data to backend
     const formData = new FormData();
     formData.append("message", msg);
     // Only send model title & model Id to backend
@@ -41,9 +40,7 @@ export default async function sendMessage(
     );
     formData.append("userId", userId);
     formData.append("userMessageId", userMessageId);
-    if (file) {
-      formData.append("file", file);
-    }
+
     if (currentChatId) {
       formData.append("chatId", currentChatId);
     }
@@ -58,6 +55,9 @@ export default async function sendMessage(
       method: "POST",
       body: formData,
       credentials: "include",
+      headers: {
+        Accept: "text/event-stream",
+      },
     });
 
     const response: Response = await Promise.race([

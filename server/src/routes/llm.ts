@@ -4,22 +4,19 @@ import express, { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import multer from "multer";
 import { environment, openai } from "../index";
-import { handleFileUpload } from "../helpers/azure/blobFunctions";
 import asyncHandler from "../middlewares/asyncMiddleware";
 import handleSingleAgentModel from "../helpers/assistants/singleAgent";
 import handleMultiAgentModel from "../helpers/assistants/multiAgent";
-import { FileObject } from "openai/resources/index";
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio/createBio";
 import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
 import { Filter } from "mongodb";
+import { getUserByFirebaseId } from "../db/models/user/userServices";
 
 const router = express.Router();
-
-// init storage for user documents
-const upload = multer({ dest: "temp/" }); // 'temp/' is where Multer stores uploaded files
+const upload = multer();
 
 // Rate limiter for GPT messages
 const messageRateLimiter = rateLimit({
@@ -31,76 +28,58 @@ const messageRateLimiter = rateLimit({
   keyGenerator: (req) => req.body.userId || "unknown-user",
 });
 
-type LLMRequestBody = {
-  message: string;
-  chatId: string;
-  userId: string;
-  userMessageId: string;
-  currentModel: string;
-  file?: Express.Multer.File;
-  sections?: string;
-};
-
-const MAX_FILE_SIZE_MB = 1;
 // Store running streams: Useful for cancelling a running stream
 const runningStreams: RunningStreamData = {};
+
 router.post(
   "/respond",
+  upload.none(),
   messageRateLimiter,
-  upload.single("file"),
   asyncHandler(async (req: Request, res: Response) => {
     if (!res.headersSent) {
       res.setHeader("Content-Type", "text/plain");
       res.setHeader("Transfer-Encoding", "chunked");
     }
+    const userId = req.user?.uid;
 
-    const { message, chatId, userId, userMessageId, currentModel, sections } =
-      req.body as LLMRequestBody;
-
+    // check if user exists in database
     if (!userId) {
+      console.log("USER ID: ", userId);
       res.status(401).end("Unauthorized");
       return;
+    } else {
+      const user = await getUserByFirebaseId(userId);
+      if (!user) {
+        console.log("USER ID: ", userId);
+        res.status(401).end("Unauthorized");
+        return;
+      }
     }
-    const model: { id: string; title: string } = JSON.parse(currentModel);
+    const message = req.body.message;
+    const chatId = req.body.chatId;
+    const userMessageId = req.body.userMessageId;
+    const currentModel = req.body.currentModel;
+    const sections = req.body.sections;
 
-    const file = req.file;
+    if (!currentModel) {
+      res.status(400).end("Current model is required");
+      return;
+    }
 
-    let userFile: FileObject | null = null;
+    let model: { id: string; title: string };
+    try {
+      model = JSON.parse(currentModel);
+    } catch (error) {
+      console.error("Error parsing currentModel:", error);
+      res.status(400).end("Invalid model format");
+      return;
+    }
+
     runningStreams[userMessageId] = {
       canceled: false,
       runId: null,
       threadId: null,
     };
-
-    if (file) {
-      const fileSizeInMB = file.size / (1024 * 1024);
-
-      if (!file.mimetype || !file.mimetype.includes("pdf")) {
-        res.status(400).send("Only PDF files are allowed");
-        return; // Just return here to stop the execution (no returning of Response object)
-      }
-
-      if (fileSizeInMB > MAX_FILE_SIZE_MB) {
-        res
-          .status(413)
-          .send(`File size must be less than ${MAX_FILE_SIZE_MB}MB`);
-        return;
-      }
-
-      if (model.title === "Will NOT Allow File Uploads for right now") {
-        try {
-          userFile = await handleFileUpload(file);
-        } catch (error) {
-          if (environment === "dev") {
-            console.error("Error uploading file:", error);
-          }
-          throw error;
-        }
-      } else {
-        res.status(400).send("File uploads are not allowed for this model");
-        return;
-      }
-    }
 
     if (
       model.title === "Professor Ratings" ||
@@ -122,7 +101,6 @@ router.post(
               title: "Help Assistant",
             },
             chatId,
-            userFile,
             message,
             res,
             userId,
@@ -140,7 +118,6 @@ router.post(
               title: "Help Assistant",
             },
             chatId,
-            userFile,
             message: "No Sections Found",
             res,
             userId,
@@ -176,7 +153,6 @@ router.post(
         await handleSingleAgentModel({
           model,
           chatId,
-          userFile,
           message,
           res,
           userId,
@@ -200,6 +176,17 @@ router.post(
 router.post(
   "/cancel",
   asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.uid;
+    if (!userId) {
+      res.status(401).end("Unauthorized");
+      return;
+    } else {
+      const user = await getUserByFirebaseId(userId);
+      if (!user) {
+        res.status(401).end("Unauthorized");
+        return;
+      }
+    }
     const { userMessageId } = req.body;
 
     const runData = runningStreams[userMessageId];
@@ -243,6 +230,18 @@ router.post(
 router.post(
   "/title",
   asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.uid;
+    if (!userId) {
+      res.status(401).end("Unauthorized");
+      return;
+    } else {
+      const user = await getUserByFirebaseId(userId);
+      if (!user) {
+        res.status(401).end("Unauthorized");
+        return;
+      }
+    }
+
     try {
       const { message } = req.body;
       const contentStr =
@@ -275,6 +274,18 @@ router.post(
 router.post(
   "/generate-bio",
   asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.uid;
+    if (!userId) {
+      res.status(401).end("Unauthorized");
+      return;
+    } else {
+      const user = await getUserByFirebaseId(userId);
+      if (!user) {
+        res.status(401).end("Unauthorized");
+        return;
+      }
+    }
+
     try {
       const { userId } = req.body;
       const bio = await createBio(userId);

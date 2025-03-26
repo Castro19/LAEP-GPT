@@ -71,16 +71,10 @@ async function handleMultiAgentModel({
     // Fetch the main assistant's ID.
     const assistantId = await fetchMainAssistant(model.id);
     // Initialize (or fetch) thread IDs.
-    const { threadId } = await initializeOrFetchIds(chatId, null, assistantId);
+    const { threadId } = await initializeOrFetchIds(chatId, assistantId);
 
     // Add the updated message to the main thread.
-    await addMessageToThread(
-      threadId,
-      "assistant",
-      messageToAdd,
-      null,
-      model.title
-    );
+    await addMessageToThread(threadId, "assistant", messageToAdd);
 
     if (environment === "dev") {
       console.log(

@@ -32,6 +32,7 @@ const AboutMe = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: userData?.userId }),
+        credentials: "include",
       });
       const data = await response.json();
       handleChange("bio", data.bio);

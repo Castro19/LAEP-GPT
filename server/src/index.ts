@@ -77,7 +77,7 @@ app.use("/users", authenticate, userRouter);
 app.use("/flowcharts", authenticate, flowchartRouter);
 app.use("/flowInfo", authenticate, flowInfoRouter);
 app.use("/professorRatings", professorRatingRouter);
-app.use("/llms", llmRouter);
+app.use("/llms", authenticate, llmRouter);
 app.use("/team", teamRouter);
 app.use("/deepseek", deepseekRouter);
 app.use("/sections", authenticate, sectionRouter);

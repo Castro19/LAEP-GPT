@@ -12,7 +12,6 @@ import { environment } from "@/helpers/getEnvironmentVars";
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
   currentModel: AssistantType;
-  file: File | null;
   msg: string; //replace with formData
   currentChatId: string;
   userId: string;
@@ -38,7 +37,6 @@ export const fetchBotResponse = createAsyncThunk<
   async (
     {
       currentModel,
-      file: currentFile,
       msg,
       currentChatId,
       userId,
@@ -91,7 +89,6 @@ export const fetchBotResponse = createAsyncThunk<
       const { botMessage, updateStream }: SendMessageReturnType =
         await sendMessage(
           currentModel,
-          currentFile,
           msg,
           currentChatId,
           userId,
@@ -151,7 +148,7 @@ export const fetchBotResponse = createAsyncThunk<
     }
   }
 );
-// In your Redux actions file
+
 export const cancelBotResponse = createAsyncThunk(
   "message/cancelBotResponse",
   async (

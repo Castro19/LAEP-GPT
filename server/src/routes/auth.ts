@@ -35,6 +35,9 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
+      domain:
+        process.env.NODE_ENV === "production" ? "polylink.dev" : "localhost",
     });
 
     // Verify the ID token to get user info
