@@ -113,19 +113,19 @@ export default function SideBarModeDropDown({ onSelect }: SideBarModeDropDownPro
   return (
     <NavigationMenu>
       <NavigationMenuList className="w-full">
-        <NavigationMenuItem className="w-full">
-          <NavigationMenuTrigger className="w-full text-left px-4 py-2 hover:bg-accent">
-            <div className="flex items-center space-x-3">
+        <NavigationMenuItem className="w-full p-1">
+          <NavigationMenuTrigger className="w-full group flex items-center justify-between px-2 py-1 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-opacity-70">
+            <div className="flex items-center gap-3">
               <Avatar className="w-8 h-8">
                 <AvatarImage
                   src={currentModel.urlPhoto || "/imgs/test.png"}
                   alt={currentModel.title}
                 />
               </Avatar>
-              <span className="text-sm font-medium">{currentModel.title}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{currentModel.title}</span>
             </div>
           </NavigationMenuTrigger>
-          <NavigationMenuContent className="w-full">
+          <NavigationMenuContent className="w-full md:bg-gray-800">
             <ul className="p-2 w-full bg-popover">
               {transformedassistantList.map((option) => (
                 <ListItem
@@ -133,7 +133,7 @@ export default function SideBarModeDropDown({ onSelect }: SideBarModeDropDownPro
                   assistant={option}
                   onClick={() => handleAssistantSelect(option)}
                   className={cn(
-                    "w-full",
+                    "w-full group",
                     option.locked ? "cursor-not-allowed opacity-50" : ""
                   )}
                 />
@@ -164,7 +164,7 @@ const ListItem = React.forwardRef<
       className={cn(
         "flex items-center space-x-3 w-full px-4 py-2 text-left",
         "rounded-md transition-colors",
-        "hover:bg-slate-800 hover:text-white",
+        "hover:bg-slate-700 hover:text-white",
         className
       )}
       {...props}
