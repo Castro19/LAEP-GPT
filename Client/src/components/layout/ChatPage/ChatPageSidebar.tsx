@@ -19,17 +19,29 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import useDeviceType from "@/hooks/useDeviceType";
+import { AssistantType } from "@polylink/shared/types";
+import { useNavigate } from "react-router-dom";
+import SideBarModeDropDown from "@/components/chat/chatSideBar/SideBarDropDown";
+import { handleModeSelection } from "@/components/layout/ChatPage/ChatPageHeader";
 
 export function ChatPageSidebar() {
   const isNarrowScreen = useIsNarrowScreen();
   const deviceType = useDeviceType();
+
+  const navigate = useNavigate();
+  const error = useAppSelector((state) => state.message.error);
+
 
   const dispatch = useAppDispatch();
   const logList = useAppSelector((state) => state.log.logList);
   const userId = useAppSelector((state) => state.auth.userId);
 
   const hasFetchedLogs = useRef(false);
-  const { open } = useSidebar();
+  const { open, setOpenMobile } = useSidebar();
+
+  const { currentChatId, loading, messagesByChatId } = useAppSelector(
+    (state) => state.message
+  );
 
   useEffect(() => {
     if (hasFetchedLogs.current || logList.length > 0) return;
@@ -39,6 +51,23 @@ export function ChatPageSidebar() {
       dispatch(logActions.fetchLogs());
     }
   }, [dispatch, userId, logList.length]);
+
+  const handleModelSelect = (model: AssistantType) => {
+    // Close sidebar if on mobile
+    if (isNarrowScreen || deviceType !== "desktop") {
+      setOpenMobile(false);
+    }
+    
+    handleModeSelection(
+      model, 
+      dispatch, 
+      navigate, 
+      currentChatId, 
+      error, 
+      loading, 
+      messagesByChatId
+    );
+  };
 
   return (
     <>
@@ -65,6 +94,7 @@ export function ChatPageSidebar() {
           <ScrollArea className="h-full">
             <SidebarGroup>
               <SidebarMenu>
+                <SideBarModeDropDown onSelect={handleModelSelect} />
                 <ChatLogList />
               </SidebarMenu>
             </SidebarGroup>
