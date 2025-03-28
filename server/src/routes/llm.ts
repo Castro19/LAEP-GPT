@@ -79,10 +79,8 @@ router.post(
           .end("Chat history is too long. Please start a new chat.");
         return;
       }
-    } catch (error) {
-      console.error("Error fetching log:", error);
-      res.status(400).end("Invalid logId");
-      return;
+    } catch {
+      // Do nothing as this is a new chat request, log does not exist
     }
     let model: { id: string; title: string };
     try {
