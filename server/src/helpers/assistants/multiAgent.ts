@@ -30,7 +30,7 @@ type MultiAgentRequest = {
   res: Response;
   userMessageId: string;
   runningStreams: RunningStreamData;
-  chatId: string;
+  logId: string;
   sections?: ScheduleBuilderSection[];
 };
 
@@ -49,7 +49,7 @@ async function handleMultiAgentModel({
   res,
   userMessageId,
   runningStreams,
-  chatId,
+  logId,
   sections,
 }: MultiAgentRequest): Promise<void> {
   try {
@@ -71,7 +71,7 @@ async function handleMultiAgentModel({
     // Fetch the main assistant's ID.
     const assistantId = await fetchMainAssistant(model.id);
     // Initialize (or fetch) thread IDs.
-    const { threadId } = await initializeOrFetchIds(chatId, assistantId);
+    const { threadId } = await initializeOrFetchIds(logId, assistantId);
 
     // Add the updated message to the main thread.
     await addMessageToThread(threadId, "assistant", messageToAdd);

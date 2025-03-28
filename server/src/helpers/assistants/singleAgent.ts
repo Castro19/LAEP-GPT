@@ -59,7 +59,7 @@ const calpolyClubsAssistant = (user: UserData, message: string): string => {
 
 type SingleAgentRequestBody = {
   model: { id: string; title: string };
-  chatId: string;
+  logId: string;
   message: string;
   res: Response;
   userId: string;
@@ -69,7 +69,7 @@ type SingleAgentRequestBody = {
 
 async function handleSingleAgentModel({
   model,
-  chatId,
+  logId,
   message,
   res,
   userId,
@@ -86,7 +86,7 @@ async function handleSingleAgentModel({
     throw new Error("Assistant ID not found");
   }
   // Creates from OpenAI API & Stores in DB if not already created
-  const { threadId } = await initializeOrFetchIds(chatId, model.id);
+  const { threadId } = await initializeOrFetchIds(logId, model.id);
   // Add threadId to runningStreams
   runningStreams[userMessageId].threadId = threadId;
 
