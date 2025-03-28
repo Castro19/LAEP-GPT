@@ -14,6 +14,7 @@ import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
 import { Filter } from "mongodb";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
+import { getLogById } from "../db/models/chatlog/chatLogServices";
 
 const router = express.Router();
 const upload = multer();
@@ -44,28 +45,45 @@ router.post(
 
     // check if user exists in database
     if (!userId) {
-      console.log("USER ID: ", userId);
       res.status(401).end("Unauthorized");
       return;
     } else {
       const user = await getUserByFirebaseId(userId);
       if (!user) {
-        console.log("USER ID: ", userId);
         res.status(401).end("Unauthorized");
         return;
       }
     }
+
+    if (environment === "dev") {
+      console.log("Request body: ", req.body);
+    }
     const message = req.body.message;
-    const chatId = req.body.chatId;
+    const logId = req.body.chatId;
     const userMessageId = req.body.userMessageId;
     const currentModel = req.body.currentModel;
     const sections = req.body.sections;
 
-    if (!currentModel) {
-      res.status(400).end("Current model is required");
+    if (!currentModel || !logId || !userMessageId) {
+      res
+        .status(400)
+        .end("Current model, logId, and userMessageId are required");
       return;
     }
 
+    try {
+      const log = await getLogById(logId, userId);
+      if (log.content.length >= 12) {
+        res
+          .status(429)
+          .end("Chat history is too long. Please start a new chat.");
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching log:", error);
+      res.status(400).end("Invalid logId");
+      return;
+    }
     let model: { id: string; title: string };
     try {
       model = JSON.parse(currentModel);
@@ -100,7 +118,7 @@ router.post(
               id: "67b42fd0c4f92c0ed9ea73ab",
               title: "Help Assistant",
             },
-            chatId,
+            logId,
             message,
             res,
             userId,
@@ -117,7 +135,7 @@ router.post(
               id: "67b42fd0c4f92c0ed9ea73ab",
               title: "Help Assistant",
             },
-            chatId,
+            logId,
             message: "No Sections Found",
             res,
             userId,
@@ -134,7 +152,7 @@ router.post(
             res,
             userMessageId,
             runningStreams,
-            chatId,
+            logId,
             sections: sections ? JSON.parse(sections as string) : [], // convert str to json object
           });
         }
@@ -152,7 +170,7 @@ router.post(
       try {
         await handleSingleAgentModel({
           model,
-          chatId,
+          logId,
           message,
           res,
           userId,

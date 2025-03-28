@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoSend, IoStopCircleOutline } from "react-icons/io5";
 // React Redux
@@ -31,16 +31,27 @@ const ChatInput = ({
   const [currentUserMessageId, setCurrentUserMessageId] = useState<
     string | null
   >(null);
+  const [lockedChat, setLockedChat] = useState(false);
+
   const currentModel = useAppSelector((state) => state.assistant.currentModel);
-  const { msg, isNewChat, currentChatId, loading, error } = useAppSelector(
-    (state) => state.message
-  );
+  const { msg, isNewChat, currentChatId, loading, error, messagesByChatId } =
+    useAppSelector((state) => state.message);
+  const currentChatMessages = messagesByChatId[currentChatId ?? ""];
+
   const { currentCalendar } = useAppSelector((state) => state.calendar);
 
   const userId = useAppSelector((state) => state.auth.userId);
 
   const navigate = useNavigate();
   const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
+
+  useEffect(() => {
+    if (currentChatMessages?.content.length >= 12) {
+      setLockedChat(true);
+    } else {
+      setLockedChat(false);
+    }
+  }, [currentChatMessages, currentChatId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     dispatch(messageActions.updateMsg(e.target.value));
@@ -190,60 +201,70 @@ const ChatInput = ({
       className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-      {msg.length > 1500 && (
-        <div className="text-yellow-500 text-sm">
-          You have reached {msg.length} of 2000 characters.
+      {lockedChat ? (
+        <div className="flex justify-center text-sm text-gray-500 px-2 pt-2">
+          Chat history is too long. Please start a new chat.
         </div>
+      ) : (
+        <>
+          {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+          {msg.length > 1500 && (
+            <div className="text-yellow-500 text-sm">
+              You have reached {msg.length} of 2000 characters.
+            </div>
+          )}
+          <form
+            onSubmit={
+              currentChatId && loading[currentChatId] ? () => {} : handleSubmit
+            }
+            className="flex items-end gap-2"
+          >
+            <textarea
+              ref={textareaRef}
+              id="ChatInput"
+              className="flex-1 resize-none p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition-all duration-300 ease-in-out bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 overflow-y-hidden"
+              placeholder="Type your message here..."
+              rows={1}
+              value={msg}
+              onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+            {currentChatId && loading[currentChatId] ? (
+              <Button
+                className="dark:bg-transparent hover:bg-gray-800 dark:hover:bg-slate-800 focus:ring-2 focus:ring-red-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base text-white"
+                type="submit"
+                variant="outline"
+                ref={sendButtonRef}
+                onClick={handleStop}
+              >
+                <IoStopCircleOutline className="text-red-500 text-3xl" />
+              </Button>
+            ) : (
+              <Button
+                className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
+                type="submit"
+                variant="outline"
+                disabled={
+                  currentChatId && loading[currentChatId]
+                    ? true
+                    : msg.length === 0
+                }
+                ref={sendButtonRef}
+              >
+                <IoSend className="text-2xl" />
+              </Button>
+            )}
+          </form>
+          <div className="flex justify-center text-sm text-gray-500 px-2 pt-2">
+            AI-generated responses may contain inaccuracies
+          </div>
+        </>
       )}
-      <form
-        onSubmit={
-          currentChatId && loading[currentChatId] ? () => {} : handleSubmit
-        }
-        className="flex items-end gap-2"
-      >
-        <textarea
-          ref={textareaRef}
-          id="ChatInput"
-          className="flex-1 resize-none p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 transition-all duration-300 ease-in-out bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 overflow-y-hidden"
-          placeholder="Type your message here..."
-          rows={1}
-          value={msg}
-          onChange={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(e);
-            }
-          }}
-        />
-        {currentChatId && loading[currentChatId] ? (
-          <Button
-            className="dark:bg-transparent hover:bg-gray-800 dark:hover:bg-slate-800 focus:ring-2 focus:ring-red-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base text-white"
-            type="submit"
-            variant="outline"
-            ref={sendButtonRef}
-            onClick={handleStop}
-          >
-            <IoStopCircleOutline className="text-red-500 text-3xl" />
-          </Button>
-        ) : (
-          <Button
-            className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base"
-            type="submit"
-            variant="outline"
-            disabled={
-              currentChatId && loading[currentChatId] ? true : msg.length === 0
-            }
-            ref={sendButtonRef}
-          >
-            <IoSend className="text-2xl" />
-          </Button>
-        )}
-      </form>
-      <div className="flex justify-center text-sm text-gray-500 px-2 pt-2">
-        AI-generated responses may contain inaccuracies
-      </div>
     </div>
   );
 };
