@@ -92,9 +92,9 @@ router.post(
       message,
       res,
       userId,
-      userMessageId,
       runningStreams,
       sections,
+      streamId: userMessageId,
     });
   })
 );
