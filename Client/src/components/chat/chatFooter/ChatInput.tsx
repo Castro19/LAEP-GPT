@@ -107,10 +107,10 @@ const ChatInput = ({
         dispatch(messageActions.toggleNewChat(false));
 
         dispatch(
-          logActions.addLog({
-            msg,
+          logActions.upsertLog({
             logId: newLogId,
             assistantMongoId: currentModel.id,
+            msg,
           })
         )
           .unwrap()
@@ -124,9 +124,8 @@ const ChatInput = ({
       } else {
         if (currentChatId) {
           dispatch(
-            logActions.updateLog({
+            logActions.upsertLog({
               logId: currentChatId,
-              urlPhoto: currentModel.urlPhoto,
             })
           );
         }
