@@ -14,33 +14,6 @@ import { environment } from "../index";
 
 const router = express.Router();
 
-// Creating a new Log: (Create)
-router.post("/", (async (req, res) => {
-  try {
-    const userId = req.user?.uid;
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const { assistantMongoId, logId, title, content, timestamp } = req.body;
-
-    const newLog: ChatLogDocument = {
-      logId,
-      assistantMongoId,
-      title,
-      timestamp,
-      content,
-      userId,
-    };
-    await createLog(newLog);
-    res.status(201).json({ message: "Log created successfully" });
-  } catch (error) {
-    res.status(500).send("Failed to create log: " + (error as Error).message);
-    if (environment === "dev") {
-      console.error("Failed to create log: ", error);
-    }
-  }
-}) as RequestHandler);
-
 // Get the entire LogList by userId: (Read)
 router.get("/", (async (req, res) => {
   try {
@@ -82,7 +55,7 @@ router.get("/:logId", (async (req, res) => {
 
 // Updating a Log: (Update)
 router.put("/", (async (req, res) => {
-  const { logId, content } = req.body;
+  const { logId, content, assistantMongoId, msg, timestamp, title } = req.body;
   const userId = req.user?.uid;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -90,18 +63,41 @@ router.put("/", (async (req, res) => {
   if (!logId) {
     return res.status(400).json({ message: "Log ID is required" });
   }
-  try {
-    const timestamp = new Date().toISOString(); // Timestamp for updating log
 
-    await updateLog(logId, userId, content, timestamp);
-    res.status(200).json({ timestamp, message: "Log updated successfully" });
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Failed to update log: ", error);
+  if (msg) {
+    // Create
+    try {
+      const newLog: ChatLogDocument = {
+        logId,
+        assistantMongoId,
+        title,
+        timestamp,
+        content,
+        userId,
+      };
+      await createLog(newLog);
+      res.status(201).json({ message: "Log created successfully" });
+    } catch (error) {
+      res.status(500).send("Failed to create log: " + (error as Error).message);
+      if (environment === "dev") {
+        console.error("Failed to create log: ", error);
+      }
     }
-    res
-      .status(500)
-      .json("Failed to update log in database: " + (error as Error).message);
+  } else {
+    // Update
+    try {
+      const timestamp = new Date().toISOString(); // Timestamp for updating log
+
+      await updateLog(logId, userId, content, timestamp);
+      res.status(200).json({ timestamp, message: "Log updated successfully" });
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Failed to update log: ", error);
+      }
+      res
+        .status(500)
+        .json("Failed to update log in database: " + (error as Error).message);
+    }
   }
 }) as RequestHandler);
 

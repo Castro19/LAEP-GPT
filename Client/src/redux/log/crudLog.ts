@@ -1,8 +1,8 @@
 import {
   LogData,
-  MessageObjType,
   CreateLogTitleData,
   LogListType,
+  MessageObjType,
 } from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
@@ -26,26 +26,6 @@ export default async function createLogTitle(msg: string) {
   } catch (error) {
     if (environment === "dev") {
       console.error(error);
-    }
-  }
-}
-
-// Creating Log
-export async function createLogItem(logData: LogData): Promise<void> {
-  try {
-    const response = await fetch(`${serverUrl}/chatLogs`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(logData),
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-    return;
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Failed to create chatlog on server side: ", error);
     }
   }
 }
@@ -87,35 +67,6 @@ export async function fetchLogById(logId: string): Promise<LogData | never[]> {
       console.error("Failed to fetch log by id: ", error);
     }
     return [];
-  }
-}
-
-type UpdateLogData = {
-  logId: string;
-  urlPhoto?: string;
-  content?: MessageObjType[];
-  timestamp?: string;
-};
-// Update Log (Message gets added)
-export async function updateLogItem(logData: UpdateLogData): Promise<string> {
-  try {
-    const response = await fetch(`${serverUrl}/chatLogs`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(logData),
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-    const { timestamp } = await response.json();
-
-    return timestamp;
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Failed to update chatlog on server side: ", error);
-    }
-    throw error;
   }
 }
 
@@ -166,6 +117,36 @@ export async function updateLogTitleInDB({
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to update log title: ", error);
+    }
+    throw error;
+  }
+}
+
+type UpsertLogData = {
+  logId: string;
+  content: MessageObjType[];
+  assistantMongoId?: string;
+  msg?: string;
+  timestamp?: string;
+  title?: string;
+};
+
+export async function upsertLogItem(logData: UpsertLogData): Promise<string> {
+  try {
+    const response = await fetch(`${serverUrl}/chatLogs`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(logData),
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    const { timestamp } = await response.json();
+    return timestamp;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to upsert log: ", error);
     }
     throw error;
   }
