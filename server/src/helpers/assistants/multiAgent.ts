@@ -28,7 +28,7 @@ type MultiAgentRequest = {
   model: { id: string; title: string };
   message: string;
   res: Response;
-  userMessageId: string;
+  streamId: string;
   runningStreams: RunningStreamData;
   logId: string;
   sections?: ScheduleBuilderSection[];
@@ -47,7 +47,7 @@ async function handleMultiAgentModel({
   model,
   message,
   res,
-  userMessageId,
+  streamId,
   runningStreams,
   logId,
   sections,
@@ -88,7 +88,7 @@ async function handleMultiAgentModel({
       threadId,
       assistantId,
       res,
-      userMessageId,
+      streamId,
       runningStreams
     );
   } catch (error) {

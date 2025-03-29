@@ -9,9 +9,9 @@ interface ModelHandlerParams {
   message: string;
   res: Response;
   userId: string;
-  userMessageId: string;
   runningStreams: RunningStreamData;
   sections?: string;
+  streamId: string;
 }
 export const isSpecializedModel = (modelTitle: string): boolean => {
   return [
@@ -48,7 +48,7 @@ export const handleHelpAssistant = async (
     message: params.message,
     res: params.res,
     userId: params.userId,
-    userMessageId: params.userMessageId,
+    streamId: params.streamId,
     runningStreams: params.runningStreams,
   });
 };
@@ -77,6 +77,7 @@ export const handleModelResponse = async (
         }
         await handleMultiAgentModel({
           ...params,
+          streamId: params.streamId,
           sections: sections ? JSON.parse(sections as string) : [],
         });
       }

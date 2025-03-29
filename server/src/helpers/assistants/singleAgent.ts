@@ -63,7 +63,7 @@ type SingleAgentRequestBody = {
   message: string;
   res: Response;
   userId: string;
-  userMessageId: string;
+  streamId: string;
   runningStreams: RunningStreamData;
 };
 
@@ -73,7 +73,7 @@ async function handleSingleAgentModel({
   message,
   res,
   userId,
-  userMessageId,
+  streamId,
   runningStreams,
 }: SingleAgentRequestBody): Promise<void> {
   let messageToAdd = message;
@@ -88,7 +88,7 @@ async function handleSingleAgentModel({
   // Creates from OpenAI API & Stores in DB if not already created
   const { threadId } = await initializeOrFetchIds(logId, model.id);
   // Add threadId to runningStreams
-  runningStreams[userMessageId].threadId = threadId;
+  runningStreams[streamId].threadId = threadId;
 
   const user = await getUserByFirebaseId(userId);
 
@@ -113,7 +113,7 @@ async function handleSingleAgentModel({
       threadId,
       assistantId,
       res,
-      userMessageId,
+      streamId,
       runningStreams
     );
 
