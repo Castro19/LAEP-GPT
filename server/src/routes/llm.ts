@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
-import multer from "multer";
 import { environment, openai } from "../index";
 import asyncHandler from "../middlewares/asyncMiddleware";
 
@@ -17,7 +16,6 @@ import { getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
 const router = express.Router();
-const upload = multer();
 
 // Rate limiter for GPT messages
 const messageRateLimiter = rateLimit({
@@ -34,7 +32,6 @@ const runningStreams: RunningStreamData = {};
 
 router.post(
   "/respond",
-  upload.none(),
   messageRateLimiter,
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.uid;
@@ -43,11 +40,7 @@ router.post(
       return;
     }
 
-    const message = req.body.message;
-    const logId = req.body.chatId;
-    const userMessageId = req.body.userMessageId;
-    const currentModel = req.body.currentModel;
-    const sections = req.body.sections;
+    const { message, logId, userMessageId, currentModel, sections } = req.body;
 
     if (!currentModel || !logId || !userMessageId) {
       res
@@ -68,17 +61,6 @@ router.post(
       // This is a new chat request, log does not exist
     }
 
-    let model: { id: string; title: string };
-
-    // Parse the current model
-    try {
-      model = JSON.parse(currentModel);
-    } catch (error) {
-      console.error("Error parsing currentModel:", error);
-      res.status(400).end("Invalid model format");
-      return;
-    }
-
     // Store the running streams
     runningStreams[userMessageId] = {
       canceled: false,
@@ -87,7 +69,7 @@ router.post(
     };
 
     await handleModelResponse({
-      model,
+      model: currentModel,
       logId,
       message,
       res,
