@@ -60,25 +60,31 @@ const ChatInput = ({
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (msg.length <= 0) return;
+
+    // Step 1: Clear the input field and reset UI
     dispatch(messageActions.updateMsg(""));
     resetInputAndScrollToBottom(textareaRef, messagesContainerRef);
 
-    // Generate a new unique chatId
+    // Step 2: Generate unique IDs for the new conversation
     const newLogId = uuidv4();
     const userMessageId = uuidv4();
     setCurrentUserMessageId(userMessageId);
     const botMessageId = uuidv4();
+
+    // Step 3: Clear any existing errors
     if (error) {
-      dispatch(messageActions.clearError()); // Clear error when user starts typing
+      dispatch(messageActions.clearError());
     }
 
     try {
+      // Step 4: Determine the chat ID (use existing or create new)
       const logId = isNewChat ? newLogId : currentChatId;
       dispatch(messageActions.setCurrentChatId(logId));
       if (!logId) {
         throw new Error("Log ID is required");
       }
 
+      // Step 5: Send message to bot and get response
       try {
         await dispatch(
           messageActions.fetchBotResponse({
@@ -87,6 +93,7 @@ const ChatInput = ({
             currentChatId: logId,
             userMessageId,
             botMessageId,
+            // Include sections only for Schedule Analysis model
             sections:
               currentModel.title === "Schedule Analysis" &&
               currentCalendar &&
@@ -94,7 +101,7 @@ const ChatInput = ({
                 ? transformSectionsToScheduleBuilderSections(
                     currentCalendar.sections
                   )
-                : [], // Remove this empty list eventually
+                : [],
           })
         ).unwrap();
       } catch (error) {
@@ -103,33 +110,29 @@ const ChatInput = ({
         }
       }
 
+      // Step 6: If the chat is new, we toggle the new chat state to false
       if (isNewChat) {
         dispatch(messageActions.toggleNewChat(false));
+      }
 
-        dispatch(
-          logActions.upsertLog({
-            logId: newLogId,
-            assistantMongoId: currentModel.id,
-            msg,
-          })
-        )
-          .unwrap()
-          .then(({ logId }) => {
+      // Step 7: Create/update log in database and handle navigation
+      dispatch(
+        logActions.upsertLog({
+          logId: newLogId,
+          assistantMongoId: currentModel.id,
+          msg: isNewChat ? msg : undefined,
+        })
+      )
+        .unwrap()
+        .then(({ logId }) => {
+          if (isNewChat) {
             dispatch(messageActions.setCurrentChatId(logId));
-            // Check if the current path is not '/chat' before navigating
+            // Navigate to new chat URL only if not already on chat page
             if (location.pathname === "/chat") {
               navigate(`/chat/${logId}`);
             }
-          });
-      } else {
-        if (currentChatId) {
-          dispatch(
-            logActions.upsertLog({
-              logId: currentChatId,
-            })
-          );
-        }
-      }
+          }
+        });
     } catch (error: unknown) {
       if (environment === "dev") {
         console.error("Failed to send message", error);
