@@ -99,7 +99,6 @@ const ChatInput = ({
             currentModel,
             msg,
             currentChatId: logId,
-            userId: userId ? userId : "",
             userMessageId,
             botMessageId,
             sections:

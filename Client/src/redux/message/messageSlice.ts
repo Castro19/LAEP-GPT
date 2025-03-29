@@ -14,7 +14,6 @@ interface fetchBotResponseParams {
   currentModel: AssistantType;
   msg: string; //replace with formData
   currentChatId: string;
-  userId: string;
   userMessageId: string;
   botMessageId: string;
   sections: ScheduleBuilderSection[];
@@ -39,7 +38,6 @@ export const fetchBotResponse = createAsyncThunk<
       currentModel,
       msg,
       currentChatId,
-      userId,
       userMessageId,
       botMessageId,
       sections,
@@ -91,7 +89,6 @@ export const fetchBotResponse = createAsyncThunk<
           currentModel,
           msg,
           currentChatId,
-          userId,
           userMessageId,
           botMessageId,
           sections
