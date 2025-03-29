@@ -4,7 +4,6 @@ export default async function sendMessage(
   currentModel: AssistantType,
   msg: string,
   currentChatId: string | null,
-  userId: string,
   userMessageId: string,
   botMessageId: string,
   sections: ScheduleBuilderSection[]
@@ -38,7 +37,6 @@ export default async function sendMessage(
         id: currentModel.id,
       })
     );
-    formData.append("userId", userId);
     formData.append("userMessageId", userMessageId);
 
     if (currentChatId) {
