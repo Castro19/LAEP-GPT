@@ -27,82 +27,60 @@ export const fetchLogs = createAsyncThunk(
   }
 );
 
-export type AddLogParams = {
-  msg: string;
+export type UpsertLogParams = {
   logId: string;
-  assistantMongoId: string;
+  assistantMongoId?: string;
+  msg?: string;
 };
-// Thunk for adding a new log. Combines CREATE and READ operations.
-export const addLog = createAsyncThunk(
-  "log/addLog",
+
+export const upsertLog = createAsyncThunk(
+  "log/upsertLog",
   async (
-    { logId, assistantMongoId, msg }: AddLogParams,
+    { logId, assistantMongoId, msg }: UpsertLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
-      const logTitle = await createLogTitle(msg);
-
-      const timestamp = new Date().toISOString(); // Timestamp for log
       const chatLog = (getState() as RootState).message.messagesByChatId[logId];
+
       if (!chatLog) {
         throw new Error("Chat log not found");
       }
-      if (logTitle) {
+
+      if (msg) {
+        // new chat
+        const title = await createLogTitle(msg);
+        const timestamp = new Date().toISOString(); // Timestamp for log
+
         dispatch(
           addLogList({
             content: chatLog.content, // Include the actual content
             logId,
             timestamp, // Include the timestamp
-            title: logTitle,
+            title,
           })
         );
+
+        await createLogItem({
+          content: chatLog.content, // Ensure the content is included in the DB save
+          logId,
+          timestamp, // Ensure the timestamp is included in the DB save
+          title,
+          assistantMongoId,
+        });
+        return { success: true, logId, timestamp };
+      } else {
+        // update log
+        const timestamp = await updateLogItem({
+          logId,
+          content: chatLog.content,
+        });
+        return { success: true, logId, timestamp };
       }
-      // Save Log to Database
-      await createLogItem({
-        content: chatLog.content, // Ensure the content is included in the DB save
-        logId,
-        timestamp, // Ensure the timestamp is included in the DB save
-        title: logTitle,
-        assistantMongoId: assistantMongoId,
-      });
-      return { success: true, logId };
     } catch (error) {
       if (environment === "dev") {
-        console.error("Failed to create log title: ", error);
+        console.error("Failed to upsert log: ", error);
       }
-      return rejectWithValue({ message: "Failed to create log title" });
-    }
-  }
-);
-
-export type UpdateLogData = {
-  logId: string;
-  urlPhoto?: string;
-  timestamp?: string;
-};
-
-// Thunk for updating a log. Combines UPDATE and READ operations.
-export const updateLog = createAsyncThunk(
-  "log/updateLog",
-  async ({ logId }: UpdateLogData, { getState, rejectWithValue }) => {
-    try {
-      const chatLog = (getState() as RootState).message.messagesByChatId[logId];
-      if (!chatLog) {
-        throw new Error("Chat log not found");
-      }
-      const content = chatLog.content; // Accessing current message list from the state
-
-      const timestamp = await updateLogItem({
-        logId,
-        content,
-      });
-
-      return { success: true, logId, timestamp };
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to update log: ", error);
-      }
-      return rejectWithValue({ message: "Failed to update log" });
+      return rejectWithValue({ message: "Failed to upsert log" });
     }
   }
 );
@@ -182,7 +160,7 @@ const logSlice = createSlice({
           console.error("Failed to load logs:", action.payload);
         }
       })
-      .addCase(updateLog.fulfilled, (state, action) => {
+      .addCase(upsertLog.fulfilled, (state, action) => {
         const { logId, timestamp } = action.payload;
         const logIndex = state.logList.findIndex((log) => log.logId === logId);
         // Move the log to the front of the list
