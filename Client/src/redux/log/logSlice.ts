@@ -1,10 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import createLogTitle, {
-  createLogItem,
   fetchAllLogs,
-  updateLogItem,
   deleteLogItem,
   updateLogTitleInDB,
+  upsertLogItem,
 } from "./crudLog";
 import { LogData, LogSliceType } from "@polylink/shared/types";
 import { RootState } from "../store";
@@ -59,18 +58,19 @@ export const upsertLog = createAsyncThunk(
             title,
           })
         );
-
-        await createLogItem({
-          content: chatLog.content, // Ensure the content is included in the DB save
+        // Create
+        await upsertLogItem({
           logId,
+          content: chatLog.content, // Ensure the content is included in the DB save
+          assistantMongoId,
+          msg, // To make the title
           timestamp, // Ensure the timestamp is included in the DB save
           title,
-          assistantMongoId,
         });
         return { success: true, logId, timestamp };
       } else {
-        // update log
-        const timestamp = await updateLogItem({
+        // Update
+        const timestamp = await upsertLogItem({
           logId,
           content: chatLog.content,
         });
