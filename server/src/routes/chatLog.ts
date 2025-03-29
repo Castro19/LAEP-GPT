@@ -82,7 +82,7 @@ router.get("/:logId", (async (req, res) => {
 
 // Updating a Log: (Update)
 router.put("/", (async (req, res) => {
-  const { logId, content, timestamp } = req.body;
+  const { logId, content } = req.body;
   const userId = req.user?.uid;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -91,8 +91,10 @@ router.put("/", (async (req, res) => {
     return res.status(400).json({ message: "Log ID is required" });
   }
   try {
+    const timestamp = new Date().toISOString(); // Timestamp for updating log
+
     await updateLog(logId, userId, content, timestamp);
-    res.status(200).json({ message: "Log updated successfully" });
+    res.status(200).json({ timestamp, message: "Log updated successfully" });
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to update log: ", error);
