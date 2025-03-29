@@ -37,7 +37,6 @@ const ChatInput = ({
 
   // Redux
   const dispatch = useAppDispatch();
-  const userId = useAppSelector((state) => state.auth.userId);
   const currentModel = useAppSelector((state) => state.assistant.currentModel);
   const { currentCalendar } = useAppSelector((state) => state.calendar);
   const { msg, isNewChat, currentChatId, loading, error, messagesByChatId } =
@@ -110,9 +109,8 @@ const ChatInput = ({
         dispatch(
           logActions.addLog({
             msg,
-            id: newLogId,
+            logId: newLogId,
             assistantMongoId: currentModel.id,
-            chatId: logId,
           })
         )
           .unwrap()
@@ -128,9 +126,7 @@ const ChatInput = ({
           dispatch(
             logActions.updateLog({
               logId: currentChatId,
-              firebaseUserId: userId ? userId : null,
               urlPhoto: currentModel.urlPhoto,
-              chatId: currentChatId,
             })
           );
         }

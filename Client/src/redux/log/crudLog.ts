@@ -92,13 +92,12 @@ export async function fetchLogById(logId: string): Promise<LogData | never[]> {
 
 type UpdateLogData = {
   logId: string;
-  firebaseUserId: string | null;
   urlPhoto?: string;
   content?: MessageObjType[];
   timestamp?: string;
 };
 // Update Log (Message gets added)
-export async function updateLogItem(logData: UpdateLogData): Promise<void> {
+export async function updateLogItem(logData: UpdateLogData): Promise<string> {
   try {
     const response = await fetch(`${serverUrl}/chatLogs`, {
       method: "PUT",
@@ -109,11 +108,14 @@ export async function updateLogItem(logData: UpdateLogData): Promise<void> {
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
-    return;
+    const { timestamp } = await response.json();
+
+    return timestamp;
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to update chatlog on server side: ", error);
     }
+    throw error;
   }
 }
 

@@ -6,7 +6,7 @@ import createLogTitle, {
   deleteLogItem,
   updateLogTitleInDB,
 } from "./crudLog";
-import { LogData, LogSliceType, MessageObjType } from "@polylink/shared/types";
+import { LogData, LogSliceType } from "@polylink/shared/types";
 import { RootState } from "../store";
 import { environment } from "@/helpers/getEnvironmentVars";
 
@@ -29,24 +29,21 @@ export const fetchLogs = createAsyncThunk(
 
 export type AddLogParams = {
   msg: string;
-  id: string;
+  logId: string;
   assistantMongoId: string;
-  chatId: string;
 };
 // Thunk for adding a new log. Combines CREATE and READ operations.
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { id, assistantMongoId, chatId, msg }: AddLogParams,
+    { logId, assistantMongoId, msg }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
       const logTitle = await createLogTitle(msg);
 
       const timestamp = new Date().toISOString(); // Timestamp for log
-      const chatLog = (getState() as RootState).message.messagesByChatId[
-        chatId
-      ];
+      const chatLog = (getState() as RootState).message.messagesByChatId[logId];
       if (!chatLog) {
         throw new Error("Chat log not found");
       }
@@ -54,8 +51,8 @@ export const addLog = createAsyncThunk(
         dispatch(
           addLogList({
             content: chatLog.content, // Include the actual content
-            logId: id,
-            timestamp: timestamp, // Include the timestamp
+            logId,
+            timestamp, // Include the timestamp
             title: logTitle,
           })
         );
@@ -63,12 +60,12 @@ export const addLog = createAsyncThunk(
       // Save Log to Database
       await createLogItem({
         content: chatLog.content, // Ensure the content is included in the DB save
-        logId: id,
-        timestamp: timestamp, // Ensure the timestamp is included in the DB save
+        logId,
+        timestamp, // Ensure the timestamp is included in the DB save
         title: logTitle,
         assistantMongoId: assistantMongoId,
       });
-      return { success: true, logId: id };
+      return { success: true, logId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to create log title: ", error);
@@ -80,48 +77,27 @@ export const addLog = createAsyncThunk(
 
 export type UpdateLogData = {
   logId: string;
-  firebaseUserId: string | null;
-  chatId: string;
   urlPhoto?: string;
-  content?: MessageObjType[];
   timestamp?: string;
 };
 
 // Thunk for updating a log. Combines UPDATE and READ operations.
 export const updateLog = createAsyncThunk(
   "log/updateLog",
-  async (
-    { logId, firebaseUserId, chatId }: UpdateLogData,
-    { dispatch, getState, rejectWithValue }
-  ) => {
+  async ({ logId }: UpdateLogData, { getState, rejectWithValue }) => {
     try {
-      const timestamp = new Date().toISOString(); // Timestamp for updating log
-      const chatLog = (getState() as RootState).message.messagesByChatId[
-        chatId
-      ];
+      const chatLog = (getState() as RootState).message.messagesByChatId[logId];
       if (!chatLog) {
         throw new Error("Chat log not found");
       }
       const content = chatLog.content; // Accessing current message list from the state
 
-      // TO-DO: Handle updating the timestamp on server side and update the state on the return value
-      dispatch(
-        updateLogTimestamp({
-          logId,
-          timestamp,
-        })
-      );
+      const timestamp = await updateLogItem({
+        logId,
+        content,
+      });
 
-      if (firebaseUserId) {
-        // Update log in the database
-        await updateLogItem({
-          logId,
-          firebaseUserId,
-          content,
-          timestamp,
-        });
-      }
-      return { success: true, logId };
+      return { success: true, logId, timestamp };
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to update log: ", error);
@@ -190,18 +166,6 @@ const logSlice = createSlice({
 
       state.logList.unshift(newLog); // Push to the front of the array
     },
-    // Reducer to update an existing log in the state (UPDATE)
-    updateLogTimestamp: (
-      state,
-      action: PayloadAction<{ logId: string; timestamp: string }>
-    ) => {
-      const { logId, timestamp } = action.payload;
-      const logIndex = state.logList.findIndex((log) => log.logId === logId);
-
-      if (logIndex !== -1) {
-        state.logList[logIndex].timestamp = timestamp; // Update the timestamp
-      }
-    },
     deleteLogListItem: (state, action: PayloadAction<{ logId: string }>) => {
       const { logId } = action.payload;
       state.logList = state.logList.filter((log) => log.logId != logId);
@@ -219,10 +183,12 @@ const logSlice = createSlice({
         }
       })
       .addCase(updateLog.fulfilled, (state, action) => {
-        const { logId } = action.payload;
+        const { logId, timestamp } = action.payload;
         const logIndex = state.logList.findIndex((log) => log.logId === logId);
         // Move the log to the front of the list
         if (logIndex !== -1) {
+          state.logList[logIndex].timestamp = timestamp; // Update the timestamp
+
           const [removedLog] = state.logList.splice(logIndex, 1);
           state.logList.unshift(removedLog);
         }
@@ -250,7 +216,6 @@ const logSlice = createSlice({
   },
 });
 
-export const { addLogList, updateLogTimestamp, deleteLogListItem } =
-  logSlice.actions;
+export const { addLogList, deleteLogListItem } = logSlice.actions;
 
 export const logReducer = logSlice.reducer;
