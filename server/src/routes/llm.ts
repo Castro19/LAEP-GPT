@@ -5,8 +5,7 @@ import rateLimit from "express-rate-limit";
 import multer from "multer";
 import { environment, openai } from "../index";
 import asyncHandler from "../middlewares/asyncMiddleware";
-import handleSingleAgentModel from "../helpers/assistants/singleAgent";
-import handleMultiAgentModel from "../helpers/assistants/multiAgent";
+
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio/createBio";
 import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
@@ -15,7 +14,8 @@ import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import { Filter } from "mongodb";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
 import { getLogById } from "../db/models/chatlog/chatLogServices";
-
+import { isUnauthorized } from "../helpers/auth/verifyAuth";
+import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
 const router = express.Router();
 const upload = multer();
 
@@ -37,27 +37,12 @@ router.post(
   upload.none(),
   messageRateLimiter,
   asyncHandler(async (req: Request, res: Response) => {
-    if (!res.headersSent) {
-      res.setHeader("Content-Type", "text/plain");
-      res.setHeader("Transfer-Encoding", "chunked");
-    }
     const userId = req.user?.uid;
-
-    // check if user exists in database
-    if (!userId) {
-      res.status(401).end("Unauthorized");
+    // check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
       return;
-    } else {
-      const user = await getUserByFirebaseId(userId);
-      if (!user) {
-        res.status(401).end("Unauthorized");
-        return;
-      }
     }
 
-    if (environment === "dev") {
-      console.log("Request body: ", req.body);
-    }
     const message = req.body.message;
     const logId = req.body.chatId;
     const userMessageId = req.body.userMessageId;
@@ -80,9 +65,12 @@ router.post(
         return;
       }
     } catch {
-      // Do nothing as this is a new chat request, log does not exist
+      // This is a new chat request, log does not exist
     }
+
     let model: { id: string; title: string };
+
+    // Parse the current model
     try {
       model = JSON.parse(currentModel);
     } catch (error) {
@@ -91,101 +79,23 @@ router.post(
       return;
     }
 
+    // Store the running streams
     runningStreams[userMessageId] = {
       canceled: false,
       runId: null,
       threadId: null,
     };
 
-    if (
-      model.title === "Professor Ratings" ||
-      model.title === "Spring Planner Assistant" ||
-      model.title === "Schedule Analysis"
-    ) {
-      if (environment === "dev") {
-        console.log("Sections: ", sections);
-        console.log("Type of sections: ", typeof sections);
-      }
-      try {
-        if (
-          message ===
-          "[CLICK ME TO START] How do I use the Schedule Analysis Assistant?"
-        ) {
-          await handleSingleAgentModel({
-            model: {
-              id: "67b42fd0c4f92c0ed9ea73ab",
-              title: "Help Assistant",
-            },
-            logId,
-            message,
-            res,
-            userId,
-            userMessageId,
-            runningStreams,
-          });
-        } else if (
-          model.title === "Schedule Analysis" &&
-          sections &&
-          JSON.parse(sections).length === 0
-        ) {
-          await handleSingleAgentModel({
-            model: {
-              id: "67b42fd0c4f92c0ed9ea73ab",
-              title: "Help Assistant",
-            },
-            logId,
-            message: "No Sections Found",
-            res,
-            userId,
-            userMessageId,
-            runningStreams,
-          });
-        } else {
-          if (environment === "dev") {
-            console.log("MODEL: ", model);
-          }
-          await handleMultiAgentModel({
-            model,
-            message,
-            res,
-            userMessageId,
-            runningStreams,
-            logId,
-            sections: sections ? JSON.parse(sections as string) : [], // convert str to json object
-          });
-        }
-      } catch (error) {
-        if (environment === "dev") {
-          console.error("Error in multi-agent model:", error);
-        }
-        if (!res.headersSent) {
-          res.status(500).send("Failed to process request.");
-        } else {
-          res.end();
-        }
-      }
-    } else {
-      try {
-        await handleSingleAgentModel({
-          model,
-          logId,
-          message,
-          res,
-          userId,
-          userMessageId,
-          runningStreams,
-        });
-      } catch (error) {
-        if (environment === "dev") {
-          console.error("Error in single-agent model:", error);
-        }
-        if (!res.headersSent) {
-          res.status(500).send("Failed to process request.");
-        } else {
-          res.end();
-        }
-      }
-    }
+    await handleModelResponse({
+      model,
+      logId,
+      message,
+      res,
+      userId,
+      userMessageId,
+      runningStreams,
+      sections,
+    });
   })
 );
 

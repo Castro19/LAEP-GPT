@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoSend, IoStopCircleOutline } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
+import createLogTitle from "@/redux/log/crudLog"; // TODO: Remove this
 // Helpers
 import {
   adjustTextareaHeight,
   resetInputAndScrollToBottom,
 } from "@/components/chat";
-import { v4 as uuidv4 } from "uuid";
-import { Button } from "@/components/ui/button";
-import useTrackAnalytics from "@/hooks/useTrackAnalytics";
-import createLogTitle from "@/redux/log/crudLog";
-import { environment } from "@/helpers/getEnvironmentVars";
 import { transformSectionsToScheduleBuilderSections } from "@/helpers/transformSection";
+import { environment } from "@/helpers/getEnvironmentVars";
+// UI Components
+import { Button } from "@/components/ui/button";
+// Hooks
+import useTrackAnalytics from "@/hooks/useTrackAnalytics";
+// Icons
+import { IoSend, IoStopCircleOutline } from "react-icons/io5";
 
 type ChatInputProps = {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -27,22 +30,24 @@ const ChatInput = ({
   textareaRef,
   sendButtonRef,
 }: ChatInputProps) => {
-  const dispatch = useAppDispatch();
+  // Local State
   const [currentUserMessageId, setCurrentUserMessageId] = useState<
     string | null
   >(null);
   const [lockedChat, setLockedChat] = useState(false);
 
+  const navigate = useNavigate();
+
+  // Redux
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector((state) => state.auth.userId);
   const currentModel = useAppSelector((state) => state.assistant.currentModel);
+  const { currentCalendar } = useAppSelector((state) => state.calendar);
   const { msg, isNewChat, currentChatId, loading, error, messagesByChatId } =
     useAppSelector((state) => state.message);
+
   const currentChatMessages = messagesByChatId[currentChatId ?? ""];
 
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
-
-  const userId = useAppSelector((state) => state.auth.userId);
-
-  const navigate = useNavigate();
   const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
 
   useEffect(() => {
