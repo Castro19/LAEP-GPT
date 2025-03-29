@@ -11,7 +11,6 @@ import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectio
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
 import { Filter } from "mongodb";
-import { getUserByFirebaseId } from "../db/models/user/userServices";
 import { getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
@@ -85,16 +84,11 @@ router.post(
   "/cancel",
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.uid;
-    if (!userId) {
-      res.status(401).end("Unauthorized");
+    // check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
       return;
-    } else {
-      const user = await getUserByFirebaseId(userId);
-      if (!user) {
-        res.status(401).end("Unauthorized");
-        return;
-      }
     }
+
     const { userMessageId } = req.body;
 
     const runData = runningStreams[userMessageId];
@@ -139,19 +133,13 @@ router.post(
   "/title",
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.uid;
-    if (!userId) {
-      res.status(401).end("Unauthorized");
+    // check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
       return;
-    } else {
-      const user = await getUserByFirebaseId(userId);
-      if (!user) {
-        res.status(401).end("Unauthorized");
-        return;
-      }
     }
 
     try {
-      const { message } = req.body;
+      const { msg } = req.body;
       const contentStr =
         "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
 
@@ -162,7 +150,7 @@ router.post(
             role: "system",
             content: contentStr,
           },
-          { role: "user", content: message },
+          { role: "user", content: msg },
         ],
       });
 
@@ -183,19 +171,11 @@ router.post(
   "/generate-bio",
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.uid;
-    if (!userId) {
-      res.status(401).end("Unauthorized");
+    // check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
       return;
-    } else {
-      const user = await getUserByFirebaseId(userId);
-      if (!user) {
-        res.status(401).end("Unauthorized");
-        return;
-      }
     }
-
     try {
-      const { userId } = req.body;
       const bio = await createBio(userId);
       res.json({ bio: bio });
     } catch (error) {

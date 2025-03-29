@@ -7,13 +7,13 @@ import {
 import { UpdateLogTitleData } from "./logSlice";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 
-export default async function createLogTitle(msg: string, modelTitle: string) {
+export default async function createLogTitle(msg: string) {
   try {
     // Assuming the title is generated based on the last message or another logic
     const response = await fetch(`${serverUrl}/llms/title`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: msg, AssistantType: modelTitle }),
+      body: JSON.stringify({ msg }),
       credentials: "include",
     });
     if (!response.ok) {
