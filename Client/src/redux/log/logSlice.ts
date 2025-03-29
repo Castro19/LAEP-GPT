@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import {
+import createLogTitle, {
   createLogItem,
   fetchAllLogs,
   updateLogItem,
@@ -10,9 +10,25 @@ import { LogData, LogSliceType, MessageObjType } from "@polylink/shared/types";
 import { RootState } from "../store";
 import { environment } from "@/helpers/getEnvironmentVars";
 
+// Read (Fetch Logs by UserID)
+export const fetchLogs = createAsyncThunk(
+  "log/fetchLogs",
+  async (_, { rejectWithValue }) => {
+    try {
+      const fetchedLogs = await fetchAllLogs();
+
+      return fetchedLogs;
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Failed to fetch logs: ", error);
+      }
+      return rejectWithValue({ message: "Failed to fetch logs" });
+    }
+  }
+);
+
 export type AddLogParams = {
   msg: string;
-  logTitle: string;
   id: string;
   assistantMongoId: string;
   chatId: string;
@@ -21,10 +37,12 @@ export type AddLogParams = {
 export const addLog = createAsyncThunk(
   "log/addLog",
   async (
-    { logTitle, id, assistantMongoId, chatId }: AddLogParams,
+    { id, assistantMongoId, chatId, msg }: AddLogParams,
     { dispatch, getState, rejectWithValue }
   ) => {
     try {
+      const logTitle = await createLogTitle(msg);
+
       const timestamp = new Date().toISOString(); // Timestamp for log
       const chatLog = (getState() as RootState).message.messagesByChatId[
         chatId
@@ -60,22 +78,6 @@ export const addLog = createAsyncThunk(
   }
 );
 
-// Read (Fetch Logs by UserID)
-export const fetchLogs = createAsyncThunk(
-  "log/fetchLogs",
-  async (_, { rejectWithValue }) => {
-    try {
-      const fetchedLogs = await fetchAllLogs();
-
-      return fetchedLogs;
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to fetch logs: ", error);
-      }
-      return rejectWithValue({ message: "Failed to fetch logs" });
-    }
-  }
-);
 export type UpdateLogData = {
   logId: string;
   firebaseUserId: string | null;

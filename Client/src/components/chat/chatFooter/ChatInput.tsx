@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 // React Redux
 import { useAppDispatch, useAppSelector } from "@/redux";
 import { messageActions, logActions } from "@/redux";
-import createLogTitle from "@/redux/log/crudLog"; // TODO: Remove this
 // Helpers
 import {
   adjustTextareaHeight,
@@ -73,19 +72,7 @@ const ChatInput = ({
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
-    try {
-      const logId = isNewChat ? newLogId : currentChatId;
-      if (!logId) {
-        throw new Error("Log ID is required");
-      }
-      if (!currentModel.id) {
-        throw new Error("Assistant ID is required");
-      }
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to track message: ", error);
-      }
-    }
+
     try {
       const logId = isNewChat ? newLogId : currentChatId;
       dispatch(messageActions.setCurrentChatId(logId));
@@ -119,12 +106,10 @@ const ChatInput = ({
 
       if (isNewChat) {
         dispatch(messageActions.toggleNewChat(false));
-        const logTitle = await createLogTitle(msg, currentModel.title);
 
         dispatch(
           logActions.addLog({
             msg,
-            logTitle: logTitle ? logTitle : "New Chat Log",
             id: newLogId,
             assistantMongoId: currentModel.id,
             chatId: logId,
