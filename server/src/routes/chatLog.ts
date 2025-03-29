@@ -56,8 +56,9 @@ router.get("/:logId", (async (req, res) => {
 
 // Updating a Log: (Update)
 router.put("/", (async (req, res) => {
-  const { logId, content, assistantMongoId, msg, timestamp } = req.body;
+  const { logId, content, assistantMongoId, msg } = req.body;
   const userId = req.user?.uid;
+  console.log("req.body", req.body);
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -65,13 +66,17 @@ router.put("/", (async (req, res) => {
     return res.status(400).json({ message: "Log ID is required" });
   }
 
+  const timestamp = new Date().toISOString();
+
   if (msg) {
     // Create
     const title = await createTitle(msg);
+    console.log("Creating log");
     try {
       const newLog: ChatLogDocument = {
         logId,
         assistantMongoId,
+        title,
         timestamp,
         content,
         userId,
@@ -79,7 +84,12 @@ router.put("/", (async (req, res) => {
       await createLog(newLog);
       res
         .status(201)
-        .json({ message: "Log created successfully", isNewChat: true, title });
+        .json({
+          timestamp,
+          message: "Log created successfully",
+          isNewChat: true,
+          title,
+        });
     } catch (error) {
       res.status(500).send("Failed to create log: " + (error as Error).message);
       if (environment === "dev") {
@@ -87,10 +97,7 @@ router.put("/", (async (req, res) => {
       }
     }
   } else {
-    // Update
     try {
-      const timestamp = new Date().toISOString(); // Timestamp for updating log
-
       await updateLog(logId, userId, content, timestamp);
       res.status(200).json({
         timestamp,

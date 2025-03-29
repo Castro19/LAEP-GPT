@@ -45,18 +45,14 @@ export const upsertLog = createAsyncThunk(
         throw new Error("Chat log not found");
       }
 
-      if (msg) {
-        const timestamp = new Date().toISOString(); // Timestamp for log
+      const { isNewChat, title, timestamp } = await upsertLogItem({
+        logId,
+        content: chatLog.content, // Ensure the content is included in the DB save
+        assistantMongoId,
+        msg, // To make the title
+      });
 
-        // Create
-        const { isNewChat, title } = await upsertLogItem({
-          logId,
-          content: chatLog.content, // Ensure the content is included in the DB save
-          assistantMongoId,
-          msg, // To make the title
-          timestamp, // Ensure the timestamp is included in the DB save
-        });
-
+      if (isNewChat) {
         dispatch(
           addLogList({
             content: chatLog.content, // Include the actual content
@@ -65,16 +61,9 @@ export const upsertLog = createAsyncThunk(
             timestamp, // Include the timestamp
           })
         );
-
-        return { success: true, logId, timestamp, isNewChat, title };
-      } else {
-        // Update
-        const timestamp = await upsertLogItem({
-          logId,
-          content: chatLog.content,
-        });
-        return { success: true, logId, timestamp };
       }
+
+      return { success: true, logId, timestamp };
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to upsert log: ", error);
@@ -164,8 +153,7 @@ const logSlice = createSlice({
         const logIndex = state.logList.findIndex((log) => log.logId === logId);
         // Move the log to the front of the list
         if (logIndex !== -1) {
-          state.logList[logIndex].timestamp =
-            typeof timestamp === "string" ? timestamp : timestamp.timestamp;
+          state.logList[logIndex].timestamp = timestamp;
 
           const [removedLog] = state.logList.splice(logIndex, 1);
           state.logList.unshift(removedLog);

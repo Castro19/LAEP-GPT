@@ -99,8 +99,6 @@ type UpsertLogData = {
   content: MessageObjType[];
   assistantMongoId?: string;
   msg?: string;
-  timestamp?: string;
-  title?: string;
 };
 
 export async function upsertLogItem(logData: UpsertLogData): Promise<{
