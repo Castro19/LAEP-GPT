@@ -14,8 +14,6 @@ import { transformSectionsToScheduleBuilderSections } from "@/helpers/transformS
 import { environment } from "@/helpers/getEnvironmentVars";
 // UI Components
 import { Button } from "@/components/ui/button";
-// Hooks
-import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 // Icons
 import { IoSend, IoStopCircleOutline } from "react-icons/io5";
 
@@ -48,8 +46,6 @@ const ChatInput = ({
 
   const currentChatMessages = messagesByChatId[currentChatId ?? ""];
 
-  const { trackCreateMessage, trackUpdateMessage } = useTrackAnalytics();
-
   useEffect(() => {
     if (currentChatMessages?.content.length >= 12) {
       setLockedChat(true);
@@ -74,7 +70,6 @@ const ChatInput = ({
     const userMessageId = uuidv4();
     setCurrentUserMessageId(userMessageId);
     const botMessageId = uuidv4();
-    const createdAt = new Date(); // Changed from Date.now()
     if (error) {
       dispatch(messageActions.clearError()); // Clear error when user starts typing
     }
@@ -86,14 +81,6 @@ const ChatInput = ({
       if (!currentModel.id) {
         throw new Error("Assistant ID is required");
       }
-      trackCreateMessage({
-        userId: userId ? userId : "",
-        userMessageId: userMessageId,
-        botMessageId: botMessageId,
-        logId,
-        assistantId: currentModel.id,
-        createdAt,
-      });
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to track message: ", error);
@@ -129,17 +116,6 @@ const ChatInput = ({
         if (environment === "dev") {
           console.error("Failed to fetch bot response: ", error);
         }
-
-        trackUpdateMessage({
-          userMessageId,
-          userMessage: msg,
-          createdAt,
-          hadError: true,
-          errorMessage:
-            error instanceof Error
-              ? error.message
-              : "An unknown error occurred",
-        });
       }
 
       if (isNewChat) {
@@ -175,13 +151,6 @@ const ChatInput = ({
           );
         }
       }
-      trackUpdateMessage({
-        userMessageId,
-        userMessage: null,
-        createdAt,
-        hadError: false,
-        errorMessage: null,
-      });
     } catch (error: unknown) {
       if (environment === "dev") {
         console.error("Failed to send message", error);
