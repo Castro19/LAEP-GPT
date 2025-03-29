@@ -26,34 +26,33 @@ export default async function sendMessage(
   });
 
   try {
-    //create FormData to send data to backend
-    const formData = new FormData();
-    formData.append("message", msg);
-    // Only send model title & model Id to backend
-    formData.append(
-      "currentModel",
-      JSON.stringify({
+    // Create request body object instead of FormData
+    const requestBody = {
+      message: msg,
+      currentModel: {
         title: currentModel.title,
         id: currentModel.id,
-      })
-    );
-    formData.append("userMessageId", userMessageId);
+      },
+      userMessageId: userMessageId,
+      logId: currentChatId || undefined,
+      sections:
+        currentModel.title === "Schedule Analysis" ? sections : undefined,
+    };
 
-    if (currentChatId) {
-      formData.append("chatId", currentChatId);
-    }
-    if (sections && currentModel.title === "Schedule Analysis") {
-      if (environment === "dev") {
-        console.log("Adding sections to form data: ", sections);
-      }
-      formData.append("sections", JSON.stringify(sections));
+    if (
+      environment === "dev" &&
+      sections &&
+      currentModel.title === "Schedule Analysis"
+    ) {
+      console.log("Adding sections to request: ", sections);
     }
 
     const fetchPromise: Promise<Response> = fetch(`${serverUrl}/llms/respond`, {
       method: "POST",
-      body: formData,
+      body: JSON.stringify(requestBody),
       credentials: "include",
       headers: {
+        "Content-Type": "application/json",
         Accept: "text/event-stream",
       },
     });
