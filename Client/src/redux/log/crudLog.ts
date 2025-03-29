@@ -1,34 +1,6 @@
-import {
-  LogData,
-  CreateLogTitleData,
-  LogListType,
-  MessageObjType,
-} from "@polylink/shared/types";
+import { LogData, LogListType, MessageObjType } from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
-
-export default async function createLogTitle(msg: string) {
-  try {
-    // Assuming the title is generated based on the last message or another logic
-    const response = await fetch(`${serverUrl}/llms/title`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ msg }),
-      credentials: "include",
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data: CreateLogTitleData = await response.json();
-
-    return data.title;
-  } catch (error) {
-    if (environment === "dev") {
-      console.error(error);
-    }
-  }
-}
 
 // Reading: Fetch all lofgs by as userID:
 export async function fetchAllLogs(): Promise<LogListType[] | never[]> {
@@ -131,7 +103,11 @@ type UpsertLogData = {
   title?: string;
 };
 
-export async function upsertLogItem(logData: UpsertLogData): Promise<string> {
+export async function upsertLogItem(logData: UpsertLogData): Promise<{
+  timestamp: string;
+  isNewChat: boolean;
+  title: string;
+}> {
   try {
     const response = await fetch(`${serverUrl}/chatLogs`, {
       method: "PUT",
@@ -142,8 +118,8 @@ export async function upsertLogItem(logData: UpsertLogData): Promise<string> {
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
-    const { timestamp } = await response.json();
-    return timestamp;
+    const { timestamp, isNewChat, title } = await response.json();
+    return { timestamp, isNewChat, title };
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to upsert log: ", error);
