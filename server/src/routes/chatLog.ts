@@ -8,6 +8,7 @@ import {
   updateChatMessageReaction,
   updateLogTitle,
 } from "../db/models/chatlog/chatLogServices";
+import { createTitle } from "../helpers/assistants/createTitle/createTitle";
 
 import { ChatLogDocument, CreateLogTitleData } from "@polylink/shared/types";
 import { environment } from "../index";
@@ -55,7 +56,7 @@ router.get("/:logId", (async (req, res) => {
 
 // Updating a Log: (Update)
 router.put("/", (async (req, res) => {
-  const { logId, content, assistantMongoId, msg, timestamp, title } = req.body;
+  const { logId, content, assistantMongoId, msg, timestamp } = req.body;
   const userId = req.user?.uid;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -66,17 +67,19 @@ router.put("/", (async (req, res) => {
 
   if (msg) {
     // Create
+    const title = await createTitle(msg);
     try {
       const newLog: ChatLogDocument = {
         logId,
         assistantMongoId,
-        title,
         timestamp,
         content,
         userId,
       };
       await createLog(newLog);
-      res.status(201).json({ message: "Log created successfully" });
+      res
+        .status(201)
+        .json({ message: "Log created successfully", isNewChat: true, title });
     } catch (error) {
       res.status(500).send("Failed to create log: " + (error as Error).message);
       if (environment === "dev") {
@@ -89,7 +92,11 @@ router.put("/", (async (req, res) => {
       const timestamp = new Date().toISOString(); // Timestamp for updating log
 
       await updateLog(logId, userId, content, timestamp);
-      res.status(200).json({ timestamp, message: "Log updated successfully" });
+      res.status(200).json({
+        timestamp,
+        message: "Log updated successfully",
+        isNewChat: false,
+      });
     } catch (error) {
       if (environment === "dev") {
         console.error("Failed to update log: ", error);

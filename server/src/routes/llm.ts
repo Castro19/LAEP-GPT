@@ -130,44 +130,6 @@ router.post(
 );
 
 router.post(
-  "/title",
-  asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.uid;
-    // check if user is authorized
-    if (!userId || (await isUnauthorized(userId, res))) {
-      return;
-    }
-
-    try {
-      const { msg } = req.body;
-      const contentStr =
-        "Based on the user's message and the model description, please return a 10-30 character title response that best suits the user's message. Important The response should not be larger than 30 chars and should be a title!";
-
-      const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: contentStr,
-          },
-          { role: "user", content: msg },
-        ],
-      });
-
-      const title = chatCompletion.choices[0].message.content;
-      res.json({ title: title });
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Error calling OpenAI:", error);
-      }
-      res
-        .status(500)
-        .json({ error: "Failed to generate response from OpenAI" });
-    }
-  })
-);
-
-router.post(
   "/generate-bio",
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.uid;

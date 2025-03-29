@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import createLogTitle, {
+import {
   fetchAllLogs,
   deleteLogItem,
   updateLogTitleInDB,
@@ -46,28 +46,27 @@ export const upsertLog = createAsyncThunk(
       }
 
       if (msg) {
-        // new chat
-        const title = await createLogTitle(msg);
         const timestamp = new Date().toISOString(); // Timestamp for log
 
-        dispatch(
-          addLogList({
-            content: chatLog.content, // Include the actual content
-            logId,
-            timestamp, // Include the timestamp
-            title,
-          })
-        );
         // Create
-        await upsertLogItem({
+        const { isNewChat, title } = await upsertLogItem({
           logId,
           content: chatLog.content, // Ensure the content is included in the DB save
           assistantMongoId,
           msg, // To make the title
           timestamp, // Ensure the timestamp is included in the DB save
-          title,
         });
-        return { success: true, logId, timestamp };
+
+        dispatch(
+          addLogList({
+            content: chatLog.content, // Include the actual content
+            logId,
+            title,
+            timestamp, // Include the timestamp
+          })
+        );
+
+        return { success: true, logId, timestamp, isNewChat, title };
       } else {
         // Update
         const timestamp = await upsertLogItem({
@@ -165,7 +164,8 @@ const logSlice = createSlice({
         const logIndex = state.logList.findIndex((log) => log.logId === logId);
         // Move the log to the front of the list
         if (logIndex !== -1) {
-          state.logList[logIndex].timestamp = timestamp; // Update the timestamp
+          state.logList[logIndex].timestamp =
+            typeof timestamp === "string" ? timestamp : timestamp.timestamp;
 
           const [removedLog] = state.logList.splice(logIndex, 1);
           state.logList.unshift(removedLog);
