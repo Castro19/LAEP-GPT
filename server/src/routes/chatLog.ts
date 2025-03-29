@@ -58,7 +58,7 @@ router.get("/:logId", (async (req, res) => {
 router.put("/", (async (req, res) => {
   const { logId, content, assistantMongoId, msg } = req.body;
   const userId = req.user?.uid;
-  console.log("req.body", req.body);
+
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -68,10 +68,10 @@ router.put("/", (async (req, res) => {
 
   const timestamp = new Date().toISOString();
 
+  // If there is a message (we only pass in a msg when creating a new log to generate the title) => create a new log
   if (msg) {
     // Create
     const title = await createTitle(msg);
-    console.log("Creating log");
     try {
       const newLog: ChatLogDocument = {
         logId,
@@ -82,14 +82,12 @@ router.put("/", (async (req, res) => {
         userId,
       };
       await createLog(newLog);
-      res
-        .status(201)
-        .json({
-          timestamp,
-          message: "Log created successfully",
-          isNewChat: true,
-          title,
-        });
+      res.status(201).json({
+        timestamp,
+        message: "Log created successfully",
+        isNewChat: true,
+        title,
+      });
     } catch (error) {
       res.status(500).send("Failed to create log: " + (error as Error).message);
       if (environment === "dev") {
