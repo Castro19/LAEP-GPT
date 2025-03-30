@@ -80,26 +80,20 @@ router.post(
       runId: null,
       threadId: null,
     };
-    if (currentModel.title === "Calpoly SLO") {
-      await responseApi(
+    if (
+      currentModel.title === "Calpoly SLO" ||
+      currentModel.title === "Calpoly Clubs"
+    ) {
+      await responseApi({
         message,
         res,
         logId,
         runningStreams,
         userMessageId,
-        "calpolySlo",
-        previousLogId
-      );
-    } else if (currentModel.title === "Calpoly Clubs") {
-      await responseApi(
-        message,
-        res,
-        logId,
-        runningStreams,
-        userMessageId,
-        "clubs",
-        previousLogId
-      );
+        assistant: { id: currentModel.id, title: currentModel.title },
+        previousLogId,
+        userId,
+      });
     } else {
       await handleModelResponse({
         model: currentModel,

@@ -8,28 +8,61 @@ import calpolySloAssistant from "./calpolySlo/calpolySloAssistant";
 import clubsAssistant from "./clubs/clubsAssistant";
 
 import { RunningStreamData } from "@polylink/shared/types";
+import { getAssistantById } from "../../db/models/assistant/assistantServices";
+import { getUserByFirebaseId } from "../../db/models/user/userServices";
+import { calpolyClubsAssistant } from "./singleAgent";
 
 export type StreamReturnType = Stream<OpenAI.Responses.ResponseStreamEvent> & {
   _request_id?: string | null;
 };
 
-async function responseApi(
-  message: string,
-  res: Response,
-  logId: string,
-  runningStreams: RunningStreamData,
-  userMessageId: string,
-  type: "calpolySlo" | "clubs",
-  previousLogId?: string | null
-): Promise<string | undefined> {
+type ResponseApiParams = {
+  message: string;
+  res: Response;
+  logId: string;
+  runningStreams: RunningStreamData;
+  userMessageId: string;
+  assistant: { id: string; title: string };
+  userId: string;
+  previousLogId?: string | null;
+};
+async function responseApi({
+  message,
+  res,
+  logId,
+  runningStreams,
+  userMessageId,
+  assistant,
+  previousLogId,
+  userId,
+}: ResponseApiParams): Promise<string | undefined> {
   let messageId: string | undefined;
   let stream: StreamReturnType | undefined;
 
-  if (type === "calpolySlo") {
-    stream = await calpolySloAssistant(message, previousLogId);
-  } else if (type === "clubs") {
-    console.log("Creating clubs stream");
-    stream = await clubsAssistant(message, previousLogId);
+  // Fetch assistant from db
+  const fetchAssistant = await getAssistantById(assistant.id);
+  if (!fetchAssistant) {
+    throw new Error("Assistant not found");
+  }
+
+  if (fetchAssistant.title === "Calpoly SLO") {
+    stream = await calpolySloAssistant(
+      message,
+      fetchAssistant.instructions || "",
+      previousLogId
+    );
+  } else if (fetchAssistant.title === "Calpoly Clubs") {
+    const user = await getUserByFirebaseId(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const messageToAdd = calpolyClubsAssistant(user, message);
+
+    stream = await clubsAssistant(
+      messageToAdd,
+      fetchAssistant.instructions || "",
+      previousLogId
+    );
   }
 
   if (!stream) {

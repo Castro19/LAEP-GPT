@@ -1,9 +1,9 @@
 import { openai } from "../../..";
 import { StreamReturnType } from "../responseApi";
-import clubTemplate from "./clubTemplate";
 
 async function clubsAssistant(
   message: string,
+  instructions: string,
   previousLogId?: string | null
 ): Promise<StreamReturnType> {
   const stream = await openai.responses.create({
@@ -16,7 +16,7 @@ async function clubsAssistant(
       },
     ],
     input: [
-      { role: "developer", content: clubTemplate },
+      { role: "developer", content: instructions },
       {
         role: "user",
         content: [

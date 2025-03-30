@@ -3,7 +3,7 @@ import { ObjectId } from "bson";
 export type AssistantType = {
   id: string; // The unique id of the assistant
   title: string; // the title of the assistant
-  prompt?: string; // the prompt of the assistant
+  instructions?: string; // the instructions of the assistant
   assistantId?: string; // The unique id of the assistant
   desc: string; // the displayed description of the assistant
   urlPhoto?: string; // The avatar image of the assistant
