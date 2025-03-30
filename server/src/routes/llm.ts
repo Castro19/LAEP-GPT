@@ -87,6 +87,17 @@ router.post(
         logId,
         runningStreams,
         userMessageId,
+        "calpolySlo",
+        previousLogId
+      );
+    } else if (currentModel.title === "Calpoly Clubs") {
+      await responseApi(
+        message,
+        res,
+        logId,
+        runningStreams,
+        userMessageId,
+        "clubs",
         previousLogId
       );
     } else {

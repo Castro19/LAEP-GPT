@@ -1,32 +1,41 @@
-import { openai } from "../..";
 import { Response } from "express";
-import calpolySloTemplate from "./calpolySlo/calpolySloTemplate";
+import { Stream } from "openai/streaming";
+import { OpenAI } from "openai";
+
 import { updateLogPreviousMessageId } from "../../db/models/chatlog/chatLogServices";
 
+import calpolySloAssistant from "./calpolySlo/calpolySloAssistant";
+import clubsAssistant from "./clubs/clubsAssistant";
+
 import { RunningStreamData } from "@polylink/shared/types";
+
+export type StreamReturnType = Stream<OpenAI.Responses.ResponseStreamEvent> & {
+  _request_id?: string | null;
+};
+
 async function responseApi(
   message: string,
   res: Response,
   logId: string,
   runningStreams: RunningStreamData,
   userMessageId: string,
+  type: "calpolySlo" | "clubs",
   previousLogId?: string | null
 ): Promise<string | undefined> {
   let messageId: string | undefined;
+  let stream: StreamReturnType | undefined;
 
-  const stream = await openai.responses.create({
-    model: "gpt-4o-2024-11-20",
-    previous_response_id: previousLogId,
-    input: [
-      { role: "developer", content: calpolySloTemplate },
-      {
-        role: "user",
-        content: message,
-      },
-    ],
-    stream: true,
-    store: true,
-  });
+  if (type === "calpolySlo") {
+    stream = await calpolySloAssistant(message, previousLogId);
+  } else if (type === "clubs") {
+    console.log("Creating clubs stream");
+    stream = await clubsAssistant(message, previousLogId);
+  }
+
+  if (!stream) {
+    res.status(500).end("Error creating stream");
+    return;
+  }
 
   for await (const event of stream) {
     // If the user has canceled, break out right away
