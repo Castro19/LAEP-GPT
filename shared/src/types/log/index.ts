@@ -9,6 +9,7 @@ export type LogData = {
   assistantMongoId?: string; // The assistantId from the assistant that the user is chatting with
   content: MessageObjType[]; // The message content from the log
   logId: string; // The unique id associated with the chat log
+  previousLogId?: string | null; // The previous logId associated with the chat log
   timestamp: string; // The timestamp of the last message in the chat log
   title?: string; // The title of the log
 };

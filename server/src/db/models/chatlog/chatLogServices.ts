@@ -44,19 +44,30 @@ export const getLogById = async (
 };
 
 // Update
-export const updateLog = async (
-  logId: string,
-  firebaseUserId: string,
-  content: MessageObjType[],
-  timestamp: string
-): Promise<void> => {
+export const updateLog = async ({
+  logId,
+  assistantMongoId,
+  userId,
+  content,
+  timestamp,
+  title,
+}: {
+  logId: string;
+  userId: string;
+  content: MessageObjType[];
+  timestamp: string;
+  assistantMongoId?: string;
+  title?: string;
+}): Promise<void> => {
   try {
     // Future: Check Permissions of firebaseUserId before updating Log
     const result = await ChatLogModel.updateLogContent(
       logId,
-      firebaseUserId,
+      userId,
       content,
-      timestamp
+      timestamp,
+      title,
+      assistantMongoId
     );
     if (!result.acknowledged) {
       throw new Error("Failed to update log");
@@ -67,6 +78,24 @@ export const updateLog = async (
   }
 };
 
+export const updateLogPreviousMessageId = async (
+  logId: string,
+  previousMessageId: string
+): Promise<void> => {
+  try {
+    const result = await ChatLogModel.updateLogPreviousMessageId(
+      logId,
+      previousMessageId
+    );
+
+    if (!result.acknowledged) {
+      throw new Error("Failed to update log previous message id");
+    }
+    return;
+  } catch (error) {
+    throw new Error("Service error: " + (error as Error).message);
+  }
+};
 // Delete
 export const deleteLog = async (
   logId: string,

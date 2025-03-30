@@ -48,7 +48,10 @@ const courseCatalogAssistant = async (
   return `Search Results: ${courseDescriptions}\n${message}`;
 };
 
-const calpolyClubsAssistant = (user: UserData, message: string): string => {
+export const calpolyClubsAssistant = (
+  user: UserData,
+  message: string
+): string => {
   const interests = user.interestAreas.join(", ");
   const preferredActivities = user.preferredActivities.join(", ");
   const goals = user.goals.join(", ");

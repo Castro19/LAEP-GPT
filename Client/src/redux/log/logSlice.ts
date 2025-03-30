@@ -48,6 +48,7 @@ export const upsertLog = createAsyncThunk(
       const { isNewChat, title, timestamp } = await upsertLogItem({
         logId,
         content: chatLog.content, // Ensure the content is included in the DB save
+        // The following are only needed if creating a new log
         assistantMongoId,
         msg, // To make the title
       });

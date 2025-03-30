@@ -34,18 +34,10 @@ export default async function sendMessage(
         id: currentModel.id,
       },
       userMessageId: userMessageId,
-      logId: currentChatId || undefined,
+      logId: currentChatId,
       sections:
         currentModel.title === "Schedule Analysis" ? sections : undefined,
     };
-
-    if (
-      environment === "dev" &&
-      sections &&
-      currentModel.title === "Schedule Analysis"
-    ) {
-      console.log("Adding sections to request: ", sections);
-    }
 
     const fetchPromise: Promise<Response> = fetch(`${serverUrl}/llms/respond`, {
       method: "POST",
@@ -67,11 +59,6 @@ export default async function sendMessage(
         // 429 = rate limiting: too many GPT message requests
         const errorData = await response.text();
         throw new Error(errorData);
-      }
-      // Remove this after testing
-      if (environment === "dev") {
-        const errorData = await response.text();
-        console.error("Error: ", errorData);
       }
       throw new Error(`An unkown error occured. Please try again.`);
     }

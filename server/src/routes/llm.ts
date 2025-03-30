@@ -11,9 +11,11 @@ import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectio
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 
 import { Filter } from "mongodb";
-import { getLogById } from "../db/models/chatlog/chatLogServices";
+import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
+
+import responseApi from "../helpers/assistants/responseApi";
 const router = express.Router();
 
 // Rate limiter for GPT messages
@@ -39,9 +41,10 @@ router.post(
       return;
     }
 
-    const { message, logId, userMessageId, currentModel, sections } = req.body;
+    const { message, userMessageId, logId, currentModel, sections } = req.body;
+    let previousLogId = null;
 
-    if (!currentModel || !logId || !userMessageId) {
+    if (!currentModel || !userMessageId || !logId) {
       res
         .status(400)
         .end("Current model, logId, and userMessageId are required");
@@ -50,6 +53,7 @@ router.post(
 
     try {
       const log = await getLogById(logId, userId);
+      previousLogId = log.previousLogId;
       if (log.content.length >= 12) {
         res
           .status(429)
@@ -57,7 +61,17 @@ router.post(
         return;
       }
     } catch {
-      // This is a new chat request, log does not exist
+      // New Log Request
+      const log = {
+        logId,
+        assistantMongoId: currentModel.id,
+        title: "",
+        timestamp: new Date().toISOString(),
+        content: [],
+        previousLogId: null,
+        userId,
+      };
+      await createLog(log);
     }
 
     // Store the running streams
@@ -66,17 +80,32 @@ router.post(
       runId: null,
       threadId: null,
     };
-
-    await handleModelResponse({
-      model: currentModel,
-      logId,
-      message,
-      res,
-      userId,
-      runningStreams,
-      sections,
-      streamId: userMessageId,
-    });
+    if (
+      currentModel.title === "Calpoly SLO" ||
+      currentModel.title === "Calpoly Clubs"
+    ) {
+      await responseApi({
+        message,
+        res,
+        logId,
+        runningStreams,
+        userMessageId,
+        assistant: { id: currentModel.id, title: currentModel.title },
+        previousLogId,
+        userId,
+      });
+    } else {
+      await handleModelResponse({
+        model: currentModel,
+        logId,
+        message,
+        res,
+        userId,
+        runningStreams,
+        sections,
+        streamId: userMessageId,
+      });
+    }
   })
 );
 
