@@ -14,6 +14,7 @@ import { Filter } from "mongodb";
 import { getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
+import responseApi from "../helpers/assistants/responseApi";
 const router = express.Router();
 
 // Rate limiter for GPT messages
@@ -66,17 +67,21 @@ router.post(
       runId: null,
       threadId: null,
     };
-
-    await handleModelResponse({
-      model: currentModel,
-      logId,
-      message,
-      res,
-      userId,
-      runningStreams,
-      sections,
-      streamId: userMessageId,
-    });
+    if (currentModel.title === "Calpoly SLO") {
+      console.log("----WORKING WITH CALPOLY SLO----");
+      await responseApi(message, res);
+    } else {
+      await handleModelResponse({
+        model: currentModel,
+        logId,
+        message,
+        res,
+        userId,
+        runningStreams,
+        sections,
+        streamId: userMessageId,
+      });
+    }
   })
 );
 
