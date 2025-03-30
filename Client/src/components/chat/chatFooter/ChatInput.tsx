@@ -118,7 +118,7 @@ const ChatInput = ({
       // Step 7: Create/update log in database and handle navigation
       dispatch(
         logActions.upsertLog({
-          logId: newLogId,
+          logId,
           assistantMongoId: currentModel.id,
           msg: isNewChat ? msg : undefined,
         })
