@@ -45,6 +45,16 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       colors: {
+        //added given formatting
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        card: "hsl(var(--card))",
+        primary: "hsl(var(--primary))",
+        border: "hsl(var(--border))",
+        muted: "hsl(var(--muted))",
+
+
+
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -81,6 +91,25 @@ export default {
 };
 
 function addVariablesForColors({ addBase, theme }) {
+  //added given formatting
+  addBase({
+    ":root": {
+      "--background": "255 255 255",        
+      "--foreground": "17 24 39",            
+      "--card": "240 240 240",
+      "--primary": "34 197 94",              
+      "--border": "220 220 220",
+      "--muted": "120 120 120",
+    },
+    ".dark": {
+      "--background": "15 23 42",          
+      "--foreground": "255 255 255",
+      "--card": "30 41 59",                
+      "--primary": "34 197 94",
+      "--border": "55 65 81",
+      "--muted": "148 163 184",
+    },
+  });
   function flattenColors(colors) {
     const result = {};
     for (const [key, value] of Object.entries(colors)) {
