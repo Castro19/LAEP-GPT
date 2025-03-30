@@ -14,6 +14,7 @@ import { Filter } from "mongodb";
 import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
+
 import responseApi from "../helpers/assistants/responseApi";
 const router = express.Router();
 
@@ -80,7 +81,14 @@ router.post(
       threadId: null,
     };
     if (currentModel.title === "Calpoly SLO") {
-      await responseApi(message, res, logId, previousLogId);
+      await responseApi(
+        message,
+        res,
+        logId,
+        runningStreams,
+        userMessageId,
+        previousLogId
+      );
     } else {
       await handleModelResponse({
         model: currentModel,
