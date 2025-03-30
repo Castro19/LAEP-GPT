@@ -1,6 +1,5 @@
 import express, { RequestHandler } from "express";
 import {
-  createLog,
   getLogsByUser,
   getLogById,
   updateLog,
@@ -10,7 +9,7 @@ import {
 } from "../db/models/chatlog/chatLogServices";
 import { createTitle } from "../helpers/assistants/createTitle/createTitle";
 
-import { ChatLogDocument, CreateLogTitleData } from "@polylink/shared/types";
+import { CreateLogTitleData } from "@polylink/shared/types";
 import { environment } from "../index";
 
 const router = express.Router();
@@ -73,15 +72,15 @@ router.put("/", (async (req, res) => {
     // Create
     const title = await createTitle(msg);
     try {
-      const newLog: ChatLogDocument = {
+      const newLog = {
         logId,
-        assistantMongoId,
-        title,
         timestamp,
         content,
         userId,
+        assistantMongoId,
+        title,
       };
-      await createLog(newLog);
+      await updateLog(newLog);
       res.status(201).json({
         timestamp,
         message: "Log created successfully",
@@ -96,7 +95,12 @@ router.put("/", (async (req, res) => {
     }
   } else {
     try {
-      await updateLog(logId, userId, content, timestamp);
+      await updateLog({
+        logId,
+        userId,
+        content,
+        timestamp,
+      });
       res.status(200).json({
         timestamp,
         message: "Log updated successfully",

@@ -68,6 +68,7 @@ export const fetchLogById = async (
           content: 1,
           userId: 1,
           assistantMongoId: 1,
+          previousLogId: 1,
         },
       }
     );
@@ -89,21 +90,27 @@ export const fetchLogById = async (
 // Update
 export const updateLogContent = async (
   logId: string,
-  firebaseUserId: string,
+  userId: string,
   content: MessageObjType[],
-  timestamp: string
+  timestamp: string,
+  title?: string,
+  assistantMongoId?: string
 ): Promise<UpdateResult> => {
   if (!chatLogCollection) initializeCollection();
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateObj: any = {
+      userId: userId,
+      content: content,
+      timestamp: timestamp,
+    };
+
+    if (title) updateObj.title = title;
+    if (assistantMongoId) updateObj.assistantMongoId = assistantMongoId;
+
     const result = await chatLogCollection.updateOne(
       { logId: logId },
-      {
-        $set: {
-          userId: firebaseUserId,
-          content: content, // Ensure content is handled correctly as per your schema
-          timestamp: timestamp, // This should be a single datetime value
-        },
-      }
+      { $set: updateObj }
     );
     return result;
   } catch (error) {
@@ -127,6 +134,24 @@ export const updateChatMessageReaction = async (
   } catch (error) {
     throw new Error(
       "Error updating chat message reaction: " + (error as Error).message
+    );
+  }
+};
+
+export const updateLogPreviousMessageId = async (
+  logId: string,
+  previousLogId: string
+): Promise<UpdateResult> => {
+  if (!chatLogCollection) initializeCollection();
+  try {
+    const result = await chatLogCollection.updateOne(
+      { logId: logId },
+      { $set: { previousLogId: previousLogId } }
+    );
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error updating log previous message id: " + (error as Error).message
     );
   }
 };
