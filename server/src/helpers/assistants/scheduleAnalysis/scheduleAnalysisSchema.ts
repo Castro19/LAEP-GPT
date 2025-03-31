@@ -1,121 +1,231 @@
-import { z } from "zod";
-
-// --------------------------------------------
-// 1) Shared Enums & Item Definitions
-// --------------------------------------------
-
-/** Valid fields for "sections" collection fetch. */
-const SectionFieldsEnum = [
-  "classNumber",
-  "courseId",
-  "subject",
-  "catalogNumber",
-  "component",
-  "courseName",
-  "description",
-  "prerequisites",
-  "units",
-  "enrollmentStatus",
-  "enrollment",
-  "instructionMode",
-  "courseAttributes",
-  "meetings",
-  "instructors",
-  "instructorsWithRatings",
-  "techElectives",
-  "classPair",
-] as const;
-const SectionFieldsSchema = z.enum(SectionFieldsEnum);
-
-/** Valid fields for "professorRatings" collection fetch. */
-const ProfessorFieldsEnum = [
-  "overallRating",
-  "numEvals",
-  "courseRating",
-  "studentDifficulties",
-  "tags",
-  "reviews",
-] as const;
-const ProfessorFieldsSchema = z.enum(ProfessorFieldsEnum);
-
-/** The "professors" array inside each section object. */
-const ProfessorObjectSchema = z
-  .object({
-    id: z.string().nullable(), // can be null if unknown
-    name: z.string(), // professor name is required
-  })
-  .strict();
-
-/** Each "section" in the sections arrays. */
-const SectionItemSchema = z
-  .object({
-    courseId: z.string(),
-    classNumber: z.number(),
-    professors: z.array(ProfessorObjectSchema),
-  })
-  .strict();
-
-// --------------------------------------------
-// 2) Sub-schema Definitions (Optional & Strict)
-// --------------------------------------------
-
-/**
- * fetchScheduleSections object
- * - 'required' must be a boolean
- * - 'fields' and 'sections' are optional arrays (no default()).
- * - .strict() ensures no extra properties
- */
-const FetchScheduleSectionsSchema = z
-  .object({
-    required: z.boolean(),
-    fields: z.array(SectionFieldsSchema).optional(),
-    sections: z.array(SectionItemSchema).optional(),
-  })
-  .strict();
-
-/**
- * fetchAlternativeSections object
- */
-const FetchAlternativeSectionsSchema = z
-  .object({
-    required: z.boolean(),
-    fields: z.array(SectionFieldsSchema).optional(),
-    sections: z.array(SectionItemSchema).optional(),
-  })
-  .strict();
-
-/**
- * fetchProfessors object
- */
-const FetchProfessorsSchema = z
-  .object({
-    required: z.boolean(),
-    fields: z.array(ProfessorFieldsSchema).optional(),
-    sections: z.array(SectionItemSchema).optional(),
-  })
-  .strict();
-
-// --------------------------------------------
-// 3) Top-Level Schedule Analysis Schema
-// --------------------------------------------
-
-/**
- * The main Schedule Analysis schema:
- * - queryType (enum) - required
- * - fetchScheduleSections, fetchAlternativeSections, fetchProfessors
- *   are optional. If present, must match the sub-schema.
- * - .strict() disallows unknown keys at this top level.
- */
-export const ScheduleAnalysisSchema = z
-  .object({
-    queryType: z.enum([
-      "schedule_review",
-      "professor_insights",
-      "schedule_analysis",
-      "section_optimization",
-    ]),
-    fetchScheduleSections: FetchScheduleSectionsSchema.optional(),
-    fetchAlternativeSections: FetchAlternativeSectionsSchema.optional(),
-    fetchProfessors: FetchProfessorsSchema.optional(),
-  })
-  .strict();
+export const ScheduleAnalysisSchema = {
+  type: "object",
+  properties: {
+    queryType: {
+      type: "string",
+      enum: [
+        "schedule_review",
+        "professor_insights",
+        "schedule_analysis",
+        "section_optimization",
+      ],
+      description: "Indicates the overall type of user query.",
+    },
+    fetchScheduleSections: {
+      type: "object",
+      properties: {
+        required: {
+          type: "boolean",
+          description: "Whether we need to fetch existing scheduled sections.",
+        },
+        fields: {
+          type: "array",
+          description:
+            "Specific fields to fetch from the 'sections' collection for these schedule sections.",
+          items: {
+            type: "string",
+            enum: [
+              "classNumber",
+              "courseId",
+              "subject",
+              "catalogNumber",
+              "component",
+              "courseName",
+              "description",
+              "prerequisites",
+              "units",
+              "enrollmentStatus",
+              "enrollment",
+              "instructionMode",
+              "courseAttributes",
+              "meetings",
+              "instructors",
+              "instructorsWithRatings",
+              "techElectives",
+              "classPair",
+            ],
+          },
+        },
+        sections: {
+          type: "array",
+          description: "Which sections to fetch or analyze in the schedule.",
+          items: {
+            type: "object",
+            properties: {
+              courseId: {
+                type: "string",
+              },
+              classNumber: {
+                type: "number",
+              },
+              professors: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                    },
+                    name: {
+                      type: "string",
+                    },
+                  },
+                  required: ["id", "name"],
+                  additionalProperties: false,
+                },
+              },
+            },
+            required: ["courseId", "classNumber", "professors"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["required", "fields", "sections"],
+      additionalProperties: false,
+      strict: true,
+    },
+    fetchAlternativeSections: {
+      type: "object",
+      properties: {
+        required: {
+          type: "boolean",
+          description:
+            "Whether we need to find alternative sections for conflict resolution or better options.",
+        },
+        fields: {
+          type: "array",
+          description:
+            "Specific fields needed to identify or evaluate alternatives in the 'sections' collection.",
+          items: {
+            type: "string",
+            enum: [
+              "classNumber",
+              "courseId",
+              "subject",
+              "catalogNumber",
+              "component",
+              "courseName",
+              "description",
+              "prerequisites",
+              "units",
+              "enrollmentStatus",
+              "enrollment",
+              "instructionMode",
+              "courseAttributes",
+              "meetings",
+              "instructors",
+              "instructorsWithRatings",
+              "techElectives",
+              "classPair",
+            ],
+          },
+        },
+        sections: {
+          type: "array",
+          description: "Which sections the user wants alternatives for.",
+          items: {
+            type: "object",
+            properties: {
+              courseId: {
+                type: "string",
+              },
+              classNumber: {
+                type: "number",
+              },
+              professors: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                    },
+                    name: {
+                      type: "string",
+                    },
+                  },
+                  required: ["id", "name"],
+                  additionalProperties: false,
+                },
+              },
+            },
+            required: ["courseId", "classNumber", "professors"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["required", "fields", "sections"],
+      additionalProperties: false,
+      strict: true,
+    },
+    fetchProfessors: {
+      type: "object",
+      properties: {
+        required: {
+          type: "boolean",
+          description:
+            "Whether we need professor data from the 'professorRatings' collection.",
+        },
+        fields: {
+          type: "array",
+          description:
+            "Specific fields to fetch from the 'professorRatings' collection.",
+          items: {
+            type: "string",
+            enum: [
+              "overallRating",
+              "numEvals",
+              "courseRating",
+              "studentDifficulties",
+              "tags",
+              "reviews",
+            ],
+          },
+        },
+        sections: {
+          type: "array",
+          description: "Sections/professors for whom we need rating info.",
+          items: {
+            type: "object",
+            properties: {
+              courseId: {
+                type: "string",
+              },
+              classNumber: {
+                type: "number",
+              },
+              professors: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                    },
+                    name: {
+                      type: "string",
+                    },
+                  },
+                  required: ["id", "name"],
+                  additionalProperties: false,
+                },
+              },
+            },
+            required: ["courseId", "classNumber", "professors"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["required", "fields", "sections"],
+      additionalProperties: false,
+      strict: true,
+    },
+  },
+  required: [
+    "queryType",
+    "fetchScheduleSections",
+    "fetchAlternativeSections",
+    "fetchProfessors",
+  ],
+  additionalProperties: false,
+};

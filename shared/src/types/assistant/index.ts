@@ -10,6 +10,11 @@ export type AssistantType = {
   urlPhoto?: string; // The avatar image of the assistant
   suggestedQuestions?: string[]; // The suggested questions for the assistant
   inTestMode?: boolean;
+  model: string; // The model of the assistant
+  tools?: {
+    type: string;
+    vector_store_ids?: string[];
+  }[]; // The tool of the assistant
 };
 
 export type AssistantSliceType = {
