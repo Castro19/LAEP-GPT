@@ -104,19 +104,53 @@ export const fetchBotResponse = createAsyncThunk<
       try {
         if (updateStream) {
           await updateStream((botMessageId: string, text: string) => {
+            // 1) Detect any special "web search" markers
+            if (text.includes("[WEB_SEARCH_START]")) {
+              // Dispatch our new action
+              dispatch(
+                setToolUsage({
+                  id: botMessageId,
+                  toolUsage: "Searching the web...",
+                  chatId: currentChatId,
+                })
+              );
+              // Remove the token from the actual user-facing text
+              text = text.replace("[WEB_SEARCH_START]", "");
+            }
+            if (text.includes("[FILE_SEARCH_START]")) {
+              dispatch(
+                setToolUsage({
+                  id: botMessageId,
+                  toolUsage: "Searching through all clubs...",
+                  chatId: currentChatId,
+                })
+              );
+              text = text.replace("[FILE_SEARCH_START]", "");
+            }
+
+            if (
+              text.includes("[FILE_SEARCH_DONE]") ||
+              text.includes("[WEB_SEARCH_DONE]")
+            ) {
+              text = text.replace("[FILE_SEARCH_DONE]", "");
+              text = text.replace("[WEB_SEARCH_DONE]", "");
+              dispatch(
+                setToolUsage({
+                  id: botMessageId,
+                  toolUsage: null,
+                  chatId: currentChatId,
+                })
+              );
+            }
+
+            // 2) Now dispatch the updated text to the Redux store
             dispatch(
               updateBotMessage({
                 id: botMessageId,
                 text,
                 chatId: currentChatId,
               })
-            ); // Updating existing bot message
-          });
-        } else {
-          return rejectWithValue({
-            message: "There was a problem streaming the response.",
-            botMessageId,
-            chatId: currentChatId,
+            );
           });
         }
       } catch (streamError) {
@@ -312,6 +346,23 @@ const messageSlice = createSlice({
         message.thinkingState = thinkingState;
       }
     },
+    setToolUsage: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        toolUsage: string | null;
+        chatId: string;
+      }>
+    ) => {
+      const { id, toolUsage, chatId } = action.payload;
+      const message = state.messagesByChatId[chatId]?.content.find(
+        (msg) => msg.id === id
+      );
+      if (message) {
+        message.toolUsage = toolUsage || undefined;
+      }
+    },
+
     // Reducer to set the entire message list (typically for initial load e.g. when a user selects a new log or new chat) (UPDATE)
     setMsgList: (
       state,
@@ -393,6 +444,7 @@ export const {
   clearError,
   setCurrentChatId,
   toggleNewChat,
+  setToolUsage,
 } = messageSlice.actions;
 
 export const messageReducer = messageSlice.reducer;

@@ -68,6 +68,7 @@ export default async function sendMessage(
       id: botMessageId,
       sender: "bot",
       text: "Loading...",
+      toolUsage: null,
       urlPhoto: currentModel.urlPhoto,
       userReaction: null,
     };

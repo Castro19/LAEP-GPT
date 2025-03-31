@@ -92,6 +92,19 @@ async function responseApi({
     } else if (event.type === "response.output_text.done") {
       res.end();
     }
+
+    // Tools:
+    // Web search
+    if (event.type === "response.web_search_call.in_progress") {
+      res.write("[WEB_SEARCH_START]");
+    } else if (event.type === "response.web_search_call.completed") {
+      res.write("[WEB_SEARCH_DONE]");
+      // File search
+    } else if (event.type === "response.file_search_call.in_progress") {
+      res.write("[FILE_SEARCH_START]");
+    } else if (event.type === "response.file_search_call.completed") {
+      res.write("[FILE_SEARCH_DONE]");
+    }
   }
   return messageId;
 }
