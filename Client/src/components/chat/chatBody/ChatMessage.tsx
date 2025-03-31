@@ -7,8 +7,9 @@ import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import useTrackAnalytics from "@/hooks/useTrackAnalytics";
 import { putUserReaction } from "@/redux/message/messageSlice";
 import { useAppDispatch, useAppSelector } from "@/redux";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+import ChatLoadingMessage from "./ChatLoadingMessage";
 
 const md = new MarkdownIt();
 
@@ -118,14 +119,8 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
     >
       {!isUserMessage && (
         <div className="pt-1">
-          {msg?.thinkingState ? (
-            <div className="flex items-center space-x-4 mb-12">
-              <Skeleton className="h-16 w-16 rounded-full dark:bg-slate-600/50" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px] dark:bg-slate-600/50" />
-                <Skeleton className="h-4 w-[200px] dark:bg-slate-600/50" />
-              </div>
-            </div>
+          {msg?.thinkingState || msg?.toolUsage ? (
+            <ChatLoadingMessage toolUsage={msg?.toolUsage || null} />
           ) : (
             !isScreenWidthSmall && (
               <Avatar className="w-10 h-10 rounded-full overflow-hidden transition-transform hover:scale-110 mr-2">
@@ -138,7 +133,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
           )}
         </div>
       )}
-      {!msg?.thinkingState && (
+      {!msg?.thinkingState && !msg?.toolUsage && (
         <div
           className={`flex flex-col ${
             isScreenWidthSmall ? "max-w-[100%]" : "max-w-[75%]"

@@ -5,6 +5,7 @@ export type MessageObjType = {
   urlPhoto?: string; // Bot only (The url photo corresponding to the message)
   userReaction: "like" | "dislike" | null;
   thinkingState?: boolean;
+  toolUsage?: string;
 };
 
 export type MessageByChatIdType = {
