@@ -1,43 +1,29 @@
 // queryAgent.ts
-
 import { openai } from "../../../index"; // or wherever your OpenAI client is set up
-import { zodResponseFormat } from "openai/helpers/zod";
 import { ScheduleAnalysisSchema } from "./scheduleAnalysisSchema";
-import { scheduleAnalysisSystemInstructions } from "./scheduleAnalysisSyststemInstructions";
-
-export type ScheduleAnalysisHelperResponse = {
-  queryType: string;
-  fetchScheduleSections: unknown;
-  fetchAlternativeSections: unknown;
-  fetchProfessors: unknown;
-} | null;
+import { ScheduleBuilderObject } from "@polylink/shared/types";
 
 async function scheduleAnalysisHelperAssistant(
-  text: string
-): Promise<ScheduleAnalysisHelperResponse> {
+  text: string,
+  instructions: string
+): Promise<ScheduleBuilderObject | null> {
   try {
-    // Instead of .create(), use .parse():
-    const completion = await openai.beta.chat.completions.parse({
+    const response = await openai.responses.create({
       model: "gpt-4o",
-      messages: [
-        { role: "system", content: scheduleAnalysisSystemInstructions },
+      input: [
+        { role: "system", content: instructions },
         { role: "user", content: text },
       ],
-      temperature: 0.7,
-      // This ensures the model's response must match the Zod schema
-      response_format: zodResponseFormat(ScheduleAnalysisSchema, "analysis"),
+      text: {
+        format: {
+          type: "json_schema",
+          name: "schedule_analysis",
+          schema: ScheduleAnalysisSchema,
+        },
+      },
     });
 
-    // The parsed object is available in:
-    const validated = completion.choices[0].message?.parsed;
-
-    if (!validated) {
-      throw new Error(
-        "Invalid response from Schedule Analysis Helper Assistant"
-      );
-    }
-
-    return validated as ScheduleAnalysisHelperResponse;
+    return JSON.parse(response.output_text) as ScheduleBuilderObject;
   } catch (err) {
     console.error("Query agent error:", err);
     return null;

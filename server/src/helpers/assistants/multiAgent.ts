@@ -8,9 +8,6 @@ import {
   initializeOrFetchIds,
 } from "../openAI/threadFunctions";
 
-// Multi-Assistant Flows
-import handleScheduleBuilderFlow from "./scheduleAnalysis/scheduleAnalysisAssistant";
-
 // Multi-Agent general helpers
 import {
   fetchMainAssistant,
@@ -49,14 +46,13 @@ async function handleMultiAgentModel({
   streamId,
   runningStreams,
   logId,
-  sections,
 }: MultiAgentRequest): Promise<void> {
   try {
     let messageToAdd: string;
 
     // Delegate to the appropriate flow based on the model title.
     if (model.title === "Schedule Analysis") {
-      messageToAdd = await handleScheduleBuilderFlow(message, sections);
+      messageToAdd = message;
     } else {
       throw new Error("Unsupported model title");
     }

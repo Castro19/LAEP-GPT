@@ -7,7 +7,10 @@ import { updateLogPreviousMessageId } from "../../db/models/chatlog/chatLogServi
 import calpolySloAssistant from "./calpolySlo/calpolySloAssistant";
 import clubsAssistant from "./clubs/clubsAssistant";
 
-import { RunningStreamData } from "@polylink/shared/types";
+import {
+  RunningStreamData,
+  ScheduleBuilderSection,
+} from "@polylink/shared/types";
 import { getAssistantById } from "../../db/models/assistant/assistantServices";
 import { getUserByFirebaseId } from "../../db/models/user/userServices";
 import { calpolyClubsAssistant } from "./singleAgent";
@@ -17,6 +20,10 @@ import {
   ProfessorRatingsObject,
 } from "./professorRatings/professorRatingsAssistant";
 import professorRatings from "./professorRatings/professorRatings";
+import scheduleAnalysisHelperAssistant from "./scheduleAnalysis/scheduleAnalysisHelperAssistant";
+import scheduleAnalysis from "./scheduleAnalysis/scheduleAnalysis";
+import scheduleAnalysisAssistant from "./scheduleAnalysis/scheduleAnalysisAssistant";
+import { environment } from "../..";
 
 export type StreamReturnType = Stream<OpenAI.Responses.ResponseStreamEvent> & {
   _request_id?: string | null;
@@ -31,6 +38,7 @@ type ResponseApiParams = {
   assistant: { id: string; title: string };
   userId: string;
   previousLogId?: string | null;
+  sections?: ScheduleBuilderSection[];
 };
 async function responseApi({
   message,
@@ -39,8 +47,9 @@ async function responseApi({
   runningStreams,
   userMessageId,
   assistant,
-  previousLogId,
   userId,
+  previousLogId,
+  sections,
 }: ResponseApiParams): Promise<string | undefined> {
   let messageId: string | undefined;
   let stream: StreamReturnType | undefined;
@@ -92,6 +101,28 @@ async function responseApi({
       fetchAssistant.instructions || "",
       previousLogId
     );
+  } else if (fetchAssistant.title === "Schedule Analysis") {
+    res.write("[SCHEDULE_ANALYSIS_HELPER_START]");
+
+    const helperResponse = await scheduleAnalysisHelperAssistant(
+      message +
+        "\nHere are my current schedule sections: " +
+        JSON.stringify(sections),
+      fetchAssistant.helperInstructions || ""
+    );
+    res.write("[SCHEDULE_ANALYSIS_HELPER_DONE]");
+
+    if (!helperResponse) {
+      throw new Error("Helper response not found");
+    }
+    const updatedMessage = await scheduleAnalysis(message, helperResponse);
+
+    res.write("[ANALYSIS_START]");
+    stream = await scheduleAnalysisAssistant(
+      updatedMessage,
+      fetchAssistant.instructions || "",
+      previousLogId
+    );
   }
 
   if (!stream) {
@@ -113,7 +144,9 @@ async function responseApi({
       try {
         await updateLogPreviousMessageId(logId, messageId);
       } catch (error) {
-        console.error("Error updating log previous message id: ", error);
+        if (environment === "dev") {
+          console.error("Error updating log previous message id: ", error);
+        }
       }
     }
     if (event.type === "response.output_text.delta") {

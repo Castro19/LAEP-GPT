@@ -83,7 +83,8 @@ router.post(
     if (
       currentModel.title === "Calpoly SLO" ||
       currentModel.title === "Calpoly Clubs" ||
-      currentModel.title === "Professor Ratings"
+      currentModel.title === "Professor Ratings" ||
+      currentModel.title === "Schedule Analysis"
     ) {
       await responseApi({
         message,
@@ -94,6 +95,7 @@ router.post(
         assistant: { id: currentModel.id, title: currentModel.title },
         previousLogId,
         userId,
+        sections,
       });
     } else {
       await handleModelResponse({

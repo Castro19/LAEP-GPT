@@ -50,6 +50,29 @@ export const handleToolUsageMarkers = (
     );
     text = text.replace("[PROFESSOR_RATINGS_HELPER_DONE]", "");
   }
+
+  if (text.includes("[SCHEDULE_ANALYSIS_HELPER_START]")) {
+    dispatch(
+      setToolUsage({
+        id: botMessageId,
+        toolUsage: "Analyzing your schedule...",
+        chatId: currentChatId,
+      })
+    );
+    text = text.replace("[SCHEDULE_ANALYSIS_HELPER_START]", "");
+  }
+
+  if (text.includes("[SCHEDULE_ANALYSIS_HELPER_DONE]")) {
+    dispatch(
+      setToolUsage({
+        id: botMessageId,
+        toolUsage: "Filtering through your schedule...",
+        chatId: currentChatId,
+      })
+    );
+    text = text.replace("[SCHEDULE_ANALYSIS_HELPER_DONE]", "");
+  }
+
   if (text.includes("[ANALYSIS_START]")) {
     dispatch(
       setToolUsage({
