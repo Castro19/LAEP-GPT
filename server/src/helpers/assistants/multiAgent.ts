@@ -9,7 +9,6 @@ import {
 } from "../openAI/threadFunctions";
 
 // Multi-Assistant Flows
-import handleProfessorRatingsFlow from "./professorRatings/professorRatingsAssistant";
 import handleScheduleBuilderFlow from "./scheduleAnalysis/scheduleAnalysisAssistant";
 
 // Multi-Agent general helpers
@@ -58,8 +57,6 @@ async function handleMultiAgentModel({
     // Delegate to the appropriate flow based on the model title.
     if (model.title === "Schedule Analysis") {
       messageToAdd = await handleScheduleBuilderFlow(message, sections);
-    } else if (model.title === "Professor Ratings") {
-      messageToAdd = await handleProfessorRatingsFlow(message);
     } else {
       throw new Error("Unsupported model title");
     }
@@ -82,7 +79,6 @@ async function handleMultiAgentModel({
         messageToAdd
       );
     }
-
     // Run the main assistant and stream the response back to the client.
     await runAssistantAndStreamResponse(
       threadId,

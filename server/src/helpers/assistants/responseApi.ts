@@ -11,6 +11,12 @@ import { RunningStreamData } from "@polylink/shared/types";
 import { getAssistantById } from "../../db/models/assistant/assistantServices";
 import { getUserByFirebaseId } from "../../db/models/user/userServices";
 import { calpolyClubsAssistant } from "./singleAgent";
+import {
+  professorRatingsHelper,
+  professorRatingsAssistant,
+  ProfessorRatingsObject,
+} from "./professorRatings/professorRatingsAssistant";
+import professorRatings from "./professorRatings/professorRatings";
 
 export type StreamReturnType = Stream<OpenAI.Responses.ResponseStreamEvent> & {
   _request_id?: string | null;
@@ -63,6 +69,29 @@ async function responseApi({
       fetchAssistant.instructions || "",
       previousLogId
     );
+  } else if (fetchAssistant.title === "Professor Ratings") {
+    res.write("[PROFESSOR_RATINGS_HELPER_START]");
+    const helperResponse = await professorRatingsHelper(
+      message,
+      fetchAssistant.helperInstructions || ""
+    );
+    res.write("[PROFESSOR_RATINGS_HELPER_DONE]");
+
+    if (!helperResponse) {
+      throw new Error("Helper response not found");
+    }
+    // Update the message using the professorRatings helper function.
+    const updatedMessage = await professorRatings(
+      message,
+      helperResponse.results as ProfessorRatingsObject[]
+    );
+    res.write("[ANALYSIS_START]");
+
+    stream = await professorRatingsAssistant(
+      updatedMessage,
+      fetchAssistant.instructions || "",
+      previousLogId
+    );
   }
 
   if (!stream) {
@@ -104,6 +133,8 @@ async function responseApi({
       res.write("[FILE_SEARCH_START]");
     } else if (event.type === "response.file_search_call.completed") {
       res.write("[FILE_SEARCH_DONE]");
+    } else if (event.type === "response.created") {
+      res.write("[ANALYSIS_DONE]");
     }
   }
   return messageId;
