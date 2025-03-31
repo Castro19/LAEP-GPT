@@ -44,6 +44,10 @@ jobs:
         run: |
           cd server
           zip -r release.zip ./*
+      - name: Show ZIP contents
+        run: |
+          cd server
+          zipinfo release.zip
 
       # Step 6: Upload Artifact
       - name: Upload Artifact
