@@ -64,17 +64,30 @@ async function callResponseApi(
   const tools =
     assistant.title === "Calpoly Clubs" ? assistant?.tools : undefined;
 
-  return openai.responses.create({
-    model: assistant.model,
-    previous_response_id: previousLogId,
-    tools: tools as Tool[] | undefined,
-    input: [
-      { role: "developer", content: instructions },
-      { role: "user", content: message },
-    ],
-    stream: true,
-    store: true,
-  });
+  const stream = tools
+    ? openai.responses.create({
+        model: assistant.model,
+        previous_response_id: previousLogId,
+        tools: tools as Tool[],
+        input: [
+          { role: "developer", content: instructions },
+          { role: "user", content: message },
+        ],
+        stream: true,
+        store: true,
+      })
+    : openai.responses.create({
+        model: assistant.model,
+        previous_response_id: previousLogId,
+        input: [
+          { role: "developer", content: instructions },
+          { role: "user", content: message },
+        ],
+        stream: true,
+        store: true,
+      });
+
+  return stream;
 }
 
 /**
