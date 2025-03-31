@@ -21,7 +21,7 @@ export const handleModeSelection = (
   dispatch: AppDispatch,
   navigate: NavigateFunction,
   currentChatId: string | null,
-  error: any,
+  error: string | null,
   loading: { [chatId: string]: boolean },
   messagesByChatId: MessageByChatIdType
 ) => {
