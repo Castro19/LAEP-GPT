@@ -95,6 +95,10 @@ export function ChatPageSidebar() {
             <SidebarGroup>
               <SidebarMenu>
                 <SideBarModeDropDown onSelect={handleModelSelect} />
+              </SidebarMenu>
+            </SidebarGroup>
+            <SidebarGroup>
+              <SidebarMenu>
                 <ChatLogList />
               </SidebarMenu>
             </SidebarGroup>

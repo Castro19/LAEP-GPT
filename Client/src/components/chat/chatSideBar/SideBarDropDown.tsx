@@ -114,7 +114,7 @@ export default function SideBarModeDropDown({ onSelect }: SideBarModeDropDownPro
     <NavigationMenu>
       <NavigationMenuList className="w-full">
         <NavigationMenuItem className="w-full p-1">
-          <NavigationMenuTrigger className="w-full group flex items-center justify-between px-2 py-1 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-opacity-70">
+          <NavigationMenuTrigger className="w-full group flex items-center justify-between px-9 py-1 ml-2 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-opacity-70">
             <div className="flex items-center gap-3">
               <Avatar className="w-8 h-8">
                 <AvatarImage
@@ -162,20 +162,23 @@ const ListItem = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "flex items-center space-x-3 w-full px-4 py-2 text-left",
+        "flex items-center space-x-3 w-full px-2 py-2 text-left",
         "rounded-md transition-colors",
         "hover:bg-slate-700 hover:text-white",
+        "whitespace-nowrap min-w-0",
         className
       )}
       {...props}
     >
-      <Avatar className="w-8 h-8">
+      <Avatar className="w-8 h-8 flex-shrink-0">
         <AvatarImage
           src={urlPhoto || "/imgs/test.png"}
           alt="Assistant Photo"
         />
       </Avatar>
-      <span className="text-sm font-medium">{title}</span>
+      <span className="text-sm font-medium truncate">
+        {title}
+      </span>
     </button>
   );
 });
