@@ -34,6 +34,10 @@ router.post(
   "/respond",
   messageRateLimiter,
   asyncHandler(async (req: Request, res: Response) => {
+    if (!res.headersSent) {
+      res.setHeader("Content-Type", "text/plain");
+      res.setHeader("Transfer-Encoding", "chunked");
+    }
     const userId = req.user?.uid;
     // check if user is authorized
     if (!userId || (await isUnauthorized(userId, res))) {
