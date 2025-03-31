@@ -12,7 +12,7 @@ import {
   ScheduleBuilderSection,
 } from "@polylink/shared/types";
 
-import { calpolyClubsAssistant } from "./singleAgent";
+import { calpolyClubsAssistant } from "./helpers/singleAgentHelpers";
 import {
   professorRatingsHelper,
   ProfessorRatingsObject,

@@ -13,7 +13,6 @@ import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import { Filter } from "mongodb";
 import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
-import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
 
 import responseApi from "../helpers/assistants/responseApi";
 const router = express.Router();
@@ -98,16 +97,7 @@ router.post(
         sections,
       });
     } else {
-      await handleModelResponse({
-        model: currentModel,
-        logId,
-        message,
-        res,
-        userId,
-        runningStreams,
-        sections,
-        streamId: userMessageId,
-      });
+      throw new Error("Invalid Assistant");
     }
   })
 );
