@@ -1,9 +1,10 @@
-import { ProfessorRatingsResponse } from "./professorRatingsHelperAssistant";
-
-import { professorRatingsHelperAssistant } from "./professorRatingsHelperAssistant";
 import { environment } from "../../..";
 import { openai } from "../../..";
 import { StreamReturnType } from "../responseApi";
+import {
+  ProfessorRatingsResponse,
+  ProfessorRatingsSchema,
+} from "./professorRatingsSchema";
 
 export type ProfessorRatingsObject = {
   type: "courses" | "professor" | "both" | "fallback";
@@ -34,18 +35,37 @@ export async function professorRatingsAssistant(
 }
 
 export async function professorRatingsHelper(
-  message: string
+  message: string,
+  helperInstructions: string
 ): Promise<ProfessorRatingsResponse> {
   const messageToAdd = message + "\n";
   if (environment === "dev") {
     console.log("Message to add for Professor Ratings:", messageToAdd);
   }
 
-  const helperResponse: ProfessorRatingsResponse | null =
-    await professorRatingsHelperAssistant(messageToAdd);
-  if (!helperResponse || helperResponse.results.length === 0) {
-    throw new Error("Helper response is empty for Professor Ratings");
-  }
+  try {
+    const response = await openai.responses.create({
+      model: "gpt-4o-mini",
+      input: [
+        { role: "system", content: helperInstructions },
+        { role: "user", content: messageToAdd },
+      ],
+      text: {
+        format: {
+          type: "json_schema",
+          name: "professor_ratings",
+          schema: ProfessorRatingsSchema,
+        },
+      },
+    });
 
-  return helperResponse;
+    // 6. Return the query + explanation
+    return JSON.parse(response.output_text);
+  } catch (error) {
+    console.error("Professor Ratings Helper Assistant error:", error);
+    // If anything fails (invalid JSON, schema mismatch, etc.), return null or a fallback
+    return {
+      results: [],
+    };
+  }
 }

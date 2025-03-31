@@ -71,7 +71,10 @@ async function responseApi({
     );
   } else if (fetchAssistant.title === "Professor Ratings") {
     res.write("[PROFESSOR_RATINGS_HELPER_START]");
-    const helperResponse = await professorRatingsHelper(message);
+    const helperResponse = await professorRatingsHelper(
+      message,
+      fetchAssistant.helperInstructions || ""
+    );
     res.write("[PROFESSOR_RATINGS_HELPER_DONE]");
 
     if (!helperResponse) {
