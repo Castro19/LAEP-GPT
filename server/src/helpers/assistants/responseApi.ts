@@ -61,10 +61,13 @@ async function callResponseApi(
   assistant: AssistantDocument,
   previousLogId?: string | null
 ): Promise<StreamReturnType> {
+  const tools =
+    assistant.title === "Calpoly Clubs" ? assistant?.tools : undefined;
+
   return openai.responses.create({
     model: assistant.model,
     previous_response_id: previousLogId,
-    tools: assistant.tools as Tool[] | undefined,
+    tools: tools as Tool[] | undefined,
     input: [
       { role: "developer", content: instructions },
       { role: "user", content: message },
