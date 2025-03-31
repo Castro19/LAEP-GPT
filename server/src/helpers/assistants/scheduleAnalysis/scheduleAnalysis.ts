@@ -1,7 +1,7 @@
 import { ScheduleBuilderObject } from "@polylink/shared/types";
 import {
   professorInsights,
-  scheduleAnalysis,
+  scheduleAnalysis as scheduleAnalysisHelper,
   scheduleReview,
   sectionOptimization,
 } from "./helpers/queryType";
@@ -12,20 +12,27 @@ import {
  * @param jsonObject
  * @returns messageToAdd with schedule or professors added
  */
-async function scheduleBuilder(
+async function scheduleAnalysis(
   messageToAdd: string,
   jsonObject: ScheduleBuilderObject
 ): Promise<string> {
   if (jsonObject.queryType === "schedule_review") {
+    console.log("FOUND SCHEDULE REVIEW");
     messageToAdd = await scheduleReview(messageToAdd, jsonObject);
   } else if (jsonObject.queryType === "professor_insights") {
+    console.log("FOUND PROFESSOR INSIGHTS");
     messageToAdd = await professorInsights(messageToAdd, jsonObject);
   } else if (jsonObject.queryType === "schedule_analysis") {
-    messageToAdd = await scheduleAnalysis(messageToAdd, jsonObject);
+    console.log("FOUND SCHEDULE ANALYSIS");
+    messageToAdd = await scheduleAnalysisHelper(messageToAdd, jsonObject);
   } else if (jsonObject.queryType === "section_optimization") {
+    console.log("FOUND SECTION OPTIMIZATION");
     messageToAdd = await sectionOptimization(messageToAdd, jsonObject);
+  } else {
+    console.log("NOT FOUND");
   }
+  console.log("Message to add: ", messageToAdd);
   return messageToAdd;
 }
 
-export default scheduleBuilder;
+export default scheduleAnalysis;

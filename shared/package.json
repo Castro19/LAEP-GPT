@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
     "./types": {
-      "import": "./src/types/index.ts"
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "scripts": {
@@ -19,6 +24,21 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.20.5",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/json-schema": "^7.0.15",
+    "@types/linkify-it": "^3.0.4",
+    "@types/lodash": "^4.17.13",
+    "@types/lodash-es": "^4.17.12",
+    "@types/markdown-it": "^14.1.1",
+    "@types/mdurl": "^1.0.5",
+    "@types/multer": "^1.4.12",
+    "@types/uuid": "^9.0.8",
     "typescript": "^5.7.2"
   },
   "dependencies": {

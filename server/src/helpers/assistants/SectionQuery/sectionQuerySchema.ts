@@ -201,11 +201,12 @@ export const FilterSectionsSchema = z.object({
 });
 
 // Security-focused schema configuration
-const ForbiddenPatterns = z.string().refine(
-  // eslint-disable-next-line no-control-regex
-  (val) => !/[;$\\|<>\\/\x00-\x1F]/.test(val),
-  "Contains forbidden characters"
-);
+const ForbiddenPatterns = z
+  .string()
+  .refine(
+    (val) => !/[;$\\|<>\\/\x00-\x1F]/.test(val),
+    "Contains forbidden characters"
+  );
 
 const MaxDepthSchema = z.any().superRefine((val, ctx) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

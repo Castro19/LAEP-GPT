@@ -1,6 +1,6 @@
-import { openai } from "../../../index";
+import { client } from "../../../index";
 export const createTitle = async (msg: string): Promise<string> => {
-  const chatCompletion = await openai.chat.completions.create({
+  const chatCompletion = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {

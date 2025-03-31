@@ -1,5 +1,5 @@
 import { getUserByFirebaseId } from "../../../db/models/user/userServices";
-import { openai } from "../../../index";
+import { client } from "../../../index";
 export const createBio = async (userId: string): Promise<string> => {
   const user = await getUserByFirebaseId(userId);
   if (!user) {
@@ -14,7 +14,7 @@ export const createBio = async (userId: string): Promise<string> => {
     goals: user.goals,
     flowchartInformation: user.flowchartInformation,
   };
-  const bio = await openai.chat.completions.create({
+  const bio = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {

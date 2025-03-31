@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
-import { environment, openai } from "../index";
+import { environment, client } from "../index";
 import asyncHandler from "../middlewares/asyncMiddleware";
 
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
@@ -13,7 +13,6 @@ import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import { Filter } from "mongodb";
 import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
-import { handleModelResponse } from "../helpers/assistants/helpAssistant/helpAssistant";
 
 import responseApi from "../helpers/assistants/responseApi";
 const router = express.Router();
@@ -35,6 +34,10 @@ router.post(
   "/respond",
   messageRateLimiter,
   asyncHandler(async (req: Request, res: Response) => {
+    if (!res.headersSent) {
+      res.setHeader("Content-Type", "text/plain");
+      res.setHeader("Transfer-Encoding", "chunked");
+    }
     const userId = req.user?.uid;
     // check if user is authorized
     if (!userId || (await isUnauthorized(userId, res))) {
@@ -83,7 +86,8 @@ router.post(
     if (
       currentModel.title === "Calpoly SLO" ||
       currentModel.title === "Calpoly Clubs" ||
-      currentModel.title === "Professor Ratings"
+      currentModel.title === "Professor Ratings" ||
+      currentModel.title === "Schedule Analysis"
     ) {
       await responseApi({
         message,
@@ -94,18 +98,10 @@ router.post(
         assistant: { id: currentModel.id, title: currentModel.title },
         previousLogId,
         userId,
+        sections,
       });
     } else {
-      await handleModelResponse({
-        model: currentModel,
-        logId,
-        message,
-        res,
-        userId,
-        runningStreams,
-        sections,
-        streamId: userMessageId,
-      });
+      throw new Error("Invalid Assistant");
     }
   })
 );
@@ -126,7 +122,7 @@ router.post(
       runData.canceled = true;
       if (runData.runId && runData.threadId) {
         try {
-          await openai.beta.threads.runs.cancel(
+          await client.beta.threads.runs.cancel(
             runData.threadId,
             runData.runId
           );

@@ -1,6 +1,5 @@
 import { environment } from "../../..";
-import { openai } from "../../..";
-import { StreamReturnType } from "../responseApi";
+import { client } from "../../..";
 import {
   ProfessorRatingsResponse,
   ProfessorRatingsSchema,
@@ -13,27 +12,6 @@ export type ProfessorRatingsObject = {
   reason?: string;
 };
 
-export async function professorRatingsAssistant(
-  message: string,
-  instructions: string,
-  previousLogId?: string | null
-): Promise<StreamReturnType> {
-  const stream = await openai.responses.create({
-    model: "gpt-4o-mini",
-    previous_response_id: previousLogId,
-    input: [
-      { role: "developer", content: instructions },
-      {
-        role: "user",
-        content: message,
-      },
-    ],
-    stream: true,
-    store: true,
-  });
-  return stream;
-}
-
 export async function professorRatingsHelper(
   message: string,
   helperInstructions: string
@@ -44,7 +22,7 @@ export async function professorRatingsHelper(
   }
 
   try {
-    const response = await openai.responses.create({
+    const response = await client.responses.create({
       model: "gpt-4o-mini",
       input: [
         { role: "system", content: helperInstructions },

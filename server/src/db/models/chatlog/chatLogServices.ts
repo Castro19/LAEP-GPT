@@ -5,7 +5,7 @@ import {
   MessageObjType,
 } from "@polylink/shared/types";
 import * as ChatLogModel from "./chatLogCollection";
-import { openai } from "../../../index";
+import { client } from "../../../index";
 import { fetchIds } from "../threads/threadServices";
 
 // Create
@@ -111,7 +111,7 @@ export const deleteLog = async (
     // Try to delete thread
     if (threadId) {
       try {
-        await openai.beta.threads.del(threadId);
+        await client.beta.threads.del(threadId);
       } catch (error) {
         console.warn("Failed to delete thread:", (error as Error).message);
       }

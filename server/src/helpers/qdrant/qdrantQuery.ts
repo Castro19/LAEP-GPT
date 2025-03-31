@@ -1,11 +1,11 @@
 // Import necessary libraries
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { openai, qdrant } from "../../index";
+import { client, qdrant } from "../../index";
 
 // Helper function to get embeddings from OpenAI
 export async function getEmbedding(text: string): Promise<number[]> {
-  const response = await openai.embeddings.create({
+  const response = await client.embeddings.create({
     input: text,
     model: "text-embedding-3-large",
     dimensions: 1024,
