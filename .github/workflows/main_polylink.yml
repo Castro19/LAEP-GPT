@@ -36,6 +36,7 @@ jobs:
         run: |
           cd server
           npm install
+          npm list openai --depth=0
           npm run build
 
       # Step 5: Prepare Deployment Artifact
