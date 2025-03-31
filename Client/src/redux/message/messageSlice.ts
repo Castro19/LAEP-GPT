@@ -8,6 +8,7 @@ import {
   ScheduleBuilderSection,
 } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { handleToolUsageMarkers } from "./messageHelpers";
 
 // Thunk for fetching the bot response. Performs READ operation by getting messages from the backend.
 interface fetchBotResponseParams {
@@ -104,50 +105,16 @@ export const fetchBotResponse = createAsyncThunk<
       try {
         if (updateStream) {
           await updateStream((botMessageId: string, text: string) => {
-            // 1) Detect any special "web search" markers
-            if (text.includes("[WEB_SEARCH_START]")) {
-              // Dispatch our new action
-              dispatch(
-                setToolUsage({
-                  id: botMessageId,
-                  toolUsage: "Searching the web...",
-                  chatId: currentChatId,
-                })
-              );
-              // Remove the token from the actual user-facing text
-              text = text.replace("[WEB_SEARCH_START]", "");
-            }
-            if (text.includes("[FILE_SEARCH_START]")) {
-              dispatch(
-                setToolUsage({
-                  id: botMessageId,
-                  toolUsage: "Searching through all clubs...",
-                  chatId: currentChatId,
-                })
-              );
-              text = text.replace("[FILE_SEARCH_START]", "");
-            }
-
-            if (
-              text.includes("[FILE_SEARCH_DONE]") ||
-              text.includes("[WEB_SEARCH_DONE]")
-            ) {
-              text = text.replace("[FILE_SEARCH_DONE]", "");
-              text = text.replace("[WEB_SEARCH_DONE]", "");
-              dispatch(
-                setToolUsage({
-                  id: botMessageId,
-                  toolUsage: null,
-                  chatId: currentChatId,
-                })
-              );
-            }
-
-            // 2) Now dispatch the updated text to the Redux store
+            const updatedText = handleToolUsageMarkers(
+              text,
+              botMessageId,
+              currentChatId,
+              dispatch
+            );
             dispatch(
               updateBotMessage({
                 id: botMessageId,
-                text,
+                text: updatedText,
                 chatId: currentChatId,
               })
             );

@@ -82,7 +82,8 @@ router.post(
     };
     if (
       currentModel.title === "Calpoly SLO" ||
-      currentModel.title === "Calpoly Clubs"
+      currentModel.title === "Calpoly Clubs" ||
+      currentModel.title === "Professor Ratings"
     ) {
       await responseApi({
         message,
