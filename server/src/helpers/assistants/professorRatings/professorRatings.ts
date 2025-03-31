@@ -4,7 +4,7 @@ import {
   getProfessorsByCourseIds,
 } from "../../../db/models/professorRatings/professorRatingServices";
 import { searchProfessors } from "../../qdrant/qdrantQuery";
-import { ProfessorRatingsObject } from "./professorRatingsAssistant";
+import { ProfessorRatingsObject } from "./professorRatingsHelperAssistant";
 
 /**
  *
