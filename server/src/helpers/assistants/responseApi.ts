@@ -370,7 +370,7 @@ async function responseApi({
       console.error("Error in responseApi:", error);
     }
     if (!res.headersSent) {
-      res.status(500).send("Failed to process request.");
+      res.status(500).send("Failed to process request: " + error);
     } else {
       res.end();
     }
