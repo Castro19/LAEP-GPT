@@ -65,7 +65,7 @@ async function callResponseApi(
     assistant.title === "Calpoly Clubs" ? assistant?.tools : undefined;
 
   const stream = tools
-    ? client.responses.create({
+    ? await client.responses.create({
         model: assistant.model,
         previous_response_id: previousLogId,
         tools: tools as Tool[],
@@ -76,7 +76,7 @@ async function callResponseApi(
         stream: true,
         store: true,
       })
-    : client.responses.create({
+    : await client.responses.create({
         model: assistant.model,
         previous_response_id: previousLogId,
         input: [
