@@ -90,9 +90,7 @@ export const deepseek = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
 });
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const client = new OpenAI();
 
 export const ASST_MAP = {
   professor_ratings_query: process.env.FORMAT_ASST_ID,

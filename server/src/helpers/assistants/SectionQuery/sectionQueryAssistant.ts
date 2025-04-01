@@ -1,6 +1,6 @@
 // queryAgent.ts
 
-import { openai } from "../../../index"; // or wherever your OpenAI client is set up
+import { client } from "../../../index"; // or wherever your OpenAI client is set up
 import { FilterSectionsSchema } from "./sectionQuerySchema";
 import { systemInstructions } from "./sectionQuerySyststemInstructions"; // import system instructions
 
@@ -14,7 +14,7 @@ export const sectionQueryAssistant = async (
 ): Promise<SectionQueryResponse> => {
   try {
     // 1. Call the Chat Completion API with system + user messages
-    const response = await openai.chat.completions.create({
+    const response = await client.chat.completions.create({
       model: "gpt-4o",
       messages: [
         { role: "system", content: systemInstructions },

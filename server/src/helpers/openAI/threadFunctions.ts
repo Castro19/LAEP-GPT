@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { environment, openai } from "../../index";
+import { environment, client } from "../../index";
 import {
   addThreadToDB,
   fetchIds,
@@ -15,7 +15,7 @@ export async function addMessageToThread(
 ): Promise<Message | null> {
   let threadMessages;
   try {
-    threadMessages = await openai.beta.threads.messages.create(threadId, {
+    threadMessages = await client.beta.threads.messages.create(threadId, {
       role: role as "user",
       content: message,
     });
@@ -32,7 +32,7 @@ export async function addMessageToThread(
 }
 
 export async function deleteThread(threadId: string): Promise<void> {
-  await openai.beta.threads.del(threadId);
+  await client.beta.threads.del(threadId);
 }
 
 // Create thread rom OpenAI API if not already created
@@ -45,7 +45,7 @@ export async function initializeOrFetchIds(
     return existing;
   }
   // Initialize new threa
-  const thread = await openai.beta.threads.create();
+  const thread = await client.beta.threads.create();
 
   await addThreadToDB(chatId, thread.id, assistantId);
 

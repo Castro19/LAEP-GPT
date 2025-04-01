@@ -21,7 +21,7 @@ import professorRatings from "./professorRatings/professorRatings";
 import scheduleAnalysisHelperAssistant from "./scheduleAnalysis/scheduleAnalysisHelperAssistant";
 import scheduleAnalysis from "./scheduleAnalysis/scheduleAnalysis";
 
-import { environment, openai } from "../..";
+import { environment, client } from "../..";
 import { Tool } from "openai/resources/responses/responses";
 
 export type StreamReturnType = Stream<OpenAI.Responses.ResponseStreamEvent> & {
@@ -65,7 +65,7 @@ async function callResponseApi(
     assistant.title === "Calpoly Clubs" ? assistant?.tools : undefined;
 
   const stream = tools
-    ? openai.responses.create({
+    ? client.responses.create({
         model: assistant.model,
         previous_response_id: previousLogId,
         tools: tools as Tool[],
@@ -76,7 +76,7 @@ async function callResponseApi(
         stream: true,
         store: true,
       })
-    : openai.responses.create({
+    : client.responses.create({
         model: assistant.model,
         previous_response_id: previousLogId,
         input: [

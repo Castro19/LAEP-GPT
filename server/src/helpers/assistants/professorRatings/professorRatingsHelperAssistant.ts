@@ -1,5 +1,5 @@
 import { environment } from "../../..";
-import { openai } from "../../..";
+import { client } from "../../..";
 import {
   ProfessorRatingsResponse,
   ProfessorRatingsSchema,
@@ -22,7 +22,7 @@ export async function professorRatingsHelper(
   }
 
   try {
-    const response = await openai.responses.create({
+    const response = await client.responses.create({
       model: "gpt-4o-mini",
       input: [
         { role: "system", content: helperInstructions },

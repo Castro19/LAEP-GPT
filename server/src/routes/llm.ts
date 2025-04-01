@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
-import { environment, openai } from "../index";
+import { environment, client } from "../index";
 import asyncHandler from "../middlewares/asyncMiddleware";
 
 import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
@@ -122,7 +122,7 @@ router.post(
       runData.canceled = true;
       if (runData.runId && runData.threadId) {
         try {
-          await openai.beta.threads.runs.cancel(
+          await client.beta.threads.runs.cancel(
             runData.threadId,
             runData.runId
           );

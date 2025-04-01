@@ -1,5 +1,5 @@
 // queryAgent.ts
-import { openai } from "../../../index"; // or wherever your OpenAI client is set up
+import { client } from "../../../index"; // or wherever your OpenAI client is set up
 import { ScheduleAnalysisSchema } from "./scheduleAnalysisSchema";
 import { ScheduleBuilderObject } from "@polylink/shared/types";
 
@@ -8,7 +8,7 @@ async function scheduleAnalysisHelperAssistant(
   instructions: string
 ): Promise<ScheduleBuilderObject | null> {
   try {
-    const response = await openai.responses.create({
+    const response = await client.responses.create({
       model: "gpt-4o",
       input: [
         { role: "system", content: instructions },
