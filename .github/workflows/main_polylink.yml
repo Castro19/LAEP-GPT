@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: "18.x"
 
-      # Step 3: Install dependencies (root) including dev dependencies
+      # Step 3: Install dependencies (root)
       - name: Install All Dependencies (Workspace)
         run: |
           npm install
@@ -40,33 +40,35 @@ jobs:
           cd server
           npm list openai --depth=0 || true
 
-      # Step 6: Create a production-ready server package
+      # Step 6: Create a production-ready server package with only needed dependencies
       - name: Prepare Server Package
         run: |
-          cd server
-          # List files for debugging
-          echo "Files in server directory:"
-          ls -la
+          # Create deploy directory
+          mkdir -p deploy-package/node_modules
 
-          # Create a fresh directory for production deployment
-          mkdir -p ../deploy-package
-          # Copy only what's needed for production (omitting package-lock.json if it doesn't exist)
-          cp -r dist package.json ../deploy-package/
+          # Copy compiled code and package.json
+          cp -r server/dist deploy-package/
+          cp server/package.json deploy-package/
 
-          # Check if package-lock.json exists and copy it if it does
-          if [ -f "package-lock.json" ]; then
-            cp package-lock.json ../deploy-package/
-          else
-            echo "Warning: No package-lock.json found in server directory"
+          # Extract only production dependencies from package.json
+          echo "Extracting production dependencies..."
+          PROD_DEPS=$(node -e "const pkg = require('./server/package.json'); console.log(Object.keys(pkg.dependencies || {}).join(' '));")
+          echo "Production dependencies: $PROD_DEPS"
+
+          # If openai is not in the list, add it explicitly
+          if [[ ! "$PROD_DEPS" =~ "openai" ]]; then
+            PROD_DEPS="$PROD_DEPS openai@^4.91.0"
+            echo "Added openai dependency. Updated list: $PROD_DEPS"
           fi
 
-          # Install production dependencies directly in the deploy package
-          cd ../deploy-package
-          echo "Files in deploy-package directory:"
-          ls -la
-
-          # Use --no-package-lock to prevent npm from generating a new one
-          npm install --omit=dev --no-package-lock
+          # Install only those specific packages
+          cd deploy-package
+          echo "Installing only production dependencies..."
+          if [ ! -z "$PROD_DEPS" ]; then
+            npm install --no-save $PROD_DEPS
+          else
+            echo "No production dependencies found in package.json"
+          fi
 
           # Verify openai is correctly installed
           echo "Checking for openai package:"
@@ -78,16 +80,17 @@ jobs:
         run: |
           cd deploy-package
           zip -r release.zip dist package.json node_modules
-          # Include package-lock.json only if it exists
-          if [ -f "package-lock.json" ]; then
-            zip -r release.zip package-lock.json
-          fi
 
       # Step 8: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
           cd deploy-package
-          zipinfo -1 release.zip | grep -E "node_modules/openai|node_modules/@openai" || echo "No openai package found in zip!"
+          echo "Top-level directories in zip:"
+          zipinfo -1 release.zip | grep -v "/" | sort
+
+          echo "openai module files in zip:"
+          zipinfo -1 release.zip | grep -E "node_modules/openai|node_modules/@openai" | head -10 || echo "No openai package found in zip!"
+
           echo "Number of files in zip:" $(zipinfo -1 release.zip | wc -l)
 
       # Step 9: Upload Artifact
