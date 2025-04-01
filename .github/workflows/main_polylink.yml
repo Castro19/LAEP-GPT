@@ -50,21 +50,34 @@ jobs:
           cp -r server/dist deploy-package/
           cp server/package.json deploy-package/
 
-          # Create a minimal package.json with only openai dependency
+          # Copy the shared package
+          mkdir -p deploy-package/node_modules/@polylink
+          cp -r shared/dist deploy-package/node_modules/@polylink/shared
+
+          # If the shared package has a package.json, copy that too
+          if [ -f shared/package.json ]; then
+            cp shared/package.json deploy-package/node_modules/@polylink/shared/
+          else
+            # Create a minimal package.json for the shared package
+            cat > deploy-package/node_modules/@polylink/shared/package.json << EOL
+            {
+              "name": "@polylink/shared",
+              "version": "1.0.0",
+              "main": "index.js"
+            }
+            EOL
+          fi
+
+          # Create a new minimal package.json with dependencies EXCEPT @polylink/shared
           cd deploy-package
-
-          # Save the original package.json
           cp package.json package.json.original
-
-          # Create a new minimal package.json with just what we need
           cat > package.json << EOL
           {
             "name": "server-deploy",
-            "version": "1.0.0",
+            "version": "1.0.0", 
             "private": true,
             "dependencies": {
               "openai": "^4.91.0",
-              "@polylink/shared": "1.0.0",
               "@qdrant/js-client-rest": "^1.6.0",
               "@sentry/node": "^7.94.1",
               "@sentry/profiling-node": "^1.2.6",
@@ -90,7 +103,6 @@ jobs:
           # Verify openai is correctly installed
           echo "Checking for openai package:"
           find node_modules -name "openai" -type d | grep -v "node_modules/.*node_modules" || echo "No openai directory found"
-          find node_modules -name "@openai" -type d | grep -v "node_modules/.*node_modules" || echo "No @openai directory found"
           npm list openai --depth=0 || true
 
       # Step 7: Create zip artifact
