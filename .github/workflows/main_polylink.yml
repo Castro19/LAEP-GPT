@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: "18.x"
 
-      # Step 3: Install dependencies (root).
+      # Step 3: Install dependencies (root) including dev dependencies
       - name: Install All Dependencies (Workspace)
         run: |
           npm install
@@ -40,33 +40,43 @@ jobs:
           cd server
           npm list openai --depth=0 || true
 
-      # Step 6: Install server dependencies directly in server folder
-      - name: Install Server Dependencies for Production
+      # Step 6: Create a production-ready server package
+      - name: Prepare Server Package
         run: |
           cd server
-          # Create a clean node_modules specifically for the server
-          rm -rf node_modules
-          npm ci --omit=dev
+          # Create a fresh directory for production deployment
+          mkdir -p ../deploy-package
+          # Copy only what's needed for production
+          cp -r dist package.json package-lock.json ../deploy-package/
 
-      # Step 7: Prepare Deployment Artifact (Server only)
+          # Install production dependencies directly in the deploy package
+          cd ../deploy-package
+          npm ci --omit=dev --no-package-lock
+
+          # Verify openai is correctly installed
+          echo "Checking for openai package:"
+          find node_modules -name "openai" -type d | grep -v "node_modules/.*node_modules"
+          npm list openai --depth=0 || true
+
+      # Step 7: Create zip artifact
       - name: Create zip artifact
         run: |
-          cd server
+          cd deploy-package
           zip -r release.zip dist package.json package-lock.json node_modules
 
       # Step 8: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
-          cd server
-          zipinfo release.zip | head -n 30
-          echo "... (truncated output)"
+          cd deploy-package
+          zipinfo -1 release.zip | grep -E "node_modules/openai|node_modules/@openai" || echo "No openai package found in zip!"
+          echo "Number of files in zip:" $(zipinfo -1 release.zip | wc -l)
 
       # Step 9: Upload Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: server-app
-          path: server/release.zip
+          path: deploy-package/release.zip
 
   deploy:
     runs-on: ubuntu-latest
