@@ -44,25 +44,44 @@ jobs:
       - name: Prepare Server Package
         run: |
           cd server
+          # List files for debugging
+          echo "Files in server directory:"
+          ls -la
+
           # Create a fresh directory for production deployment
           mkdir -p ../deploy-package
-          # Copy only what's needed for production
-          cp -r dist package.json package-lock.json ../deploy-package/
+          # Copy only what's needed for production (omitting package-lock.json if it doesn't exist)
+          cp -r dist package.json ../deploy-package/
+
+          # Check if package-lock.json exists and copy it if it does
+          if [ -f "package-lock.json" ]; then
+            cp package-lock.json ../deploy-package/
+          else
+            echo "Warning: No package-lock.json found in server directory"
+          fi
 
           # Install production dependencies directly in the deploy package
           cd ../deploy-package
-          npm ci --omit=dev --no-package-lock
+          echo "Files in deploy-package directory:"
+          ls -la
+
+          # Use --no-package-lock to prevent npm from generating a new one
+          npm install --omit=dev --no-package-lock
 
           # Verify openai is correctly installed
           echo "Checking for openai package:"
-          find node_modules -name "openai" -type d | grep -v "node_modules/.*node_modules"
+          find node_modules -name "openai" -type d | grep -v "node_modules/.*node_modules" || echo "No openai directory found"
           npm list openai --depth=0 || true
 
       # Step 7: Create zip artifact
       - name: Create zip artifact
         run: |
           cd deploy-package
-          zip -r release.zip dist package.json package-lock.json node_modules
+          zip -r release.zip dist package.json node_modules
+          # Include package-lock.json only if it exists
+          if [ -f "package-lock.json" ]; then
+            zip -r release.zip package-lock.json
+          fi
 
       # Step 8: Show ZIP contents (for debugging)
       - name: Show ZIP contents
