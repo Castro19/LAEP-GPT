@@ -1,12 +1,10 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# .github/workflows/deploy-server.yml
 
 name: Build and deploy Node.js app to Azure Web App - PolyLink
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -24,32 +22,45 @@ jobs:
         with:
           node-version: "18.x"
 
-      # Step 3: Install dependencies and build shared package
-      - name: Install and Build Shared Package
+      # Step 3: Install dependencies (root).
+      #         This ensures we can build 'shared' and 'server' properly in a workspace.
+      - name: Install All Dependencies (Workspace)
         run: |
-          cd shared
           npm install
-          npm run build
+          # Just to check what's hoisted:
+          npm list openai --depth=0 || true
 
-      # Step 4: Install dependencies and build server package
-      - name: Install and Build Server Package
+      # Step 4: Build Shared
+      - name: Build Shared
+        run: |
+          npm run build:shared
+
+      # Step 5: Build Server
+      - name: Build Server
+        run: |
+          npm run build:server
+          # Confirm the server's package has the correct openai version:
+          cd server
+          npm list openai --depth=0 || true
+
+      # Step 6: Prepare Deployment Artifact (Server only)
+      #         We'll include:
+      #            - dist/ (the compiled output)
+      #            - package.json / package-lock.json
+      #            - (optionally) .env.production if needed
+      - name: Create zip artifact
         run: |
           cd server
-          npm install
-          npm list openai --depth=0
-          npm run build
+          rm -rf node_modules   # remove if any local node_modules got created
+          zip -r release.zip dist package.json package-lock.json
 
-      # Step 5: Prepare Deployment Artifact
-      - name: Zip Artifact for Deployment
-        run: |
-          cd server
-          zip -r release.zip ./*
+      # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
           cd server
           zipinfo release.zip
 
-      # Step 6: Upload Artifact
+      # Step 8: Upload Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -63,7 +74,7 @@ jobs:
       name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -87,4 +98,5 @@ jobs:
         with:
           app-name: "PolyLink"
           slot-name: "Production"
+          # 'package' points to the folder containing package.json & dist
           package: .
