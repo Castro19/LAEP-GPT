@@ -40,39 +40,57 @@ jobs:
           cd server
           npm list openai --depth=0 || true
 
-      # Step 6: Create a production-ready server package with only needed dependencies
-      - name: Prepare Server Package
+      # Step 6: Install OpenAI package directly in a clean directory
+      - name: Prepare Server Package with Direct OpenAI Installation
         run: |
           # Create deploy directory
-          mkdir -p deploy-package/node_modules
+          mkdir -p deploy-package
 
-          # Copy compiled code and package.json
+          # Copy just the compiled server code and package.json
           cp -r server/dist deploy-package/
           cp server/package.json deploy-package/
 
-          # Extract only production dependencies from package.json
-          echo "Extracting production dependencies..."
-          PROD_DEPS=$(node -e "const pkg = require('./server/package.json'); console.log(Object.keys(pkg.dependencies || {}).join(' '));")
-          echo "Production dependencies: $PROD_DEPS"
-
-          # If openai is not in the list, add it explicitly
-          if [[ ! "$PROD_DEPS" =~ "openai" ]]; then
-            PROD_DEPS="$PROD_DEPS openai@^4.91.0"
-            echo "Added openai dependency. Updated list: $PROD_DEPS"
-          fi
-
-          # Install only those specific packages
+          # Create a minimal package.json with only openai dependency
           cd deploy-package
-          echo "Installing only production dependencies..."
-          if [ ! -z "$PROD_DEPS" ]; then
-            npm install --no-save $PROD_DEPS
-          else
-            echo "No production dependencies found in package.json"
-          fi
+
+          # Save the original package.json
+          cp package.json package.json.original
+
+          # Create a new minimal package.json with just what we need
+          cat > package.json << EOL
+          {
+            "name": "server-deploy",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "openai": "^4.91.0",
+              "@polylink/shared": "1.0.0",
+              "@qdrant/js-client-rest": "^1.6.0",
+              "@sentry/node": "^7.94.1",
+              "@sentry/profiling-node": "^1.2.6",
+              "cookie-parser": "^1.4.6",
+              "cors": "^2.8.5",
+              "dotenv": "^16.3.1",
+              "express": "^4.18.2",
+              "express-rate-limit": "^7.1.5",
+              "firebase-admin": "^11.11.1",
+              "mongodb": "^6.3.0",
+              "multer": "^1.4.5-lts.1"
+            }
+          }
+          EOL
+
+          # Install just these dependencies with legacy-peer-deps flag
+          npm install --legacy-peer-deps
+
+          # Copy the original package.json back for Azure (so it has the correct metadata)
+          cp package.json.original package.json
+          rm package.json.original
 
           # Verify openai is correctly installed
           echo "Checking for openai package:"
           find node_modules -name "openai" -type d | grep -v "node_modules/.*node_modules" || echo "No openai directory found"
+          find node_modules -name "@openai" -type d | grep -v "node_modules/.*node_modules" || echo "No @openai directory found"
           npm list openai --depth=0 || true
 
       # Step 7: Create zip artifact
@@ -85,11 +103,11 @@ jobs:
       - name: Show ZIP contents
         run: |
           cd deploy-package
-          echo "Top-level directories in zip:"
+          echo "Top-level items in zip:"
           zipinfo -1 release.zip | grep -v "/" | sort
 
-          echo "openai module files in zip:"
-          zipinfo -1 release.zip | grep -E "node_modules/openai|node_modules/@openai" | head -10 || echo "No openai package found in zip!"
+          echo "Checking for OpenAI in the zip:"
+          zipinfo -1 release.zip | grep -E "node_modules/openai|node_modules/@openai" | head -5 || echo "No openai package found in zip!"
 
           echo "Number of files in zip:" $(zipinfo -1 release.zip | wc -l)
 
