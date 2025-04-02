@@ -2,13 +2,12 @@
   "name": "@polylink/server",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/index.js",
-    "prepare": "cd ../shared && npm run build",
-    "postinstall": "cd ../shared && npm install && npm run build",
     "check": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{js,ts}' --report-unused-disable-directives",
     "lint:fix": "eslint 'src/**/*.{js,ts}' --fix",
@@ -17,7 +16,7 @@
   "author": "Cristian Castro Oliva",
   "license": "ISC",
   "dependencies": {
-    "@polylink/shared": "file:../shared",
+    "@polylink/shared": "^1.0.0",
     "@qdrant/js-client-rest": "^1.12.0",
     "@sentry/node": "^8.37.1",
     "@sentry/profiling-node": "^8.37.1",
