@@ -1,5 +1,4 @@
 // TermContainer.tsx
-import React from "react";
 import CourseItem from "./CourseItem";
 import { Course, FlowchartData, Term } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
