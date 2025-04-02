@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "ESNext",
+    "module": "CommonJS",
     "declaration": true,
     "declarationDir": "./dist/types",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
