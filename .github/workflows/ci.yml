@@ -12,7 +12,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "20.x"
 
       - name: Install Client Dependencies
         run: |
@@ -59,7 +59,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: "20.x"
 
       - name: Install Shared Dependencies
         run: cd shared && npm install
@@ -83,7 +83,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: "20.x"
 
       # Restore client build cache
       - name: Restore build artifacts
@@ -92,10 +92,25 @@ jobs:
           path: Client/dist
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
-      - name: Install Server Dependencies
+      # Restore shared build cache
+      - name: Restore shared build
+        uses: actions/cache@v3
+        with:
+          path: shared/dist
+          key: ${{ runner.os }}-shared-build-${{ github.sha }}
+
+      - name: Install Dependencies and Link Shared
         run: |
-          cd shared && npm install
-          cd ../server && npm install --ignore-scripts
+          # Install shared package
+          cd shared
+          npm install
+          npm run build
+          npm link
+
+          # Install server package and link to shared
+          cd ../server
+          npm install --ignore-scripts
+          npm link @polylink/shared
 
       - name: Run lint
         run: cd server && npm run lint
