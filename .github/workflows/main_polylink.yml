@@ -20,18 +20,17 @@ jobs:
         with:
           node-version: "18.x"
 
-      # Step 3: Install dependencies (root)
+      # Step 3: Install dependencies (root).
+      #         This ensures we can build 'shared' and 'server' properly in a workspace.
       - name: Install All Dependencies (Workspace)
         run: |
           npm install
           # Just to check what's hoisted:
           npm list openai --depth=0 || true
-
       # Step 4: Build Shared
       - name: Build Shared
         run: |
           npm run build:shared
-
       # Step 5: Build Server
       - name: Build Server
         run: |
@@ -39,95 +38,27 @@ jobs:
           # Confirm the server's package has the correct openai version:
           cd server
           npm list openai --depth=0 || true
-
-      # Step 6: Install OpenAI package directly in a clean directory
-      - name: Prepare Server Package with Direct OpenAI Installation
-        run: |
-          # Create deploy directory
-          mkdir -p deploy-package
-
-          # Copy just the compiled server code and package.json
-          cp -r server/dist deploy-package/
-          cp server/package.json deploy-package/
-
-          # Copy the shared package
-          mkdir -p deploy-package/node_modules/@polylink
-          cp -r shared/dist deploy-package/node_modules/@polylink/shared
-
-          # If the shared package has a package.json, copy that too
-          if [ -f shared/package.json ]; then
-            cp shared/package.json deploy-package/node_modules/@polylink/shared/
-          else
-            # Create a minimal package.json for the shared package
-            cat > deploy-package/node_modules/@polylink/shared/package.json << 'EOL'
-            {
-              "name": "@polylink/shared",
-              "version": "1.0.0",
-              "main": "index.js"
-            }
-            EOL
-                fi
-
-                # Create a new minimal package.json with dependencies EXCEPT @polylink/shared
-                cd deploy-package
-                cp package.json package.json.original
-                cat > package.json << 'EOL'
-            {
-              "name": "server-deploy",
-              "version": "1.0.0", 
-              "private": true,
-              "dependencies": {
-                "openai": "^4.91.0",
-                "@qdrant/js-client-rest": "^1.6.0",
-                "@sentry/node": "^7.94.1",
-                "@sentry/profiling-node": "^1.2.6",
-                "cookie-parser": "^1.4.6",
-                "cors": "^2.8.5",
-                "dotenv": "^16.3.1",
-                "express": "^4.18.2",
-                "express-rate-limit": "^7.1.5",
-                "firebase-admin": "^11.11.1",
-                "mongodb": "^6.3.0",
-                "multer": "^1.4.5-lts.1"
-              }
-            }
-            EOL
-
-          # Install just these dependencies with legacy-peer-deps flag
-          npm install --legacy-peer-deps
-
-          # Copy the original package.json back for Azure (so it has the correct metadata)
-          cp package.json.original package.json
-          rm package.json.original
-
-          # Verify openai is correctly installed
-          echo "Checking for openai package:"
-          find node_modules -name "openai" -type d | grep -v "node_modules/.*node_modules" || echo "No openai directory found"
-          npm list openai --depth=0 || true
-      # Step 7: Create zip artifact
+      # Step 6: Prepare Deployment Artifact (Server only)
+      #         We'll include:
+      #            - dist/ (the compiled output)
+      #            - package.json / package-lock.json
+      #            - (optionally) .env.production if needed
       - name: Create zip artifact
         run: |
-          cd deploy-package
-          zip -r release.zip dist package.json node_modules
-
-      # Step 8: Show ZIP contents (for debugging)
+          cd server
+          rm -rf node_modules   # remove if any local node_modules got created
+          zip -r release.zip dist package.json package-lock.json
+      # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
-          cd deploy-package
-          echo "Top-level items in zip:"
-          zipinfo -1 release.zip | grep -v "/" | sort
-
-          echo "Checking for OpenAI in the zip:"
-          zipinfo -1 release.zip | grep -E "node_modules/openai|node_modules/@openai" | head -5 || echo "No openai package found in zip!"
-
-          echo "Number of files in zip:" $(zipinfo -1 release.zip | wc -l)
-
-      # Step 9: Upload Artifact
+          cd server
+          zipinfo release.zip
+      # Step 8: Upload Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: server-app
-          path: deploy-package/release.zip
+          path: server/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -154,17 +85,11 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
 
-      # Add this environment variable to tell Azure NOT to run npm install
-      - name: Set deployment settings
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: "PolyLink"
-          app-settings-json: '[{"name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "false"}]'
-
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLink"
           slot-name: "Production"
+          # 'package' points to the folder containing package.json & dist
           package: .
