@@ -44,17 +44,23 @@ const Flowchart = ({
   }, [userData]);
 
   const termsPerYear = 3; // Fall, Winter, Spring
-  // Function to compute the term name
   // Skip, Fall, Winter, Spring, Fall, Winter, Spring, Fall, Winter, Spring, ...
   const getTermName = (termNumber: number) => {
     const termName = TERM_MAP[termNumber as keyof typeof TERM_MAP];
-    const yearOffset = Math.floor((termNumber - 1) / termsPerYear);
-    let year = startYear + yearOffset;
 
-    // Adjust the year for Winter and Spring terms
-    if (termName === "Winter" || termName === "Spring") {
-      year += 1;
-    }
+    // Calculate year offset based on term index
+    // For terms 1,2: year 0 (Fall 2020, Winter 2020)
+    // For term 3: year 1 (Spring 2021)
+    // For terms 5,6: year 1 (Fall 2021, Winter 2021)
+    // For term 7: year 2 (Spring 2022)
+    // For terms 9,10: year 2 (Fall 2022, Winter 2022)
+    // For term 11: year 3 (Spring 2023)
+    // For terms 13,14: year 3 (Fall 2023, Winter 2023)
+    // For term 15: year 4 (Spring 2024)
+    const baseYearOffset = Math.floor((termNumber - 1) / 4);
+    const yearOffset =
+      termName === "Spring" ? baseYearOffset + 1 : baseYearOffset;
+    const year = startYear + yearOffset;
 
     return `${termName} ${year}`;
   };
@@ -129,6 +135,7 @@ const Flowchart = ({
         <div className="flex w-max space-x-4 py-2 px-4">
           {termsData.map((term) => {
             const termName = getTermName(term.tIndex);
+
             return (
               <div
                 className="flex-shrink-1 min-w-[340px] max-w-[350px] bg-slate-50 text-center border-2 border-slate-500"

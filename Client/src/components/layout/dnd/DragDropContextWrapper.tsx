@@ -1,5 +1,4 @@
 // FlowChatLayout.jsx
-import React from "react";
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import cloneDeep from "lodash-es/cloneDeep";
@@ -48,7 +47,7 @@ const DragDropContextWrapper = ({
       const termIndex = parseInt(destination.droppableId.split("-")[1], 10);
       const courseId = draggableId.replace("sidebar-", "");
       const courseFetched: CourseObject | null = await getCourseFromSidebar(
-        catalog,
+        catalog ? catalog : "2022-2026",
         courseId
       );
       if (!courseFetched) return;
