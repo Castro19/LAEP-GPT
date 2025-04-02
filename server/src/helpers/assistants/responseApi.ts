@@ -21,7 +21,7 @@ import professorRatings from "./professorRatings/professorRatings";
 import scheduleAnalysisHelperAssistant from "./scheduleAnalysis/scheduleAnalysisHelperAssistant";
 import scheduleAnalysis from "./scheduleAnalysis/scheduleAnalysis";
 
-import { environment, client } from "../..";
+import { environment, client } from "../../index";
 import { Tool } from "openai/resources/responses/responses";
 
 export type StreamReturnType = Stream<OpenAI.Responses.ResponseStreamEvent> & {
