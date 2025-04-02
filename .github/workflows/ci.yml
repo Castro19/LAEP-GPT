@@ -51,8 +51,30 @@ jobs:
           path: Client/dist
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
+  shared-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Shared Dependencies
+        run: cd shared && npm install
+
+      - name: Build Shared Package
+        run: cd shared && npm run build
+
+      - name: Cache Shared Build
+        uses: actions/cache@v3
+        with:
+          path: shared/dist
+          key: ${{ runner.os }}-shared-build-${{ github.sha }}
+
   server-setup:
-    needs: client-build-and-lint
+    needs: [client-build-and-lint, shared-build]
     runs-on: ubuntu-latest
 
     steps:
@@ -71,7 +93,9 @@ jobs:
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
       - name: Install Server Dependencies
-        run: cd server && npm install --ignore-scripts # Added --ignore-scripts flag
+        run: |
+          cd shared && npm install
+          cd ../server && npm install --ignore-scripts
 
       - name: Run lint
         run: cd server && npm run lint
