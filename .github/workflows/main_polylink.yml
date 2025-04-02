@@ -18,43 +18,47 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: "18.x"
+          # Use at least Node 18 (or Node 20)
+          node-version: "20.x"
 
-      # Step 3: Install dependencies (root).
-      #         This ensures we can build 'shared' and 'server' properly in a workspace.
+      # Step 3: Install dependencies at the root (for all workspaces: shared + server)
       - name: Install All Dependencies (Workspace)
         run: |
-          npm install
-          # Just to check what's hoisted:
+          npm ci
+          # Optional debug info
           npm list openai --depth=0 || true
-      # Step 4: Build Shared
+
+      # Step 4: Build Shared + Server
       - name: Build Shared
-        run: |
-          npm run build:shared
-      # Step 5: Build Server
+        run: npm run build:shared
+
       - name: Build Server
+        run: npm run build:server
+
+      # Step 5: Prune down to production dependencies *inside the server folder*
+      #         so we only ship what's needed for runtime.
+      - name: Prune for Production (Server)
         run: |
-          npm run build:server
-          # Confirm the server's package has the correct openai version:
           cd server
+          # Remove any old node_modules
+          rm -rf node_modules
+          # Install ONLY production dependencies, pinned by the root lock file
+          npm ci --only=production
+          # Double-check what version of openai we actually have
           npm list openai --depth=0 || true
-      # Step 6: Prepare Deployment Artifact (Server only)
-      #         We'll include:
-      #            - dist/ (the compiled output)
-      #            - package.json / package-lock.json
-      #            - (optionally) .env.production if needed
+
+      # Step 6: Create final deployment artifact with dist + node_modules + package.json
       - name: Create zip artifact
         run: |
-          cp package-lock.json server/
           cd server
-          rm -rf node_modules
-          zip -r release.zip dist package.json package-lock.json
+          zip -r release.zip dist node_modules package.json
 
       # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
           cd server
           zipinfo release.zip
+
       # Step 8: Upload Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -96,5 +100,6 @@ jobs:
         with:
           app-name: "PolyLink"
           slot-name: "Production"
-          # 'package' points to the folder containing package.json & dist
+          # We now have node_modules already included,
+          # so Azure won't attempt to re-install anything.
           package: ./server-build
