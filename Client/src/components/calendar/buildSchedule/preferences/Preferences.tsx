@@ -26,7 +26,7 @@ const Preferences = ({
         form={form}
         label="Only Open Classes"
         name="openOnly"
-        defaultChecked={true}
+        defaultChecked={false}
       />
       <FormSwitch
         form={form}

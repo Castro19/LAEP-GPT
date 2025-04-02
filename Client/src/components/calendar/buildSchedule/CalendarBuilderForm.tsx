@@ -101,7 +101,7 @@ const CalendarBuilderForm = ({
           <SelectedSectionContainer form={form} />
         </BuildScheduleContainer>
         <LeftSectionFooter
-          formText="New Schedule"
+          formText="Generate Schedule"
           buttonText="Save Schedule"
           onFormSubmit={handleBuildSchedule}
           onClick={handleSaveSchedule}

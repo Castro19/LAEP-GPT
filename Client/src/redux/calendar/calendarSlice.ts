@@ -54,7 +54,7 @@ const initialState: calendarState = {
     minInstructorRating: "",
     maxInstructorRating: "",
     timeRange: "",
-    openOnly: true,
+    openOnly: false,
     useCurrentSchedule: false,
     showOverlappingClasses: false,
   },
