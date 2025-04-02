@@ -45,9 +45,11 @@ jobs:
       #            - (optionally) .env.production if needed
       - name: Create zip artifact
         run: |
+          cp package-lock.json server/
           cd server
-          rm -rf node_modules   # remove if any local node_modules got created
+          rm -rf node_modules
           zip -r release.zip dist package.json package-lock.json
+
       # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
@@ -76,7 +78,10 @@ jobs:
           name: server-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: |
+          mkdir server-build
+          cd server-build
+          unzip ../release.zip
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -92,4 +97,4 @@ jobs:
           app-name: "PolyLink"
           slot-name: "Production"
           # 'package' points to the folder containing package.json & dist
-          package: .
+          package: ./server-build
