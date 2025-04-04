@@ -21,7 +21,7 @@ import {
 import useDeviceType from "@/hooks/useDeviceType";
 import { AssistantType } from "@polylink/shared/types";
 import { useNavigate } from "react-router-dom";
-import SideBarModeDropDown from "@/components/chat/chatSideBar/SideBarDropDown";
+import AssistantSelector from "@/components/chat/chatSideBar/AssistantSelector";
 import { handleModeSelection } from "@/components/layout/ChatPage/ChatPageHeader";
 
 export function ChatPageSidebar() {
@@ -94,7 +94,7 @@ export function ChatPageSidebar() {
           <ScrollArea className="h-full">
             <SidebarGroup>
               <SidebarMenu>
-                <SideBarModeDropDown onSelect={handleModelSelect} />
+                <AssistantSelector onSelect={handleModelSelect} />
               </SidebarMenu>
             </SidebarGroup>
             <SidebarGroup>

@@ -2,25 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
 import { AssistantType } from "@polylink/shared/types";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import React from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "../../ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
+import AssistantItem, { ListItemAssistant } from "./AssistantItem";
 
-type SideBarModeDropDownProps = {
+type assistantSelectorProps = {
   // eslint-disable-next-line no-unused-vars
   onSelect: (model: AssistantType) => void;
 };
 
-export default function SideBarModeDropDown({ onSelect }: SideBarModeDropDownProps) {
+export default function AssistantSelector({ onSelect }: assistantSelectorProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { currentModel, assistantList } = useAppSelector(
@@ -61,6 +53,7 @@ export default function SideBarModeDropDown({ onSelect }: SideBarModeDropDownPro
     setFlowchartAssistantLocked(userHasNoPrimaryFlowchart);
     setMatchingAssistantLocked(matchingAssistantLocked);
   }, [userData]);
+
   // Transform assistantList to prioritize 'name' over 'title'
   const transformedassistantList = assistantList.map((option) => {
     // Prioritize displaying 'name', fallback to 'title' if 'name' is not available
@@ -110,76 +103,40 @@ export default function SideBarModeDropDown({ onSelect }: SideBarModeDropDownPro
     }
   };
 
+  const otherAssistants = transformedassistantList.filter(
+    (assistant) => assistant.id !== currentModel.id
+  );
+
   return (
-    <NavigationMenu>
-      <NavigationMenuList className="w-full">
-        <NavigationMenuItem className="w-full p-1">
-          <NavigationMenuTrigger className="w-full group flex items-center justify-between px-9 py-1 ml-2 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-opacity-70">
-            <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8">
-                <AvatarImage
-                  src={currentModel.urlPhoto || "/imgs/test.png"}
-                  alt={currentModel.title}
-                />
-              </Avatar>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">{currentModel.title}</span>
-            </div>
-          </NavigationMenuTrigger>
-          <NavigationMenuContent className="w-full md:bg-gray-800">
-            <ul className="p-2 w-full bg-popover">
-              {transformedassistantList.map((option) => (
-                <ListItem
-                  key={option.id}
-                  assistant={option}
-                  onClick={() => handleAssistantSelect(option)}
-                  className={cn(
-                    "w-full group",
-                    option.locked ? "cursor-not-allowed opacity-50" : ""
-                  )}
-                />
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    <div className="flex flex-col h-full">
+      {/* Current Selected Assistant - Sticky */}
+      <div className="sticky bg-gray-800 rounded-lg ml-2"> 
+        <AssistantItem
+          assistant={currentModel as ListItemAssistant}
+          onClick={() => handleAssistantSelect(currentModel as ListItemAssistant)}
+          className={cn(
+            "w-full group"
+          )}
+        />
+      </div>
+    
+      {/* List of Other Assistants - Scrollable */}
+      <div className="flex-grow overflow-y-auto px-1 py-1"> 
+        <ul className="space-y-1">
+          {otherAssistants.map((option) => (
+            <li key={option.id}>
+              <AssistantItem
+                assistant={option}
+                onClick={() => handleAssistantSelect(option)}
+                className={cn(
+                  "w-full group",
+                  option.locked ? "cursor-not-allowed opacity-50" : ""
+                )}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
-
-type ListItemAssistant = AssistantType & {
-  locked: boolean;
-};
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"button">,
-  React.ComponentPropsWithoutRef<"button"> & {
-    assistant: ListItemAssistant;
-  }
->(({ className, assistant, ...props }, ref) => {
-  const { title, urlPhoto } = assistant;
-  
-  return (
-    <button
-      ref={ref}
-      className={cn(
-        "flex items-center space-x-3 w-full px-2 py-2 text-left",
-        "rounded-md transition-colors",
-        "hover:bg-slate-700 hover:text-white",
-        "whitespace-nowrap min-w-0",
-        className
-      )}
-      {...props}
-    >
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarImage
-          src={urlPhoto || "/imgs/test.png"}
-          alt="Assistant Photo"
-        />
-      </Avatar>
-      <span className="text-sm font-medium truncate">
-        {title}
-      </span>
-    </button>
-  );
-});
-ListItem.displayName = "ListItem";
