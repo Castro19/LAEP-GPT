@@ -7,11 +7,7 @@ import { useToast } from "../../ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import AssistantItem, { ListItemAssistant } from "./AssistantItem";
 
-type assistantSelectorProps = {
-  onSelect: (model: AssistantType) => void;
-};
-
-export default function AssistantSelector({ onSelect }: assistantSelectorProps) {
+export default function AssistantSelector({ onSelect }: { onSelect: (model: AssistantType) => void }) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { currentModel, assistantList } = useAppSelector(

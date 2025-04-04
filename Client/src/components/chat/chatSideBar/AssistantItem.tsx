@@ -42,4 +42,6 @@ const AssistantItem = React.forwardRef<
   );
 });
 
+AssistantItem.displayName = "AssistantItem";
+
 export default AssistantItem; 
