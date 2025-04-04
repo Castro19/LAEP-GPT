@@ -19,8 +19,9 @@ const AssistantItem = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "flex items-center space-x-3 w-full px-2 py-2 text-left",
+        "flex items-center space-x-3 w-full p-2 ml-1",
         "rounded-md transition-colors",
+        "w-full group",
         "hover:bg-slate-700 hover:text-white", // Ensure hover effect is defined
         "whitespace-nowrap min-w-0",
         "text-white", // Default text color
@@ -30,17 +31,15 @@ const AssistantItem = React.forwardRef<
     >
       <Avatar className="w-8 h-8 flex-shrink-0">
         <AvatarImage
-          src={urlPhoto || "/imgs/test.png"}
+          src={urlPhoto}
           alt="Assistant Photo"
         />
       </Avatar>
-      <span className="text-sm font-medium truncate">
+      <span className="text-sm">
         {title}
       </span>
     </button>
   );
 });
-
-AssistantItem.displayName = "AssistantItem";
 
 export default AssistantItem; 

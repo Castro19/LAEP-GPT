@@ -8,7 +8,6 @@ import { ToastAction } from "@radix-ui/react-toast";
 import AssistantItem, { ListItemAssistant } from "./AssistantItem";
 
 type assistantSelectorProps = {
-  // eslint-disable-next-line no-unused-vars
   onSelect: (model: AssistantType) => void;
 };
 
@@ -109,19 +108,19 @@ export default function AssistantSelector({ onSelect }: assistantSelectorProps) 
 
   return (
     <div className="flex flex-col h-full">
-      {/* Current Selected Assistant - Sticky */}
-      <div className="sticky bg-gray-800 rounded-lg ml-2"> 
+      {/* Current Selected Assistant */}
+      <div className="flex-grow ml-2 bg-slate-800 rounded-md sticky"> 
         <AssistantItem
           assistant={currentModel as ListItemAssistant}
           onClick={() => handleAssistantSelect(currentModel as ListItemAssistant)}
           className={cn(
-            "w-full group"
+            "hover:bg-transparent"
           )}
         />
       </div>
     
-      {/* List of Other Assistants - Scrollable */}
-      <div className="flex-grow overflow-y-auto px-1 py-1"> 
+      {/* List of Other Assistants */}
+      <div className="flex-grow px-1 py-1"> 
         <ul className="space-y-1">
           {otherAssistants.map((option) => (
             <li key={option.id}>
@@ -129,7 +128,6 @@ export default function AssistantSelector({ onSelect }: assistantSelectorProps) 
                 assistant={option}
                 onClick={() => handleAssistantSelect(option)}
                 className={cn(
-                  "w-full group",
                   option.locked ? "cursor-not-allowed opacity-50" : ""
                 )}
               />
