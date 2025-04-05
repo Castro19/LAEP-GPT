@@ -4,7 +4,6 @@ import {
   useAppDispatch,
   assistantActions,
   messageActions,
-  calendarActions,
 } from "@/redux";
 import { useParams } from "react-router-dom";
 
@@ -39,9 +38,7 @@ const ChatPage = () => {
   const { assistantList, currentModel } = useAppSelector(
     (state) => state.assistant
   );
-  const { primaryCalendarId, currentCalendar } = useAppSelector(
-    (state) => state.calendar
-  );
+
   const hasFetchedassistantList = useRef(false);
 
   useEffect(() => {
@@ -105,25 +102,6 @@ const ChatPage = () => {
     fetchLog();
   }, [chatId, dispatch]);
 
-  useEffect(() => {
-    const fetchCalendars = async () => {
-      if (userId) {
-        await dispatch(calendarActions.fetchCalendarsAsync());
-      }
-    };
-    fetchCalendars();
-    // Only run this effect once on component mount
-  }, [dispatch, userId]);
-
-  useEffect(() => {
-    if (primaryCalendarId) {
-      dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
-    }
-  }, [primaryCalendarId, dispatch]);
-
-  if (environment === "dev") {
-    console.log("CURRENT CALENDAR: ", currentCalendar);
-  }
   return (
     <>
       <div className="flex">

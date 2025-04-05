@@ -33,7 +33,6 @@ export function ChatPageSidebar() {
   const error = useAppSelector((state) => state.message.error);
 
   const dispatch = useAppDispatch();
-  const logList = useAppSelector((state) => state.log.logList);
   const userId = useAppSelector((state) => state.auth.userId);
 
   const hasFetchedLogs = useRef(false);
@@ -44,13 +43,14 @@ export function ChatPageSidebar() {
   );
 
   useEffect(() => {
-    if (hasFetchedLogs.current || logList.length > 0) return;
+    if (hasFetchedLogs.current) return;
     hasFetchedLogs.current = true;
+
     // Only fetch logs if userId is not null (user is signed in)
     if (userId) {
       dispatch(logActions.fetchLogs());
     }
-  }, [dispatch, userId, logList.length]);
+  }, [dispatch, userId]);
 
   const handleModelSelect = (model: AssistantType) => {
     // Close sidebar if on mobile
