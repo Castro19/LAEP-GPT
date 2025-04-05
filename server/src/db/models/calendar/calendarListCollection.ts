@@ -16,7 +16,7 @@ const initializeCollection = (): Collection<CalendarListDocument> => {
  */
 export const findCalendarListByUserId = async (
   userId: string
-): Promise<CalendarListDocument | null> => {
+): Promise<CalendarListDocument> => {
   if (!calendarCollection) {
     calendarCollection = initializeCollection();
   }
@@ -27,7 +27,12 @@ export const findCalendarListByUserId = async (
       { projection: { _id: 0 } }
     );
     if (!result) {
-      return null;
+      return {
+        userId,
+        calendars: [],
+        primaryCalendarId: "",
+        _id: "",
+      };
     }
     return result;
   } catch (error) {
