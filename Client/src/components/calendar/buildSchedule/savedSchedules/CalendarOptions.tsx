@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SlOptionsVertical } from "react-icons/sl";
 import {
@@ -11,7 +11,7 @@ import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
 import { Calendar, CalendarListItem } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { calendarActions, useAppDispatch } from "@/redux";
+import { calendarActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
 const CalendarOptions = ({
@@ -31,6 +31,7 @@ const CalendarOptions = ({
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { primaryCalendarId } = useAppSelector((state) => state.calendar);
   // Popover state
   const [open, setOpen] = useState(false);
 
@@ -45,7 +46,7 @@ const CalendarOptions = ({
     const updatedCalendar = {
       calendar: calendar,
       name: name,
-      primaryCalendarId: primaryOption ? calendar.id : false,
+      primaryCalendarId: primaryOption ? calendar.id : primaryCalendarId,
     } as {
       calendar: Calendar;
       name: string;
