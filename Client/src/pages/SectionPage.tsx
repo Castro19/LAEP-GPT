@@ -7,13 +7,42 @@ import SectionForm from "@/components/section/courseFilters/SectionForm";
 
 // UI Components
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MobileSectionPageLayout from "@/components/layout/SectionPage/MobileSectionPageLayout";
 import useDeviceType from "@/hooks/useDeviceType";
+import { useUserData } from "@/hooks/useUserData";
+import { flowSelectionActions, useAppDispatch } from "@/redux";
 
 const SectionPage = () => {
   const isNarrowScreen = useIsNarrowScreen();
   const deviceType = useDeviceType();
+  const dispatch = useAppDispatch();
+  const { userData } = useUserData();
+  const { major } = userData.flowchartInformation;
+
+  const hasFetchedMajorOptions = useRef(false);
+  const hasFetchedConcentrationOptions = useRef(false);
+
+  useEffect(() => {
+    if (hasFetchedMajorOptions.current) return;
+    hasFetchedMajorOptions.current = true;
+    // Only fetch major options once when component mounts
+    dispatch(flowSelectionActions.fetchMajorOptions("2022-2026"));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (hasFetchedConcentrationOptions.current) return;
+    hasFetchedConcentrationOptions.current = true;
+    // Only fetch concentration options when major changes
+    if (major) {
+      dispatch(
+        flowSelectionActions.fetchConcentrationOptions({
+          catalog: "2022-2026",
+          major: major,
+        })
+      );
+    }
+  }, [dispatch, major]);
 
   return (
     <>
