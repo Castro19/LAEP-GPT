@@ -1,19 +1,15 @@
 // Redux:
-import {
-  useAppDispatch,
-  assistantActions,
-  layoutActions,
-  useAppSelector,
-} from "@/redux";
+import { useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 // My components
-import { ModeDropDown, NewChat, onNewChat } from "@/components/chat";
+import { ModeDropDown, NewChat } from "@/components/chat";
 // Types
 import { AssistantType } from "@polylink/shared/types";
 // UI Components & Icons
 import { FiSidebar } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import { handleModeSelection } from "@/components/chat/helpers/handleModeSelection";
 
 const ChatHeader = () => {
   // Redux:
@@ -27,20 +23,16 @@ const ChatHeader = () => {
 
   const { toggleSidebar } = useSidebar();
 
-  const handleModeSelection = (model: AssistantType) => {
-    if (model && model.id) {
-      const modelId = model.id;
-      dispatch(assistantActions.setCurrentAssistant(modelId));
-      dispatch(layoutActions.toggleDropdown(false));
-      onNewChat(
-        currentChatId,
-        dispatch,
-        navigate,
-        error,
-        loading,
-        messagesByChatId
-      );
-    }
+  const handleModelSelect = (model: AssistantType) => {
+    handleModeSelection(
+      model,
+      dispatch,
+      navigate,
+      currentChatId,
+      error,
+      loading,
+      messagesByChatId
+    );
   };
 
   return (
@@ -49,7 +41,7 @@ const ChatHeader = () => {
         <Button variant="ghost" onClick={toggleSidebar}>
           <FiSidebar className="m-auto w-5 h-5" />
         </Button>
-        <ModeDropDown onSelect={handleModeSelection} />
+        <ModeDropDown onSelect={handleModelSelect} />
         <NewChat />
       </div>
     </header>
