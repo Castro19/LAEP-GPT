@@ -14,6 +14,7 @@ import {
 } from "./crudFlowchart";
 // Define types
 interface FlowchartState {
+  createFlowchart: boolean;
   flowchartData: FlowchartData | null;
   flowchartList: FetchedFlowchartObject[] | null;
   currentFlowchart: FetchedFlowchartObject | null;
@@ -29,6 +30,7 @@ interface FlowchartState {
 
 // Initial state
 const initialState: FlowchartState = {
+  createFlowchart: false,
   flowchartData: null,
   flowchartList: null,
   currentFlowchart: null,
@@ -225,6 +227,9 @@ const flowchartSlice = createSlice({
         course.completed = !course.completed;
       }
     },
+    setCreateFlowchart: (state, action: PayloadAction<boolean>) => {
+      state.createFlowchart = action.payload;
+    },
     setLoading: (
       state,
       action: PayloadAction<{ type: string; value: boolean }>
@@ -393,6 +398,7 @@ export const {
   resetFlowchartData,
   toggleCourseCompletion,
   setFlowchartList,
+  setCreateFlowchart,
   setLoading,
 } = flowchartSlice.actions;
 

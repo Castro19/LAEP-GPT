@@ -4,7 +4,7 @@ import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
-import { Flowchart, EmptyFlowchart } from "@/components/flowchart";
+import { Flowchart, CreateFlowchart } from "@/components/flowchart";
 import FlowchartLayout from "@/components/layout/FlowchartPage/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterIconSidebar from "@/components/layout/dynamicLayouts/OuterIconSidebar";
@@ -16,9 +16,8 @@ const FlowChartPage = () => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
   const { flowchartId } = useParams();
-  const { flowchartData, loading, currentFlowchart } = useAppSelector(
-    (state) => state.flowchart
-  );
+  const { flowchartData, loading, currentFlowchart, createFlowchart } =
+    useAppSelector((state) => state.flowchart);
 
   const initialLoadRef = useRef(false);
   const previousFlowchartDataRef = useRef(flowchartData);
@@ -87,10 +86,10 @@ const FlowChartPage = () => {
         {isNarrowScreen ? null : <OuterIconSidebar />}
         <SidebarProvider className="dark:bg-slate-900">
           <FlowchartLayout>
-            {flowchartData ? (
-              <Flowchart flowchartData={flowchartData} />
+            {createFlowchart || !flowchartData ? (
+              <CreateFlowchart />
             ) : (
-              <EmptyFlowchart />
+              <Flowchart flowchartData={flowchartData} />
             )}
           </FlowchartLayout>
         </SidebarProvider>

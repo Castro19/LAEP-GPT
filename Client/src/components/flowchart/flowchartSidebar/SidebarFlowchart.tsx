@@ -1,37 +1,27 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   flowchartActions,
   flowSelectionActions,
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
-import { fetchFlowchartDataHelper } from "@/redux/flowchart/api-flowchart";
 
 // My components
 import {
   FlowchartLog,
-  FlowchartOptions,
   CourseDropdown,
   CourseSearchbar,
 } from "@/components/flowchart";
-import CustomModal from "@/components/ui/CustomModal";
+
 import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
 
 // Hooks
 import { useUserData } from "@/hooks/useUserData";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
-// Env vars
-import { environment } from "@/helpers/getEnvironmentVars";
-
-// Types
-import { FlowchartData } from "@polylink/shared/types";
-
 // UI Components
 import { ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "@/components/ui/use-toast";
 import { SidebarMenuSub } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -49,83 +39,24 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { open } = useSidebar();
-  const isNarrowScreen = useIsNarrowScreen();
   const { flowchartList } = useAppSelector((state) => state.flowchart);
   const { selections } = useAppSelector((state) => state.flowSelection);
-  const { userData, handleChangeFlowchartInformation, handleSave } =
-    useUserData();
+
+  const navigate = useNavigate();
+
+  const isNarrowScreen = useIsNarrowScreen();
+  const { open } = useSidebar();
+  const { userData } = useUserData();
 
   // Handler for selecting a log to view
   const handleSelectFlowchart = (flowchartId: string) => {
     dispatch(flowchartActions.setFlowchart(flowchartId));
-  };
-
-  const handleSaveFlowchart = async () => {
-    if (selections.catalog && selections.major && selections.concentration) {
-      const flowchartData = await fetchFlowchartDataHelper(
-        dispatch,
-        selections.catalog,
-        selections.major,
-        selections.concentration.code,
-        userData.year,
-        true
-      );
-      await saveFlowchartToDB(flowchartData);
-      dispatch(
-        flowchartActions.setLoading({
-          type: "fetchFlowchartData",
-          value: false,
-        })
-      );
-    } else {
-      toast({
-        title: "Please select a catalog and major",
-        description:
-          "You must select a catalog and major to create a flowchart",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const saveFlowchartToDB = async (flowchartData: FlowchartData) => {
-    let flowchart;
-    if (!flowchartData) {
-      return;
-    }
-    try {
-      flowchart = await dispatch(
-        flowchartActions.postFlowchartInDB({
-          flowchartData,
-          name: flowchartData.name,
-          // If there are no flowcharts in the database, set the new flowchart as primary
-          primaryOption: (flowchartList ?? []).length === 0,
-        })
-      ).unwrap(); // Unwraps the result to get the payload or throw error
-
-      if (flowchart && flowchart.flowchartId) {
-        if (flowchart.primaryOption) {
-          handleChangeFlowchartInformation(
-            "flowchartId",
-            flowchart.flowchartId
-          );
-          handleSave();
-        }
-        navigate(`/flowchart/${flowchart.flowchartId}`);
-      } else {
-        if (environment === "dev") {
-          console.error("Failed to get flowchartId from the response.");
-        }
-      }
-    } catch (error) {
-      if (environment === "dev") {
-        console.error("Failed to save flowchart:", error);
-      }
-    }
+    dispatch(flowchartActions.setCreateFlowchart(false));
   };
 
   useEffect(() => {
@@ -144,6 +75,11 @@ export function SidebarFlowchart() {
       dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
     }
   }, [selections.catalog, dispatch]);
+
+  const handleCreateFlowchart = () => {
+    dispatch(flowchartActions.setCreateFlowchart(true));
+    navigate("/flowchart");
+  };
 
   return (
     <Sidebar
@@ -191,15 +127,13 @@ export function SidebarFlowchart() {
                       ))}
                     </SidebarMenuSub>
                     <div className="flex items-center justify-center">
-                      <div className="w-11/12 my-4">
-                        <CustomModal
-                          onSave={handleSaveFlowchart}
-                          title="Create Flowchart"
-                          disableOutsideClick={true}
-                        >
-                          <FlowchartOptions type="flowchart" />
-                        </CustomModal>
-                      </div>
+                      <Button
+                        type="submit"
+                        className="w-11/12 shadow-lg dark:bg-gray-100 dark:bg-opacity-90 dark:hover:bg-gray-300 dark:hover:bg-opacity-90"
+                        onClick={handleCreateFlowchart}
+                      >
+                        Create Flowchart
+                      </Button>
                     </div>
                   </CollapsibleContent>
                 </SidebarMenuItem>

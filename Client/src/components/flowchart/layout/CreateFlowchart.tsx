@@ -21,12 +21,14 @@ import { environment } from "@/helpers/getEnvironmentVars";
 // Types
 import { FlowchartData } from "@polylink/shared/types";
 
-const EmptyFlowchart = () => {
-  const { selections } = useAppSelector((state) => state.flowSelection);
-  const { userData, handleSave } = useUserData();
-  const { flowchartList } = useAppSelector((state) => state.flowchart);
+const CreateFlowchart = () => {
   const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
+  const { selections } = useAppSelector((state) => state.flowSelection);
+  const { flowchartList } = useAppSelector((state) => state.flowchart);
+
+  const { userData, handleSave } = useUserData();
   const { toast } = useToast();
 
   // Calculate progress (1/3, 2/3, 3/3)
@@ -96,6 +98,7 @@ const EmptyFlowchart = () => {
 
           handleSave();
         }
+        dispatch(flowchartActions.setCreateFlowchart(false));
         navigate(`/flowchart/${flowchart.flowchartId}`);
       } else {
         if (environment === "dev") {
@@ -152,4 +155,4 @@ const EmptyFlowchart = () => {
   );
 };
 
-export default EmptyFlowchart;
+export default CreateFlowchart;
