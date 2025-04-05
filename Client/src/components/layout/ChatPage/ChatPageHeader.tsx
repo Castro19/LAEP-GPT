@@ -1,37 +1,15 @@
 // Redux:
-import {
-  useAppDispatch,
-  assistantActions,
-  layoutActions,
-  useAppSelector,
-} from "@/redux";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/redux";
+import { useNavigate } from "react-router-dom";
 // My components
-import { ModeDropDown, NewChat, onNewChat } from "@/components/chat";
+import { ModeDropDown, NewChat } from "@/components/chat";
 // Types
-import { AssistantType, MessageByChatIdType } from "@polylink/shared/types";
+import { AssistantType } from "@polylink/shared/types";
 // UI Components & Icons
 import { FiSidebar } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import { AppDispatch } from "@/redux/store";
-
-export const handleModeSelection = (
-  model: AssistantType,
-  dispatch: AppDispatch,
-  navigate: NavigateFunction,
-  currentChatId: string | null,
-  error: string | null,
-  loading: { [chatId: string]: boolean },
-  messagesByChatId: MessageByChatIdType
-) => {
-  if (model && model.id) {
-    const modelId = model.id;
-    dispatch(assistantActions.setCurrentAssistant(modelId));
-    dispatch(layoutActions.toggleDropdown(false));
-    onNewChat(currentChatId, dispatch, navigate, error, loading, messagesByChatId);
-  }
-};
+import { handleModeSelection } from "@/components/chat/helpers/handleModeSelection";
 
 const ChatHeader = () => {
   // Redux:

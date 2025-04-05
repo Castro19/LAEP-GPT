@@ -7,7 +7,12 @@ import { useToast } from "../../ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import AssistantItem, { ListItemAssistant } from "./AssistantItem";
 
-export default function AssistantSelector({ onSelect }: { onSelect: (model: AssistantType) => void }) {
+export default function AssistantSelector({
+  onSelect,
+}: {
+  // eslint-disable-next-line no-unused-vars
+  onSelect: (model: AssistantType) => void;
+}) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { currentModel, assistantList } = useAppSelector(
@@ -105,18 +110,18 @@ export default function AssistantSelector({ onSelect }: { onSelect: (model: Assi
   return (
     <div className="flex flex-col h-full">
       {/* Current Selected Assistant */}
-      <div className="flex-grow ml-2 bg-slate-800 rounded-md sticky"> 
+      <div className="flex-grow ml-2 bg-slate-800 rounded-md sticky">
         <AssistantItem
           assistant={currentModel as ListItemAssistant}
-          onClick={() => handleAssistantSelect(currentModel as ListItemAssistant)}
-          className={cn(
-            "hover:bg-transparent"
-          )}
+          onClick={() =>
+            handleAssistantSelect(currentModel as ListItemAssistant)
+          }
+          className={cn("hover:bg-transparent")}
         />
       </div>
-    
+
       {/* List of Other Assistants */}
-      <div className="flex-grow px-1 py-1"> 
+      <div className="flex-grow px-1 py-1">
         <ul className="space-y-1">
           {otherAssistants.map((option) => (
             <li key={option.id}>

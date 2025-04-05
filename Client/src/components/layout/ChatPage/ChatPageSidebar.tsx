@@ -14,6 +14,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   useSidebar,
@@ -22,7 +23,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 import { AssistantType } from "@polylink/shared/types";
 import { useNavigate } from "react-router-dom";
 import AssistantSelector from "@/components/chat/chatSideBar/AssistantSelector";
-import { handleModeSelection } from "@/components/layout/ChatPage/ChatPageHeader";
+import { handleModeSelection } from "@/components/chat/helpers/handleModeSelection";
 
 export function ChatPageSidebar() {
   const isNarrowScreen = useIsNarrowScreen();
@@ -30,7 +31,6 @@ export function ChatPageSidebar() {
 
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.message.error);
-
 
   const dispatch = useAppDispatch();
   const logList = useAppSelector((state) => state.log.logList);
@@ -57,14 +57,14 @@ export function ChatPageSidebar() {
     if (isNarrowScreen || deviceType !== "desktop") {
       setOpenMobile(false);
     }
-    
+
     handleModeSelection(
-      model, 
-      dispatch, 
-      navigate, 
-      currentChatId, 
-      error, 
-      loading, 
+      model,
+      dispatch,
+      navigate,
+      currentChatId,
+      error,
+      loading,
       messagesByChatId
     );
   };
@@ -93,12 +93,14 @@ export function ChatPageSidebar() {
         <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
           <ScrollArea className="h-full">
             <SidebarGroup>
+              <SidebarGroupLabel>Assistants</SidebarGroupLabel>
               <SidebarMenu>
                 <AssistantSelector onSelect={handleModelSelect} />
               </SidebarMenu>
             </SidebarGroup>
             <SidebarGroup>
               <SidebarMenu>
+                <SidebarGroupLabel>Chat Logs</SidebarGroupLabel>
                 <ChatLogList />
               </SidebarMenu>
             </SidebarGroup>
