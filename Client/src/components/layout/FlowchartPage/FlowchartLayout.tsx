@@ -1,5 +1,7 @@
 // FlowchartLayout.tsx
-import React from "react";
+
+// Redux
+import { useAppSelector } from "@/redux";
 
 // My components
 import { SidebarFlowchart, FlowchartUnitCounts } from "@/components/flowchart";
@@ -8,9 +10,6 @@ import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
-
-// Redux
-import { useAppSelector } from "@/redux";
 
 const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   const { flowchartData } = useAppSelector((state) => state.flowchart);
