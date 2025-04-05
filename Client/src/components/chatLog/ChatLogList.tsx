@@ -3,30 +3,17 @@ import {
   messageActions,
   layoutActions,
   useAppSelector,
-  logActions,
   useAppDispatch,
 } from "@/redux";
-import { useEffect, useRef } from "react";
 
 const ChatLogList = () => {
   const logList = useAppSelector((state) => state.log.logList);
-  const userId = useAppSelector((state) => state.auth.userId);
-  const dispatch = useAppDispatch();
 
-  const hasFetchedLogs = useRef(false);
+  const dispatch = useAppDispatch();
 
   const { currentChatId, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-
-  useEffect(() => {
-    if (hasFetchedLogs.current || logList.length > 0) return;
-    hasFetchedLogs.current = true;
-    // Only fetch logs if userId is not null (user is signed in)
-    if (userId) {
-      dispatch(logActions.fetchLogs());
-    }
-  }, [dispatch, userId, logList.length]);
 
   // Handler for selecting a log to view
   const handleSelectLog = (logId: string) => {

@@ -2,12 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  flowSelectionActions,
-  sectionActions,
-  useAppDispatch,
-  useAppSelector,
-} from "@/redux";
+import { sectionActions, useAppDispatch, useAppSelector } from "@/redux";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 // Hooks
@@ -128,18 +123,6 @@ const SectionForm = ({
       dispatch(sectionActions.setFilters(updatedFilters));
     }
   }, [watchedValues, dispatch, reduxFilters]);
-
-  useEffect(() => {
-    dispatch(flowSelectionActions.fetchMajorOptions("2022-2026"));
-    if (major) {
-      dispatch(
-        flowSelectionActions.fetchConcentrationOptions({
-          catalog: "2022-2026",
-          major: major,
-        })
-      );
-    }
-  }, [dispatch, major]);
 
   // onSubmit is now used only to trigger the API call.
   const onSubmit = (data: SectionFiltersForm) => {

@@ -72,6 +72,8 @@ function ProfilePage() {
   const initialLoadRef = useRef(false);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
+  const calendarsFetchedRef = useRef(false);
+  const previousFlowchartDataRef = useRef(flowchartData);
 
   const { handleSave } = useUserData();
 
@@ -88,6 +90,16 @@ function ProfilePage() {
 
   useEffect(() => {
     const updateFlowchart = async () => {
+      if (
+        initialLoadRef.current &&
+        JSON.stringify(previousFlowchartDataRef.current) ===
+          JSON.stringify(flowchartData)
+      ) {
+        return;
+      }
+
+      previousFlowchartDataRef.current = flowchartData;
+
       try {
         if (
           userData.flowchartInformation.flowchartId &&
@@ -118,10 +130,13 @@ function ProfilePage() {
 
   useEffect(() => {
     const fetchCalendars = async () => {
+      if (calendarsFetchedRef.current) return;
+      calendarsFetchedRef.current = true;
+
       await dispatch(calendarActions.fetchCalendarsAsync());
     };
+
     fetchCalendars();
-    // Only run this effect once on component mount
   }, [dispatch]);
 
   useEffect(() => {

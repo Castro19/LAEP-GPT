@@ -21,6 +21,7 @@ const FlowChartPage = () => {
   );
 
   const initialLoadRef = useRef(false);
+  const previousFlowchartDataRef = useRef(flowchartData);
 
   useEffect(() => {
     if (initialLoadRef.current) return;
@@ -39,6 +40,16 @@ const FlowChartPage = () => {
 
   useEffect(() => {
     const updateFlowchart = async () => {
+      if (
+        initialLoadRef.current &&
+        JSON.stringify(previousFlowchartDataRef.current) ===
+          JSON.stringify(flowchartData)
+      ) {
+        return;
+      }
+
+      previousFlowchartDataRef.current = flowchartData;
+
       try {
         if (
           flowchartId &&
@@ -63,7 +74,10 @@ const FlowChartPage = () => {
         }
       }
     };
+
     updateFlowchart();
+    initialLoadRef.current = true;
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flowchartData]);
 
