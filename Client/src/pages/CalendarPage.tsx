@@ -43,15 +43,23 @@ const CalendarPage = () => {
     (state) => state.assistant.assistantList
   );
   const userId = useAppSelector((state) => state.auth.userId);
+
+  // Ref variables to prevent fetching data multiple times
   const hasFetchedassistantList = useRef(false);
+  const hasFetchedSelectedSections = useRef(false);
+  const hasFetchedCalendars = useRef(false);
 
   // Fetch the selected sections
   useEffect(() => {
+    if (hasFetchedSelectedSections.current) return;
+    hasFetchedSelectedSections.current = true;
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
   }, [dispatch]);
 
   // Fetch the calendars
   useEffect(() => {
+    if (hasFetchedCalendars.current) return;
+    hasFetchedCalendars.current = true;
     dispatch(calendarActions.fetchCalendarsAsync());
   }, [dispatch]);
 
