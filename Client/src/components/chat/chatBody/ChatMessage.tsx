@@ -1,5 +1,5 @@
-import * as MarkdownIt from "markdown-it";
-import * as DOMPurify from "dompurify";
+import MarkdownIt from "markdown-it";
+import DOMPurify from "dompurify";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { MessageObjType } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
