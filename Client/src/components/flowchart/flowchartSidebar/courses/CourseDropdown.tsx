@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 
 // Types
@@ -35,7 +35,7 @@ import {
   SidebarGroup,
 } from "@/components/ui/sidebar";
 
-const CourseDropdown = React.memo(() => {
+const CourseDropdown = memo(() => {
   const [allClasses, setAllClasses] = useState<SidebarInfo>({});
   const [gwrCourses, setGwrCourses] = useState<CourseSubject[]>([]);
   const [uscpCourses, setUscpFetched] = useState<CourseSubject[]>([]);

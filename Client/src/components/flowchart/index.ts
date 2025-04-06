@@ -1,15 +1,15 @@
 // Main Flowchart Components
 export { default as Flowchart } from "./currentFlowchart/FlowChart";
 export { default as TermContainer } from "./currentFlowchart/TermContainer";
-export { default as CreateFlowchart } from "./layout/CreateFlowchart";
-export { default as FlowchartUnitCounts } from "./layout/FlowchartUnitCounts";
+export { default as CreateFlowchart } from "./createFlowchart/CreateFlowchart";
+export { default as FlowchartUnitCounts } from "./currentFlowchart/FlowchartUnitCounts";
 
 // Flowchart Creation Components
 export { default as FlowchartOptions } from "./createFlowchart/FlowChartOptions";
 export { default as ProgressBar } from "./createFlowchart/ProgressBar";
 // Flowchart Log Components
-export { default as FlowchartLog } from "./flowchartLog/FlowchartLog";
-export { default as FlowchartLogOptions } from "./flowchartLog/FlowchartLogOptions";
+export { default as FlowchartLog } from "./flowchartSidebar/flowchartLog/FlowchartLog";
+export { default as FlowchartLogOptions } from "./flowchartSidebar/flowchartLog/FlowchartLogOptions";
 
 // Flowchart Sidebar Components
 export { SidebarFlowchart } from "./flowchartSidebar/SidebarFlowchart";

@@ -1,19 +1,25 @@
 // TermContainer.tsx
-import CourseItem from "./CourseItem";
-import { Course, FlowchartData, Term } from "@polylink/shared/types";
-import { Button } from "@/components/ui/button";
+import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import cloneDeep from "lodash-es/cloneDeep";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { setFlowchartData } from "@/redux/flowchart/flowchartSlice";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
+
+// Types
+import { Course, FlowchartData, Term } from "@polylink/shared/types";
+
+// Icons
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
-import { Draggable, Droppable } from "@hello-pangea/dnd"; // Import here
+
+// My components
+import CourseItem from "./CourseItem";
+
+// UI Components
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import useDeviceType from "@/hooks/useDeviceType";
 
 interface TermContainerProps {
   term: Term;
@@ -40,7 +46,6 @@ const TermContainer: React.FC<TermContainerProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
-  const deviceType = useDeviceType();
   const handleTermClick = (action: "add" | "remove") => {
     if (!flowchartData) return;
     const updatedCourses = term.courses.map((course) => ({
@@ -68,7 +73,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
 
     updateFlowchartTermData(flowchartData, updatedTerms);
     const updatedFlowchartData = { ...flowchartData, termData: updatedTerms };
-    dispatch(setFlowchartData(updatedFlowchartData));
+    dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
   return (
     <div className="flex flex-col min-w-[300px] max-w-[350px] dark:bg-gray-900 shadow-md">
@@ -95,9 +100,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
       </div>
       <ScrollArea className="h-full min-w-full mb-4">
         {/* Body */}
-        <div
-          className={`${deviceType === "desktop" ? "h-[40rem]" : "h-[60vh]"}`}
-        >
+        <div className="h-[60vh]">
           <Droppable droppableId={`term-${term.tIndex}`}>
             {(provided) => (
               <div
