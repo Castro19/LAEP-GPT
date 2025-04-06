@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
