@@ -2,7 +2,7 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 // Components
-import CollapsibleContentWrapper from "@/components/section/reusable/wrappers/CollapsibleContentWrapper";
+import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 import SectionsChosen from "./SectionsChosen";
 import { SavedSchedules } from "@/components/calendar";
 import Preferences from "@/components/calendar/buildSchedule/preferences/Preferences";
@@ -11,7 +11,7 @@ import Preferences from "@/components/calendar/buildSchedule/preferences/Prefere
 import { FaBook, FaCalendar } from "react-icons/fa";
 
 // constants
-import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
+import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 
 const SelectedSectionContainer = ({
   form,

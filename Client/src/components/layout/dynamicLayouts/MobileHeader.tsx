@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   useAppSelector,
   assistantActions,
-  sectionActions,
+  classSearchActions,
   useAppDispatch,
 } from "@/redux";
 import { onNewChat } from "../../chat/helpers/newChatHandler";
@@ -35,7 +35,7 @@ function MobileHeader() {
   const location = useLocation();
 
   const handleChatClick = () => {
-    dispatch(sectionActions.setIsInitialState(true));
+    dispatch(classSearchActions.setIsInitialState(true));
 
     if (assistantList.length > 0) {
       dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
@@ -58,7 +58,7 @@ function MobileHeader() {
   };
 
   const handleNavigation = (path: string) => {
-    dispatch(sectionActions.setIsInitialState(true));
+    dispatch(classSearchActions.setIsInitialState(true));
 
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
@@ -113,9 +113,9 @@ function MobileHeader() {
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
-                onClick={() => handleNavigation("/section")}
+                onClick={() => handleNavigation("/class-search")}
                 className={`${
-                  isActive("/section")
+                  isActive("/class-search")
                     ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                     : "hover:text-slate-600"
                 }`}

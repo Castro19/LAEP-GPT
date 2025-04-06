@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import {
   SectionEnrollment,
   SectionSchedule,
-} from "@/components/section/currentSectionList/SectionInfo";
+} from "@/components/classSearch/currentSectionList/SectionInfo";
 import { transformToSectionDetail } from "@/helpers/transformSection";
-import BadgeSection from "@/components/section/reusable/sectionInfo/BadgeSection";
-import { FormatPrerequisites } from "@/components/section/reusable/sectionInfo/FormatPrereq";
+import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
+import { FormatPrerequisites } from "@/components/classSearch/reusable/sectionInfo/FormatPrereq";
 
 const instructionModeMap = {
   PA: "Synchronous",
@@ -41,7 +41,7 @@ const enrollmentStatusDesc = (enrollStatus: "O" | "C" | "W") => {
 
 const CalendarSectionInfo = () => {
   const { calendarSelectedSection, loading } = useAppSelector(
-    (state) => state.section
+    (state) => state.classSearch
   );
 
   if (loading) return <div className="text-slate-400">Loading...</div>;

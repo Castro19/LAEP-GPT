@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   createBrowserRouter,
   createRoutesFromChildren,
@@ -8,7 +8,7 @@ import {
   useLocation,
   useNavigationType,
 } from "react-router-dom";
-import { authActions, useAppDispatch } from "@/redux/index.ts";
+import { authActions, useAppDispatch } from "@/redux";
 import "./index.css";
 
 // Wrappers
@@ -24,7 +24,7 @@ import TeamPage from "@/pages/TeamPage.tsx";
 import AboutPage from "@/pages/AboutPage.tsx";
 import ComingSoonPage from "@/pages/ComingSoonPage.tsx";
 import FlowChartPage from "@/pages/FlowchartPage.tsx";
-import SectionPage from "@/pages/SectionPage.tsx";
+import ClassSearchPage from "@/pages/ClassSearchPage.tsx";
 import CalendarPage from "@/pages/CalendarPage.tsx";
 import ErrorPage from "@/pages/ErrorPage/ErrorPage.tsx";
 
@@ -64,7 +64,7 @@ if (environment === "production") {
     dsn: "https://24a74de9a44215714cb50584c4dee9f6@o4508270569259008.ingest.us.sentry.io/4508270642528256",
     integrations: [
       Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect: React.useEffect,
+        useEffect: useEffect,
         useLocation,
         useNavigationType,
         createRoutesFromChildren,
@@ -114,8 +114,8 @@ const router = routerChosen([
         ],
       },
       {
-        path: "section",
-        element: <SectionPage />,
+        path: "class-search",
+        element: <ClassSearchPage />,
       },
       {
         path: "calendar",

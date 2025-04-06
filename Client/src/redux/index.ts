@@ -12,7 +12,7 @@ export { authReducer } from "./auth/authSlice.ts";
 export { userReducer } from "./user/userSlice.ts";
 export { flowchartReducer } from "./flowchart/flowchartSlice.ts";
 export { flowSelectionReducer } from "./flowSelection/flowSelectionSlice.ts";
-export { sectionReducer } from "./section/sectionSlice.ts";
+export { classSearchReducer } from "./classSearch/classSearchSlice.ts";
 export { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice.ts";
 export { calendarReducer } from "./calendar/calendarSlice.ts";
 // Export all actions for easy dispatching in components
@@ -24,7 +24,7 @@ export * as authActions from "./auth/authSlice.ts";
 export * as userActions from "./user/userSlice.ts";
 export * as flowchartActions from "./flowchart/flowchartSlice.ts";
 export * as flowSelectionActions from "./flowSelection/flowSelectionSlice.ts";
-export * as sectionActions from "./section/sectionSlice.ts";
+export * as classSearchActions from "./classSearch/classSearchSlice.ts";
 export * as sectionSelectionActions from "./sectionSelection/sectionSelectionSlice.ts";
 export * as calendarActions from "./calendar/calendarSlice.ts";
 // Custom hooks for using dispatch and selector with TypeScript

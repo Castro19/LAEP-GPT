@@ -7,7 +7,7 @@ import { authReducer } from "./auth/authSlice";
 import { userReducer } from "./user/userSlice";
 import { flowchartReducer } from "./flowchart/flowchartSlice";
 import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
-import { sectionReducer } from "./section/sectionSlice";
+import { classSearchReducer } from "./classSearch/classSearchSlice";
 import { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice";
 import { calendarReducer } from "./calendar/calendarSlice";
 
@@ -21,7 +21,7 @@ const store = configureStore({
     user: userReducer,
     flowchart: flowchartReducer,
     flowSelection: flowSelectionReducer,
-    section: sectionReducer,
+    classSearch: classSearchReducer,
     sectionSelection: sectionSelectionReducer,
     calendar: calendarReducer,
   },

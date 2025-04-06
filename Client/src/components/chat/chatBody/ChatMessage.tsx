@@ -1,5 +1,5 @@
-import MarkdownIt from "markdown-it";
-import DOMPurify from "dompurify";
+import * as MarkdownIt from "markdown-it";
+import * as DOMPurify from "dompurify";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { MessageObjType } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,26 @@ const md = new MarkdownIt();
 // Remember the old renderer
 const defaultLinkRenderer =
   md.renderer.rules.link_open ||
-  function (tokens, idx, options, _env, self) {
+  function (
+    tokens: MarkdownIt.Token[],
+    idx: number,
+    options: MarkdownIt.Options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _env: any,
+    self: MarkdownIt.Renderer
+  ) {
     return self.renderToken(tokens, idx, options);
   };
 
 // Override link_open rule to add target and rel attributes using attrSet()
-md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+md.renderer.rules.link_open = function (
+  tokens: MarkdownIt.Token[],
+  idx: number,
+  options: MarkdownIt.Options,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  env: any,
+  self: MarkdownIt.Renderer
+) {
   tokens[idx].attrSet("target", "_blank");
   tokens[idx].attrSet("rel", "noopener noreferrer");
   // Return the default renderer
@@ -47,7 +61,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
 
   const isScreenWidthSmall =
     isNarrowScreen ||
-    location.pathname.includes("/section") ||
+    location.pathname.includes("/class-search") ||
     location.pathname.includes("/calendar");
 
   const handleLike = (id: string) => {
