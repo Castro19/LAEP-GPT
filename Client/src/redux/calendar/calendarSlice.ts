@@ -24,7 +24,7 @@ export interface Preferences {
   showOverlappingClasses: boolean;
 }
 
-interface calendarState {
+export interface CalendarState {
   page: number;
   totalPages: number;
   calendars: {
@@ -40,7 +40,7 @@ interface calendarState {
   preferences: Preferences;
 }
 
-const initialState: calendarState = {
+const initialState: CalendarState = {
   page: 1,
   totalPages: 1,
   calendars: [],

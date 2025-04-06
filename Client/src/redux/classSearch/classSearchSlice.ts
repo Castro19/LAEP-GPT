@@ -9,7 +9,7 @@ import {
 } from "./crudClassSearch";
 import { environment } from "@/helpers/getEnvironmentVars";
 
-interface ClassSearchState {
+export interface ClassSearchState {
   sections: Section[];
   calendarSelectedSection: Section | null;
   total: number;

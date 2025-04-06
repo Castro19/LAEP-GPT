@@ -2,7 +2,7 @@ import { serverUrl } from "@/helpers/getEnvironmentVars";
 import { ConcentrationInfo } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface FlowchartState {
+export interface FlowSelectionState {
   catalogOptions: string[];
   majorOptions: string[];
   concentrationOptions: ConcentrationInfo[];
@@ -74,7 +74,7 @@ export const fetchConcentrationOptions = createAsyncThunk(
 );
 
 // Initial state
-const initialState: FlowchartState = {
+const initialState: FlowSelectionState = {
   catalogOptions: ["2019-2020", "2020-2021", "2021-2022", "2022-2026"],
   majorOptions: [],
   concentrationOptions: [],
@@ -100,7 +100,7 @@ const flowSelectionSlice = createSlice({
     setSelection: (
       state,
       action: PayloadAction<{
-        key: keyof FlowchartState["selections"];
+        key: keyof FlowSelectionState["selections"];
         value: string | ConcentrationInfo;
       }>
     ) => {
