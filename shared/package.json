@@ -39,7 +39,7 @@
     "@types/mdurl": "^1.0.5",
     "@types/multer": "^1.4.12",
     "@types/uuid": "^9.0.8",
-    "typescript": "^5.7.2"
+    "typescript": "~5.5.0"
   },
   "dependencies": {
     "bson": "^6.10.1"
