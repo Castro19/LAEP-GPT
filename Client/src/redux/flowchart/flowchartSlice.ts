@@ -13,7 +13,7 @@ import {
   updateFlowchartInDB,
 } from "./crudFlowchart";
 // Define types
-interface FlowchartState {
+export interface FlowchartState {
   createFlowchart: boolean;
   flowchartData: FlowchartData | null;
   flowchartList: FetchedFlowchartObject[] | null;

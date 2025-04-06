@@ -24,7 +24,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../ui/button";
 import {
   assistantActions,
-  sectionActions,
+  classSearchActions,
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
@@ -46,7 +46,7 @@ function OuterIconSidebar() {
   const [isProfileHovered, setIsProfileHovered] = useState(false);
 
   const handleChatClick = () => {
-    dispatch(sectionActions.setIsInitialState(true));
+    dispatch(classSearchActions.setIsInitialState(true));
 
     if (assistantList.length > 0) {
       dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
@@ -87,7 +87,7 @@ function OuterIconSidebar() {
   };
 
   const handleNavigation = (path: string) => {
-    dispatch(sectionActions.setIsInitialState(true));
+    dispatch(classSearchActions.setIsInitialState(true));
 
     if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
@@ -172,9 +172,9 @@ function OuterIconSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNavigation("/section")}
+                        onClick={() => handleNavigation("/class-search")}
                         className={`${
-                          isActive("/section")
+                          isActive("/class-search")
                             ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}

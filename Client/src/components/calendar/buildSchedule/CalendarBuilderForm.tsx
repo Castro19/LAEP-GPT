@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
-import { CALENDAR_PREFERENCES_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
+import { CALENDAR_PREFERENCES_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 import { BuildScheduleContainer, SelectedSectionContainer } from "..";
 import { buildSchedule } from "@/components/calendar/helpers";
 import { LeftSectionFooter } from "..";
@@ -61,7 +61,7 @@ const CalendarBuilderForm = ({
             className="bg-black border-white border-2"
             altText="Add Sections"
             onClick={() => {
-              navigate("/section");
+              navigate("/class-search");
             }}
           >
             Add Sections

@@ -3,7 +3,7 @@ import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 
 import { ChevronRight } from "lucide-react";
-import { convertTo12HourFormat } from "@/components/section/helpers/timeFormatter";
+import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 import {
   Collapsible,
   CollapsibleContent,
@@ -24,7 +24,7 @@ const SectionsChosen = () => {
         The sections you select from the{" "}
         <strong
           className="text-blue-300/80 cursor-pointer"
-          onClick={() => navigate("/section")}
+          onClick={() => navigate("/class-search")}
         >
           Class Search
         </strong>{" "}

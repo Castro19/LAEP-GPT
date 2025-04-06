@@ -8,7 +8,7 @@ import { UpdateUserData, UserData } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 // Define the initial state for the user
-interface UserState {
+export interface UserState {
   userData: UserData;
   loading: boolean;
   error: string | null;

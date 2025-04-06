@@ -5,8 +5,8 @@ import {
   InstructorRatingSlider,
   // TimeRange,
   UnitSlider,
-} from "@/components/section";
-import { SECTION_FILTERS_SCHEMA } from "@/components/section/courseFilters/helpers/constants";
+} from "@/components/classSearch";
+import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 
 const Preferences = ({
   form,

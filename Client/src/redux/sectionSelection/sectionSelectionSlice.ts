@@ -7,7 +7,7 @@ import {
   removeSection,
 } from "./crudSelectionSection";
 import { environment } from "@/helpers/getEnvironmentVars";
-interface SectionSelectionState {
+export interface SectionSelectionState {
   selectedSections: SelectedSection[];
   message: string;
 }

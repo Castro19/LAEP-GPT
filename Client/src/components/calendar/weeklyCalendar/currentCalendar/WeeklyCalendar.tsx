@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { SelectedSection } from "@polylink/shared/types";
 import { CalendarTimeSlots } from "@/components/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fetchSingleSection } from "@/redux/section/sectionSlice";
+import { fetchSingleSection } from "@/redux/classSearch/classSearchSlice";
 import { useAppDispatch } from "@/redux";
 import {
   getConflictGroups,

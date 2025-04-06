@@ -1,4 +1,4 @@
-import AnimateWrapper from "@/components/section/reusable/wrappers/AnimateWrapper";
+import AnimateWrapper from "@/components/classSearch/reusable/wrappers/AnimateWrapper";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAppSelector } from "@/redux";

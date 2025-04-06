@@ -60,7 +60,7 @@ const NoSelectedSections = () => {
                     <strong
                       onClick={() => {
                         if (item.isButton) {
-                          navigate("/section");
+                          navigate("/class-search");
                         }
                       }}
                       className={`text-blue-300 ${
@@ -78,7 +78,7 @@ const NoSelectedSections = () => {
         </div>
         <Button
           size="lg"
-          onClick={() => navigate("/section")}
+          onClick={() => navigate("/class-search")}
           className="gap-2 text-lg font-semibold bg-blue-500 hover:bg-blue-400 transition-colors w-full"
         >
           {COPY.emptyState.cta}
