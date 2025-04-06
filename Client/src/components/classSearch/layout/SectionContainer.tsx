@@ -24,7 +24,9 @@ const SectionContainer = () => {
   return (
     <div className="flex flex-col gap-4 w-full min-h-screen overflow-hidden no-scroll">
       {loading ? (
-        <SectionLoading />
+        <>
+          <SectionLoading />
+        </>
       ) : (
         <div className="overflow-auto flex-1 no-scroll">
           <ScrollArea
@@ -40,7 +42,7 @@ const SectionContainer = () => {
               <NoSectionsFound />
             )}
           </ScrollArea>
-          {courses.length > 0 ? <PaginationFooter /> : <PaginationFooter />}
+          {courses.length > 0 ? <PaginationFooter /> : null}
         </div>
       )}
     </div>
