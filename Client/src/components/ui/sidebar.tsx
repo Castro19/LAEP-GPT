@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Separator } from "./separator";
-import { Sheet, SheetContent } from "./sheet";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "./sheet";
 import { Skeleton } from "./skeleton";
 import {
   Tooltip,
@@ -124,7 +124,15 @@ const SidebarProvider = React.forwardRef<
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isNarrowScreen, openMobile, setOpenMobile, toggleSidebar]
+      [
+        state,
+        open,
+        setOpen,
+        isNarrowScreen,
+        openMobile,
+        setOpenMobile,
+        toggleSidebar,
+      ]
     );
 
     return (
@@ -209,6 +217,11 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
+            <SheetTitle className="sr-only">Sidebar Navigation</SheetTitle>
+            <SheetDescription className="sr-only">
+              Navigation menu for accessing different sections of the
+              application
+            </SheetDescription>
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>
@@ -612,7 +625,9 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isNarrowScreen || deviceType !== "desktop"}
+          hidden={
+            state !== "collapsed" || isNarrowScreen || deviceType !== "desktop"
+          }
           {...tooltip}
         />
       </Tooltip>

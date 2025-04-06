@@ -79,124 +79,132 @@ if (environment === "production") {
   routerChosen = Sentry.wrapCreateBrowserRouter(createBrowserRouter);
 }
 
-const router = routerChosen([
+const router = routerChosen(
+  [
+    {
+      path: "/",
+      element: <SplashPage />,
+      errorElement: <ErrorPageChosen />,
+    },
+    {
+      element: <ProtectedRoute />, // Wrap protected routes
+      errorElement: <ErrorPageChosen />,
+      children: [
+        {
+          path: "chat",
+          element: <ChatPage />,
+          children: [
+            {
+              path: ":chatId",
+              element: <ChatPage />,
+            },
+          ],
+        },
+        {
+          path: "profile/edit",
+          element: <ProfilePage />,
+        },
+        {
+          path: "flowchart",
+          element: <FlowChartPage />,
+          children: [
+            {
+              path: ":flowchartId",
+              element: <Flowchart />,
+            },
+          ],
+        },
+        {
+          path: "class-search",
+          element: <ClassSearchPage />,
+        },
+        {
+          path: "calendar",
+          element: <CalendarPage />,
+          children: [
+            {
+              path: ":calendarId",
+              element: <CalendarPage />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: "/register",
+      element: <Register />,
+      errorElement: <ErrorPageChosen />,
+      children: [
+        {
+          path: "login",
+          element: <LoginForm />,
+        },
+        {
+          path: "sign-up",
+          element: <SignUpForm />,
+        },
+        {
+          path: "reset-password",
+          element: <ResetPassword />,
+        },
+      ],
+    },
+    {
+      path: "verify-email",
+      element: <VerifyEmail />,
+    },
+    {
+      path: "coming-soon",
+      element: <ComingSoonPage />,
+    },
+    {
+      path: "team",
+      element: <TeamPage />,
+      loader: getTeamMembers,
+    },
+    {
+      path: "about",
+      element: <AboutPage />,
+    },
+    {
+      path: "/auth",
+      element: <FirebaseAuth />,
+    },
+    {
+      path: "/sign-in-flow",
+      element: <NewUserRoute />,
+      errorElement: <ErrorPageChosen />,
+      children: [
+        {
+          path: "terms",
+          element: <Terms />,
+        },
+        {
+          path: "input-information",
+          element: <InputInformation />,
+        },
+        {
+          path: "basic-information",
+          element: <BasicInformation showStartingYear={false} />,
+        },
+        {
+          path: "demographics",
+          element: <Demographics />,
+        },
+        {
+          path: "interests",
+          element: <Interests />,
+        },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <SplashPage />,
-    errorElement: <ErrorPageChosen />,
-  },
-  {
-    element: <ProtectedRoute />, // Wrap protected routes
-    errorElement: <ErrorPageChosen />,
-    children: [
-      {
-        path: "chat",
-        element: <ChatPage />,
-        children: [
-          {
-            path: ":chatId",
-            element: <ChatPage />,
-          },
-        ],
-      },
-      {
-        path: "profile/edit",
-        element: <ProfilePage />,
-      },
-      {
-        path: "flowchart",
-        element: <FlowChartPage />,
-        children: [
-          {
-            path: ":flowchartId",
-            element: <Flowchart />,
-          },
-        ],
-      },
-      {
-        path: "class-search",
-        element: <ClassSearchPage />,
-      },
-      {
-        path: "calendar",
-        element: <CalendarPage />,
-        children: [
-          {
-            path: ":calendarId",
-            element: <CalendarPage />,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    path: "/register",
-    element: <Register />,
-    errorElement: <ErrorPageChosen />,
-    children: [
-      {
-        path: "login",
-        element: <LoginForm />,
-      },
-      {
-        path: "sign-up",
-        element: <SignUpForm />,
-      },
-      {
-        path: "reset-password",
-        element: <ResetPassword />,
-      },
-    ],
-  },
-  {
-    path: "verify-email",
-    element: <VerifyEmail />,
-  },
-  {
-    path: "coming-soon",
-    element: <ComingSoonPage />,
-  },
-  {
-    path: "team",
-    element: <TeamPage />,
-    loader: getTeamMembers,
-  },
-  {
-    path: "about",
-    element: <AboutPage />,
-  },
-  {
-    path: "/auth",
-    element: <FirebaseAuth />,
-  },
-  {
-    path: "/sign-in-flow",
-    element: <NewUserRoute />,
-    errorElement: <ErrorPageChosen />,
-    children: [
-      {
-        path: "terms",
-        element: <Terms />,
-      },
-      {
-        path: "input-information",
-        element: <InputInformation />,
-      },
-      {
-        path: "basic-information",
-        element: <BasicInformation showStartingYear={false} />,
-      },
-      {
-        path: "demographics",
-        element: <Demographics />,
-      },
-      {
-        path: "interests",
-        element: <Interests />,
-      },
-    ],
-  },
-]);
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    },
+  }
+);
 
 let hasCheckedAuth = false;
 function App() {
