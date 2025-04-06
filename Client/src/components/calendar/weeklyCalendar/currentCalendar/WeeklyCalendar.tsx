@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -137,7 +138,6 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   const groups = getConflictGroups(events as unknown as EventType[]);
   console.log("Groups", groups);
   // 2) Build background events for each group (only if group size > 1? up to you)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let backgroundEvents: any[] = [];
   for (const group of groups) {
     // If you only want to highlight if there's at least 2 events in a group:
@@ -153,7 +153,6 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   if (environment === "dev") {
     console.log("Final events", finalEvents);
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
     dispatch(fetchSingleSection(classNumber));
@@ -193,7 +192,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             events={finalEvents}
             contentHeight={height}
             titleFormat={{}} // (Empty: no title text on top)
-            dayHeaderContent={(args) => {
+            dayHeaderContent={(args: any) => {
               const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
               return days[args.date.getDay()];
             }}
@@ -208,13 +207,13 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             dayCellClassNames="border border-slate-200 dark:border-slate-700"
             stickyHeaderDates={true}
             eventColor="#334155"
-            eventClassNames={(arg) => {
+            eventClassNames={(arg: any) => {
               if (arg.event.extendedProps.isOverlay) {
                 return ["conflict-overlay-event"];
               }
               return [];
             }}
-            eventContent={(arg) => {
+            eventContent={(arg: any) => {
               if (arg.event.extendedProps.isOverlay) {
                 return null; // no text
               }
@@ -224,7 +223,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             }}
             eventClick={handleEventClick}
             nowIndicator={false}
-            eventDidMount={(info) => {
+            eventDidMount={(info: any) => {
               // If this is a background event, style it on the fly
               if (info.event.display === "background") {
                 console.log("Background event", info.event);
