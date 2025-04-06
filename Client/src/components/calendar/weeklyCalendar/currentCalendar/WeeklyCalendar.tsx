@@ -138,7 +138,6 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   const groups = getConflictGroups(events as unknown as EventType[]);
   console.log("Groups", groups);
   // 2) Build background events for each group (only if group size > 1? up to you)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let backgroundEvents: any[] = [];
   for (const group of groups) {
     // If you only want to highlight if there's at least 2 events in a group:
@@ -154,7 +153,6 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   if (environment === "dev") {
     console.log("Final events", finalEvents);
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
     dispatch(fetchSingleSection(classNumber));
