@@ -4,20 +4,17 @@ import cloneDeep from "lodash-es/cloneDeep";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 
 // Types
-import { Course, FlowchartData, Term } from "@polylink/shared/types";
+import { FlowchartData, Term } from "@polylink/shared/types";
 
 // Icons
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 
 // My components
 import CourseItem from "./CourseItem";
+import CourseToolTipContent from "./CourseTooltipContent";
 
 // UI Components
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -155,34 +152,6 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </h4>
       </div>
     </div>
-  );
-};
-
-const CourseToolTipContent = ({ course }: { course: Course }) => {
-  return (
-    <TooltipContent className="dark:bg-gray-800 border border-gray-700 shadow-xl">
-      <div className="flex flex-col gap-3 p-3 min-w-[300px] max-w-[400px]">
-        {/* Header Section */}
-        <div className="space-y-1">
-          <p className="text-lg font-bold text-white">
-            {course.id || course.customId}
-          </p>
-          <p className="text-sm text-gray-300">
-            {course.displayName || course.customDisplayName || course.id}
-          </p>
-        </div>
-
-        <hr className="border-gray-600" />
-
-        {/* Description Section */}
-        <div
-          className="text-sm leading-relaxed text-gray-200 max-h-[250px] overflow-y-auto pr-2 
-          scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
-        >
-          {course.desc || course.customDesc || "No Description"}
-        </div>
-      </div>
-    </TooltipContent>
   );
 };
 
