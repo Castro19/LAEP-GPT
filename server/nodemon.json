@@ -2,7 +2,7 @@
   "watch": ["src"],
   "ignore": ["node_modules"],
   "ext": "ts,mjs,js,json,graphql",
-  "exec": "npx tsc && node ./dist/index.js",
+  "exec": "npx tsc && node --no-deprecation ./dist/index.js",
   "env": {
     "DEBUG": "express/*",
     "STATIC": "../proto/public"
