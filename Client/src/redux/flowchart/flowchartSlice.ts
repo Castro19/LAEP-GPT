@@ -192,7 +192,7 @@ const flowchartSlice = createSlice({
   name: "flowchart",
   initialState,
   reducers: {
-    setFlowchartData: (state, action: PayloadAction<FlowchartData>) => {
+    setFlowchartData: (state, action: PayloadAction<FlowchartData | null>) => {
       state.flowchartData = action.payload;
     },
     setCurrentFlowchart: (
