@@ -78,6 +78,7 @@ export function SidebarFlowchart() {
 
   const handleCreateFlowchart = () => {
     dispatch(flowchartActions.setCreateFlowchart(true));
+    dispatch(flowchartActions.setFlowchartData(null));
     navigate("/flowchart");
   };
 
