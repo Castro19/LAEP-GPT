@@ -5,9 +5,10 @@ interface ProgressBarProps {
 }
 
 const steps = [
-  { label: "Choose Catalog", step: 1 },
-  { label: "Choose Major", step: 2 },
-  { label: "Choose Concentration", step: 3 },
+  { label: "Choose Starting Year", step: 1 },
+  { label: "Choose Catalog", step: 2 },
+  { label: "Choose Major", step: 3 },
+  { label: "Choose Concentration", step: 4 },
 ];
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ value }) => {
@@ -18,12 +19,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ value }) => {
         {steps.map(({ label, step }, index) => (
           <div
             key={index}
-            className="flex flex-col items-center w-1/3 text-center"
+            className="flex flex-col items-center w-1/4 text-center"
           >
             {/* Animated Step Circle */}
             <motion.div
               className={`w-10 h-10 flex items-center justify-center rounded-full font-bold text-white transition-all ${
-                value >= (step / 3) * 100
+                value >= (step / steps.length) * 100
                   ? "bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg"
                   : "bg-gray-700 text-gray-300"
               }`}
@@ -36,7 +37,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ value }) => {
             {/* Step Label */}
             <p
               className={`text-sm mt-2 ${
-                value >= (step / 3) * 100
+                value >= (step / steps.length) * 100
                   ? "text-blue-400 font-semibold"
                   : "text-gray-500"
               }`}

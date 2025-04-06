@@ -74,9 +74,13 @@ export async function fetchFlowchartDataHelper(
       const year = yearMap(startYear);
       flowchartData = autoFillFlowchart(flowchartData, year);
     }
+    const updatedFlowchartData = {
+      ...flowchartData,
+      startYear: startYear,
+    };
     // Dispatch the action to update the flowchart data in the Redux store
-    dispatch(fetchFlowchartData.fulfilled(flowchartData, "", ""));
-    return flowchartData;
+    dispatch(fetchFlowchartData.fulfilled(updatedFlowchartData, "", ""));
+    return updatedFlowchartData;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (environment === "dev") {
@@ -107,13 +111,20 @@ const autoFillFlowchart = (
 };
 
 const yearMap = (year: string) => {
-  const yearMap = {
-    freshman: 1,
-    sophomore: 2,
-    junior: 3,
-    senior: 4,
-  };
-  return yearMap[year as keyof typeof yearMap];
+  switch (year) {
+    case "2024":
+      return 1;
+    case "2023":
+      return 2;
+    case "2022":
+      return 3;
+    case "2021":
+      return 4;
+    case "2020":
+      return 4;
+    default:
+      return 0;
+  }
 };
 
 const getMaxTIndex = (studentYear: number): number => {

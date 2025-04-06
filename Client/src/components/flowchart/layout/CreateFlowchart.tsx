@@ -31,28 +31,30 @@ const CreateFlowchart = () => {
   const { userData, handleSave } = useUserData();
   const { toast } = useToast();
 
-  // Calculate progress (1/3, 2/3, 3/3)
+  // Calculate progress (1/4, 2/4, 3/4, 4/4)
   const stepsCompleted =
+    (selections.startingYear || userData.year ? 1 : 0) +
     (selections.catalog ? 1 : 0) +
     (selections.major ? 1 : 0) +
     (selections.concentration ? 1 : 0);
 
-  const progress = (stepsCompleted / 3) * 100; // Convert to percentage
-  const isComplete = stepsCompleted === 3;
+  const progress = (stepsCompleted / 4) * 100; // Convert to percentage
+  const isComplete = stepsCompleted === 4;
 
   const handleSaveFlowchart = async () => {
     if (
       isComplete &&
       selections.catalog &&
       selections.major &&
-      selections.concentration
+      selections.concentration &&
+      (selections.startingYear || userData.year)
     ) {
       const flowchartData = await fetchFlowchartDataHelper(
         dispatch,
         selections.catalog,
         selections.major,
         selections.concentration.code,
-        userData.year,
+        selections.startingYear ?? userData.year,
         true
       );
       await saveFlowchartToDB(flowchartData);
@@ -72,9 +74,16 @@ const CreateFlowchart = () => {
       return;
     }
     try {
+      console.log("Flowchart Data", flowchartData);
+      // Create a new object with the updated startYear instead of modifying the original
+      const updatedFlowchartData = {
+        ...flowchartData,
+        startYear: selections.startingYear ?? userData.year,
+      };
+
       flowchart = await dispatch(
         flowchartActions.postFlowchartInDB({
-          flowchartData,
+          flowchartData: updatedFlowchartData,
           name: flowchartData.name,
           // If there are no flowcharts in the database, set the new flowchart as primary
           primaryOption: (flowchartList ?? []).length === 0,
@@ -127,7 +136,7 @@ const CreateFlowchart = () => {
         <div className="w-full mt-4">
           <ProgressBar value={progress} />
           <p className="text-sm text-gray-400 mt-1 text-center">
-            {stepsCompleted}/3 Steps Completed
+            {stepsCompleted}/{4} Steps Completed
           </p>
         </div>
 
