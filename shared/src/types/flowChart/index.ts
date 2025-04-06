@@ -23,6 +23,7 @@ export type Course = {
   customUnits?: string;
   customDesc?: string;
   customDisplayName?: string;
+  addl?: string;
   completed?: boolean; // New property
 };
 

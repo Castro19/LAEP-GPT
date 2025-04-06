@@ -65,6 +65,7 @@ export async function fetchFlowchartDataHelper(
           course.displayName = courseFromData.displayName;
           course.desc = courseFromData.desc;
           course.units = courseFromData.units;
+          course.addl = courseFromData.addl;
         }
       });
     });
