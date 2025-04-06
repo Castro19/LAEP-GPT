@@ -4,7 +4,15 @@ import { useUserData } from "@/hooks/useUserData";
 import { ConcentrationInfo } from "@polylink/shared/types";
 import { motion } from "framer-motion";
 import ReusableDropdown from "@/components/ui/reusable-dropdown";
-import { RiBookLine, RiGraduationCapLine, RiStackLine } from "react-icons/ri";
+import {
+  RiBookLine,
+  RiCalendarLine,
+  RiGraduationCapLine,
+  RiStackLine,
+} from "react-icons/ri";
+import { Label } from "@/components/ui/label";
+
+const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
 
 const FlowchartOptions = ({
   type = "flowchart",
@@ -14,6 +22,7 @@ const FlowchartOptions = ({
   const dispatch = useAppDispatch();
   const { selections, catalogOptions, majorOptions, concentrationOptions } =
     useAppSelector((state) => state.flowSelection);
+  const { userData } = useAppSelector((state) => state.user);
 
   const { handleChangeFlowchartInformation } = useUserData();
 
@@ -94,7 +103,29 @@ const FlowchartOptions = ({
       className="w-full max-w-4xl"
     >
       {/* Dropdowns in a Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Starting Year Selection */}
+
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2 mb-2">
+            <RiCalendarLine className="w-5 h-5 text-blue-500" />
+            <Label className="text-lg font-medium">Starting Year</Label>
+          </div>
+          <ReusableDropdown
+            name="startingYear"
+            dropdownItems={YEAR_OPTIONS}
+            handleChangeItem={(_, value) =>
+              handleChangeOption("startingYear", value)
+            }
+            selectedItem={
+              selections.startingYear ||
+              userData.flowchartInformation.startingYear ||
+              ""
+            }
+            className="w-full border rounded-lg hover:border-blue-300 transition-colors"
+          />
+        </div>
+
         {/* Catalog Dropdown */}
         <div className="flex flex-col">
           <div className="flex items-center space-x-2 mb-2">

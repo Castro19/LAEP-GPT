@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
+import { useRef, useState, useEffect } from "react";
+import { useAppDispatch, flowchartActions } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
 
 // Hooks
@@ -34,14 +34,12 @@ const Flowchart = ({
   flowchartData?: FlowchartData | null;
 }) => {
   const dispatch = useAppDispatch();
-  const userData = useAppSelector((state) => state.user.userData);
   const isNarrowScreen = useIsNarrowScreen();
   const flowchartRef = useRef<HTMLDivElement>(null);
-  const startYear = useMemo(() => {
-    return userData.flowchartInformation.startingYear
-      ? parseInt(userData.flowchartInformation.startingYear, 10) || 2022
-      : 2022;
-  }, [userData]);
+
+  const startYear = flowchartData?.startYear
+    ? parseInt(flowchartData.startYear, 10) || 2022
+    : 2022;
 
   const termsPerYear = 3; // Fall, Winter, Spring
   // Skip, Fall, Winter, Spring, Fall, Winter, Spring, Fall, Winter, Spring, ...
