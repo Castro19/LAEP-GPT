@@ -22,7 +22,7 @@ const InputInformation = () => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-lg mx-auto my-sm:my-8 px-2 sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl"
     >
-      <Card className="p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-8">
+      <Card className="p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm space-y-8 overflow-hidden">
         {/* Options */}
         <div className="grid grid-cols-1 gap-4">
           <motion.button

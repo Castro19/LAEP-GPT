@@ -7,6 +7,7 @@ import { useAppSelector } from "@/redux";
 
 // Hooks
 import { useUserData } from "@/hooks/useUserData";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // Environment variables
 import terms from "@/constants/terms";
@@ -15,12 +16,12 @@ import terms from "@/constants/terms";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import useDeviceType from "@/hooks/useDeviceType";
+
 const md = new MarkdownIt();
 
 export default function Terms() {
   const { handleChange } = useUserData();
-  const device = useDeviceType();
+  const isNarrowScreen = useIsNarrowScreen();
 
   const userData = useAppSelector((state) => state.user.userData);
 
@@ -39,7 +40,9 @@ export default function Terms() {
       className="w-full h-full"
     >
       <Card
-        className={`${device === "mobile" ? "p-2" : "p-3 sm:p-4 md:p-6"} mx-auto w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] xl:max-w-[75%] 2xl:max-w-[70%]`}
+        className={`${
+          isNarrowScreen ? "p-2" : "p-3 sm:p-4 md:p-6"
+        } overflow-hidden`}
       >
         {/* Terms Content */}
         <div className="relative rounded-lg border border-gray-200 dark:border-gray-700 mb-4 sm:mb-6 md:mb-8">
@@ -50,7 +53,7 @@ export default function Terms() {
             />
           </div>
 
-          {/* Gradient Overlay (smaller so it doesn't add too much "fade" space) */}
+          {/* Gradient Overlay (smaller so it doesn’t add too much “fade” space) */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 sm:h-8 md:h-10 bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
         </div>
 
@@ -73,12 +76,6 @@ export default function Terms() {
               I accept the terms and conditions
             </Label>
           </motion.div>
-
-          {/* Info Note */}
-          <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 text-center mt-2 sm:mt-3 md:mt-4">
-            By accepting, you agree to our terms of service and data sharing
-            policies
-          </p>
         </div>
       </Card>
     </motion.div>

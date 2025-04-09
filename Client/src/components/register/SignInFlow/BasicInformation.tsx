@@ -68,7 +68,7 @@ const BasicInformation = ({
     >
       <Card
         // Keep the existing background color; just add some rounding + shadow
-        className="p-4 sm:p-6 space-y-8 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+        className="p-4 sm:p-6 space-y-8 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
       >
         {/* Header */}
         <div className="text-center space-y-1 sm:space-y-2">
