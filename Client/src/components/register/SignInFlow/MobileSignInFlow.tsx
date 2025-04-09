@@ -36,7 +36,6 @@ const MobileSignInFlow: React.FC<MobileSignInFlowProps> = ({
     >
       {/* Subtle background shapes, absolutely positioned */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none select-none overflow-hidden">
-        {/* You can reuse or modify your existing shapes */}
         <svg
           className="absolute w-[380px] h-[380px] text-slate-600 opacity-10 top-[-120px] left-[-120px]"
           fill="currentColor"
@@ -53,39 +52,31 @@ const MobileSignInFlow: React.FC<MobileSignInFlowProps> = ({
         </svg>
       </div>
 
-      {/**
-       * Inner content container:
-       *   - flex-1 so it grows to fill vertical space,
-       *     letting the footer stay pinned at the bottom.
-       *   - We center horizontally any content within it.
-       */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4">
-        {/* A card-like wrapper for your main sign-in flow box */}
-        <div className="w-full max-w-md border border-slate-500 bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden flex flex-col">
-          {/* TitleCard at the top */}
-          <TitleCard title={title} description={description} />
+      {/* Header at the top (optionally sticky if desired) */}
+      <header className="z-10">
+        <TitleCard title={title} description={description} />
+      </header>
 
-          {/**
-           * Main scrollable area:
-           * - Use your ScrollArea or a normal overflow-auto.
-           * - p-4 or p-6 for spacing inside.
-           */}
-          <div className="flex-1 overflow-auto bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white p-4">
-            {/* Insert your form steps here, e.g. <Outlet> or children */}
-            <ScrollArea>{children}</ScrollArea>
-          </div>
+      {/**
+       * The main area:
+       * flex-1 so it expands vertically.
+       * We wrap children in a scrollable area, so the user can scroll
+       * if the content is too large.
+       */}
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center">
+        <div className="w-full max-w-md flex-1 overflow-auto bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white">
+          <ScrollArea>{children}</ScrollArea>
         </div>
-      </div>
+      </main>
 
       {/**
        * Footer container:
-       * - "sticky bottom-0" pins it to the bottom even if scrolled.
-       * - We apply border-t + background.
-       * - Also apply paddingBottom for safe area if you'd like.
+       * - sticky bottom-0 pins it to the bottom even if scrolled.
+       * - we apply safe-area + base padding via calc().
        */}
-      <div
-        className="z-10 sticky bottom-0 border-t border-slate-600/50 
-                   bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800 
+      <footer
+        className="z-10 sticky bottom-0 border-t border-slate-600/50
+                   bg-gradient-to-br from-zinc-800/95 via-zinc-800 to-slate-800
                    dark:from-slate-900 dark:via-slate-800 dark:to-slate-900
                    flex items-center justify-center px-4 py-3"
         style={{
@@ -144,7 +135,7 @@ const MobileSignInFlow: React.FC<MobileSignInFlowProps> = ({
             )}
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
