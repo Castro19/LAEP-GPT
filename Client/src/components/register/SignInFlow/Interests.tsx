@@ -32,7 +32,7 @@ export function Interests() {
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      <Card className="p-6 space-y-8">
+      <Card className="p-6 space-y-8 overflow-hidden">
         {/* Header */}
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-semibold">Your Interests</h2>
