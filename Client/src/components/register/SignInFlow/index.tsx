@@ -46,7 +46,7 @@ const SignInFlow = () => {
         break;
       case "input-information":
         setTitle("Personalize your profile");
-        setDescription("The following questions are optional...");
+        setDescription("Personalize your AI assistant now or do this later");
         break;
       case "basic-information":
         setTitle("Section 1: Basic Information");

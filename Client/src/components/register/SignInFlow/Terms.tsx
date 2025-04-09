@@ -38,7 +38,9 @@ export default function Terms() {
       transition={{ duration: 0.5 }}
       className="w-full h-full"
     >
-      <Card className={`${device === "mobile" ? "p-2" : "p-3 sm:p-4 md:p-6"}`}>
+      <Card
+        className={`${device === "mobile" ? "p-2" : "p-3 sm:p-4 md:p-6"} mx-auto w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] xl:max-w-[75%] 2xl:max-w-[70%]`}
+      >
         {/* Terms Content */}
         <div className="relative rounded-lg border border-gray-200 dark:border-gray-700 mb-4 sm:mb-6 md:mb-8">
           <div className="overflow-y-auto p-3 sm:p-4 md:p-6 max-h-[350px] sm:max-h-[400px] md:max-h-[450px] lg:max-h-[500px]">
@@ -48,7 +50,7 @@ export default function Terms() {
             />
           </div>
 
-          {/* Gradient Overlay (smaller so it doesn’t add too much “fade” space) */}
+          {/* Gradient Overlay (smaller so it doesn't add too much "fade" space) */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 sm:h-8 md:h-10 bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
         </div>
 
