@@ -63,13 +63,19 @@ const BasicInformation = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full"
+      // Center and add spacing for mobile
+      className="w-full max-w-md mx-auto px-2 sm:px-4 my-4 sm:my-6 sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl"
     >
-      <Card className="p-6 space-y-8">
+      <Card
+        // Keep the existing background color; just add some rounding + shadow
+        className="p-4 sm:p-6 space-y-8 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+      >
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold">Basic Information</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+        <div className="text-center space-y-1 sm:space-y-2">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            Basic Information
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
             Please share some basic information about yourself
           </p>
         </div>
@@ -79,8 +85,10 @@ const BasicInformation = ({
           {showStartingYear && (
             <div className="space-y-2">
               <div className="flex items-center space-x-2 mb-2">
-                <RiCalendarLine className="w-5 h-5 text-blue-500" />
-                <Label className="text-lg font-medium">Starting Year</Label>
+                <RiCalendarLine className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                <Label className="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">
+                  Starting Year
+                </Label>
               </div>
               <ReusableDropdown
                 name="startingYear"
@@ -101,8 +109,10 @@ const BasicInformation = ({
           {/* Year Selection */}
           <div className="space-y-2">
             <div className="flex items-center space-x-2 mb-2">
-              <RiUserStarLine className="w-5 h-5 text-blue-500" />
-              <Label className="text-lg font-medium">Current Year</Label>
+              <RiUserStarLine className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              <Label className="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">
+                Current Year
+              </Label>
             </div>
             <RadioGroup
               value={userData?.year || ""}
@@ -134,7 +144,7 @@ const BasicInformation = ({
                     />
                     <Label
                       htmlFor={`year${year.value}`}
-                      className="text-gray-700 dark:text-gray-300"
+                      className="text-sm sm:text-base text-gray-700 dark:text-gray-300 cursor-pointer"
                     >
                       {year.label}
                     </Label>
@@ -143,11 +153,14 @@ const BasicInformation = ({
               </div>
             </RadioGroup>
           </div>
+
           {/* Major Selection */}
           <div className="space-y-2">
             <div className="flex items-center space-x-2 mb-2">
-              <RiGraduationCapLine className="w-5 h-5 text-blue-500" />
-              <Label className="text-lg font-medium">Major</Label>
+              <RiGraduationCapLine className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              <Label className="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">
+                Major
+              </Label>
             </div>
             <ReusableDropdown
               name="major`"
