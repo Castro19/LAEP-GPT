@@ -113,6 +113,8 @@ const autoFillFlowchart = (
 
 const yearMap = (year: string) => {
   switch (year) {
+    case "2025":
+      return 0;
     case "2024":
       return 1;
     case "2023":

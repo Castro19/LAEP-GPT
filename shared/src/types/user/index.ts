@@ -36,7 +36,14 @@ export type UserData = {
 
   availability: Availability;
   bio: string;
-  year: "freshman" | "sophomore" | "junior" | "senior" | "graduate"; // TODO
+  year:
+    | "incoming-freshman"
+    | "incoming-transfer"
+    | "freshman"
+    | "sophomore"
+    | "junior"
+    | "senior"
+    | "graduate"; // TODO
   demographic: {
     gender: string;
     ethnicity: string;

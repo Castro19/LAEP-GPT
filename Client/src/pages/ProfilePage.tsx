@@ -38,6 +38,10 @@ const yearMapping = (year: string) => {
       return "Senior";
     case "graduate":
       return "Graduate";
+    case "incoming-freshman":
+      return "Incoming Freshman";
+    case "incoming-transfer":
+      return "Incoming Transfer";
     default:
       return "";
   }
