@@ -1,5 +1,8 @@
 import express, { Request, Response, RequestHandler } from "express";
-import { getSignupAccessByEmail } from "../db/models/signupAccess/signupAccessServices";
+import {
+  createSignupAccess,
+  getSignupAccessByEmail,
+} from "../db/models/signupAccess/signupAccessServices";
 import {
   addUser,
   checkUserExistsByEmail,
@@ -14,13 +17,9 @@ import { environment } from "../index";
 
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Hello W");
-});
-
 // Login endpoint
 router.post("/login", async (req, res) => {
-  const { token } = req.body;
+  const { token, secretPassphrase } = req.body;
   const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
 
   try {
@@ -52,14 +51,21 @@ router.post("/login", async (req, res) => {
     const user = await getUserByFirebaseId(userId);
 
     if (!user) {
+      console.log("Decoded token:", JSON.stringify(decodedToken));
       // Determine userType
       const email = decodedToken.email || "";
-      const name = decodedToken.name || decodedToken.displayName || "";
+      // Check for display name in different possible locations in the token
+      const name =
+        decodedToken.name ||
+        decodedToken.displayName ||
+        (decodedToken.firebase && decodedToken.firebase.displayName) ||
+        "";
       const userType = await getSignupAccessByEmail(email);
       // Microsoft login is also email verified
       const emailVerified =
         decodedToken.email_verified ||
-        decodedToken.firebase.sign_in_provider === "microsoft.com";
+        decodedToken.firebase.sign_in_provider === "microsoft.com" ||
+        secretPassphrase === "Mustangs"; // Bypass email verification for incoming students
 
       const userData: UserData = {
         userId,
@@ -68,7 +74,6 @@ router.post("/login", async (req, res) => {
         email,
         emailVerified,
         canShareData: false,
-
         availability: {
           Monday: [],
           Tuesday: [],
@@ -94,6 +99,7 @@ router.post("/login", async (req, res) => {
           major: "",
           concentration: "",
         },
+        isIncoming: secretPassphrase === "Mustangs",
       };
       await addUser(userData);
 
@@ -185,5 +191,33 @@ router.post(
     }
   }
 );
+
+router.post("/create-signup-access", async (req: Request, res: Response) => {
+  const { email, role } = req.body;
+  await createSignupAccess(email, role);
+  res.status(200).send({ message: "Signup access created" });
+});
+
+// Endpoint to update user's display name in Firebase Admin SDK
+router.post("/update-display-name", (async (req: Request, res: Response) => {
+  const { userId, displayName } = req.body;
+
+  if (!userId || !displayName) {
+    return res.status(400).send({ error: "Missing required fields" });
+  }
+
+  try {
+    await admin.auth().updateUser(userId, {
+      displayName: displayName,
+    });
+
+    res.status(200).send({ message: "Display name updated successfully" });
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error updating display name:", error);
+    }
+    res.status(500).send({ error: "Failed to update display name" });
+  }
+}) as RequestHandler);
 
 export default router;

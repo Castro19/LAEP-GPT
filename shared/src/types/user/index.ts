@@ -59,4 +59,5 @@ export type UserData = {
     major: string;
     concentration: string;
   };
+  isIncoming?: boolean;
 };

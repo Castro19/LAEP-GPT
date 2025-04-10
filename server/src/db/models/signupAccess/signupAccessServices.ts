@@ -9,6 +9,15 @@ const initializeCollection = (): void => {
   signupAccessCollection = getDb().collection("signupAccess");
 };
 
+// Delete after 1 week
+export const createSignupAccess = async (
+  email: string,
+  role: string
+): Promise<void> => {
+  if (!signupAccessCollection) initializeCollection();
+  await signupAccessCollection.insertOne({ email, role });
+};
+
 export const getSignupAccessByEmail = async (
   email: string
 ): Promise<string> => {
