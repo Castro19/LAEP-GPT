@@ -25,6 +25,8 @@ import {
 export const labelStyle = "underline text-lg self-center";
 
 const years = [
+  { value: "incoming-freshman", label: "Incoming Freshman" },
+  { value: "incoming-transfer", label: "Incoming Transfer" },
   { value: "freshman", label: "Freshman" },
   { value: "sophomore", label: "Sophomore" },
   { value: "junior", label: "Junior" },
@@ -32,7 +34,7 @@ const years = [
   { value: "graduate", label: "Graduate" },
 ];
 
-const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024"];
+const YEAR_OPTIONS = ["2019", "2020", "2021", "2022", "2023", "2024", "2025"];
 
 const BasicInformation = ({
   showStartingYear = true,
