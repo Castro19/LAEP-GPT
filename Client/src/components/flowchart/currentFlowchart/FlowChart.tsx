@@ -166,10 +166,10 @@ const Flowchart = ({
             })}
           </CarouselContent>
           <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
-            <div className="pointer-events-auto">
+            <div className="pointer-events-auto z-10">
               <CarouselPrevious className="h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity" />
             </div>
-            <div className="pointer-events-auto">
+            <div className="pointer-events-auto z-10">
               <CarouselNext className="h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity" />
             </div>
           </div>
