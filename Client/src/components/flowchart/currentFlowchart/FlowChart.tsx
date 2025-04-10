@@ -140,8 +140,11 @@ const Flowchart = ({
           opts={{
             align: "start",
             containScroll: "trimSnaps",
-            dragFree: false,
-            skipSnaps: false,
+            dragFree: true,
+            skipSnaps: true,
+            duration: 20,
+            slidesToScroll: 1,
+            inViewThreshold: 0.5,
           }}
         >
           <CarouselContent className="-ml-2 md:-ml-4">
