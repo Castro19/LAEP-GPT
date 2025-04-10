@@ -22,12 +22,13 @@ import {
 // Add custom styles for the bounce animation
 const bounceStyles = `
   @keyframes subtle-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0.3; }
   }
   
   .pulse-animation {
-    animation: subtle-pulse 0.5s ease-in-out;
+    animation: subtle-pulse 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 `;
 
@@ -285,7 +286,7 @@ const Flowchart = ({
               onMouseLeave={handlePrevHoverEnd}
             >
               <CarouselPrevious
-                className={`h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity ${
+                className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
                   prevBounceCount > 0 ? "pulse-animation" : ""
                 }`}
               />
@@ -296,7 +297,7 @@ const Flowchart = ({
               onMouseLeave={handleNextHoverEnd}
             >
               <CarouselNext
-                className={`h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity ${
+                className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
                   nextBounceCount > 0 ? "pulse-animation" : ""
                 }`}
               />
