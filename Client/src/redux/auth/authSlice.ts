@@ -321,7 +321,7 @@ export const signUpWithEmail = createAsyncThunk<
             }
           }
           if (secretPassphrase === "Mustangs") {
-            navigate("/chat");
+            navigate("/sign-in-flow/terms");
           } else {
             navigate("/verify-email");
           }
