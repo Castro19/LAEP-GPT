@@ -1,6 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAppDispatch, flowchartActions } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
+import { type CarouselApi } from "@/components/ui/carousel";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
@@ -10,7 +11,13 @@ import { TermContainer, defaultTermData } from "@/components/flowchart";
 
 // UI Components
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Carousel,
+  CarouselItem,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -35,7 +42,7 @@ const Flowchart = ({
 }) => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
-  const flowchartRef = useRef<HTMLDivElement>(null);
+  const [api, setApi] = useState<CarouselApi>();
 
   const startYear = flowchartData?.startYear
     ? parseInt(flowchartData.startYear, 10) || 2022
@@ -79,39 +86,37 @@ const Flowchart = ({
   // Add state for selected year
   const [selectedYear, setSelectedYear] = useState(0);
 
-  // Modify the scrollToYear function to update selected year
+  // Modify the scrollToYear function to use the carousel API
   const scrollToYear = (yearIndex: number) => {
     setSelectedYear(yearIndex);
-    if (flowchartRef.current) {
-      const termWidth = flowchartRef.current.scrollWidth / totalTerms;
-      const scrollPosition = yearIndex * termsPerYear * termWidth;
-      flowchartRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      });
+
+    if (api) {
+      // Calculate the term index to scroll to based on the year
+      const termIndex = yearIndex * termsPerYear;
+      api.scrollTo(termIndex);
     }
   };
 
+  // Update the useEffect to use the carousel API
   useEffect(() => {
-    const handleScroll = () => {
-      if (flowchartRef.current) {
-        const scrollLeft = flowchartRef.current.scrollLeft;
-        const yearWidth = flowchartRef.current.scrollWidth / totalYears;
-        const newSelectedYear = Math.round(scrollLeft / yearWidth);
-        setSelectedYear(newSelectedYear);
-      }
+    if (!api) {
+      return;
+    }
+
+    const onSelect = () => {
+      const currentIndex = api.selectedScrollSnap();
+      const yearIndex = Math.floor(currentIndex / termsPerYear);
+      setSelectedYear(yearIndex);
     };
 
-    const refCurrent = flowchartRef.current;
-    refCurrent?.addEventListener("scroll", handleScroll);
-
+    api.on("select", onSelect);
     return () => {
-      refCurrent?.removeEventListener("scroll", handleScroll);
+      api.off("select", onSelect);
     };
-  }, [totalYears]);
+  }, [api, termsPerYear]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col ml-16 mr-16">
       <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2 ml-12">
         {[...Array(totalYears)].map((_, index) => (
           <Button
@@ -129,31 +134,44 @@ const Flowchart = ({
         ))}
       </div>
 
-      <ScrollArea ref={flowchartRef} className="dark:bg-gray-900">
-        <div className="flex w-max space-x-4 py-2 px-4">
-          {termsData.map((term) => {
-            const termName = getTermName(term.tIndex);
+      <div className="relative">
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            containScroll: "trimSnaps",
+            dragFree: false,
+            skipSnaps: false,
+          }}
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {termsData.map((term) => {
+              const termName = getTermName(term.tIndex);
 
-            return (
-              <div
-                className="flex-shrink-1 min-w-[340px] max-w-[350px] bg-slate-50 text-center border-2 border-slate-500"
-                key={term.tIndex + termName}
-              >
-                <TermContainer
-                  term={term}
-                  termName={termName}
-                  onCourseToggleComplete={onCourseToggleComplete}
-                />
-              </div>
-            );
-          })}
-          <ScrollBar
-            orientation="horizontal"
-            data-state="visible"
-            className="bg-white h-4"
-          />
-        </div>
-      </ScrollArea>
+              return (
+                <CarouselItem
+                  className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  key={term.tIndex + termName}
+                >
+                  <TermContainer
+                    term={term}
+                    termName={termName}
+                    onCourseToggleComplete={onCourseToggleComplete}
+                  />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
+            <div className="pointer-events-auto">
+              <CarouselPrevious className="h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity" />
+            </div>
+            <div className="pointer-events-auto">
+              <CarouselNext className="h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity" />
+            </div>
+          </div>
+        </Carousel>
+      </div>
     </div>
   );
 };
