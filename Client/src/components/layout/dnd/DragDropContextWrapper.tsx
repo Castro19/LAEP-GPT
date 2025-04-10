@@ -1,7 +1,13 @@
 // FlowChatLayout.jsx
-import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
-import { DragDropContext, DropResult } from "@hello-pangea/dnd";
+import {
+  useAppDispatch,
+  useAppSelector,
+  flowchartActions,
+  layoutActions,
+} from "@/redux";
+import { DragDropContext, DropResult, DragUpdate } from "@hello-pangea/dnd";
 import cloneDeep from "lodash-es/cloneDeep";
+import { ReactNode } from "react";
 
 // Types
 import {
@@ -15,11 +21,11 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { serverUrl } from "@/helpers/getEnvironmentVars";
 
-const DragDropContextWrapper = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+interface DragDropContextWrapperProps {
+  children: ReactNode;
+}
+
+const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
   const dispatch = useAppDispatch();
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
@@ -27,7 +33,16 @@ const DragDropContextWrapper = ({
   const { catalog } = useAppSelector(
     (state) => state.user.userData.flowchartInformation
   );
+
+  const handleDragStart = () => {
+    dispatch(layoutActions.setDragState({ isDragging: true, direction: null }));
+  };
+
   const handleDragEnd = async (result: DropResult) => {
+    dispatch(
+      layoutActions.setDragState({ isDragging: false, direction: null })
+    );
+
     const { source, destination, draggableId } = result;
     if (!destination) return;
 
@@ -87,6 +102,37 @@ const DragDropContextWrapper = ({
       // Prevent dragging from term container back to sidebar
       return;
     }
+  };
+
+  const handleDragUpdate = (update: DragUpdate) => {
+    if (!update.destination) return;
+
+    const source = update.source;
+    const destination = update.destination;
+
+    // Calculate drag direction based on source and destination
+    let direction: "left" | "right" | "up" | "down" | null = null;
+
+    if (source.droppableId === destination.droppableId) {
+      // Same container
+      if (source.index > destination.index) {
+        direction = "up";
+      } else if (source.index < destination.index) {
+        direction = "down";
+      }
+    } else {
+      // Different containers
+      const sourceIndex = parseInt(source.droppableId.split("-")[1]);
+      const destIndex = parseInt(destination.droppableId.split("-")[1]);
+
+      if (sourceIndex > destIndex) {
+        direction = "left";
+      } else if (sourceIndex < destIndex) {
+        direction = "right";
+      }
+    }
+
+    dispatch(layoutActions.setDragState({ isDragging: true, direction }));
   };
 
   // Helper function to move course between terms
@@ -185,7 +231,13 @@ const DragDropContextWrapper = ({
   };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>{children}</DragDropContext>
+    <DragDropContext
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragUpdate={handleDragUpdate}
+    >
+      {children}
+    </DragDropContext>
   );
 };
 

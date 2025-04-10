@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAppDispatch, flowchartActions } from "@/redux";
+import { useAppDispatch, flowchartActions, useAppSelector } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
 import { type CarouselApi } from "@/components/ui/carousel";
 
@@ -42,6 +42,8 @@ const Flowchart = ({
 }) => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
+
+  const { isDragging } = useAppSelector((state) => state.layout);
   const [api, setApi] = useState<CarouselApi>();
 
   const startYear = flowchartData?.startYear
@@ -145,6 +147,7 @@ const Flowchart = ({
             duration: 20,
             slidesToScroll: 1,
             inViewThreshold: 0.5,
+            direction: isDragging ? "ltr" : undefined,
           }}
         >
           <CarouselContent className="-ml-2 md:-ml-4">

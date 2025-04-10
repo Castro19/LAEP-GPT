@@ -11,10 +11,8 @@ import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 
 // My components
 import CourseItem from "./CourseItem";
-import CourseToolTipContent from "./CourseTooltipContent";
 
 // UI Components
-import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -106,35 +104,28 @@ const TermContainer: React.FC<TermContainerProps> = ({
                 {...provided.droppableProps}
               >
                 {term.courses.map((course, index) => (
-                  <TooltipProvider
-                    key={`term-${term.tIndex}-${course.id || index}`}
+                  <Draggable
+                    key={`${course.id || index}-${term.tIndex}`}
+                    draggableId={`${course.id || index}-${term.tIndex}`}
+                    index={index}
                   >
-                    <Tooltip>
-                      <Draggable
-                        key={`term-${term.tIndex}-${course.id || index}`}
-                        draggableId={`term-${term.tIndex}-${course.id || index}`}
-                        index={index}
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
                       >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <CourseItem
-                              termIndex={term.tIndex}
-                              course={course}
-                              coursePosition={index}
-                              onToggleComplete={() =>
-                                onCourseToggleComplete(term.tIndex, index)
-                              }
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                      <CourseToolTipContent course={course} />
-                    </Tooltip>
-                  </TooltipProvider>
+                        <CourseItem
+                          termIndex={term.tIndex}
+                          course={course}
+                          coursePosition={index}
+                          onToggleComplete={() =>
+                            onCourseToggleComplete(term.tIndex, index)
+                          }
+                        />
+                      </div>
+                    )}
+                  </Draggable>
                 ))}
                 {provided.placeholder}
               </div>
