@@ -15,6 +15,7 @@ import CourseItem from "./CourseItem";
 // UI Components
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
 
 interface TermContainerProps {
   term: Term;
@@ -104,28 +105,22 @@ const TermContainer: React.FC<TermContainerProps> = ({
                 {...provided.droppableProps}
               >
                 {term.courses.map((course, index) => (
-                  <Draggable
+                  <PortalAwareDraggable
                     key={`${course.id || index}-${term.tIndex}`}
                     draggableId={`${course.id || index}-${term.tIndex}`}
                     index={index}
                   >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <CourseItem
-                          termIndex={term.tIndex}
-                          course={course}
-                          coursePosition={index}
-                          onToggleComplete={() =>
-                            onCourseToggleComplete(term.tIndex, index)
-                          }
-                        />
-                      </div>
+                    {(provided, snapshot) => (
+                      <CourseItem
+                        termIndex={term.tIndex}
+                        course={course}
+                        coursePosition={index}
+                        onToggleComplete={() =>
+                          onCourseToggleComplete(term.tIndex, index)
+                        }
+                      />
                     )}
-                  </Draggable>
+                  </PortalAwareDraggable>
                 ))}
                 {provided.placeholder}
               </div>
