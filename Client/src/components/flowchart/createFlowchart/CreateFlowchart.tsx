@@ -122,12 +122,14 @@ const CreateFlowchart = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center items-start ml-12">
-      <div className="flex flex-col items-center w-full max-w-4xl mt-12">
+    <div className="h-screen flex justify-center items-start px-4 sm:px-6 md:px-8">
+      <div className="flex flex-col items-center w-full max-w-4xl mt-8 sm:mt-12">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">Academic Path</h1>
-          <p className="text-md text-gray-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
+            Academic Path
+          </h1>
+          <p className="text-sm sm:text-md text-gray-400 mt-1">
             Configure your academic journey
           </p>
         </div>
@@ -135,7 +137,7 @@ const CreateFlowchart = () => {
         {/* Progress Bar */}
         <div className="w-full mt-4">
           <ProgressBar value={progress} />
-          <p className="text-sm text-gray-400 mt-1 text-center">
+          <p className="text-xs sm:text-sm text-gray-400 mt-1 text-center">
             {stepsCompleted}/{4} Steps Completed
           </p>
         </div>
@@ -146,9 +148,12 @@ const CreateFlowchart = () => {
         </div>
 
         {/* Generate Flowchart Button */}
-        <div className="w-full mt-6">
+        <div
+          className="w-full mt-6"
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
           <Button
-            className={`w-full py-3 text-lg transition-all font-semibold rounded-md ${
+            className={`w-full py-2 sm:py-3 text-base sm:text-lg transition-all font-semibold rounded-md mb-4 ${
               isComplete
                 ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                 : "bg-gray-600 text-gray-400 cursor-not-allowed"
