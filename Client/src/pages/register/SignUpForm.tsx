@@ -10,6 +10,7 @@ import SpecialButton from "@/components/ui/specialButton";
 import { clearRegisterError } from "@/redux/auth/authSlice";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 export function SignupFormDemo() {
   const [firstName, setFirstName] = useState("");
@@ -18,6 +19,8 @@ export function SignupFormDemo() {
   const [password, setPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isIncoming, setIsIncoming] = useState(false);
+  const [secretPassphrase, setSecretPassphrase] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -58,12 +61,24 @@ export function SignupFormDemo() {
       return;
     }
 
+    // Validate passphrase if isIncoming is true
+    if (isIncoming && !secretPassphrase) {
+      dispatch(
+        authActions.setRegisterError(
+          "Please enter the passphrase for incoming students."
+        )
+      );
+      return;
+    }
+
     // Prepare the user data
     const userData = {
       email,
       password,
       firstName,
       lastName,
+      isIncoming,
+      secretPassphrase: isIncoming ? secretPassphrase : undefined,
     };
 
     // Dispatch the signup action
@@ -176,6 +191,35 @@ export function SignupFormDemo() {
               className="bg-neutral-800/50 border-neutral-700 text-neutral-200 placeholder:text-neutral-500 focus:border-blue-500"
             />
           </LabelInputContainer>
+
+          {/* Incoming Student Toggle */}
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="incoming-student" className="text-neutral-200">
+              I am an incoming student
+            </Label>
+            <Switch
+              id="incoming-student"
+              checked={isIncoming}
+              onCheckedChange={setIsIncoming}
+            />
+          </div>
+
+          {/* Passphrase Input - Only shown when isIncoming is true */}
+          {isIncoming && (
+            <LabelInputContainer>
+              <Label htmlFor="passphrase" className="text-neutral-200">
+                Passphrase
+              </Label>
+              <Input
+                id="passphrase"
+                placeholder="Enter the passphrase for incoming students"
+                type="text"
+                value={secretPassphrase}
+                onChange={(e) => setSecretPassphrase(e.target.value)}
+                className="bg-neutral-800/50 border-neutral-700 text-neutral-200 placeholder:text-neutral-500 focus:border-blue-500"
+              />
+            </LabelInputContainer>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.01 }}

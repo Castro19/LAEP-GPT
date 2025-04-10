@@ -12,7 +12,12 @@ import {
   linkWithCredential,
   AuthCredential,
 } from "firebase/auth";
-import { loginUser, verifyCalPolyEmail } from "./crudAuth";
+import {
+  createSignupAccess,
+  loginUser,
+  verifyCalPolyEmail,
+  updateUserDisplayName,
+} from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
 import { AuthState, UserData, FirebaseError } from "@polylink/shared/types";
@@ -245,14 +250,22 @@ export const signUpWithEmail = createAsyncThunk<
     password: string;
     firstName: string;
     lastName: string;
+    secretPassphrase: string | undefined;
     // eslint-disable-next-line no-unused-vars
     navigate: (path: string) => void;
   },
   { dispatch: AppDispatch }
 >(
   "auth/signUpWithEmail",
-  async ({ email, password, firstName, lastName, navigate }, { dispatch }) => {
+  async (
+    { email, password, firstName, lastName, secretPassphrase, navigate },
+    { dispatch }
+  ) => {
     dispatch(clearRegisterError());
+
+    if (secretPassphrase === "Mustangs") {
+      await createSignupAccess(email, "student");
+    }
 
     if (email && (await verifyCalPolyEmail(email))) {
       dispatch(setLoading(true));
@@ -266,20 +279,38 @@ export const signUpWithEmail = createAsyncThunk<
         );
         const user = userCredential.user;
 
-        // Send verification email immediately after sign-up
-        await sendEmailVerification(user);
+        // Update the user's profile with display name
         await updateProfile(user, {
           displayName: `${firstName} ${lastName}`,
         });
-        const token = await user.getIdToken(); // Get the Firebase ID token
+
+        // Send verification email immediately after sign-up (We are not sending it for incoming students to make the signup process faster)
+        if (secretPassphrase !== "Mustangs") {
+          await sendEmailVerification(user);
+        }
+
+        // Force token refresh to include the updated display name
+        await user.getIdToken(true);
+
+        // Get the refreshed token
+        const token = await user.getIdToken();
+
         // Send the token to server to set the HTTP-only cookie
         try {
-          if (user.emailVerified) {
-            const userResponse = await loginUser(token);
+          if (user.emailVerified || secretPassphrase === "Mustangs") {
+            const userResponse = await loginUser(token, secretPassphrase);
             if (userResponse) {
               if (userResponse.isNewUser) {
                 dispatch(setIsNewUser(userResponse.isNewUser));
                 dispatch(setUserData(userResponse.userData));
+
+                // If the user's name is empty in the response, update it on the server
+                if (!userResponse.userData.name && user.uid) {
+                  await updateUserDisplayName(
+                    user.uid,
+                    `${firstName} ${lastName}`
+                  );
+                }
               }
               dispatch(checkAuthentication());
             } else {
@@ -289,7 +320,11 @@ export const signUpWithEmail = createAsyncThunk<
               );
             }
           }
-          navigate("/verify-email");
+          if (secretPassphrase === "Mustangs") {
+            navigate("/chat");
+          } else {
+            navigate("/verify-email");
+          }
         } catch (error) {
           // FIX: Handle other errors
           dispatch(setRegisterError("Failed to sign up. Please try again."));
