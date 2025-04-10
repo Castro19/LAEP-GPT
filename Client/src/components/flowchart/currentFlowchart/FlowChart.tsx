@@ -1,6 +1,7 @@
-import { useRef, useState, useEffect } from "react";
-import { useAppDispatch, flowchartActions } from "@/redux";
+import { useState, useEffect, useRef } from "react";
+import { useAppDispatch, flowchartActions, useAppSelector } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
+import { type CarouselApi } from "@/components/ui/carousel";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
@@ -10,7 +11,26 @@ import { TermContainer, defaultTermData } from "@/components/flowchart";
 
 // UI Components
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Carousel,
+  CarouselItem,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+// Add custom styles for the bounce animation
+const bounceStyles = `
+  @keyframes subtle-pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0.3; }
+  }
+  
+  .pulse-animation {
+    animation: subtle-pulse 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+`;
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -35,7 +55,15 @@ const Flowchart = ({
 }) => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
-  const flowchartRef = useRef<HTMLDivElement>(null);
+
+  const { isDragging } = useAppSelector((state) => state.layout);
+  const [api, setApi] = useState<CarouselApi>();
+
+  // Add refs for hover timers
+  const prevHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const nextHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [prevBounceCount, setPrevBounceCount] = useState(0);
+  const [nextBounceCount, setNextBounceCount] = useState(0);
 
   const startYear = flowchartData?.startYear
     ? parseInt(flowchartData.startYear, 10) || 2022
@@ -79,39 +107,129 @@ const Flowchart = ({
   // Add state for selected year
   const [selectedYear, setSelectedYear] = useState(0);
 
-  // Modify the scrollToYear function to update selected year
+  // Modify the scrollToYear function to use the carousel API
   const scrollToYear = (yearIndex: number) => {
     setSelectedYear(yearIndex);
-    if (flowchartRef.current) {
-      const termWidth = flowchartRef.current.scrollWidth / totalTerms;
-      const scrollPosition = yearIndex * termsPerYear * termWidth;
-      flowchartRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      });
+
+    if (api) {
+      // Calculate the term index to scroll to based on the year
+      const termIndex = yearIndex * termsPerYear;
+      api.scrollTo(termIndex);
     }
   };
 
+  // Update the useEffect to use the carousel API
   useEffect(() => {
-    const handleScroll = () => {
-      if (flowchartRef.current) {
-        const scrollLeft = flowchartRef.current.scrollLeft;
-        const yearWidth = flowchartRef.current.scrollWidth / totalYears;
-        const newSelectedYear = Math.round(scrollLeft / yearWidth);
-        setSelectedYear(newSelectedYear);
-      }
+    if (!api) {
+      return;
+    }
+
+    const onSelect = () => {
+      const currentIndex = api.selectedScrollSnap();
+      const yearIndex = Math.floor(currentIndex / termsPerYear);
+      setSelectedYear(yearIndex);
     };
 
-    const refCurrent = flowchartRef.current;
-    refCurrent?.addEventListener("scroll", handleScroll);
-
+    api.on("select", onSelect);
     return () => {
-      refCurrent?.removeEventListener("scroll", handleScroll);
+      api.off("select", onSelect);
     };
-  }, [totalYears]);
+  }, [api, termsPerYear]);
+
+  // Add functions to handle hover effects
+  const handlePrevHoverStart = () => {
+    if (!api) return;
+
+    // Clear any existing timer
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+    }
+
+    // Start the pulse sequence
+    startPulseSequence("prev");
+  };
+
+  const handlePrevHoverEnd = () => {
+    // Clear the timer and reset bounce count
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+      prevHoverTimerRef.current = null;
+    }
+    setPrevBounceCount(0);
+  };
+
+  const handleNextHoverStart = () => {
+    if (!api) return;
+
+    // Clear any existing timer
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+    }
+
+    // Start the pulse sequence
+    startPulseSequence("next");
+  };
+
+  const handleNextHoverEnd = () => {
+    // Clear the timer and reset bounce count
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+      nextHoverTimerRef.current = null;
+    }
+    setNextBounceCount(0);
+  };
+
+  // Recursive function to handle the pulse sequence
+  const startPulseSequence = (direction: "prev" | "next") => {
+    if (!api) return;
+
+    const isPrev = direction === "prev";
+    const timerRef = isPrev ? prevHoverTimerRef : nextHoverTimerRef;
+    const setBounceCount = isPrev ? setPrevBounceCount : setNextBounceCount;
+
+    // Start with the first pulse
+    setBounceCount(1);
+
+    // Function to handle the next pulse in the sequence
+    const handleNextPulse = (pulseNumber: number) => {
+      if (pulseNumber > 3) {
+        // After 3 pulses, trigger the carousel movement
+        if (isPrev) {
+          api.scrollPrev();
+        } else {
+          api.scrollNext();
+        }
+
+        // Reset bounce count
+        setBounceCount(0);
+
+        // Start the next sequence after a short delay
+        timerRef.current = setTimeout(() => {
+          startPulseSequence(direction);
+        }, 500);
+
+        return;
+      }
+
+      // Set the current pulse number
+      setBounceCount(pulseNumber);
+
+      // Schedule the next pulse
+      timerRef.current = setTimeout(() => {
+        handleNextPulse(pulseNumber + 1);
+      }, 500);
+    };
+
+    // Start the sequence
+    timerRef.current = setTimeout(() => {
+      handleNextPulse(2);
+    }, 500);
+  };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col ml-16 mr-16">
+      <style>{bounceStyles}</style>
+
       <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2 ml-12">
         {[...Array(totalYears)].map((_, index) => (
           <Button
@@ -129,31 +247,64 @@ const Flowchart = ({
         ))}
       </div>
 
-      <ScrollArea ref={flowchartRef} className="dark:bg-gray-900">
-        <div className="flex w-max space-x-4 py-2 px-4">
-          {termsData.map((term) => {
-            const termName = getTermName(term.tIndex);
+      <div className="relative">
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            containScroll: "trimSnaps",
+            dragFree: true,
+            skipSnaps: true,
+            duration: 20,
+            slidesToScroll: 1,
+            inViewThreshold: 0.5,
+            direction: isDragging ? "ltr" : undefined,
+          }}
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {termsData.map((term) => {
+              const termName = getTermName(term.tIndex);
 
-            return (
-              <div
-                className="flex-shrink-1 min-w-[340px] max-w-[350px] bg-slate-50 text-center border-2 border-slate-500"
-                key={term.tIndex + termName}
-              >
-                <TermContainer
-                  term={term}
-                  termName={termName}
-                  onCourseToggleComplete={onCourseToggleComplete}
-                />
-              </div>
-            );
-          })}
-          <ScrollBar
-            orientation="horizontal"
-            data-state="visible"
-            className="bg-white h-4"
-          />
-        </div>
-      </ScrollArea>
+              return (
+                <CarouselItem
+                  className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  key={term.tIndex + termName}
+                >
+                  <TermContainer
+                    term={term}
+                    termName={termName}
+                    onCourseToggleComplete={onCourseToggleComplete}
+                  />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
+            <div
+              className="pointer-events-auto z-10"
+              onMouseEnter={handlePrevHoverStart}
+              onMouseLeave={handlePrevHoverEnd}
+            >
+              <CarouselPrevious
+                className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
+                  prevBounceCount > 0 ? "pulse-animation" : ""
+                }`}
+              />
+            </div>
+            <div
+              className="pointer-events-auto z-10"
+              onMouseEnter={handleNextHoverStart}
+              onMouseLeave={handleNextHoverEnd}
+            >
+              <CarouselNext
+                className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
+                  nextBounceCount > 0 ? "pulse-animation" : ""
+                }`}
+              />
+            </div>
+          </div>
+        </Carousel>
+      </div>
     </div>
   );
 };

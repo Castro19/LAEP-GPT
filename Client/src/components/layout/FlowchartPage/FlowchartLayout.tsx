@@ -17,6 +17,7 @@ const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <DragDropContextWrapper>
       <SidebarFlowchart />
+      <div id="draggable-portal"></div>
       <div
         className={`bg-slate-900 text-white min-h-screen flex flex-col overflow-hidden no-scroll w-full ${
           isNarrowScreen ? "mr-8" : "mr-16"
