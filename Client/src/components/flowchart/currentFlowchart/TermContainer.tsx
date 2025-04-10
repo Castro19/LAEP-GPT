@@ -1,7 +1,7 @@
 // TermContainer.tsx
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import cloneDeep from "lodash-es/cloneDeep";
-import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { Droppable } from "@hello-pangea/dnd";
 
 // Types
 import { FlowchartData, Term } from "@polylink/shared/types";
@@ -110,7 +110,8 @@ const TermContainer: React.FC<TermContainerProps> = ({
                     draggableId={`${course.id || index}-${term.tIndex}`}
                     index={index}
                   >
-                    {(provided, snapshot) => (
+                    {/* eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars */}
+                    {(_provided, _snapshot) => (
                       <CourseItem
                         termIndex={term.tIndex}
                         course={course}

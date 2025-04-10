@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAppDispatch, flowchartActions, useAppSelector } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
 import { type CarouselApi } from "@/components/ui/carousel";
@@ -18,6 +18,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+
+// Add custom styles for the bounce animation
+const bounceStyles = `
+  @keyframes subtle-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  .pulse-animation {
+    animation: subtle-pulse 0.5s ease-in-out;
+  }
+`;
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -45,6 +57,12 @@ const Flowchart = ({
 
   const { isDragging } = useAppSelector((state) => state.layout);
   const [api, setApi] = useState<CarouselApi>();
+
+  // Add refs for hover timers
+  const prevHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const nextHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [prevBounceCount, setPrevBounceCount] = useState(0);
+  const [nextBounceCount, setNextBounceCount] = useState(0);
 
   const startYear = flowchartData?.startYear
     ? parseInt(flowchartData.startYear, 10) || 2022
@@ -117,8 +135,100 @@ const Flowchart = ({
     };
   }, [api, termsPerYear]);
 
+  // Add functions to handle hover effects
+  const handlePrevHoverStart = () => {
+    if (!api) return;
+
+    // Clear any existing timer
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+    }
+
+    // Start the pulse sequence
+    startPulseSequence("prev");
+  };
+
+  const handlePrevHoverEnd = () => {
+    // Clear the timer and reset bounce count
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+      prevHoverTimerRef.current = null;
+    }
+    setPrevBounceCount(0);
+  };
+
+  const handleNextHoverStart = () => {
+    if (!api) return;
+
+    // Clear any existing timer
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+    }
+
+    // Start the pulse sequence
+    startPulseSequence("next");
+  };
+
+  const handleNextHoverEnd = () => {
+    // Clear the timer and reset bounce count
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+      nextHoverTimerRef.current = null;
+    }
+    setNextBounceCount(0);
+  };
+
+  // Recursive function to handle the pulse sequence
+  const startPulseSequence = (direction: "prev" | "next") => {
+    if (!api) return;
+
+    const isPrev = direction === "prev";
+    const timerRef = isPrev ? prevHoverTimerRef : nextHoverTimerRef;
+    const setBounceCount = isPrev ? setPrevBounceCount : setNextBounceCount;
+
+    // Start with the first pulse
+    setBounceCount(1);
+
+    // Function to handle the next pulse in the sequence
+    const handleNextPulse = (pulseNumber: number) => {
+      if (pulseNumber > 3) {
+        // After 3 pulses, trigger the carousel movement
+        if (isPrev) {
+          api.scrollPrev();
+        } else {
+          api.scrollNext();
+        }
+
+        // Reset bounce count
+        setBounceCount(0);
+
+        // Start the next sequence after a short delay
+        timerRef.current = setTimeout(() => {
+          startPulseSequence(direction);
+        }, 500);
+
+        return;
+      }
+
+      // Set the current pulse number
+      setBounceCount(pulseNumber);
+
+      // Schedule the next pulse
+      timerRef.current = setTimeout(() => {
+        handleNextPulse(pulseNumber + 1);
+      }, 500);
+    };
+
+    // Start the sequence
+    timerRef.current = setTimeout(() => {
+      handleNextPulse(2);
+    }, 500);
+  };
+
   return (
     <div className="flex flex-col ml-16 mr-16">
+      <style>{bounceStyles}</style>
+
       <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2 ml-12">
         {[...Array(totalYears)].map((_, index) => (
           <Button
@@ -169,11 +279,27 @@ const Flowchart = ({
             })}
           </CarouselContent>
           <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
-            <div className="pointer-events-auto z-10">
-              <CarouselPrevious className="h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity" />
+            <div
+              className="pointer-events-auto z-10"
+              onMouseEnter={handlePrevHoverStart}
+              onMouseLeave={handlePrevHoverEnd}
+            >
+              <CarouselPrevious
+                className={`h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity ${
+                  prevBounceCount > 0 ? "pulse-animation" : ""
+                }`}
+              />
             </div>
-            <div className="pointer-events-auto z-10">
-              <CarouselNext className="h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity" />
+            <div
+              className="pointer-events-auto z-10"
+              onMouseEnter={handleNextHoverStart}
+              onMouseLeave={handleNextHoverEnd}
+            >
+              <CarouselNext
+                className={`h-full w-12 rounded-none opacity-30 hover:opacity-100 transition-opacity ${
+                  nextBounceCount > 0 ? "pulse-animation" : ""
+                }`}
+              />
             </div>
           </div>
         </Carousel>
