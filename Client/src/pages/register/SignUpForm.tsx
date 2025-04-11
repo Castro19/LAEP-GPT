@@ -11,6 +11,7 @@ import { clearRegisterError } from "@/redux/auth/authSlice";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import { Helmet } from "react-helmet";
 
 export function SignupFormDemo() {
   const [firstName, setFirstName] = useState("");
@@ -96,6 +97,14 @@ export function SignupFormDemo() {
 
   return (
     <div>
+      <Helmet>
+        <title>Sign Up | PolyLink</title>
+        <meta 
+          name="description" 
+          content="Create your PolyLink account to connect with Cal Poly students and access course information."
+        />
+        <meta property="og:image" content="/seo-signup.png" />
+      </Helmet>
       {userLoggedIn && <Navigate to={"/chat"} replace={true} />}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
