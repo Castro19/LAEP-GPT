@@ -11,11 +11,15 @@ import OuterIconSidebar from "@/components/layout/dynamicLayouts/OuterIconSideba
 import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+import MobileFlowchartLayout from "@/components/layout/FlowchartPage/MobileFlowchartLayout";
+import useDeviceType from "@/hooks/useDeviceType";
 
 const FlowChartPage = () => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
   const { flowchartId } = useParams();
+  const device = useDeviceType();
+
   const { flowchartData, loading, currentFlowchart, createFlowchart } =
     useAppSelector((state) => state.flowchart);
 
@@ -82,18 +86,32 @@ const FlowChartPage = () => {
 
   return (
     <>
-      <div className="flex overflow-hidden no-scroll">
-        {isNarrowScreen ? null : <OuterIconSidebar />}
-        <SidebarProvider className="dark:bg-slate-900">
-          <FlowchartLayout>
-            {createFlowchart || !flowchartData ? (
-              <CreateFlowchart />
-            ) : (
-              <Flowchart flowchartData={flowchartData} />
-            )}
-          </FlowchartLayout>
-        </SidebarProvider>
-      </div>
+      {device !== "desktop" ? (
+        <div className="flex overflow-hidden no-scroll">
+          <SidebarProvider className="dark:bg-slate-900">
+            <MobileFlowchartLayout>
+              {createFlowchart || !flowchartData ? (
+                <CreateFlowchart />
+              ) : (
+                <Flowchart flowchartData={flowchartData} />
+              )}
+            </MobileFlowchartLayout>
+          </SidebarProvider>
+        </div>
+      ) : (
+        <div className="flex overflow-hidden no-scroll">
+          {isNarrowScreen ? null : <OuterIconSidebar />}
+          <SidebarProvider className="dark:bg-slate-900">
+            <FlowchartLayout>
+              {createFlowchart || !flowchartData ? (
+                <CreateFlowchart />
+              ) : (
+                <Flowchart flowchartData={flowchartData} />
+              )}
+            </FlowchartLayout>
+          </SidebarProvider>
+        </div>
+      )}
     </>
   );
 };
