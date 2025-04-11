@@ -72,7 +72,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
   return (
-    <div className="flex flex-col w-full dark:bg-gray-900 shadow-md">
+    <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-[calc(100vh-12rem)]">
       {/* Header */}
       <div className="flex justify-between items-center gap-2">
         <>
@@ -94,13 +94,14 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </>
         <hr className="my-2" />
       </div>
-      <ScrollArea className="h-full min-w-full mb-4">
-        {/* Body */}
-        <div className="h-[60vh]">
+
+      {/* Scrollable content area */}
+      <ScrollArea className="flex-1 min-w-full">
+        <div className="h-full pb-4">
           <Droppable droppableId={`term-${term.tIndex}`}>
             {(provided) => (
               <div
-                className="flex-grow p-2 overflow-y-auto gap-2 flex flex-col"
+                className="p-2 gap-2 flex flex-col min-h-full"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -130,9 +131,8 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </div>
       </ScrollArea>
 
-      {/* Footer */}
-      <div className="p-4">
-        <hr className="my-2" />
+      {/* Fixed footer */}
+      <div className="p-4 border-t border-slate-700">
         <h4 className="m-0">
           Units: {term.tUnits}
           {term.courses.length ? ` (${term.courses.length} courses)` : ""}
