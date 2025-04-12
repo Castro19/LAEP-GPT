@@ -8,6 +8,7 @@ import {
   CourseObject,
 } from "@polylink/shared/types";
 import { MongoQuery } from "../../../types/mongo";
+
 export const getCourses = async (
   queryParams: CourseQuery
 ): Promise<CourseObject[]> => {
@@ -15,7 +16,8 @@ export const getCourses = async (
   let query = {} as MongoQuery<CourseDocument>;
 
   if (catalogYear) {
-    query.catalogYear = catalogYear;
+    // I believe we should hardcode catalog year to 2022-2026 to get the most recent courses.
+    query.catalogYear = "2022-2026";
   }
   // Initialize filters
   const filters = [];

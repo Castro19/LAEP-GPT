@@ -1,5 +1,6 @@
 import { useState, useEffect, memo, useRef } from "react";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { useAppSelector } from "@/redux";
 
 // Types
 import {
@@ -14,10 +15,12 @@ import {
   fetchCoursesBySubjectAPI,
   fetchSubjectNamesAPI,
 } from "@/components/flowchart";
+import { getCatalogYear } from "@/components/flowchart/helpers/findCatalogYear";
 
 // My components
 import { SidebarCourse, CourseSearchbar } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
+
 // Icons and UI Components
 import {
   ChevronDown,
@@ -89,6 +92,10 @@ const CourseDropdown = memo(() => {
     GWR: [],
     USCP: [],
   });
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
+
+  // Get current catalog year
+  const currentCatalogYear = getCatalogYear(flowchartData?.name);
 
   // Refs for each course type
   const refs: Record<CourseType, React.RefObject<HTMLButtonElement>> = {
@@ -98,7 +105,7 @@ const CourseDropdown = memo(() => {
 
   // API calls
   const fetchSubjects = async (type: CourseType) => {
-    const subjectNamesFetched = await fetchSubjectNamesAPI("2022-2026", {
+    const subjectNamesFetched = await fetchSubjectNamesAPI(currentCatalogYear, {
       ge: "false",
       gwr: type === "GWR" ? "true" : "false",
       uscp: type === "USCP" ? "true" : "false",
@@ -129,7 +136,7 @@ const CourseDropdown = memo(() => {
     }
 
     // Fetch data if not already fetched
-    const courses = await fetchCoursesBySubjectAPI("2022-2026", {
+    const courses = await fetchCoursesBySubjectAPI(currentCatalogYear, {
       gwr: type === "GWR" ? "true" : "false",
       uscp: type === "USCP" ? "true" : "false",
       subject,

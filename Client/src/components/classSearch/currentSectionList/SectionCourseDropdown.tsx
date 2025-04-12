@@ -8,11 +8,13 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "@/components/ui/command";
-import { useUserData } from "@/hooks/useUserData";
 import { Course, CourseSidebar } from "@polylink/shared/types";
 import { fetchCoursesAPI } from "@/components/flowchart";
 
 import { environment } from "@/helpers/getEnvironmentVars";
+import { getCatalogYear } from "@/components/flowchart/helpers/findCatalogYear";
+import { useAppSelector } from "@/redux";
+
 // Debounce function
 // eslint-disable-next-line no-unused-vars
 function debounce(func: (...args: any[]) => void, wait: number) {
@@ -29,9 +31,9 @@ const CourseSearchbar = ({
   // eslint-disable-next-line no-unused-vars
   onSelect: (courseId: string) => void;
 }) => {
-  const { userData } = useUserData();
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
 
-  const catalogYear = userData.flowchartInformation?.catalog || "2022-2026";
+  const catalogYear = getCatalogYear(flowchartData?.name);
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [courses, setCourses] = useState<CourseSidebar[]>([]);

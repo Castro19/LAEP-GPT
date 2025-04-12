@@ -23,5 +23,4 @@ export {
   fetchCoursesBySubjectAPI,
   fetchSubjectNamesAPI,
   fetchCoursesAPI,
-  fetchCourses,
 } from "./helpers/fetchCourses";
