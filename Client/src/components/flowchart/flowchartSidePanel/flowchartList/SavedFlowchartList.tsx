@@ -1,24 +1,30 @@
-import { useAppSelector } from "@/redux";
-import { FetchedFlowchartObject } from "@polylink/shared/types";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 
-import { GoPin } from "react-icons/go";
-import { SlOptionsVertical } from "react-icons/sl";
+// Hooks
+import { useUserData } from "@/hooks/useUserData";
+
+// Environment
+import { environment } from "@/helpers/getEnvironmentVars";
+// Types
+import { UserData, FetchedFlowchartObject } from "@polylink/shared/types";
+
+// UI Components
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
-import { flowchartActions, useAppDispatch } from "@/redux";
-import { useUserData } from "@/hooks/useUserData";
-import { environment } from "@/helpers/getEnvironmentVars";
-import { UserData } from "@polylink/shared/types";
+
+// Icons
+import { GoPin } from "react-icons/go";
+import { SlOptionsVertical } from "react-icons/sl";
 
 const SavedFlowchartList = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
   const { flowchartList } = useAppSelector((state) => state.flowchart);
