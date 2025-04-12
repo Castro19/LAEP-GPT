@@ -61,9 +61,12 @@ const FlowchartItem = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { handleSave, handleChangeFlowchartInformation } = useUserData();
-  const flowchartList = useAppSelector(
-    (state) => state.flowchart.flowchartList
+  const { flowchartList, currentFlowchart } = useAppSelector(
+    (state) => state.flowchart
   );
+
+  // Check if this flowchart is the currently selected one
+  const isActive = currentFlowchart?.flowchartId === flowchart.flowchartId;
 
   const handleSelectFlowchart = () => {
     dispatch(flowchartActions.setFlowchart(flowchart.flowchartId));
@@ -162,7 +165,14 @@ const FlowchartItem = ({
   };
 
   return (
-    <div className="group flex items-center justify-between px-2 py-2 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700">
+    <div
+      className={`group flex items-center justify-between px-2 py-2 mb-0.5 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700
+      ${
+        isActive
+          ? "bg-gray-100 dark:bg-gray-800"
+          : "hover:bg-gray-100 dark:hover:bg-gray-800"
+      }`}
+    >
       <Button
         onClick={handleSelectFlowchart}
         className={`group w-full p-1 sm:p-2 rounded-md`}
