@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
   fetchAllFlowcharts,
@@ -16,7 +16,6 @@ import { useParams } from "react-router-dom";
 import { environment } from "@/helpers/getEnvironmentVars";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileFlowchartLayout from "@/components/layout/FlowchartPage/MobileFlowchartLayout";
-import useDeviceType from "@/hooks/useDeviceType";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarAIChatContainer } from "@/components/calendar";
@@ -26,7 +25,6 @@ const FlowChartPage = () => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
   const { flowchartId } = useParams();
-  const device = useDeviceType();
 
   const { flowchartData, loading, currentFlowchart, createFlowchart } =
     useAppSelector((state) => state.flowchart);
@@ -94,18 +92,8 @@ const FlowChartPage = () => {
 
   return (
     <>
-      {device !== "desktop" ? (
-        <div className="flex overflow-hidden no-scroll">
-          <SidebarProvider className="dark:bg-slate-900">
-            <MobileFlowchartLayout>
-              {createFlowchart || !flowchartData ? (
-                <CreateFlowchart />
-              ) : (
-                <Flowchart flowchartData={flowchartData} />
-              )}
-            </MobileFlowchartLayout>
-          </SidebarProvider>
-        </div>
+      {isNarrowScreen ? (
+        <FlowchartMobile />
       ) : (
         <div className="flex overflow-hidden no-scroll">
           {isNarrowScreen ? null : <OuterIconSidebar />}
@@ -145,6 +133,48 @@ const FlowChartPage = () => {
         </div>
       )}
     </>
+  );
+};
+
+const FlowchartMobile = () => {
+  const { flowchartData, createFlowchart } = useAppSelector(
+    (state) => state.flowchart
+  );
+  const [selectedTab, setSelectedTab] = useState("Flowchart");
+
+  // Function to handle tab switching
+  const handleTabSwitch = () => {
+    setSelectedTab("Flowchart");
+  };
+
+  return (
+    <div className="flex overflow-hidden no-scroll">
+      <SidebarProvider className="dark:bg-slate-900">
+        <MobileFlowchartLayout>
+          <Tabs
+            value={selectedTab}
+            onValueChange={(value) => setSelectedTab(value)}
+          >
+            <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+              <TabsTrigger value="Flowchart Builder">
+                Flowchart Builder
+              </TabsTrigger>
+              <TabsTrigger value="Flowchart">Flowchart</TabsTrigger>
+            </TabsList>
+            <TabsContent value="Flowchart Builder">
+              <FlowchartBuilderForm onSwitchTab={handleTabSwitch} />
+            </TabsContent>
+            <TabsContent value="Flowchart">
+              {createFlowchart || !flowchartData ? (
+                <CreateFlowchart onSwitchTab={handleTabSwitch} />
+              ) : (
+                <Flowchart flowchartData={flowchartData} />
+              )}
+            </TabsContent>
+          </Tabs>
+        </MobileFlowchartLayout>
+      </SidebarProvider>
+    </div>
   );
 };
 

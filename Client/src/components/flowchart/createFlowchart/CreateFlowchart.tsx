@@ -23,7 +23,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import { FlowchartData } from "@polylink/shared/types";
 import { useEffect } from "react";
 
-const CreateFlowchart = () => {
+const CreateFlowchart = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
@@ -83,6 +83,9 @@ const CreateFlowchart = () => {
         description: "You must select all options to create a flowchart",
         variant: "destructive",
       });
+    }
+    if (onSwitchTab) {
+      onSwitchTab();
     }
   };
 
