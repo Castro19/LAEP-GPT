@@ -247,7 +247,7 @@ const Flowchart = ({
                   // On mobile/tablet, each item becomes full width
                   className={`${
                     device === "desktop"
-                      ? "pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                      ? "pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 "
                       : "w-full"
                   }`}
                 >

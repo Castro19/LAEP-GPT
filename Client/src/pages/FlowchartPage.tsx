@@ -4,7 +4,11 @@ import {
   fetchAllFlowcharts,
   setFlowchart,
 } from "@/redux/flowchart/flowchartSlice";
-import { Flowchart, CreateFlowchart } from "@/components/flowchart";
+import {
+  Flowchart,
+  CreateFlowchart,
+  FlowchartUnitCounts,
+} from "@/components/flowchart";
 import FlowchartLayout from "@/components/layout/FlowchartPage/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import OuterIconSidebar from "@/components/layout/dynamicLayouts/OuterIconSidebar";
@@ -13,6 +17,9 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileFlowchartLayout from "@/components/layout/FlowchartPage/MobileFlowchartLayout";
 import useDeviceType from "@/hooks/useDeviceType";
+import CalendarBuilderForm from "@/components/calendar/buildSchedule/CalendarBuilderForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarAIChatContainer } from "@/components/calendar";
 
 const FlowChartPage = () => {
   const dispatch = useAppDispatch();
@@ -103,11 +110,35 @@ const FlowChartPage = () => {
           {isNarrowScreen ? null : <OuterIconSidebar />}
           <SidebarProvider className="dark:bg-slate-900">
             <FlowchartLayout>
-              {createFlowchart || !flowchartData ? (
-                <CreateFlowchart />
-              ) : (
-                <Flowchart flowchartData={flowchartData} />
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
+                <div className="col-span-1">
+                  <Tabs defaultValue="Build Schedule">
+                    <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+                      <TabsTrigger value="Build Schedule">
+                        Flowchart
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="Build Schedule">
+                      <CalendarBuilderForm onSwitchTab={() => {}} />
+                    </TabsContent>
+                    <TabsContent value="AI Chat">
+                      <CalendarAIChatContainer />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+                <div className="col-span-3 items-start justify-start">
+                  {createFlowchart || !flowchartData ? (
+                    <CreateFlowchart />
+                  ) : (
+                    <>
+                      <Flowchart flowchartData={flowchartData} />
+                      {flowchartData && !isNarrowScreen && (
+                        <FlowchartUnitCounts />
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
             </FlowchartLayout>
           </SidebarProvider>
         </div>
