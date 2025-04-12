@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import {
   flowchartActions,
+  flowSelectionActions,
   useAppDispatch,
   useAppSelector,
   userActions,
@@ -20,6 +21,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 
 // Types
 import { FlowchartData } from "@polylink/shared/types";
+import { useEffect } from "react";
 
 const CreateFlowchart = () => {
   const navigate = useNavigate();
@@ -40,6 +42,23 @@ const CreateFlowchart = () => {
 
   const progress = (stepsCompleted / 4) * 100; // Convert to percentage
   const isComplete = stepsCompleted === 4;
+
+  useEffect(() => {
+    if (selections.catalog && selections.major) {
+      dispatch(
+        flowSelectionActions.fetchConcentrationOptions({
+          catalog: selections.catalog,
+          major: selections.major,
+        })
+      );
+    }
+  }, [selections.catalog, selections.major, dispatch]);
+
+  useEffect(() => {
+    if (selections.catalog) {
+      dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
+    }
+  }, [selections.catalog, dispatch]);
 
   const handleSaveFlowchart = async () => {
     if (

@@ -1,10 +1,4 @@
-import { useEffect } from "react";
-import {
-  flowchartActions,
-  flowSelectionActions,
-  useAppDispatch,
-  useAppSelector,
-} from "@/redux";
+import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 
 // My components
 import {
@@ -45,7 +39,6 @@ import { useNavigate } from "react-router-dom";
 export function SidebarFlowchart() {
   const dispatch = useAppDispatch();
   const { flowchartList } = useAppSelector((state) => state.flowchart);
-  const { selections } = useAppSelector((state) => state.flowSelection);
 
   const navigate = useNavigate();
 
@@ -58,23 +51,6 @@ export function SidebarFlowchart() {
     dispatch(flowchartActions.setFlowchart(flowchartId));
     dispatch(flowchartActions.setCreateFlowchart(false));
   };
-
-  useEffect(() => {
-    if (selections.catalog && selections.major) {
-      dispatch(
-        flowSelectionActions.fetchConcentrationOptions({
-          catalog: selections.catalog,
-          major: selections.major,
-        })
-      );
-    }
-  }, [selections.catalog, selections.major, dispatch]);
-
-  useEffect(() => {
-    if (selections.catalog) {
-      dispatch(flowSelectionActions.fetchMajorOptions(selections.catalog));
-    }
-  }, [selections.catalog, dispatch]);
 
   const handleCreateFlowchart = () => {
     dispatch(flowchartActions.setCreateFlowchart(true));
