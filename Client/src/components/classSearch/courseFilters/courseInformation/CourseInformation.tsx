@@ -8,7 +8,7 @@ import { useUserData } from "@/hooks/useUserData";
 
 // My Components
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
-import { fetchCourses } from "@/components/flowchart";
+import { fetchCoursesAPI } from "@/components/flowchart";
 import {
   FormSwitch,
   UnitSlider,
@@ -93,7 +93,7 @@ const CourseInformation = ({
               <div>
                 <Searchbar
                   placeholder="Search for a course"
-                  fetchData={fetchCourses}
+                  fetchData={fetchCoursesAPI}
                   onSelect={(courseId) => {
                     // Safely update the 'courseIds' array
                     const current = form.getValues("courseIds") || [];
