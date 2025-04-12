@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { FaBook } from "react-icons/fa";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 import SavedFlowchartList from "./SavedFlowchartList";
+import { HiOutlineAcademicCap } from "react-icons/hi2";
+import CourseDropdown from "../flowchartSidebar/courses/CourseDropdown";
 
 // Define a schema for flowchart preferences
 const FLOWCHART_PREFERENCES_SCHEMA = z.object({
@@ -55,8 +57,14 @@ const FlowchartBuilderForm = () => {
         {/* Placeholder for flowchart components */}
         <div className="flex flex-col h-full">
           <div className="flex flex-col gap-4">
-            <CollapsibleContentWrapper title="Flowchart" icon={FaBook}>
+            <CollapsibleContentWrapper
+              title="Flowchart"
+              icon={HiOutlineAcademicCap}
+            >
               <SavedFlowchartList />
+            </CollapsibleContentWrapper>
+            <CollapsibleContentWrapper title="Classes" icon={FaBook}>
+              <CourseDropdown />
             </CollapsibleContentWrapper>
           </div>
         </div>
