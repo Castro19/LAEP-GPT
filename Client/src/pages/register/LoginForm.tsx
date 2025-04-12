@@ -17,6 +17,7 @@ import { OAuthProvider } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -84,6 +85,14 @@ export default function LoginForm() {
 
   return (
     <div>
+      <Helmet>
+        <title>Login | Polylink</title>
+        <meta 
+          name="description" 
+          content="Sign in to PolyLink to access your Cal Poly course planning tools, schedule builder, and connect with your campus community. Login with your Cal Poly account or email."
+        />
+        <meta property="og:image" content="/seo-login.png" />
+      </Helmet>
       {userLoggedIn && <Navigate to={`/chat`} replace={true} />}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
