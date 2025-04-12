@@ -34,7 +34,7 @@ const SavedFlowchartList = () => {
             />
           ))
         ) : (
-          <div className="p-2 text-gray-500 dark:text-gray-400 text-sm">
+          <div className="p-2 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
             Press the{" "}
             <strong className="text-slate-400 font-semibold">
               New Flowchart
@@ -162,19 +162,19 @@ const FlowchartItem = ({
   };
 
   return (
-    <div className="group flex items-center justify-between px-2 py-2.5 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700">
+    <div className="group flex items-center justify-between px-2 py-2 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700">
       <Button
         onClick={handleSelectFlowchart}
-        className={`group w-full p-2 rounded-md`}
+        className={`group w-full p-1 sm:p-2 rounded-md`}
         variant="ghost"
       >
-        {isPrimary && <GoPin className=" dark:text-red-500 mr-1" size={16} />}
+        {isPrimary && <GoPin className="dark:text-red-500 mr-1" size={14} />}
 
-        <div className="flex-1 min-w-0 flex flex-col items-start justify-start gap-1 p-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+        <div className="flex-1 min-w-0 flex flex-col items-start justify-start gap-0.5 p-1 sm:p-2">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-[200px]">
             {flowchart.name}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
             {new Date().toLocaleString(undefined, {
               month: "2-digit",
               day: "2-digit",
@@ -190,7 +190,7 @@ const FlowchartItem = ({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild className="flex justify-end m-0 p-0 w-4">
             <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
-              <SlOptionsVertical />
+              <SlOptionsVertical size={14} />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-72">
