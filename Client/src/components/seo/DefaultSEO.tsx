@@ -9,6 +9,8 @@ const DefaultSEO = () => {
         name="description"
         content="PolyLink is your one-stop AI-powered solution for navigating Cal Poly student life."
       />
+
+      {/* OpenGraph Image Tags */}
       <meta
         property="og:title"
         content="PolyLink - Your AI Chatbot for Cal Poly SLO"
@@ -20,6 +22,8 @@ const DefaultSEO = () => {
       <meta property="og:image" content="/seo-polylink.png" />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://polylink.dev" />
+
+      {/* Twitter Card Tags */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta
         name="twitter:title"

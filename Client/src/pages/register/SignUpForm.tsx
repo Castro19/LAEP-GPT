@@ -103,6 +103,8 @@ export function SignupFormDemo() {
           name="description" 
           content="Create your PolyLink account to access AI-powered course planning tools, schedule builder, and connect with your Cal Poly community."
         />
+        
+        {/* OpenGraph Image Tags */}
         <meta property="og:title" content="Sign Up | PolyLink" />
         <meta property="og:image" content="/seo-signup.png" />
         <meta property="og:description" content="Create your PolyLink account to access AI-powered course planning tools, schedule builder, and connect with your Cal Poly community." />
