@@ -120,7 +120,7 @@ const FlowChartPage = () => {
                       </TabsTrigger>
                     </TabsList>
                     <TabsContent value="Build Schedule">
-                      <FlowchartBuilderForm onSwitchTab={() => {}} />
+                      <FlowchartBuilderForm />
                     </TabsContent>
                     <TabsContent value="AI Chat">
                       <CalendarAIChatContainer />

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/context-menu";
 import { TrashIcon } from "lucide-react";
 import CourseToolTipContent from "./CourseTooltipContent";
+import useDeviceType from "@/hooks/useDeviceType";
 
 interface CourseItemProps {
   termIndex: number;
@@ -92,6 +93,8 @@ const CourseItem: React.FC<CourseItemProps> = ({
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
+  const device = useDeviceType();
+
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const handleClick = () => {
@@ -134,7 +137,9 @@ const CourseItem: React.FC<CourseItemProps> = ({
               <Card
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleTooltip();
+                  if (device !== "desktop") {
+                    toggleTooltip();
+                  }
                   handleClick();
                 }}
                 className={`w-full h-30 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
