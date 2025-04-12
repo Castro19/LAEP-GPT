@@ -1,7 +1,7 @@
 // TermContainer.tsx
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import cloneDeep from "lodash-es/cloneDeep";
-import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { Droppable } from "@hello-pangea/dnd";
 
 // Types
 import { FlowchartData, Term } from "@polylink/shared/types";
@@ -11,12 +11,11 @@ import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 
 // My components
 import CourseItem from "./CourseItem";
-import CourseToolTipContent from "./CourseTooltipContent";
 
 // UI Components
-import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
 
 interface TermContainerProps {
   term: Term;
@@ -73,7 +72,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
   return (
-    <div className="flex flex-col min-w-[300px] max-w-[350px] dark:bg-gray-900 shadow-md">
+    <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-[calc(100vh-12rem)]">
       {/* Header */}
       <div className="flex justify-between items-center gap-2">
         <>
@@ -95,46 +94,35 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </>
         <hr className="my-2" />
       </div>
-      <ScrollArea className="h-full min-w-full mb-4">
-        {/* Body */}
-        <div className="h-[60vh]">
+
+      {/* Scrollable content area */}
+      <ScrollArea className="flex-1 min-w-full">
+        <div className="h-full pb-4">
           <Droppable droppableId={`term-${term.tIndex}`}>
             {(provided) => (
               <div
-                className="flex-grow p-2 overflow-y-auto gap-2 flex flex-col"
+                className="p-2 gap-2 flex flex-col min-h-full"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
                 {term.courses.map((course, index) => (
-                  <TooltipProvider
-                    key={`term-${term.tIndex}-${course.id || index}`}
+                  <PortalAwareDraggable
+                    key={`${course.id || index}-${term.tIndex}`}
+                    draggableId={`${course.id || index}-${term.tIndex}`}
+                    index={index}
                   >
-                    <Tooltip>
-                      <Draggable
-                        key={`term-${term.tIndex}-${course.id || index}`}
-                        draggableId={`term-${term.tIndex}-${course.id || index}`}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <CourseItem
-                              termIndex={term.tIndex}
-                              course={course}
-                              coursePosition={index}
-                              onToggleComplete={() =>
-                                onCourseToggleComplete(term.tIndex, index)
-                              }
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                      <CourseToolTipContent course={course} />
-                    </Tooltip>
-                  </TooltipProvider>
+                    {/* eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars */}
+                    {(_provided, _snapshot) => (
+                      <CourseItem
+                        termIndex={term.tIndex}
+                        course={course}
+                        coursePosition={index}
+                        onToggleComplete={() =>
+                          onCourseToggleComplete(term.tIndex, index)
+                        }
+                      />
+                    )}
+                  </PortalAwareDraggable>
                 ))}
                 {provided.placeholder}
               </div>
@@ -143,9 +131,8 @@ const TermContainer: React.FC<TermContainerProps> = ({
         </div>
       </ScrollArea>
 
-      {/* Footer */}
-      <div className="p-4">
-        <hr className="my-2" />
+      {/* Fixed footer */}
+      <div className="p-4 border-t border-slate-700">
         <h4 className="m-0">
           Units: {term.tUnits}
           {term.courses.length ? ` (${term.courses.length} courses)` : ""}

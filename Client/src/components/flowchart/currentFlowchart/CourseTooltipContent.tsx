@@ -1,5 +1,6 @@
 import { Course } from "@polylink/shared/types";
 import { TooltipContent } from "@/components/ui/tooltip";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 const CourseToolTipContent = ({ course }: { course: Course }) => {
   // Process the additional information text
@@ -81,38 +82,44 @@ const CourseToolTipContent = ({ course }: { course: Course }) => {
   const listItems = course.addl ? processAdditionalInfo(course.addl) : null;
 
   return (
-    <TooltipContent className="dark:bg-gray-800 border border-gray-700 shadow-xl">
-      <div className="flex flex-col gap-3 p-3 min-w-[300px] max-w-[400px]">
-        {/* Header Section */}
-        <div className="space-y-1">
-          <p className="text-lg font-bold text-white">
-            {course.id || course.customId}
-          </p>
-          <p className="text-sm text-gray-300">
-            {course.displayName || course.customDisplayName || course.id}
-          </p>
-        </div>
+    <TooltipPrimitive.Portal>
+      <TooltipContent
+        className="dark:bg-gray-800 border border-gray-700 shadow-xl z-[9999]"
+        sideOffset={5}
+        align="center"
+      >
+        <div className="flex flex-col gap-3 p-3 min-w-[300px] max-w-[400px]">
+          {/* Header Section */}
+          <div className="space-y-1">
+            <p className="text-lg font-bold text-white">
+              {course.id || course.customId}
+            </p>
+            <p className="text-sm text-gray-300">
+              {course.displayName || course.customDisplayName || course.id}
+            </p>
+          </div>
 
-        <hr className="border-gray-600" />
+          <hr className="border-gray-600" />
 
-        {/* Description Section */}
-        <div
-          className="text-sm leading-relaxed text-gray-200 max-h-[250px] overflow-y-auto pr-2 
-            scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
-        >
-          {course.desc || course.customDesc || "No Description"}
-        </div>
+          {/* Description Section */}
+          <div
+            className="text-sm leading-relaxed text-gray-200 max-h-[250px] overflow-y-auto pr-2 
+              scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
+          >
+            {course.desc || course.customDesc || "No Description"}
+          </div>
 
-        <hr className="border-gray-600" />
-        <div className="flex flex-col justify-start items-start text-sm text-gray-300">
-          {listItems && (
-            <ul className="list-disc pl-4 w-full text-left">
-              {listItems || "No Additional Information"}
-            </ul>
-          )}
+          <hr className="border-gray-600" />
+          <div className="flex flex-col justify-start items-start text-sm text-gray-300">
+            {listItems && (
+              <ul className="list-disc pl-4 w-full text-left">
+                {listItems || "No Additional Information"}
+              </ul>
+            )}
+          </div>
         </div>
-      </div>
-    </TooltipContent>
+      </TooltipContent>
+    </TooltipPrimitive.Portal>
   );
 };
 

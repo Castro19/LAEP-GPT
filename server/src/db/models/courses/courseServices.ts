@@ -47,10 +47,12 @@ export const getCourse = async (
     throw new Error("Catalog year and course ID are required");
   }
 
-  const courseDocument = await courseCollection.findCourse(
-    catalogYear,
-    courseId
-  );
+  let courseDocument = await courseCollection.findCourse(catalogYear, courseId);
+
+  if (!courseDocument) {
+    // TO-DO: Look into this to see if this is fine
+    courseDocument = await courseCollection.findCourse("2022-2026", courseId);
+  }
 
   if (!courseDocument) {
     return null;

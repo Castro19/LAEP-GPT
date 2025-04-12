@@ -1,10 +1,15 @@
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { Course, FlowchartData } from "@polylink/shared/types";
 import cloneDeep from "lodash-es/cloneDeep";
+import { useState } from "react";
 // Env vars
 import { environment } from "@/helpers/getEnvironmentVars";
 // UI Components & Icon
-import { TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 import {
   Card,
   CardContent,
@@ -19,6 +24,8 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { TrashIcon } from "lucide-react";
+import CourseToolTipContent from "./CourseTooltipContent";
+import useDeviceType from "@/hooks/useDeviceType";
 
 interface CourseItemProps {
   termIndex: number;
@@ -86,9 +93,14 @@ const CourseItem: React.FC<CourseItemProps> = ({
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
+  const device = useDeviceType();
+
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
   const handleClick = () => {
     onToggleComplete(course.id);
   };
+
   const handleDelete = () => {
     if (flowchartData) {
       const updatedFlowchartData = deleteCourseFromTerm(
@@ -98,6 +110,10 @@ const CourseItem: React.FC<CourseItemProps> = ({
       );
       dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
     }
+  };
+
+  const toggleTooltip = () => {
+    setIsTooltipOpen(!isTooltipOpen);
   };
 
   return (
@@ -115,41 +131,55 @@ const CourseItem: React.FC<CourseItemProps> = ({
             </div>
           </ContextMenuItem>
         </ContextMenuContent>
-        <TooltipTrigger asChild>
-          <Card
-            onClick={handleClick}
-            className={`w-full h-36 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
-              course.completed ? "dark:bg-gray-300" : ""
-            }`}
-            style={{
-              backgroundColor: course.completed ? undefined : course.color,
-              textDecoration: course.completed ? "line-through" : "none",
-            }}
-          >
-            <div className="flex flex-col h-full">
-              <CardHeader className="flex-shrink-0 space-y-1 p-3">
-                <CardTitle className="text-lg font-semibold dark:text-gray-900">
-                  {course.id || course.customId || "No Course ID"}
-                </CardTitle>
-                <CardDescription className="text-sm dark:text-gray-600">
-                  {course.displayName || course.customDisplayName || course.id}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="mt-auto">
-                {course.units && (
-                  <p className="text-sm dark:text-gray-600">
-                    Units: {course.units}
-                  </p>
-                )}
-                {course.customUnits && (
-                  <p className="text-sm dark:text-gray-600">
-                    Units: {course.customUnits}
-                  </p>
-                )}
-              </CardContent>
-            </div>
-          </Card>
-        </TooltipTrigger>
+        <TooltipProvider>
+          <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+            <TooltipTrigger asChild>
+              <Card
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (device !== "desktop") {
+                    toggleTooltip();
+                  }
+                  handleClick();
+                }}
+                className={`w-full h-30 flex-shrink-0 flex-grow-0 rounded-lg shadow-md transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${
+                  course.completed ? "dark:bg-gray-300" : ""
+                }`}
+                style={{
+                  backgroundColor: course.completed ? undefined : course.color,
+                  textDecoration: course.completed ? "line-through" : "none",
+                }}
+              >
+                <div className="flex flex-col h-full">
+                  <CardHeader className="flex-shrink-0 space-y-1 p-3">
+                    <CardTitle className="text-lg font-semibold dark:text-gray-900">
+                      {course.id || course.customId || "No Course ID"}
+                      {/* {course?.units || course?.customUnits || "No Units"} units)  */}
+                    </CardTitle>
+                    <CardDescription className="text-sm dark:text-gray-600">
+                      {course.displayName ||
+                        course.customDisplayName ||
+                        course.id}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex justify-end items-end mt-auto">
+                    {course.units && (
+                      <p className="text-sm dark:text-gray-600">
+                        Units: {course.units}
+                      </p>
+                    )}
+                    {course.customUnits && (
+                      <p className="text-sm dark:text-gray-600">
+                        Units: {course.customUnits}
+                      </p>
+                    )}
+                  </CardContent>
+                </div>
+              </Card>
+            </TooltipTrigger>
+            <CourseToolTipContent course={course} />
+          </Tooltip>
+        </TooltipProvider>
       </ContextMenuTrigger>
     </ContextMenu>
   );

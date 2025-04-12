@@ -1,6 +1,7 @@
-import { useRef, useState, useEffect } from "react";
-import { useAppDispatch, flowchartActions } from "@/redux";
+import { useState, useEffect, useRef } from "react";
+import { useAppDispatch, flowchartActions, useAppSelector } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
+import { type CarouselApi } from "@/components/ui/carousel";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
@@ -10,7 +11,27 @@ import { TermContainer, defaultTermData } from "@/components/flowchart";
 
 // UI Components
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Carousel,
+  CarouselItem,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import useDeviceType from "@/hooks/useDeviceType";
+
+// Add custom styles for the bounce animation
+const bounceStyles = `
+  @keyframes subtle-pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0.3; }
+  }
+  
+  .pulse-animation {
+    animation: subtle-pulse 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+`;
 
 const TERM_MAP = {
   "-1": "Skip",
@@ -35,31 +56,30 @@ const Flowchart = ({
 }) => {
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
-  const flowchartRef = useRef<HTMLDivElement>(null);
+  const device = useDeviceType();
+
+  const { isDragging } = useAppSelector((state) => state.layout);
+  const [api, setApi] = useState<CarouselApi>();
+
+  // Add refs for hover timers
+  const prevHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const nextHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [prevBounceCount, setPrevBounceCount] = useState(0);
+  const [nextBounceCount, setNextBounceCount] = useState(0);
 
   const startYear = flowchartData?.startYear
     ? parseInt(flowchartData.startYear, 10) || 2022
     : 2022;
 
   const termsPerYear = 3; // Fall, Winter, Spring
-  // Skip, Fall, Winter, Spring, Fall, Winter, Spring, Fall, Winter, Spring, ...
+
   const getTermName = (termNumber: number) => {
     const termName = TERM_MAP[termNumber as keyof typeof TERM_MAP];
-
-    // Calculate year offset based on term index
-    // For terms 1,2: year 0 (Fall 2020, Winter 2020)
-    // For term 3: year 1 (Spring 2021)
-    // For terms 5,6: year 1 (Fall 2021, Winter 2021)
-    // For term 7: year 2 (Spring 2022)
-    // For terms 9,10: year 2 (Fall 2022, Winter 2022)
-    // For term 11: year 3 (Spring 2023)
-    // For terms 13,14: year 3 (Fall 2023, Winter 2023)
-    // For term 15: year 4 (Spring 2024)
+    // year logic
     const baseYearOffset = Math.floor((termNumber - 1) / 4);
     const yearOffset =
       termName === "Spring" ? baseYearOffset + 1 : baseYearOffset;
     const year = startYear + yearOffset;
-
     return `${termName} ${year}`;
   };
 
@@ -69,50 +89,141 @@ const Flowchart = ({
     );
   };
 
-  // Calculate total terms and years
+  // Filter out skip terms
   const termsData = flowchartData?.termData
     ? flowchartData.termData.filter((term) => term.tIndex !== -1)
     : defaultTermData.filter((term) => term.tIndex !== -1);
+
   const totalTerms = termsData.length;
   const totalYears = Math.ceil(totalTerms / termsPerYear);
 
   // Add state for selected year
   const [selectedYear, setSelectedYear] = useState(0);
 
-  // Modify the scrollToYear function to update selected year
+  // Modify the scrollToYear function to use the carousel API
   const scrollToYear = (yearIndex: number) => {
     setSelectedYear(yearIndex);
-    if (flowchartRef.current) {
-      const termWidth = flowchartRef.current.scrollWidth / totalTerms;
-      const scrollPosition = yearIndex * termsPerYear * termWidth;
-      flowchartRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      });
+    if (api) {
+      const termIndex = yearIndex * termsPerYear;
+      api.scrollTo(termIndex);
     }
   };
 
+  // Update the useEffect to use the carousel API
   useEffect(() => {
-    const handleScroll = () => {
-      if (flowchartRef.current) {
-        const scrollLeft = flowchartRef.current.scrollLeft;
-        const yearWidth = flowchartRef.current.scrollWidth / totalYears;
-        const newSelectedYear = Math.round(scrollLeft / yearWidth);
-        setSelectedYear(newSelectedYear);
-      }
+    if (!api) return;
+
+    const onSelect = () => {
+      const currentIndex = api.selectedScrollSnap();
+      const yearIndex = Math.floor(currentIndex / termsPerYear);
+      setSelectedYear(yearIndex);
     };
 
-    const refCurrent = flowchartRef.current;
-    refCurrent?.addEventListener("scroll", handleScroll);
-
+    api.on("select", onSelect);
     return () => {
-      refCurrent?.removeEventListener("scroll", handleScroll);
+      api.off("select", onSelect);
     };
-  }, [totalYears]);
+  }, [api, termsPerYear]);
+
+  // Hover logic for desktop only
+  const handlePrevHoverStart = () => {
+    if (!api) return;
+    if (prevHoverTimerRef.current) clearTimeout(prevHoverTimerRef.current);
+    startPulseSequence("prev");
+  };
+
+  const handlePrevHoverEnd = () => {
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+      prevHoverTimerRef.current = null;
+    }
+    setPrevBounceCount(0);
+  };
+
+  const handleNextHoverStart = () => {
+    if (!api) return;
+    if (nextHoverTimerRef.current) clearTimeout(nextHoverTimerRef.current);
+    startPulseSequence("next");
+  };
+
+  const handleNextHoverEnd = () => {
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+      nextHoverTimerRef.current = null;
+    }
+    setNextBounceCount(0);
+  };
+
+  // Add click handlers to reset timers
+  const handlePrevClick = () => {
+    // Clear any existing timers
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+      prevHoverTimerRef.current = null;
+    }
+    // Reset bounce count
+    setPrevBounceCount(0);
+  };
+
+  const handleNextClick = () => {
+    // Clear any existing timers
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+      nextHoverTimerRef.current = null;
+    }
+    // Reset bounce count
+    setNextBounceCount(0);
+  };
+
+  // Recursive function to handle the pulse sequence
+  const startPulseSequence = (direction: "prev" | "next") => {
+    if (!api) return;
+
+    const isPrev = direction === "prev";
+    const timerRef = isPrev ? prevHoverTimerRef : nextHoverTimerRef;
+    const setBounceCount = isPrev ? setPrevBounceCount : setNextBounceCount;
+
+    setBounceCount(1);
+
+    const handleNextPulse = (pulseNumber: number) => {
+      if (pulseNumber > 3) {
+        // After 3 pulses, trigger the carousel movement
+        if (isPrev) {
+          api.scrollPrev();
+        } else {
+          api.scrollNext();
+        }
+        setBounceCount(0);
+
+        // Start the next sequence after a short delay
+        timerRef.current = setTimeout(() => {
+          startPulseSequence(direction);
+        }, 500);
+        return;
+      }
+
+      setBounceCount(pulseNumber);
+      timerRef.current = setTimeout(() => {
+        handleNextPulse(pulseNumber + 1);
+      }, 500);
+    };
+
+    timerRef.current = setTimeout(() => {
+      handleNextPulse(2);
+    }, 500);
+  };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2 ml-12">
+    <div
+      // On desktop: use left/right margin. On mobile/tablet: remove them.
+      className={`flex flex-col ${
+        device === "desktop" ? "ml-16 mr-16" : "mx-2"
+      }`}
+    >
+      <style>{bounceStyles}</style>
+
+      {/* Year selector row */}
+      <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2">
         {[...Array(totalYears)].map((_, index) => (
           <Button
             key={index}
@@ -129,31 +240,79 @@ const Flowchart = ({
         ))}
       </div>
 
-      <ScrollArea ref={flowchartRef} className="dark:bg-gray-900">
-        <div className="flex w-max space-x-4 py-2 px-4">
-          {termsData.map((term) => {
-            const termName = getTermName(term.tIndex);
+      <div className="relative">
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            containScroll: "trimSnaps",
+            dragFree: true,
+            skipSnaps: true,
+            duration: 20,
+            slidesToScroll: 1,
+            inViewThreshold: 0.5,
+            direction: isDragging ? "ltr" : undefined,
+          }}
+        >
+          <CarouselContent
+            // On mobile/tablet, remove negative margins to maximize space
+            className={`${
+              device === "desktop" ? "-ml-2 md:-ml-4" : "mx-0"
+            } flex`}
+          >
+            {termsData.map((term) => {
+              const termName = getTermName(term.tIndex);
+              return (
+                <CarouselItem
+                  key={term.tIndex + termName}
+                  // On mobile/tablet, each item becomes full width
+                  className={`${
+                    device === "desktop"
+                      ? "pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 "
+                      : "w-full"
+                  }`}
+                >
+                  <TermContainer
+                    term={term}
+                    termName={termName}
+                    onCourseToggleComplete={onCourseToggleComplete}
+                  />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
 
-            return (
+          {/* Hide arrows if not desktop */}
+          {device === "desktop" && (
+            <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
               <div
-                className="flex-shrink-1 min-w-[340px] max-w-[350px] bg-slate-50 text-center border-2 border-slate-500"
-                key={term.tIndex + termName}
+                className="pointer-events-auto z-10"
+                onMouseEnter={handlePrevHoverStart}
+                onMouseLeave={handlePrevHoverEnd}
+                onClick={handlePrevClick}
               >
-                <TermContainer
-                  term={term}
-                  termName={termName}
-                  onCourseToggleComplete={onCourseToggleComplete}
+                <CarouselPrevious
+                  className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
+                    prevBounceCount > 0 ? "pulse-animation" : ""
+                  }`}
                 />
               </div>
-            );
-          })}
-          <ScrollBar
-            orientation="horizontal"
-            data-state="visible"
-            className="bg-white h-4"
-          />
-        </div>
-      </ScrollArea>
+              <div
+                className="pointer-events-auto z-10"
+                onMouseEnter={handleNextHoverStart}
+                onMouseLeave={handleNextHoverEnd}
+                onClick={handleNextClick}
+              >
+                <CarouselNext
+                  className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
+                    nextBounceCount > 0 ? "pulse-animation" : ""
+                  }`}
+                />
+              </div>
+            </div>
+          )}
+        </Carousel>
+      </div>
     </div>
   );
 };
