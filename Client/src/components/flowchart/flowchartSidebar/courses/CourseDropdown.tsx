@@ -18,7 +18,7 @@ import {
 // My components
 import { SidebarCourse } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
-
+import CourseSearchBar from "@/components/flowchart/flowchartSidebar/courses/CourseSearchbar";
 // Icons and UI Components
 import {
   ChevronDown,
@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FaSearch } from "react-icons/fa";
 
 // Course type definitions
 type CourseType = "GWR" | "USCP"; // Current types
@@ -285,6 +286,9 @@ const CourseDropdown = memo(() => {
           </CollapsibleContentWrapper>
         );
       })}
+      <CollapsibleContentWrapper title="Search" icon={FaSearch}>
+        <CourseSearchBar />
+      </CollapsibleContentWrapper>
     </div>
   );
 });
