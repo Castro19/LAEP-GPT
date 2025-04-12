@@ -15,6 +15,8 @@ type CollapsibleContentWrapperProps = {
   icon: React.ComponentType<{ className?: string }>;
   defaultOpen?: boolean;
   triggerRef?: React.RefObject<HTMLButtonElement>;
+  // eslint-disable-next-line no-unused-vars
+  onOpenChange?: (open: boolean) => void;
 };
 
 const CollapsibleContentWrapper = ({
@@ -23,6 +25,7 @@ const CollapsibleContentWrapper = ({
   icon: Icon,
   defaultOpen = true,
   triggerRef,
+  onOpenChange,
 }: CollapsibleContentWrapperProps) => {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -33,7 +36,13 @@ const CollapsibleContentWrapper = ({
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      <Collapsible open={open} onOpenChange={setOpen} defaultOpen={defaultOpen}>
+      <Collapsible
+        open={open}
+        onOpenChange={(open) => {
+          setOpen(open);
+          onOpenChange?.(open);
+        }}
+      >
         <CollapsibleTrigger asChild>
           <Button
             variant="outline"
