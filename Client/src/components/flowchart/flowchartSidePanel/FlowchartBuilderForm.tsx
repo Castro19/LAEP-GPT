@@ -26,7 +26,11 @@ export type FlowchartPreferencesForm = z.infer<
   typeof FLOWCHART_PREFERENCES_SCHEMA
 >;
 
-const FlowchartBuilderForm = () => {
+const FlowchartBuilderForm = ({
+  onSwitchTab,
+}: {
+  onSwitchTab?: () => void;
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const calendarPreferences = useAppSelector(
@@ -48,6 +52,12 @@ const FlowchartBuilderForm = () => {
   const handleCreateFlowchart = () => {
     dispatch(flowchartActions.setCreateFlowchart(true));
     dispatch(flowchartActions.setFlowchartData(null));
+
+    // Call onSwitchTab if provided to switch to the Flowchart tab
+    if (onSwitchTab) {
+      onSwitchTab();
+    }
+
     navigate("/flowchart");
   };
 
@@ -61,7 +71,7 @@ const FlowchartBuilderForm = () => {
               title="Flowchart"
               icon={HiOutlineAcademicCap}
             >
-              <SavedFlowchartList />
+              <SavedFlowchartList onSwitchTab={onSwitchTab} />
             </CollapsibleContentWrapper>
             <CollapsibleContentWrapper title="Classes" icon={FaBook}>
               <CourseDropdown />

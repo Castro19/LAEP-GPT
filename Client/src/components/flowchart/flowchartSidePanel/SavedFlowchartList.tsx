@@ -20,7 +20,7 @@ import { useUserData } from "@/hooks/useUserData";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
 
-const SavedFlowchartList = () => {
+const SavedFlowchartList = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
   const { flowchartList } = useAppSelector((state) => state.flowchart);
   return (
     <div>
@@ -31,6 +31,7 @@ const SavedFlowchartList = () => {
               key={flowchart.flowchartId}
               flowchart={flowchart}
               isPrimary={flowchart.primaryOption || false}
+              onSwitchTab={onSwitchTab}
             />
           ))
         ) : (
@@ -50,9 +51,11 @@ const SavedFlowchartList = () => {
 const FlowchartItem = ({
   flowchart,
   isPrimary,
+  onSwitchTab,
 }: {
   flowchart: FetchedFlowchartObject;
   isPrimary: boolean;
+  onSwitchTab?: () => void;
 }) => {
   const [name, setName] = useState(flowchart.name);
   const [primaryOption, setPrimaryOption] = useState(isPrimary);
@@ -69,6 +72,12 @@ const FlowchartItem = ({
   const isActive = currentFlowchart?.flowchartId === flowchart.flowchartId;
 
   const handleSelectFlowchart = () => {
+    // First switch the tab if the function is provided
+    if (onSwitchTab) {
+      onSwitchTab();
+    }
+
+    // Then update the Redux state and navigate
     dispatch(flowchartActions.setFlowchart(flowchart.flowchartId));
     dispatch(flowchartActions.setCreateFlowchart(false));
     navigate(`/flowchart/${flowchart.flowchartId}`);
