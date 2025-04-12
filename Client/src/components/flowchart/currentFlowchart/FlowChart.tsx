@@ -154,6 +154,27 @@ const Flowchart = ({
     setNextBounceCount(0);
   };
 
+  // Add click handlers to reset timers
+  const handlePrevClick = () => {
+    // Clear any existing timers
+    if (prevHoverTimerRef.current) {
+      clearTimeout(prevHoverTimerRef.current);
+      prevHoverTimerRef.current = null;
+    }
+    // Reset bounce count
+    setPrevBounceCount(0);
+  };
+
+  const handleNextClick = () => {
+    // Clear any existing timers
+    if (nextHoverTimerRef.current) {
+      clearTimeout(nextHoverTimerRef.current);
+      nextHoverTimerRef.current = null;
+    }
+    // Reset bounce count
+    setNextBounceCount(0);
+  };
+
   // Recursive function to handle the pulse sequence
   const startPulseSequence = (direction: "prev" | "next") => {
     if (!api) return;
@@ -268,6 +289,7 @@ const Flowchart = ({
                 className="pointer-events-auto z-10"
                 onMouseEnter={handlePrevHoverStart}
                 onMouseLeave={handlePrevHoverEnd}
+                onClick={handlePrevClick}
               >
                 <CarouselPrevious
                   className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
@@ -279,6 +301,7 @@ const Flowchart = ({
                 className="pointer-events-auto z-10"
                 onMouseEnter={handleNextHoverStart}
                 onMouseLeave={handleNextHoverEnd}
+                onClick={handleNextClick}
               >
                 <CarouselNext
                   className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
