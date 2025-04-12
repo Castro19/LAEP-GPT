@@ -91,7 +91,17 @@ export default function LoginForm() {
           name="description" 
           content="Sign in to PolyLink to access your Cal Poly course planning tools, schedule builder, and connect with your campus community. Login with your Cal Poly account or email."
         />
+        
+        {/* OpenGraph Image Tags */}
         <meta property="og:image" content="/seo-login.png" />
+        <meta property="og:title" content="Login | PolyLink" />
+        <meta property="og:description" content="Sign in to PolyLink to access your Cal Poly course planning tools." />
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="/seo-login.png" />
+        <meta name="twitter:title" content="Login | PolyLink" />
+        <meta name="twitter:description" content="Sign in to PolyLink to access your Cal Poly course planning tools." />
       </Helmet>
       {userLoggedIn && <Navigate to={`/chat`} replace={true} />}
       <motion.div

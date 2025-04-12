@@ -55,6 +55,7 @@ import { environment } from "@/helpers/getEnvironmentVars.ts";
 
 // Constants
 import Terms from "@/components/register/SignInFlow/Terms.tsx";
+import DefaultSEO from "./components/seo/DefaultSEO";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
@@ -219,6 +220,7 @@ function App() {
 
   return (
     <Sentry.ErrorBoundary fallback={<ErrorPage />}>
+      <DefaultSEO />
       <RouterProvider router={router} />
       <Toaster />
     </Sentry.ErrorBoundary>

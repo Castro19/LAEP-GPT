@@ -101,9 +101,17 @@ export function SignupFormDemo() {
         <title>Sign Up | PolyLink</title>
         <meta 
           name="description" 
-          content="Create your PolyLink account to connect with Cal Poly students and access course information."
+          content="Create your PolyLink account to access AI-powered course planning tools, schedule builder, and connect with your Cal Poly community."
         />
+        <meta property="og:title" content="Sign Up | PolyLink" />
         <meta property="og:image" content="/seo-signup.png" />
+        <meta property="og:description" content="Create your PolyLink account to access AI-powered course planning tools, schedule builder, and connect with your Cal Poly community." />
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="/seo-signup.png" />
+        <meta name="twitter:title" content="Sign Up | PolyLink" />
+        <meta name="twitter:description" content="Create your PolyLink account to access AI-powered course planning tools, schedule builder, and connect with your Cal Poly community." />
       </Helmet>
       {userLoggedIn && <Navigate to={"/chat"} replace={true} />}
       <motion.div
