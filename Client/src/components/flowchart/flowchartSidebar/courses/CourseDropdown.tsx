@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FaSearch } from "react-icons/fa";
 
 // Course type definitions
 type CourseType = "GWR" | "USCP"; // Current types
@@ -286,9 +285,8 @@ const CourseDropdown = memo(() => {
           </CollapsibleContentWrapper>
         );
       })}
-      <CollapsibleContentWrapper title="Search" icon={FaSearch}>
-        <CourseSearchBar />
-      </CollapsibleContentWrapper>
+
+      <CourseSearchBar />
     </div>
   );
 });
