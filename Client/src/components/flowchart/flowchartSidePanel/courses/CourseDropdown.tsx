@@ -16,9 +16,8 @@ import {
 } from "@/components/flowchart";
 
 // My components
-import { SidebarCourse } from "@/components/flowchart";
+import { SidebarCourse, CourseSearchbar } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
-import CourseSearchBar from "@/components/flowchart/flowchartSidebar/courses/CourseSearchbar";
 // Icons and UI Components
 import {
   ChevronDown,
@@ -286,7 +285,7 @@ const CourseDropdown = memo(() => {
         );
       })}
 
-      <CourseSearchBar />
+      <CourseSearchbar />
     </div>
   );
 });

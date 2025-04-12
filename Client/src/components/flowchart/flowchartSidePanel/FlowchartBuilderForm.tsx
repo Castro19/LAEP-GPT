@@ -1,20 +1,26 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+
 import {
   calendarActions,
   flowchartActions,
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+
+// My Components
 import { BuildScheduleContainer } from "@/components/calendar";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { FaBook } from "react-icons/fa";
+import { SavedFlowchartList, CourseDropdown } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
-import SavedFlowchartList from "./SavedFlowchartList";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+
+// Icons
+import { FaBook } from "react-icons/fa";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
-import CourseDropdown from "../flowchartSidebar/courses/CourseDropdown";
 
 // Define a schema for flowchart preferences
 const FLOWCHART_PREFERENCES_SCHEMA = z.object({
@@ -73,7 +79,7 @@ const FlowchartBuilderForm = ({
             >
               <SavedFlowchartList onSwitchTab={onSwitchTab} />
             </CollapsibleContentWrapper>
-            <CollapsibleContentWrapper title="Classes" icon={FaBook}>
+            <CollapsibleContentWrapper title="Courses" icon={FaBook}>
               <CourseDropdown />
             </CollapsibleContentWrapper>
           </div>
