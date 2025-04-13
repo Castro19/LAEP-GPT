@@ -5,7 +5,7 @@ const DefaultSEO = () => {
     <Helmet>
       {/* Updated Title */}
       <title>PolyLink - Your AI Chatbot for Cal Poly SLO</title>
-      <meta 
+      <meta
         name="description"
         content="PolyLink is your one-stop AI-powered solution for navigating Cal Poly student life."
       />
@@ -19,7 +19,10 @@ const DefaultSEO = () => {
         property="og:description"
         content="Discover PolyLink at polylink.dev—an AI-powered chatbot for Cal Poly SLO students. Find courses, explore clubs, view professor ratings, and get your campus questions answered fast."
       />
-      <meta property="og:image" content="https://polylink.dev/seo-polylink.png" />
+      <meta
+        property="og:image"
+        content="https://polylink.dev/seo-polylink.png"
+      />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://polylink.dev" />
 
@@ -33,15 +36,19 @@ const DefaultSEO = () => {
         name="twitter:description"
         content="Discover PolyLink at polylink.dev—an AI chatbot for Cal Poly SLO students. Find courses, explore clubs, view professor ratings, and get your campus questions answered fast."
       />
-      <meta name="twitter:image" content="https://polylink.dev/seo-polylink.png" />
+      <meta
+        name="twitter:image"
+        content="https://polylink.dev/seo-polylink.png"
+      />
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Website",
-          "name": "PolyLink",
-          "url": "https://polylink.dev",
-          "description": "Discover PolyLink at polylink.dev—an AI-powered chatbot for Cal Poly SLO students. Find courses, explore clubs, view professor ratings, and get your campus questions answered fast.",
-          "image": "https://polylink.dev/seo-polylink.png"
+          name: "PolyLink",
+          url: "https://polylink.dev",
+          description:
+            "Discover PolyLink at polylink.dev—an AI-powered chatbot for Cal Poly SLO students. Find courses, explore clubs, view professor ratings, and get your campus questions answered fast.",
+          image: "https://polylink.dev/seo-polylink.png",
         })}
       </script>
     </Helmet>
