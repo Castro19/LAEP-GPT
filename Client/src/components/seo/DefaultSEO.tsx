@@ -5,7 +5,7 @@ const DefaultSEO = () => {
     <Helmet>
       {/* Updated Title */}
       <title>PolyLink - Your AI Chatbot for Cal Poly SLO</title>
-      <meta 
+      <meta
         name="description"
         content="PolyLink is your one-stop AI-powered solution for navigating Cal Poly student life."
       />
@@ -38,10 +38,11 @@ const DefaultSEO = () => {
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Website",
-          "name": "PolyLink",
-          "url": "https://polylink.dev",
-          "description": "Discover PolyLink at polylink.dev—an AI-powered chatbot for Cal Poly SLO students. Find courses, explore clubs, view professor ratings, and get your campus questions answered fast.",
-          "image": "https://polylink.dev/seo-polylink.png"
+          name: "PolyLink",
+          url: "https://polylink.dev",
+          description:
+            "Discover PolyLink at polylink.dev—an AI-powered chatbot for Cal Poly SLO students. Find courses, explore clubs, view professor ratings, and get your campus questions answered fast.",
+          image: "https://polylink.dev/seo-polylink.png",
         })}
       </script>
     </Helmet>

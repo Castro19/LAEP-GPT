@@ -60,15 +60,26 @@ Get instant AI insights on your current weekly calendar and ways to improve it b
    cd LAEP-GPT
    ```
 
-2. Install Client and Server dependencies:
+2. Run the setup script to install dependencies and configure your development environment:
+
    ```sh
-   npm run install:all
+   ./setup-dev.sh
    ```
-3. Install Root dependencies:
-   ```sh
-   npm install
-   ```
-4. Set up environment variables (e.g., API keys for OpenAI and Qdrant) in a `.env` file.
+
+   This script will:
+
+   - Install recommended VSCode extensions
+   - Install all project dependencies
+   - Build the shared package
+   - Run ESLint to verify the setup
+
+   If the script fails to install some extensions automatically, you can install them manually:
+
+   - Open VSCode
+   - Go to the Extensions view (Ctrl+Shift+X or Cmd+Shift+X)
+   - Search for and install each of the recommended extensions listed in the Developer Setup section
+
+3. Set up environment variables (e.g., API keys for OpenAI and Qdrant) in a `.env` file.
 
    - Will release with an instruction list of how to do this seperately. However, if you are onboading, please message me for the .env file and you will be sent your own personal API keys.
 
@@ -86,6 +97,54 @@ npm run dev
 cd shared
 npm run build
 ```
+
+## Developer Setup
+
+### VSCode Configuration
+
+This project includes recommended VSCode settings and extensions to ensure a consistent development experience. When you open the project in VSCode, you'll be prompted to install the recommended extensions.
+
+#### Essential Extensions
+
+- **ESLint** (`dbaeumer.vscode-eslint`) - For linting and code quality
+- **Prettier** (`esbenp.prettier-vscode`) - For code formatting
+- **TypeScript Next** (`ms-vscode.vscode-typescript-next`) - For TypeScript support
+- **GitLens** (`eamodio.gitlens`) - For enhanced Git integration and team collaboration
+- **Docker** (`ms-azuretools.vscode-docker`) - For container management
+- **Remote Containers** (`ms-vscode-remote.remote-containers`) - For development in containers
+
+#### Manual Extension Installation
+
+If the setup script fails to install some extensions automatically, you can install them manually:
+
+1. Open VSCode
+2. Go to the Extensions view (Ctrl+Shift+X or Cmd+Shift+X)
+3. Search for each extension by name or ID
+4. Click "Install" for each extension
+
+Alternatively, you can install extensions directly from the VSCode marketplace:
+
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- [TypeScript Next](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next)
+- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+
+#### ESLint and Prettier Setup
+
+The project uses ESLint and Prettier for code formatting and linting. The configuration is already set up in the repository:
+
+- ESLint configuration is in `server/eslint.config.js`
+- VSCode settings are in `.vscode/settings.json`
+
+To ensure ESLint warnings appear in VSCode:
+
+1. Make sure you have the ESLint extension installed
+2. Restart VSCode after cloning the repository
+3. If warnings still don't appear, run the following command in the server directory:
+   ```sh
+   cd server
+   npm run lint
+   ```
 
 ## Acknowledgments
 
