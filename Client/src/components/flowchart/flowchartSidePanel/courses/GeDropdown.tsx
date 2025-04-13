@@ -180,6 +180,19 @@ const GeDropdown = memo(() => {
   const isSubjectLoading = (area: string, subject: string) =>
     loadingSubjects.has(`${area}-${subject}`);
 
+  const geAreaMap = (area: string) => {
+    switch (area) {
+      case "UPPER_DIVISION_B":
+        return "Upper Division B";
+      case "UPPER_DIVISION_C":
+        return "Upper Division C";
+      case "UPPER_DIVISION_D":
+        return "Upper Division D";
+      default:
+        return `Area ${area}`;
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       <CollapsibleContentWrapper
@@ -204,7 +217,7 @@ const GeDropdown = memo(() => {
                     className="w-full justify-between items-center p-2 dark:bg-transparent dark:text-white rounded-lg shadow-md"
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium">{area}</span>
+                      <span className="font-medium">{geAreaMap(area)}</span>
                     </div>
                     <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                   </Button>
