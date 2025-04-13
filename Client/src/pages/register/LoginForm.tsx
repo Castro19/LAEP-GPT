@@ -93,7 +93,10 @@ export default function LoginForm() {
         />
 
         {/* OpenGraph Image Tags */}
-        <meta property="og:image" content="/seo-login.png" />
+        <meta
+          property="og:image"
+          content="https://polylink.dev/seo-login.png"
+        />
         <meta property="og:title" content="Login | PolyLink" />
         <meta
           property="og:description"
@@ -102,7 +105,10 @@ export default function LoginForm() {
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="/seo-login.png" />
+        <meta
+          name="twitter:image"
+          content="https://polylink.dev/seo-login.png"
+        />
         <meta name="twitter:title" content="Login | PolyLink" />
         <meta
           name="twitter:description"
