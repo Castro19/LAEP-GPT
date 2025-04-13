@@ -11,12 +11,12 @@ const Team = ({ teamMembers }: { teamMembers: TeamDocument[] }) => {
         
         {/* OpenGraph Image Tags */}
         <meta property="og:title" content="Our Team | PolyLink" />
-        <meta property="og:image" content="/seo-polylink.png" />
+        <meta property="og:image" content="https://polylink.dev/seo-polylink.png" />
         <meta property="og:description" content="Meet the talented team behind PolyLink." />
         
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="/seo-polylink.png" />
+        <meta name="twitter:image" content="https://polylink.dev/seo-polylink.png" />
         <meta name="twitter:title" content="Our Team | PolyLink" />
         <meta name="twitter:description" content="Meet the talented team behind PolyLink." />
       </Helmet>
