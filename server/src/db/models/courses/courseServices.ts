@@ -7,7 +7,6 @@ import {
   CourseDocument,
   CourseObject,
   FormattedGeCourses,
-  geData,
 } from "@polylink/shared/types";
 import * as geCollection from "./geCollection";
 import { MongoQuery } from "../../../types/mongo";

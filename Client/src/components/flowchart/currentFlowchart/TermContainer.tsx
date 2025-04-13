@@ -16,6 +16,7 @@ import CourseItem from "./CourseItem";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
+import useDeviceType from "@/hooks/useDeviceType";
 
 interface TermContainerProps {
   term: Term;
@@ -41,6 +42,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
   onCourseToggleComplete,
 }) => {
   const dispatch = useAppDispatch();
+  const device = useDeviceType();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
   const handleTermClick = (action: "add" | "remove") => {
     if (!flowchartData) return;
@@ -72,7 +74,12 @@ const TermContainer: React.FC<TermContainerProps> = ({
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
   return (
-    <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-[calc(100vh-12rem)]">
+    <div
+      className={`flex flex-col w-full dark:bg-gray-900 shadow-md ${
+        device === "desktop" ? "h-[calc(100vh-12rem)]" : "h-[calc(100vh-10rem)]"
+      }`}
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       {/* Header */}
       <div className="flex justify-between items-center gap-2">
         <>
