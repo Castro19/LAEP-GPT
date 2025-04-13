@@ -3,19 +3,20 @@ import {
   CourseObject,
   FormattedGeCourses,
 } from "@polylink/shared/types";
+import { findAlternateFlowchartCode } from "../flowInfo/flowInfoServices";
 
 /**
  * Formats geDocuments into a nested structure organized by category and subject
  * @param geCourses List of geDocuments to format
  * @returns Nested object with categories as top level, subjects as second level, and course IDs as values
  */
-type FormatGeCoursesReturnType = Record<string, Record<string, string[]>>;
+type FormatCourseReturnType = Record<string, Record<string, string[]>>;
 
 export const formatGeCoursesByCategoryAndSubject = (
   geCourses: geDocument[]
-): FormatGeCoursesReturnType => {
+): FormatCourseReturnType => {
   // Initialize the result object
-  const result: FormatGeCoursesReturnType = {};
+  const result: FormatCourseReturnType = {};
 
   // Process each course
   geCourses.forEach((course) => {
@@ -86,4 +87,34 @@ export const formatGeCoursesByCategoryAndSubjectWithObjects = (
   });
 
   return result;
+};
+
+export const getCatalogYear = (code: string): string | null => {
+  const yearIdentifier = code.split(".")[0];
+
+  if (yearIdentifier === "22-26") {
+    return "2022-2026";
+  } else if (yearIdentifier === "21-22") {
+    return "2021-2022";
+  } else if (yearIdentifier === "20-21") {
+    return "2020-2021";
+  } else if (yearIdentifier === "19-20") {
+    return "2019-2020";
+  } else {
+    return null;
+  }
+};
+
+// Ensure code is from catalog 2022-2026, If it is not then find the alternate code
+export const ensureCatalogYear = async (code: string): Promise<string> => {
+  const catalogYear = getCatalogYear(code);
+  if (catalogYear !== "2022-2026") {
+    const alternateCode = await findAlternateFlowchartCode(code);
+    if (alternateCode) {
+      return alternateCode;
+    }
+  } else {
+    return code;
+  }
+  return code;
 };

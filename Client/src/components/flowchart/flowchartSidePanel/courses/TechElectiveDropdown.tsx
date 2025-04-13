@@ -8,18 +8,17 @@ import { Course } from "@polylink/shared/types/flowChart";
 
 // Fetch Helpers
 import {
-  fetchGeAreasAPI,
-  fetchGeCoursesAPI,
-  fetchGeSubjectsAPI,
+  fetchTechElectiveInfoAPI,
+  fetchTechElectiveSubjectsAPI,
+  fetchTechElectiveCourseDetailsAPI,
 } from "@/components/flowchart/helpers/fetchCourses";
-import { getCatalogYear } from "@/components/flowchart/helpers/findCatalogYear";
 
 // My components
 import { SidebarCourse } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 
 // Icons and UI Components
-import { BookOpen } from "lucide-react";
+import { Cpu, ExternalLink, AlertTriangle } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -30,186 +29,235 @@ import { Card } from "@/components/ui/card";
 import { ChevronDown } from "lucide-react";
 
 // Type for the course data structure
-type GeCourseData = {
-  [area: string]: {
+type TechElectiveCourseData = {
+  [category: string]: {
     [subject: string]: CourseObject[];
   };
 };
 
-const GeDropdown = memo(() => {
+const TechElectiveDropdown = memo(() => {
   // State management
-  const [geAreas, setGeAreas] = useState<string[]>([]);
-  const [geSubjects, setGeSubjects] = useState<{ [area: string]: string[] }>(
-    {}
-  );
-  const [geCourses, setGeCourses] = useState<GeCourseData>({});
+  const [techElectiveInfo, setTechElectiveInfo] = useState<{
+    major: string;
+    concentration: string;
+    url: string;
+    categories: string[];
+  }>({
+    major: "",
+    concentration: "",
+    url: "",
+    categories: [],
+  });
+
+  const [teSubjects, setTeSubjects] = useState<{
+    [category: string]: string[];
+  }>({});
+  const [teCourses, setTeCourses] = useState<TechElectiveCourseData>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [loadingAreas, setLoadingAreas] = useState<Set<string>>(new Set());
+  const [loadingCategories, setLoadingCategories] = useState<Set<string>>(
+    new Set()
+  );
   const [loadingSubjects, setLoadingSubjects] = useState<Set<string>>(
     new Set()
   );
   const { flowchartData } = useAppSelector((state) => state.flowchart);
 
-  // Get current catalog year
-  const currentCatalogYear = getCatalogYear(flowchartData?.name);
+  // Ref for the Tech Elective dropdown
+  const teRef = useRef<HTMLButtonElement>(null);
 
-  // Ref for the GE dropdown
-  const geRef = useRef<HTMLButtonElement>(null);
-
-  // Fetch GE areas
-  const fetchGeAreas = useCallback(async () => {
+  // Fetch Tech Elective categories
+  const fetchTechElectiveCategories = useCallback(async () => {
     try {
       setIsLoading(true);
-      const areas = await fetchGeAreasAPI(currentCatalogYear);
-      setGeAreas(areas);
+      if (flowchartData?.name) {
+        const techElectiveInfo = await fetchTechElectiveInfoAPI(
+          flowchartData.name
+        );
+        setTechElectiveInfo(techElectiveInfo);
+      }
     } catch (error) {
-      console.error("Failed to fetch GE areas:", error);
+      console.error("Failed to fetch tech elective categories:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [currentCatalogYear]);
+  }, [flowchartData?.name]);
 
-  // Fetch GE subjects for a specific area
-  const fetchGeSubjects = useCallback(
-    async (area: string) => {
+  // Fetch Tech Elective subjects for a specific category
+  const fetchTechElectiveSubjects = useCallback(
+    async (category: string) => {
       try {
-        // Mark this area as loading
-        setLoadingAreas((prev) => {
+        // Mark this category as loading
+        setLoadingCategories((prev) => {
           const newSet = new Set(prev);
-          newSet.add(area);
+          newSet.add(category);
           return newSet;
         });
 
-        const subjects = await fetchGeSubjectsAPI(area, currentCatalogYear);
-        setGeSubjects((prev) => ({
-          ...prev,
-          [area]: subjects,
-        }));
+        if (flowchartData?.name) {
+          const subjects = await fetchTechElectiveSubjectsAPI(
+            category,
+            flowchartData.name
+          );
+          setTeSubjects((prev) => ({
+            ...prev,
+            [category]: subjects,
+          }));
+        }
       } catch (error) {
-        console.error(`Failed to fetch GE subjects for area ${area}:`, error);
+        console.error(
+          `Failed to fetch tech elective subjects for category ${category}:`,
+          error
+        );
       } finally {
-        // Mark this area as no longer loading
-        setLoadingAreas((prev) => {
+        // Mark this category as no longer loading
+        setLoadingCategories((prev) => {
           const newSet = new Set(prev);
-          newSet.delete(area);
+          newSet.delete(category);
           return newSet;
         });
       }
     },
-    [currentCatalogYear]
+    [flowchartData?.name]
   );
 
-  // Fetch GE courses for a specific subject and area
-  const fetchGeCourses = async (subject: string, area: string) => {
+  // Fetch Tech Elective courses for a specific subject and category
+  const fetchTechElectiveCourses = async (
+    subject: string,
+    category: string
+  ) => {
     try {
       // Mark this subject as loading
       setLoadingSubjects((prev) => {
         const newSet = new Set(prev);
-        newSet.add(`${area}-${subject}`);
+        newSet.add(`${category}-${subject}`);
         return newSet;
       });
 
-      const response = await fetchGeCoursesAPI(
-        subject,
-        area,
-        currentCatalogYear
-      );
+      if (flowchartData?.name) {
+        const courseDetails = await fetchTechElectiveCourseDetailsAPI(
+          subject,
+          category,
+          flowchartData.name
+        );
 
-      // Extract the courses from the response
-      // The API returns a nested structure, but we need to flatten it for our UI
-      const courses: CourseObject[] = [];
-
-      // Process the nested structure to extract all courses
-      Object.values(response).forEach((category) => {
-        Object.values(category).forEach((subjectCourses) => {
-          courses.push(...subjectCourses);
+        // Update the state with the course details
+        setTeCourses((prev) => {
+          const updatedCourses: TechElectiveCourseData = {
+            ...prev,
+            [category]: {
+              ...(prev[category] || {}),
+              [subject]: courseDetails,
+            },
+          };
+          return updatedCourses;
         });
-      });
-
-      // Update the state with the flattened courses
-      setGeCourses((prev) => {
-        const updatedCourses: GeCourseData = {
-          ...prev,
-          [area]: {
-            ...(prev[area] || {}),
-            [subject]: courses,
-          },
-        };
-        return updatedCourses;
-      });
+      }
     } catch (error) {
       console.error(
-        `Failed to fetch GE courses for subject ${subject} in area ${area}:`,
+        `Failed to fetch tech elective courses for subject ${subject} in category ${category}:`,
         error
       );
     } finally {
       // Mark this subject as no longer loading
       setLoadingSubjects((prev) => {
         const newSet = new Set(prev);
-        newSet.delete(`${area}-${subject}`);
+        newSet.delete(`${category}-${subject}`);
         return newSet;
       });
     }
   };
 
-  // Handle GE dropdown open/close
-  const handleGeOpen = (open: boolean) => {
-    if (open && geAreas.length === 0) {
-      fetchGeAreas();
+  // Handle Tech Elective dropdown open/close
+  const handleTeOpen = (open: boolean) => {
+    if (open && techElectiveInfo.categories.length === 0) {
+      fetchTechElectiveCategories();
     }
   };
 
-  // Handle area dropdown open/close
-  const handleAreaOpen = (open: boolean, area: string) => {
-    if (open && !geSubjects[area]) {
-      fetchGeSubjects(area);
+  // Handle category dropdown open/close
+  const handleCategoryOpen = (open: boolean, category: string) => {
+    if (open && !teSubjects[category]) {
+      fetchTechElectiveSubjects(category);
     }
   };
 
   // Handle subject dropdown open/close
-  const handleSubjectOpen = (open: boolean, subject: string, area: string) => {
-    if (open && (!geCourses[area] || !geCourses[area][subject])) {
-      fetchGeCourses(subject, area);
+  const handleSubjectOpen = (
+    open: boolean,
+    subject: string,
+    category: string
+  ) => {
+    if (open && (!teCourses[category] || !teCourses[category][subject])) {
+      fetchTechElectiveCourses(subject, category);
     }
   };
 
-  // Check if an area is currently loading
-  const isAreaLoading = (area: string) => loadingAreas.has(area);
+  // Check if a category is currently loading
+  const isCategoryLoading = (category: string) =>
+    loadingCategories.has(category);
 
   // Check if a subject is currently loading
-  const isSubjectLoading = (area: string, subject: string) =>
-    loadingSubjects.has(`${area}-${subject}`);
-
-  const geAreaMap = (area: string) => {
-    switch (area) {
-      case "UPPER_DIVISION_B":
-        return "Upper Division B";
-      case "UPPER_DIVISION_C":
-        return "Upper Division C";
-      case "UPPER_DIVISION_D":
-        return "Upper Division D";
-      default:
-        return `Area ${area}`;
-    }
-  };
+  const isSubjectLoading = (category: string, subject: string) =>
+    loadingSubjects.has(`${category}-${subject}`);
 
   return (
     <div className="w-full space-y-4">
       <CollapsibleContentWrapper
-        title="GE"
-        icon={BookOpen}
+        title="Tech Electives"
+        icon={Cpu}
         defaultOpen={false}
-        triggerRef={geRef}
-        onOpenChange={handleGeOpen}
+        triggerRef={teRef}
+        onOpenChange={handleTeOpen}
       >
         <div className="space-y-3">
+          {/* Tech Elective Info and Disclaimer */}
+          {techElectiveInfo.major && (
+            <div className="mb-3 px-2 py-1.5 bg-gray-50 dark:bg-gray-800/50 rounded-md text-xs">
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">
+                    {techElectiveInfo.major}
+                    {techElectiveInfo.concentration && (
+                      <span className="text-gray-500 dark:text-gray-400 ml-1">
+                        ({techElectiveInfo.concentration})
+                      </span>
+                    )}
+                  </span>
+                </div>
+
+                <div className="flex items-start gap-1.5">
+                  <AlertTriangle className="h-3.5 w-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-600 dark:text-gray-400 leading-tight">
+                    Tech Electives are for Catalog 2022-2026
+                  </span>
+                </div>
+
+                {techElectiveInfo.url && (
+                  <a
+                    href={techElectiveInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5"
+                  >
+                    <span className="leading-tight">
+                      View official catalog page
+                    </span>
+                    <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
           {isLoading ? (
-            <div className="text-center py-4">Loading GE areas...</div>
+            <div className="text-center py-4">
+              Loading tech elective categories...
+            </div>
           ) : (
-            geAreas.map((area, index) => (
+            techElectiveInfo.categories.map((category, index) => (
               <Collapsible
                 key={index}
-                onOpenChange={(open) => handleAreaOpen(open, area)}
+                onOpenChange={(open) => handleCategoryOpen(open, category)}
               >
                 <CollapsibleTrigger asChild>
                   <Button
@@ -217,24 +265,24 @@ const GeDropdown = memo(() => {
                     className="w-full justify-between items-center p-2 dark:bg-transparent dark:text-white rounded-lg shadow-md"
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium">{geAreaMap(area)}</span>
+                      <span className="font-medium">{category || "Other"}</span>
                     </div>
                     <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <Card className="p-3 mt-2 border-gray-200 dark:border-gray-800 shadow-inner">
-                    {isAreaLoading(area) ? (
+                    {isCategoryLoading(category) ? (
                       <div className="text-center py-4">
                         Loading subjects...
                       </div>
-                    ) : geSubjects[area] ? (
+                    ) : teSubjects[category] ? (
                       <div className="space-y-4">
-                        {geSubjects[area].map((subject, subjectIndex) => (
+                        {teSubjects[category].map((subject, subjectIndex) => (
                           <Collapsible
                             key={subjectIndex}
                             onOpenChange={(open) =>
-                              handleSubjectOpen(open, subject, area)
+                              handleSubjectOpen(open, subject, category)
                             }
                           >
                             <CollapsibleTrigger asChild>
@@ -250,14 +298,14 @@ const GeDropdown = memo(() => {
                             </CollapsibleTrigger>
                             <CollapsibleContent>
                               <div className="pl-4 py-2">
-                                {isSubjectLoading(area, subject) ? (
+                                {isSubjectLoading(category, subject) ? (
                                   <div className="text-center py-2">
                                     Loading courses...
                                   </div>
-                                ) : geCourses[area] &&
-                                  geCourses[area][subject] ? (
+                                ) : teCourses[category] &&
+                                  teCourses[category][subject] ? (
                                   <div className="grid grid-cols-1 gap-2">
-                                    {geCourses[area][subject].map(
+                                    {teCourses[category][subject].map(
                                       (course, courseIndex) => {
                                         const courseData: Course = {
                                           id: course.courseId,
@@ -269,7 +317,7 @@ const GeDropdown = memo(() => {
                                         return (
                                           <Droppable
                                             key={`sidebar-${course.courseId}`}
-                                            droppableId={`sidebar-${course.courseId}-ge`}
+                                            droppableId={`sidebar-${course.courseId}-te`}
                                           >
                                             {(provided) => (
                                               <div
@@ -315,7 +363,7 @@ const GeDropdown = memo(() => {
                       </div>
                     ) : (
                       <div className="text-center py-4 text-gray-500">
-                        Click to load subjects for this area
+                        Click to load subjects for this category
                       </div>
                     )}
                   </Card>
@@ -329,6 +377,6 @@ const GeDropdown = memo(() => {
   );
 });
 
-GeDropdown.displayName = "GeDropdown";
+TechElectiveDropdown.displayName = "TechElectiveDropdown";
 
-export default GeDropdown;
+export default TechElectiveDropdown;

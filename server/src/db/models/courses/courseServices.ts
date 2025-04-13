@@ -1,5 +1,6 @@
 // Store the course catalog data in MongoDB
 import { environment } from "../../../index";
+import * as techElectiveCollection from "./techElectiveCollection";
 import * as courseCollection from "./courseCollection";
 import {
   CourseQuery,
@@ -11,10 +12,11 @@ import {
 import * as geCollection from "./geCollection";
 import { MongoQuery } from "../../../types/mongo";
 import {
+  ensureCatalogYear,
   formatGeCoursesByCategoryAndSubject,
   formatGeCoursesByCategoryAndSubjectWithObjects,
+  getCatalogYear,
 } from "./courseFormatter";
-
 export const getCourses = async (
   queryParams: CourseQuery
 ): Promise<CourseObject[]> => {
@@ -157,13 +159,17 @@ export const getSubjectNames = async (
 };
 
 export const getCourseInfo = async (
-  courseIds: string[]
+  courseIds: string[],
+  catalogYear?: string
 ): Promise<CourseObject[]> => {
   if (!courseIds) {
     throw new Error("Course IDs are required");
   }
   try {
-    return (await courseCollection.findCourseInfo(courseIds)) as CourseObject[];
+    return (await courseCollection.findCourseInfo(
+      courseIds,
+      catalogYear
+    )) as CourseObject[];
   } catch (error) {
     if (environment === "dev") {
       console.error("Error fetching course info: ", error);
@@ -264,6 +270,183 @@ export const getGeCourses = async (
   } catch (error) {
     if (environment === "dev") {
       console.error("Error fetching GE courses: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getTechElectiveInfo = async (
+  code: string
+): Promise<{
+  major: string;
+  concentration: string;
+  url: string;
+  categories: string[];
+}> => {
+  if (!code) {
+    throw new Error("Code is required");
+  }
+  const updatedCode = await ensureCatalogYear(code);
+  try {
+    const techElective =
+      await techElectiveCollection.findTechElectiveCourses(updatedCode);
+
+    const categoryNames = techElective.techElectives.map((techElective) => {
+      if (techElective.name) {
+        return techElective.name;
+      }
+      return "Electives";
+    });
+
+    const techElectiveInfo = {
+      major: techElective.major,
+      concentration: techElective.concentration,
+      url: techElective.url,
+      categories: categoryNames,
+    };
+
+    return techElectiveInfo;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching tech elective courses: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getTechElectiveSubjects = async (
+  code: string,
+  category: string
+): Promise<string[]> => {
+  if (!code) {
+    throw new Error("Code is required");
+  }
+  if (!category) {
+    throw new Error("Category is required");
+  }
+  const updatedCode = await ensureCatalogYear(code);
+  try {
+    const techElective =
+      await techElectiveCollection.findTechElectiveCourses(updatedCode);
+
+    // Find the tech elective category that matches the requested category
+    // Use case-insensitive comparison for category names
+    const matchingCategory = techElective.techElectives.find(
+      (techElective) =>
+        (techElective.name &&
+          techElective.name.toLowerCase() === category.toLowerCase()) ||
+        (techElective.name === null && category.toLowerCase() === "electives")
+    );
+
+    if (!matchingCategory) {
+      return [];
+    }
+
+    // Extract subject codes from course codes (e.g., "CPE428" -> "CPE")
+    const subjectCodes = matchingCategory.courses.map((courseCode) => {
+      // Extract the subject code (letters before the numbers)
+      const match = courseCode.match(/^([A-Za-z]+)/);
+      return match ? match[1] : "";
+    });
+
+    // Remove duplicates and empty strings
+    return [...new Set(subjectCodes)].filter(Boolean);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching tech elective subjects: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getTechElectiveCourses = async (
+  category: string,
+  code: string,
+  subject?: string
+): Promise<{ courses: string[]; notes: string | null }> => {
+  if (!code) {
+    throw new Error("Code is required");
+  }
+  if (!category) {
+    throw new Error("Category is required");
+  }
+  const updatedCode = await ensureCatalogYear(code);
+  try {
+    const techElective =
+      await techElectiveCollection.findTechElectiveCourses(updatedCode);
+
+    // Find the tech elective category that matches the requested category
+    // Use case-insensitive comparison for category names
+    const matchingCategory = techElective.techElectives.find(
+      (techElective) =>
+        (techElective.name &&
+          techElective.name.toLowerCase() === category.toLowerCase()) ||
+        (techElective.name === null && category.toLowerCase() === "electives")
+    );
+
+    if (!matchingCategory) {
+      return { courses: [], notes: null };
+    }
+
+    // If subject is provided, filter courses by that subject
+    let filteredCourses = matchingCategory.courses;
+    if (subject) {
+      filteredCourses = matchingCategory.courses.filter((courseCode) => {
+        // Extract the subject code (letters before the numbers)
+        const match = courseCode.match(/^([A-Za-z]+)/);
+        const courseSubject = match ? match[1] : "";
+        return courseSubject.toLowerCase() === subject.toLowerCase();
+      });
+    }
+
+    return {
+      courses: filteredCourses,
+      notes: matchingCategory.notes,
+    };
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching tech elective courses: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getTechElectiveCourseDetails = async (
+  category: string,
+  code: string,
+  subject?: string
+): Promise<CourseObject[]> => {
+  if (!code) {
+    throw new Error("Code is required");
+  }
+  if (!category) {
+    throw new Error("Category is required");
+  }
+  const catalogYear = getCatalogYear(code);
+
+  if (!catalogYear) {
+    throw new Error("Invalid code. Could not find its catalog year");
+  }
+  const updatedCode = await ensureCatalogYear(code);
+  try {
+    // First get the filtered course codes
+    const { courses } = await getTechElectiveCourses(
+      category,
+      updatedCode,
+      subject
+    );
+
+    if (courses.length === 0) {
+      return [];
+    }
+
+    // Get detailed course information for each course code
+    const courseDetails = await getCourseInfo(courses);
+
+    return courseDetails;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching tech elective course details: ", error);
     }
     throw error;
   }

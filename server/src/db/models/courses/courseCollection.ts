@@ -131,7 +131,8 @@ export const findSubjectNames = async (
 };
 
 export const findCourseInfo = async (
-  courseIds: string[]
+  courseIds: string[],
+  catalogYear?: string
 ): Promise<CourseObject[]> => {
   if (!courseCollection) initializeCollection();
 
@@ -139,7 +140,7 @@ export const findCourseInfo = async (
     const result = await courseCollection
       .find({
         courseId: { $in: courseIds },
-        catalogYear: "2022-2026",
+        catalogYear: catalogYear || "2022-2026",
       })
       .project({
         courseId: 1,

@@ -71,3 +71,79 @@ export const searchFlowInfo = async ({
     return null;
   }
 };
+
+/**
+ * Finds the alternate flowchart code for a given code
+ * @param code The code to find the alternate for
+ * @returns The alternate code
+ */
+export const findAlternateFlowchartCode = async (
+  code: string
+): Promise<string | null> => {
+  // 1. Get the flowchart info, major and concentration
+  const initialFlowInfo = await flowInfoModel.searchFlowInfo(
+    { code: code },
+    {
+      _id: 0,
+      majorName: 1,
+      concName: 1,
+      code: 1,
+    }
+  );
+
+  if (!Array.isArray(initialFlowInfo) || initialFlowInfo.length === 0) {
+    return null;
+  }
+
+  const firstFlowInfo = initialFlowInfo[0] as ConcentrationInfo;
+
+  // 2. Look for the flowinfo with the same major and concentration but for catalog 2022-2026
+  const alternateFlowInfo = await flowInfoModel.searchFlowInfo(
+    {
+      majorName: firstFlowInfo.majorName,
+      concName: firstFlowInfo.concName,
+      catalog: "2022-2026",
+    },
+    {
+      _id: 0,
+      majorName: 1,
+      concName: 1,
+      code: 1,
+    }
+  );
+
+  if (Array.isArray(alternateFlowInfo) && alternateFlowInfo.length > 0) {
+    return (alternateFlowInfo[0] as ConcentrationInfo).code;
+  }
+
+  // 3. If no flowinfo is found, then get the non-concentration flowinfo.
+  //
+  const nonConcentrationFlowInfo = await flowInfoModel.searchFlowInfo(
+    { majorName: firstFlowInfo.majorName, catalog: "2022-2026" },
+    {
+      _id: 0,
+      majorName: 1,
+      concName: 1,
+      code: 1,
+    }
+  );
+
+  if (
+    Array.isArray(nonConcentrationFlowInfo) &&
+    nonConcentrationFlowInfo.length > 0
+  ) {
+    // Find the flowInfo with the shortest code name
+    const shortestCodeFlowInfo = nonConcentrationFlowInfo.reduce(
+      (shortest, current) => {
+        const currentCode = (current as ConcentrationInfo).code;
+        const shortestCode = (shortest as ConcentrationInfo).code;
+        return currentCode.length < shortestCode.length ? current : shortest;
+      },
+      nonConcentrationFlowInfo[0]
+    );
+
+    return (shortestCodeFlowInfo as ConcentrationInfo).code;
+  }
+
+  return null;
+};
