@@ -43,6 +43,16 @@ export type CourseDocument = CourseData & {
   _id?: string;
 };
 
+export type geData = {
+  id: string;
+  catalog: string;
+  category: string;
+};
+
+export type geDocument = geData & {
+  _id?: string;
+};
+
 export type GEObj = {
   category: string;
   id: string;
