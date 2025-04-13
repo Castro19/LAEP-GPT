@@ -14,7 +14,7 @@ const AssistantItem = React.forwardRef<
   }
 >(({ className, assistant, ...props }, ref) => {
   const { title, urlPhoto } = assistant;
-  
+
   return (
     <button
       ref={ref}
@@ -30,18 +30,13 @@ const AssistantItem = React.forwardRef<
       {...props}
     >
       <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarImage
-          src={urlPhoto}
-          alt="Assistant Photo"
-        />
+        <AvatarImage src={urlPhoto} alt="Assistant Photo" />
       </Avatar>
-      <span className="text-sm">
-        {title}
-      </span>
+      <span className="text-sm">{title}</span>
     </button>
   );
 });
 
 AssistantItem.displayName = "AssistantItem";
 
-export default AssistantItem; 
+export default AssistantItem;
