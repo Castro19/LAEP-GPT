@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-rename-tag",
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.vscode-typescript-next",
+    "pkief.material-icon-theme",
+    "equinusocio.vsc-material-theme",
+    "equinusocio.vsc-material-theme-icons"
+  ]
+}

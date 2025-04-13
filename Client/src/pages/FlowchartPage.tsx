@@ -96,7 +96,7 @@ const FlowChartPage = () => {
         <FlowchartMobile />
       ) : (
         <div className="flex overflow-hidden no-scroll">
-          {isNarrowScreen ? null : <OuterIconSidebar />}
+          <OuterIconSidebar />
           <SidebarProvider className="dark:bg-slate-900">
             <FlowchartLayout>
               <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
@@ -121,9 +121,7 @@ const FlowChartPage = () => {
                   ) : (
                     <>
                       <Flowchart flowchartData={flowchartData} />
-                      {flowchartData && !isNarrowScreen && (
-                        <FlowchartUnitCounts />
-                      )}
+                      {flowchartData && <FlowchartUnitCounts />}
                     </>
                   )}
                 </div>
@@ -155,7 +153,7 @@ const FlowchartMobile = () => {
             value={selectedTab}
             onValueChange={(value) => setSelectedTab(value)}
           >
-            <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+            <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900 h-8">
               <TabsTrigger value="Flowchart Builder">
                 Flowchart Builder
               </TabsTrigger>

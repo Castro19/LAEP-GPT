@@ -99,15 +99,11 @@ export const ModalBody = ({
   const modalRef = useRef(null);
   const { setOpen } = useModal();
 
-  useOutsideClick(
-    modalRef,
-    () => {
-      if (!disableOutsideClick) {
-        setOpen(false);
-      }
-    },
-    [modalRef, ...excludeRefs]
-  );
+  useOutsideClick(modalRef, () => {
+    if (!disableOutsideClick) {
+      setOpen(false);
+    }
+  }, [modalRef, ...excludeRefs]);
 
   return (
     <AnimatePresence>
@@ -279,15 +275,11 @@ export const CustomModalBody = ({
   const { open, setOpen } = useModal();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useOutsideClick(
-    modalRef,
-    () => {
-      if (!disableOutsideClick) {
-        setOpen(false);
-      }
-    },
-    [modalRef, ...excludeRefs]
-  );
+  useOutsideClick(modalRef, () => {
+    if (!disableOutsideClick) {
+      setOpen(false);
+    }
+  }, [modalRef, ...excludeRefs]);
 
   // Get the dedicated modal root inside the WeeklyCalendar container
   const modalRoot = document.getElementById("calendar-modal-root");

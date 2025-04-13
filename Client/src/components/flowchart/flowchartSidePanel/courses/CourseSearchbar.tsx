@@ -9,8 +9,6 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "@/components/ui/command";
-// Hooks
-import { useUserData } from "@/hooks/useUserData";
 // Types
 import { Course, CourseSidebar } from "@polylink/shared/types";
 // Course Components & Fetch Helpers
@@ -19,6 +17,8 @@ import { SidebarCourse, fetchCoursesAPI } from "@/components/flowchart";
 import { SidebarMenuSubItem, SidebarMenuSub } from "@/components/ui/sidebar";
 // Env vars
 import { environment } from "@/helpers/getEnvironmentVars";
+import { useAppSelector } from "@/redux";
+import { getCatalogYear } from "../../helpers/findCatalogYear";
 
 // Debounce function
 // eslint-disable-next-line no-unused-vars
@@ -31,9 +31,9 @@ function debounce(func: (...args: any[]) => void, wait: number) {
 }
 
 const CourseSearchbar = () => {
-  const { userData } = useUserData();
+  const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const catalogYear = getCatalogYear(flowchartData?.name);
 
-  const catalogYear = userData.flowchartInformation?.catalog || "2022-2026";
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [courses, setCourses] = useState<CourseSidebar[]>([]);
@@ -58,7 +58,6 @@ const CourseSearchbar = () => {
 
     setIsLoading(true);
     setError(null);
-
     const fetchCourses = async () => {
       try {
         const coursesFetched = await fetchCoursesAPI(catalogYear, inputValue);
@@ -104,7 +103,6 @@ const CourseSearchbar = () => {
             {courses.map((item, index) => {
               const course = {
                 id: item.courseId,
-                // Pick a nice beige color
                 color: "#F5F5DC",
                 units: item.units,
                 displayName: item.displayName,

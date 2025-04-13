@@ -59,8 +59,11 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
       destination.droppableId.startsWith("term-")
     ) {
       // Handle dragging from sidebar to term container
+      const isGe = source.droppableId.includes("ge");
+
       const termIndex = parseInt(destination.droppableId.split("-")[1], 10);
-      const courseId = draggableId.replace("sidebar-", "");
+
+      const courseId = draggableId.replace("sidebar-", "").replace("-ge", "");
       const courseFetched: CourseObject | null = await getCourseFromSidebar(
         catalog ? catalog : "2022-2026",
         courseId
@@ -69,7 +72,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
       const course: Course = {
         id: courseFetched?.courseId || "",
         // Pick a nice beige color
-        color: "#F5F5DC",
+        color: isGe ? "#DCFDD2" : "#F5F5DC",
         displayName: courseFetched?.displayName || "",
         units: courseFetched?.units || "",
         desc: courseFetched?.desc || "",
