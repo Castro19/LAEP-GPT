@@ -1,4 +1,8 @@
-import { geDocument, CourseObject } from "@polylink/shared/types";
+import {
+  geDocument,
+  CourseObject,
+  FormattedGeCourses,
+} from "@polylink/shared/types";
 
 /**
  * Formats geDocuments into a nested structure organized by category and subject
@@ -44,7 +48,7 @@ export const formatGeCoursesByCategoryAndSubject = (
 export const formatGeCoursesByCategoryAndSubjectWithObjects = (
   geCourses: geDocument[],
   courseObjects: CourseObject[]
-): Record<string, Record<string, CourseObject[]>> => {
+): FormattedGeCourses => {
   // Create a map of course IDs to their full objects for quick lookup
   const courseMap = new Map<string, CourseObject>();
   courseObjects.forEach((course) => {
@@ -52,7 +56,7 @@ export const formatGeCoursesByCategoryAndSubjectWithObjects = (
   });
 
   // Initialize the result object
-  const result: Record<string, Record<string, CourseObject[]>> = {};
+  const result: FormattedGeCourses = {};
 
   // Process each course
   geCourses.forEach((course) => {

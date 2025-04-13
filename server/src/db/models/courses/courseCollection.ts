@@ -23,7 +23,8 @@ export const findCourse = async (
 };
 
 export const findCourses = async (
-  query: MongoQuery<CourseDocument>
+  query: MongoQuery<CourseDocument>,
+  limit?: number
 ): Promise<CourseObject[]> => {
   if (!courseCollection) initializeCollection();
 
@@ -33,7 +34,7 @@ export const findCourses = async (
     units: 1,
     desc: 1,
   };
-  const resultLimit = 25;
+  const resultLimit = limit || 25;
 
   try {
     const courses = await courseCollection

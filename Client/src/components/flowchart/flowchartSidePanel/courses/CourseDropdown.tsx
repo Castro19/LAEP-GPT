@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import GeDropdown from "./GeDropdown";
 
 // Course type definitions
 type CourseType = "GWR" | "USCP"; // Current types
@@ -106,7 +107,6 @@ const CourseDropdown = memo(() => {
   // API calls
   const fetchSubjects = async (type: CourseType) => {
     const subjectNamesFetched = await fetchSubjectNamesAPI(currentCatalogYear, {
-      ge: "false",
       gwr: type === "GWR" ? "true" : "false",
       uscp: type === "USCP" ? "true" : "false",
       searchTerm: "",
@@ -291,7 +291,7 @@ const CourseDropdown = memo(() => {
           </CollapsibleContentWrapper>
         );
       })}
-
+      <GeDropdown />
       <CourseSearchbar />
     </div>
   );

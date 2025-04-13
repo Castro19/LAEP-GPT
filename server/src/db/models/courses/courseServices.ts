@@ -6,6 +6,8 @@ import {
   SubjectQuery,
   CourseDocument,
   CourseObject,
+  FormattedGeCourses,
+  geData,
 } from "@polylink/shared/types";
 import * as geCollection from "./geCollection";
 import { MongoQuery } from "../../../types/mongo";
@@ -190,17 +192,46 @@ export const getGeAreas = async (catalogYear: string): Promise<string[]> => {
   }
 };
 
-export const getGeCourses = async (
+export const getGeSubjects = async (
   area: string,
   catalogYear: string
-): Promise<Record<string, Record<string, CourseObject[]>>> => {
+): Promise<string[]> => {
+  if (!catalogYear) {
+    catalogYear = "2022-2026";
+  }
+  try {
+    const geSubjects = await geCollection.findGeSubjects(area, catalogYear);
+    // remove duplicates and make them alphabetical
+    const uniqueGeSubjects = [
+      ...new Set(geSubjects.map((subject) => subject.subject)),
+    ]
+      .sort()
+      .map((subject) => subject);
+    return uniqueGeSubjects;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching GE subjects: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getGeCourses = async (
+  subject: string,
+  area: string,
+  catalogYear: string
+): Promise<FormattedGeCourses> => {
   if (!catalogYear) {
     catalogYear = "2022-2026";
   }
 
   try {
     // Get the GE courses
-    const geCourses = await geCollection.findGeCourses(area, catalogYear);
+    const geCourses = await geCollection.findGeCourses(
+      subject,
+      area,
+      catalogYear
+    );
 
     // First format to get the structure with IDs
     const formattedByIds = formatGeCoursesByCategoryAndSubject(geCourses);
@@ -218,10 +249,13 @@ export const getGeCourses = async (
     });
 
     // Fetch all course objects
-    const courseObjects = await courseCollection.findCourses({
-      courseId: { $in: allCourseIds },
-      catalogYear: catalogYear,
-    });
+    const courseObjects = await courseCollection.findCourses(
+      {
+        courseId: { $in: allCourseIds },
+        catalogYear: catalogYear,
+      },
+      100
+    );
 
     // Format with the full course objects
     return formatGeCoursesByCategoryAndSubjectWithObjects(
