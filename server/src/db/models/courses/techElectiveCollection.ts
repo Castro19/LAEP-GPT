@@ -15,7 +15,7 @@ export const findTechElectiveCourses = async (
   if (!techElectiveCollection) initializeCollection();
   try {
     const techElective = await techElectiveCollection.findOne({ code });
-    console.log("techElective", techElective);
+
     return techElective as TechElectiveDocument;
   } catch (error) {
     if (environment === "dev") {

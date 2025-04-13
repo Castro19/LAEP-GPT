@@ -12,8 +12,10 @@ import {
 import * as geCollection from "./geCollection";
 import { MongoQuery } from "../../../types/mongo";
 import {
+  ensureCatalogYear,
   formatGeCoursesByCategoryAndSubject,
   formatGeCoursesByCategoryAndSubjectWithObjects,
+  getCatalogYear,
 } from "./courseFormatter";
 export const getCourses = async (
   queryParams: CourseQuery
@@ -157,13 +159,17 @@ export const getSubjectNames = async (
 };
 
 export const getCourseInfo = async (
-  courseIds: string[]
+  courseIds: string[],
+  catalogYear?: string
 ): Promise<CourseObject[]> => {
   if (!courseIds) {
     throw new Error("Course IDs are required");
   }
   try {
-    return (await courseCollection.findCourseInfo(courseIds)) as CourseObject[];
+    return (await courseCollection.findCourseInfo(
+      courseIds,
+      catalogYear
+    )) as CourseObject[];
   } catch (error) {
     if (environment === "dev") {
       console.error("Error fetching course info: ", error);
@@ -280,15 +286,16 @@ export const getTechElectiveInfo = async (
   if (!code) {
     throw new Error("Code is required");
   }
+  const updatedCode = await ensureCatalogYear(code);
   try {
     const techElective =
-      await techElectiveCollection.findTechElectiveCourses(code);
+      await techElectiveCollection.findTechElectiveCourses(updatedCode);
 
     const categoryNames = techElective.techElectives.map((techElective) => {
       if (techElective.name) {
         return techElective.name;
       }
-      return "Other";
+      return "Electives";
     });
 
     const techElectiveInfo = {
@@ -317,9 +324,10 @@ export const getTechElectiveSubjects = async (
   if (!category) {
     throw new Error("Category is required");
   }
+  const updatedCode = await ensureCatalogYear(code);
   try {
     const techElective =
-      await techElectiveCollection.findTechElectiveCourses(code);
+      await techElectiveCollection.findTechElectiveCourses(updatedCode);
 
     // Find the tech elective category that matches the requested category
     // Use case-insensitive comparison for category names
@@ -327,7 +335,7 @@ export const getTechElectiveSubjects = async (
       (techElective) =>
         (techElective.name &&
           techElective.name.toLowerCase() === category.toLowerCase()) ||
-        (techElective.name === null && category.toLowerCase() === "other")
+        (techElective.name === null && category.toLowerCase() === "electives")
     );
 
     if (!matchingCategory) {
@@ -362,10 +370,10 @@ export const getTechElectiveCourses = async (
   if (!category) {
     throw new Error("Category is required");
   }
-
+  const updatedCode = await ensureCatalogYear(code);
   try {
     const techElective =
-      await techElectiveCollection.findTechElectiveCourses(code);
+      await techElectiveCollection.findTechElectiveCourses(updatedCode);
 
     // Find the tech elective category that matches the requested category
     // Use case-insensitive comparison for category names
@@ -373,7 +381,7 @@ export const getTechElectiveCourses = async (
       (techElective) =>
         (techElective.name &&
           techElective.name.toLowerCase() === category.toLowerCase()) ||
-        (techElective.name === null && category.toLowerCase() === "other")
+        (techElective.name === null && category.toLowerCase() === "electives")
     );
 
     if (!matchingCategory) {
@@ -414,10 +422,19 @@ export const getTechElectiveCourseDetails = async (
   if (!category) {
     throw new Error("Category is required");
   }
+  const catalogYear = getCatalogYear(code);
 
+  if (!catalogYear) {
+    throw new Error("Invalid code. Could not find its catalog year");
+  }
+  const updatedCode = await ensureCatalogYear(code);
   try {
     // First get the filtered course codes
-    const { courses } = await getTechElectiveCourses(category, code, subject);
+    const { courses } = await getTechElectiveCourses(
+      category,
+      updatedCode,
+      subject
+    );
 
     if (courses.length === 0) {
       return [];
