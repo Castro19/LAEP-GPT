@@ -6,8 +6,15 @@ import {
   SubjectQuery,
   CourseDocument,
   CourseObject,
+  FormattedGeCourses,
+  geData,
 } from "@polylink/shared/types";
+import * as geCollection from "./geCollection";
 import { MongoQuery } from "../../../types/mongo";
+import {
+  formatGeCoursesByCategoryAndSubject,
+  formatGeCoursesByCategoryAndSubjectWithObjects,
+} from "./courseFormatter";
 
 export const getCourses = async (
   queryParams: CourseQuery
@@ -161,6 +168,103 @@ export const getCourseInfo = async (
   } catch (error) {
     if (environment === "dev") {
       console.error("Error fetching course info: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getGeAreas = async (catalogYear: string): Promise<string[]> => {
+  if (!catalogYear) {
+    catalogYear = "2022-2026";
+  }
+  try {
+    const geAreas = await geCollection.findGeAreas(catalogYear);
+    // remove duplicates and make them alphabetical
+    const uniqueGeAreas = [...new Set(geAreas.map((area) => area.category))]
+      .sort()
+      .map((area) => area);
+    return uniqueGeAreas;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching GE areas: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getGeSubjects = async (
+  area: string,
+  catalogYear: string
+): Promise<string[]> => {
+  if (!catalogYear) {
+    catalogYear = "2022-2026";
+  }
+  try {
+    const geSubjects = await geCollection.findGeSubjects(area, catalogYear);
+    // remove duplicates and make them alphabetical
+    const uniqueGeSubjects = [
+      ...new Set(geSubjects.map((subject) => subject.subject)),
+    ]
+      .sort()
+      .map((subject) => subject);
+    return uniqueGeSubjects;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching GE subjects: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getGeCourses = async (
+  subject: string,
+  area: string,
+  catalogYear: string
+): Promise<FormattedGeCourses> => {
+  if (!catalogYear) {
+    catalogYear = "2022-2026";
+  }
+
+  try {
+    // Get the GE courses
+    const geCourses = await geCollection.findGeCourses(
+      subject,
+      area,
+      catalogYear
+    );
+
+    // First format to get the structure with IDs
+    const formattedByIds = formatGeCoursesByCategoryAndSubject(geCourses);
+
+    // Collect all unique course IDs
+    const allCourseIds: string[] = [];
+    Object.values(formattedByIds).forEach((subjectMap) => {
+      Object.values(subjectMap).forEach((courseIds) => {
+        courseIds.forEach((id) => {
+          if (!allCourseIds.includes(id)) {
+            allCourseIds.push(id);
+          }
+        });
+      });
+    });
+
+    // Fetch all course objects
+    const courseObjects = await courseCollection.findCourses(
+      {
+        courseId: { $in: allCourseIds },
+        catalogYear: catalogYear,
+      },
+      100
+    );
+
+    // Format with the full course objects
+    return formatGeCoursesByCategoryAndSubjectWithObjects(
+      geCourses,
+      courseObjects
+    );
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching GE courses: ", error);
     }
     throw error;
   }

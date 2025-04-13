@@ -4,6 +4,9 @@ import {
   getSubjectNames,
   getCoursesBySubject,
   getCourse,
+  getGeCourses,
+  getGeAreas,
+  getGeSubjects,
 } from "../db/models/courses/courseServices";
 import { SubjectQuery } from "@polylink/shared/types";
 import { environment } from "../index";
@@ -58,6 +61,50 @@ router.get("/course", async (req, res) => {
       console.error("Failed to get course:", error);
     }
     res.status(500).send("Failed to get course: " + (error as Error).message);
+  }
+});
+
+router.get("/ge/areas/:catalogYear", async (req, res) => {
+  try {
+    const result = await getGeAreas(req.params.catalogYear);
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get GE areas:", error);
+    }
+    res.status(500).send("Failed to get GE areas: " + (error as Error).message);
+  }
+});
+
+router.get("/ge/subjects/:area/:catalogYear", async (req, res) => {
+  try {
+    const result = await getGeSubjects(req.params.area, req.params.catalogYear);
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get GE courses:", error);
+    }
+    res
+      .status(500)
+      .send("Failed to get GE courses: " + (error as Error).message);
+  }
+});
+
+router.get("/ge/:subject/:area/:catalogYear", async (req, res) => {
+  try {
+    const result = await getGeCourses(
+      req.params.subject,
+      req.params.area,
+      req.params.catalogYear
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get GE courses:", error);
+    }
+    res
+      .status(500)
+      .send("Failed to get GE courses: " + (error as Error).message);
   }
 });
 
