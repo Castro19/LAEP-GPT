@@ -10,7 +10,6 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { TermContainer, defaultTermData } from "@/components/flowchart";
 
 // UI Components
-import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselItem,
@@ -19,6 +18,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import useDeviceType from "@/hooks/useDeviceType";
+import YearSelector from "./YearSelector";
 
 // Add custom styles for the bounce animation
 const bounceStyles = `
@@ -222,23 +222,12 @@ const Flowchart = ({
     >
       <style>{bounceStyles}</style>
 
-      {/* Year selector row */}
-      <div className="flex justify-center gap-1 dark:bg-gray-900 border-b-1 border-slate-600 p-2">
-        {[...Array(totalYears)].map((_, index) => (
-          <Button
-            key={index}
-            variant="ghost"
-            onClick={() => scrollToYear(index)}
-            className={`cursor-pointer ${
-              selectedYear === index
-                ? "dark:bg-slate-700 text-white"
-                : "text-white hover:dark:bg-slate-800"
-            } ${isNarrowScreen ? "text-xs size-8 px-6" : "text-lg"}`}
-          >
-            Year {index + 1}
-          </Button>
-        ))}
-      </div>
+      <YearSelector
+        totalYears={totalYears}
+        selectedYear={selectedYear}
+        scrollToYear={scrollToYear}
+        isNarrowScreen={isNarrowScreen}
+      />
 
       <div className="relative">
         <Carousel
