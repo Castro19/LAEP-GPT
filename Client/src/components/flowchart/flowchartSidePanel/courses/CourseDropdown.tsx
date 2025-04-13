@@ -37,6 +37,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import GeDropdown from "./GeDropdown";
+import TechElectiveDropdown from "./TechElectiveDropdown";
 
 // Course type definitions
 type CourseType = "GWR" | "USCP"; // Current types
@@ -292,6 +293,7 @@ const CourseDropdown = memo(() => {
         );
       })}
       <GeDropdown />
+      <TechElectiveDropdown />
       <CourseSearchbar />
     </div>
   );

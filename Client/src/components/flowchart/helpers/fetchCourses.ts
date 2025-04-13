@@ -200,3 +200,152 @@ export const fetchGeCoursesAPI = async (
     throw err;
   }
 };
+
+/**
+ * Fetches tech elective information for a given code
+ * @param code The tech elective code
+ * @returns Tech elective information including major, concentration, URL, and categories
+ */
+export const fetchTechElectiveInfoAPI = async (
+  code: string
+): Promise<{
+  major: string;
+  concentration: string;
+  url: string;
+  categories: string[];
+}> => {
+  try {
+    const response = await fetch(
+      `${serverUrl}/courses/techElective/info/${code}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    if (environment === "dev") {
+      console.error("Failed to fetch tech elective info:", err);
+    }
+    throw err;
+  }
+};
+
+/**
+ * Fetches subject codes for a given tech elective category
+ * @param category The tech elective category
+ * @param code The tech elective code
+ * @returns Array of subject codes
+ */
+export const fetchTechElectiveSubjectsAPI = async (
+  category: string,
+  code: string
+): Promise<string[]> => {
+  try {
+    // Encode the category to handle spaces and special characters
+    const encodedCategory = encodeURIComponent(category);
+
+    const response = await fetch(
+      `${serverUrl}/courses/techElective/subjects/${encodedCategory}/${code}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    if (environment === "dev") {
+      console.error("Failed to fetch tech elective subjects:", err);
+    }
+    throw err;
+  }
+};
+
+/**
+ * Fetches courses for a given tech elective category and subject
+ * @param subject The subject code (e.g., "CSC")
+ * @param category The tech elective category
+ * @param code The tech elective code
+ * @returns Object containing courses and notes
+ */
+export const fetchTechElectiveCoursesAPI = async (
+  subject: string,
+  category: string,
+  code: string
+): Promise<{
+  courses: string[];
+  notes: string | null;
+}> => {
+  try {
+    // Encode the category and subject to handle spaces and special characters
+    const encodedCategory = encodeURIComponent(category);
+    const encodedSubject = encodeURIComponent(subject);
+
+    const response = await fetch(
+      `${serverUrl}/courses/techElective/${encodedSubject}/${encodedCategory}/${code}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    if (environment === "dev") {
+      console.error("Failed to fetch tech elective courses:", err);
+    }
+    throw err;
+  }
+};
+
+/**
+ * Fetches detailed course information for a given tech elective category and subject
+ * @param subject The subject code (e.g., "CSC")
+ * @param category The tech elective category
+ * @param code The tech elective code
+ * @returns Array of course objects with detailed information
+ */
+export const fetchTechElectiveCourseDetailsAPI = async (
+  subject: string,
+  category: string,
+  code: string
+): Promise<CourseObject[]> => {
+  try {
+    // Encode the category and subject to handle spaces and special characters
+    const encodedCategory = encodeURIComponent(category);
+    const encodedSubject = encodeURIComponent(subject);
+
+    const response = await fetch(
+      `${serverUrl}/courses/techElective/${encodedSubject}/${encodedCategory}/${code}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    if (environment === "dev") {
+      console.error("Failed to fetch tech elective course details:", err);
+    }
+    throw err;
+  }
+};
