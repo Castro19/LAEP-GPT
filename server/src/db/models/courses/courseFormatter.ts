@@ -9,13 +9,13 @@ import {
  * @param geCourses List of geDocuments to format
  * @returns Nested object with categories as top level, subjects as second level, and course IDs as values
  */
-type FormatGeCoursesReturnType = Record<string, Record<string, string[]>>;
+type FormatCourseReturnType = Record<string, Record<string, string[]>>;
 
 export const formatGeCoursesByCategoryAndSubject = (
   geCourses: geDocument[]
-): FormatGeCoursesReturnType => {
+): FormatCourseReturnType => {
   // Initialize the result object
-  const result: FormatGeCoursesReturnType = {};
+  const result: FormatCourseReturnType = {};
 
   // Process each course
   geCourses.forEach((course) => {

@@ -7,6 +7,10 @@ import {
   getGeCourses,
   getGeAreas,
   getGeSubjects,
+  getTechElectiveCourses,
+  getTechElectiveInfo,
+  getTechElectiveSubjects,
+  getTechElectiveCourseDetails,
 } from "../db/models/courses/courseServices";
 import { SubjectQuery } from "@polylink/shared/types";
 import { environment } from "../index";
@@ -105,6 +109,84 @@ router.get("/ge/:subject/:area/:catalogYear", async (req, res) => {
     res
       .status(500)
       .send("Failed to get GE courses: " + (error as Error).message);
+  }
+});
+
+router.get("/techElective/info/:code", async (req, res) => {
+  try {
+    const result = await getTechElectiveInfo(req.params.code);
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get tech elective courses:", error);
+    }
+    res
+      .status(500)
+      .send("Failed to get tech elective courses: " + (error as Error).message);
+  }
+});
+
+router.get("/techElective/subjects/:category/:code", async (req, res) => {
+  try {
+    // Decode the category parameter to handle spaces and special characters
+    const decodedCategory = decodeURIComponent(req.params.category);
+    const result = await getTechElectiveSubjects(
+      req.params.code,
+      decodedCategory
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get tech elective courses:", error);
+    }
+    res
+      .status(500)
+      .send("Failed to get tech elective courses: " + (error as Error).message);
+  }
+});
+
+router.get("/techElective/:subject/:category/:code", async (req, res) => {
+  try {
+    // Decode the category parameter to handle spaces and special characters
+    const decodedCategory = decodeURIComponent(req.params.category);
+    const decodedSubject = decodeURIComponent(req.params.subject);
+    const result = await getTechElectiveCourseDetails(
+      decodedCategory,
+      req.params.code,
+      decodedSubject
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get tech elective course details:", error);
+    }
+    res
+      .status(500)
+      .send(
+        "Failed to get tech elective course details: " +
+          (error as Error).message
+      );
+  }
+});
+
+router.get("/techElective/:subject/:category/:code", async (req, res) => {
+  try {
+    // Decode the category parameter to handle spaces and special characters
+    const decodedCategory = decodeURIComponent(req.params.category);
+    const decodedSubject = decodeURIComponent(req.params.subject);
+    const result = await getTechElectiveCourses(
+      decodedCategory,
+      req.params.code,
+      decodedSubject
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to get tech elective courses:", error);
+    }
+    res
+      .status(500)
+      .send("Failed to get tech elective courses: " + (error as Error).message);
   }
 });
 
