@@ -45,7 +45,9 @@ type GeArea = {
 const GeDropdown = memo(() => {
   // State management
   const [geAreas, setGeAreas] = useState<GeArea[]>([]);
-  const [geSubjects, _] = useState<{ [area: string]: string[] }>({});
+  const [geSubjects] = useState<{
+    [area: string]: string[];
+  }>({});
   const [geCourses, setGeCourses] = useState<GeCourseData>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingAreas, setLoadingAreas] = useState<Set<string>>(new Set());
