@@ -60,6 +60,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
     ) {
       // Handle dragging from sidebar to term container
       const isGe = source.droppableId.includes("ge");
+      const isTechElective = source.droppableId.includes("te");
 
       const termIndex = parseInt(destination.droppableId.split("-")[1], 10);
 
@@ -72,7 +73,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
       const course: Course = {
         id: courseFetched?.courseId || "",
         // Pick a nice beige color
-        color: isGe ? "#DCFDD2" : "#F5F5DC",
+        color: isGe ? "#DCFDD2" : isTechElective ? "#FEFD9A" : "#F5F5DC",
         displayName: courseFetched?.displayName || "",
         units: courseFetched?.units || "",
         desc: courseFetched?.desc || "",
