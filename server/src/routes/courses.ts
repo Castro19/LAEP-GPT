@@ -68,9 +68,13 @@ router.get("/course", async (req, res) => {
   }
 });
 
-router.get("/ge/areas/:catalogYear", async (req, res) => {
+router.get("/ge/areas", async (req, res) => {
   try {
-    const result = await getGeAreas(req.params.catalogYear);
+    const { completedCourseIds, catalogYear } = req.query as {
+      completedCourseIds: string[];
+      catalogYear: string;
+    };
+    const result = await getGeAreas(catalogYear, completedCourseIds);
     res.status(200).json(result);
   } catch (error) {
     if (environment === "dev") {
@@ -80,9 +84,18 @@ router.get("/ge/areas/:catalogYear", async (req, res) => {
   }
 });
 
-router.get("/ge/subjects/:area/:catalogYear", async (req, res) => {
+router.get("/ge/subjects", async (req, res) => {
   try {
-    const result = await getGeSubjects(req.params.area, req.params.catalogYear);
+    const { completedCourseIds, area, catalogYear } = req.query as {
+      completedCourseIds: string[];
+      area: string;
+      catalogYear: string;
+    };
+    const result = await getGeSubjects(
+      area,
+      catalogYear,
+      completedCourseIds || []
+    );
     res.status(200).json(result);
   } catch (error) {
     if (environment === "dev") {
