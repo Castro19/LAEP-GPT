@@ -239,7 +239,6 @@ const flowchartSlice = createSlice({
       const course = term.courses[courseIndex];
       if (course) {
         course.completed = !course.completed;
-
         // Update the completedCourseIds array
         const courseId = course.id || course.customId;
         if (courseId) {
@@ -317,6 +316,7 @@ const flowchartSlice = createSlice({
       })
       .addCase(fetchFlowchartData.fulfilled, (state, action) => {
         state.flowchartData = action.payload;
+        state.loading.fetchFlowchartData = false;
       })
       .addCase(fetchFlowchartData.rejected, (state, action) => {
         state.loading.fetchFlowchartData = false;

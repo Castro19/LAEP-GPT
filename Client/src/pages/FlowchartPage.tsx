@@ -41,7 +41,7 @@ const FlowChartPage = () => {
       dispatch(resetFlowchartData());
       previousFlowchartIdRef.current = flowchartId;
     }
-  }, [flowchartId, dispatch]);
+  }, [flowchartId, dispatch, createFlowchart]);
 
   useEffect(() => {
     if (initialLoadRef.current) return;
