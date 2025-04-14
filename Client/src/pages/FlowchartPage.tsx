@@ -36,7 +36,7 @@ const FlowChartPage = () => {
 
   // Reset flowchart data when flowchartId changes
   useEffect(() => {
-    if (previousFlowchartIdRef.current !== flowchartId) {
+    if (previousFlowchartIdRef.current !== flowchartId && createFlowchart) {
       // Reset the flowchart data to clear completed courses
       dispatch(resetFlowchartData());
       previousFlowchartIdRef.current = flowchartId;
