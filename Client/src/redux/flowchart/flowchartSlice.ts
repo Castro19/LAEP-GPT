@@ -4,6 +4,7 @@ import {
   FlowchartData,
   PostFlowchartInDB,
   Term,
+  Course,
 } from "@polylink/shared/types";
 import {
   deleteFlowchartFromDB,
@@ -18,6 +19,7 @@ export interface FlowchartState {
   flowchartData: FlowchartData | null;
   flowchartList: FetchedFlowchartObject[] | null;
   currentFlowchart: FetchedFlowchartObject | null;
+  completedCourseIds: string[];
   loading: {
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
@@ -34,6 +36,7 @@ const initialState: FlowchartState = {
   flowchartData: null,
   flowchartList: null,
   currentFlowchart: null,
+  completedCourseIds: [],
   loading: {
     fetchFlowchartData: false,
     setFlowchart: false,
@@ -194,6 +197,16 @@ const flowchartSlice = createSlice({
   reducers: {
     setFlowchartData: (state, action: PayloadAction<FlowchartData | null>) => {
       state.flowchartData = action.payload;
+      // Update completed courses when flowchart data changes
+      if (action.payload?.termData) {
+        const allCourses = action.payload.termData.flatMap(
+          (term) => term.courses
+        );
+        state.completedCourseIds = allCourses
+          .filter((course) => course.completed)
+          .map((course) => course.id || course.customId || "")
+          .filter(Boolean);
+      }
     },
     setCurrentFlowchart: (
       state,
@@ -203,6 +216,7 @@ const flowchartSlice = createSlice({
     },
     resetFlowchartData: (state) => {
       state.flowchartData = null;
+      state.completedCourseIds = [];
     },
     setFlowchartList: (
       state,
@@ -225,6 +239,19 @@ const flowchartSlice = createSlice({
       const course = term.courses[courseIndex];
       if (course) {
         course.completed = !course.completed;
+        // Update the completedCourseIds array
+        const courseId = course.id || course.customId;
+        if (courseId) {
+          if (course.completed) {
+            if (!state.completedCourseIds.includes(courseId)) {
+              state.completedCourseIds.push(courseId);
+            }
+          } else {
+            state.completedCourseIds = state.completedCourseIds.filter(
+              (id) => id !== courseId
+            );
+          }
+        }
       }
     },
     setCreateFlowchart: (state, action: PayloadAction<boolean>) => {
@@ -254,6 +281,13 @@ const flowchartSlice = createSlice({
           break;
       }
     },
+    // Add a new action to update completed courses directly
+    updateCompletedCourses: (state, action: PayloadAction<Course[]>) => {
+      state.completedCourseIds = action.payload
+        .filter((course) => course.completed)
+        .map((course) => course.id || course.customId || "")
+        .filter(Boolean);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -282,6 +316,7 @@ const flowchartSlice = createSlice({
       })
       .addCase(fetchFlowchartData.fulfilled, (state, action) => {
         state.flowchartData = action.payload;
+        state.loading.fetchFlowchartData = false;
       })
       .addCase(fetchFlowchartData.rejected, (state, action) => {
         state.loading.fetchFlowchartData = false;
@@ -296,6 +331,17 @@ const flowchartSlice = createSlice({
         state.flowchartData = action.payload.flowchartData;
         state.currentFlowchart = action.payload.flowchartMeta;
         state.loading.setFlowchart = false;
+
+        // Initialize completed courses when a new flowchart is loaded
+        if (action.payload.flowchartData?.termData) {
+          const allCourses = action.payload.flowchartData.termData.flatMap(
+            (term) => term.courses
+          );
+          state.completedCourseIds = allCourses
+            .filter((course) => course.completed)
+            .map((course) => course.id || course.customId || "")
+            .filter(Boolean);
+        }
       })
       .addCase(setFlowchart.rejected, (state, action) => {
         state.loading.setFlowchart = false;
@@ -400,6 +446,7 @@ export const {
   setFlowchartList,
   setCreateFlowchart,
   setLoading,
+  updateCompletedCourses,
 } = flowchartSlice.actions;
 
 export const flowchartReducer = flowchartSlice.reducer;

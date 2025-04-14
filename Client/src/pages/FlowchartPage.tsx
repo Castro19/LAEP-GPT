@@ -3,6 +3,7 @@ import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
   fetchAllFlowcharts,
   setFlowchart,
+  resetFlowchartData,
 } from "@/redux/flowchart/flowchartSlice";
 import {
   Flowchart,
@@ -31,6 +32,16 @@ const FlowChartPage = () => {
 
   const initialLoadRef = useRef(false);
   const previousFlowchartDataRef = useRef(flowchartData);
+  const previousFlowchartIdRef = useRef(flowchartId);
+
+  // Reset flowchart data when flowchartId changes
+  useEffect(() => {
+    if (previousFlowchartIdRef.current !== flowchartId && createFlowchart) {
+      // Reset the flowchart data to clear completed courses
+      dispatch(resetFlowchartData());
+      previousFlowchartIdRef.current = flowchartId;
+    }
+  }, [flowchartId, dispatch, createFlowchart]);
 
   useEffect(() => {
     if (initialLoadRef.current) return;

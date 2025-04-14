@@ -20,6 +20,7 @@ import {
 // Helper functions
 import { toast } from "@/components/ui/use-toast";
 import { serverUrl } from "@/helpers/getEnvironmentVars";
+import { getCatalogYear } from "@/components/flowchart/helpers/findCatalogYear";
 
 interface DragDropContextWrapperProps {
   children: ReactNode;
@@ -30,9 +31,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
-  const { catalog } = useAppSelector(
-    (state) => state.user.userData.flowchartInformation
-  );
+  const catalog = getCatalogYear(flowchartData?.name || "");
 
   const handleDragStart = () => {
     dispatch(layoutActions.setDragState({ isDragging: true, direction: null }));
@@ -60,6 +59,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
     ) {
       // Handle dragging from sidebar to term container
       const isGe = source.droppableId.includes("ge");
+      const isTechElective = source.droppableId.includes("te");
 
       const termIndex = parseInt(destination.droppableId.split("-")[1], 10);
 
@@ -72,7 +72,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
       const course: Course = {
         id: courseFetched?.courseId || "",
         // Pick a nice beige color
-        color: isGe ? "#DCFDD2" : "#F5F5DC",
+        color: isGe ? "#DCFDD2" : isTechElective ? "#FEFD9A" : "#F5F5DC",
         displayName: courseFetched?.displayName || "",
         units: courseFetched?.units || "",
         desc: courseFetched?.desc || "",

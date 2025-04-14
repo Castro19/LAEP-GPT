@@ -309,7 +309,7 @@ const TechElectiveDropdown = memo(() => {
                                       (course, courseIndex) => {
                                         const courseData: Course = {
                                           id: course.courseId,
-                                          color: "#DCFDD2",
+                                          color: "#FEFD9A",
                                           units: course.units,
                                           displayName: course.displayName,
                                           desc: course.desc,
