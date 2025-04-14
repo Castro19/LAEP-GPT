@@ -1,6 +1,7 @@
-import { useState, memo, useRef, useCallback } from "react";
+import { useState, memo, useRef, useCallback, useEffect } from "react";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { useAppSelector } from "@/redux";
+import { cn } from "@/lib/utils";
 
 // Types
 import { CourseObject } from "@polylink/shared/types";
@@ -19,7 +20,7 @@ import { SidebarCourse } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 
 // Icons and UI Components
-import { BookOpen } from "lucide-react";
+import { BookOpen, CheckCircle, RefreshCw } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -36,19 +37,34 @@ type GeCourseData = {
   };
 };
 
+type GeArea = {
+  category: string;
+  completed: boolean;
+};
+
 const GeDropdown = memo(() => {
   // State management
-  const [geAreas, setGeAreas] = useState<string[]>([]);
-  const [geSubjects, setGeSubjects] = useState<{ [area: string]: string[] }>(
-    {}
-  );
+  const [geAreas, setGeAreas] = useState<GeArea[]>([]);
+  const [geSubjects] = useState<{
+    [area: string]: string[];
+  }>({});
   const [geCourses, setGeCourses] = useState<GeCourseData>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingAreas, setLoadingAreas] = useState<Set<string>>(new Set());
   const [loadingSubjects, setLoadingSubjects] = useState<Set<string>>(
     new Set()
   );
-  const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const [lastRefreshedCourseIds, setLastRefreshedCourseIds] = useState<
+    string[]
+  >([]);
+  const [needsRefresh, setNeedsRefresh] = useState<boolean>(false);
+  const [subjects, setSubjects] = useState<{
+    [area: string]: { subject: string; completed: boolean }[];
+  }>({});
+
+  const { flowchartData, completedCourseIds } = useAppSelector(
+    (state) => state.flowchart
+  );
 
   // Get current catalog year
   const currentCatalogYear = getCatalogYear(flowchartData?.name);
@@ -56,18 +72,37 @@ const GeDropdown = memo(() => {
   // Ref for the GE dropdown
   const geRef = useRef<HTMLButtonElement>(null);
 
+  // Check if completedCourseIds have changed since last refresh
+  useEffect(() => {
+    if (lastRefreshedCourseIds.length > 0) {
+      // Check if the arrays are different
+      const hasChanged =
+        completedCourseIds.length !== lastRefreshedCourseIds.length ||
+        completedCourseIds.some((id) => !lastRefreshedCourseIds.includes(id)) ||
+        lastRefreshedCourseIds.some((id) => !completedCourseIds.includes(id));
+
+      setNeedsRefresh(hasChanged);
+    }
+  }, [completedCourseIds, lastRefreshedCourseIds]);
+
   // Fetch GE areas
   const fetchGeAreas = useCallback(async () => {
     try {
       setIsLoading(true);
-      const areas = await fetchGeAreasAPI(currentCatalogYear);
-      setGeAreas(areas);
+      const areas = await fetchGeAreasAPI(
+        currentCatalogYear,
+        completedCourseIds
+      );
+      setGeAreas(areas as GeArea[]);
+      // Update the last refreshed course IDs
+      setLastRefreshedCourseIds([...completedCourseIds]);
+      setNeedsRefresh(false);
     } catch (error) {
       console.error("Failed to fetch GE areas:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [currentCatalogYear]);
+  }, [currentCatalogYear, completedCourseIds]);
 
   // Fetch GE subjects for a specific area
   const fetchGeSubjects = useCallback(
@@ -80,10 +115,14 @@ const GeDropdown = memo(() => {
           return newSet;
         });
 
-        const subjects = await fetchGeSubjectsAPI(area, currentCatalogYear);
-        setGeSubjects((prev) => ({
+        const subjectsData = await fetchGeSubjectsAPI(
+          area,
+          currentCatalogYear,
+          completedCourseIds
+        );
+        setSubjects((prev) => ({
           ...prev,
-          [area]: subjects,
+          [area]: subjectsData,
         }));
       } catch (error) {
         console.error(`Failed to fetch GE subjects for area ${area}:`, error);
@@ -96,7 +135,7 @@ const GeDropdown = memo(() => {
         });
       }
     },
-    [currentCatalogYear]
+    [currentCatalogYear, completedCourseIds]
   );
 
   // Fetch GE courses for a specific subject and area
@@ -193,6 +232,11 @@ const GeDropdown = memo(() => {
     }
   };
 
+  // Handle manual refresh of GE areas
+  const handleRefreshGeAreas = () => {
+    fetchGeAreas();
+  };
+
   return (
     <div className="w-full space-y-4">
       <CollapsibleContentWrapper
@@ -206,122 +250,163 @@ const GeDropdown = memo(() => {
           {isLoading ? (
             <div className="text-center py-4">Loading GE areas...</div>
           ) : (
-            geAreas.map((area, index) => (
-              <Collapsible
-                key={index}
-                onOpenChange={(open) => handleAreaOpen(open, area)}
-              >
-                <CollapsibleTrigger asChild>
+            <>
+              {needsRefresh && (
+                <div className="flex justify-end mb-2 w-full">
                   <Button
-                    variant="outline"
-                    className="w-full justify-between items-center p-2 dark:bg-transparent dark:text-white rounded-lg shadow-md"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRefreshGeAreas}
+                    className="text-xs w-full"
                   >
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium">{geAreaMap(area)}</span>
-                    </div>
-                    <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    Refresh
                   </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <Card className="p-3 mt-2 border-gray-200 dark:border-gray-800 shadow-inner">
-                    {isAreaLoading(area) ? (
-                      <div className="text-center py-4">
-                        Loading subjects...
+                </div>
+              )}
+              {geAreas.map((area, index) => (
+                <Collapsible
+                  key={index}
+                  onOpenChange={(open) => handleAreaOpen(open, area.category)}
+                >
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-between items-center p-2 dark:bg-transparent dark:text-white rounded-lg shadow-md",
+                        area.completed && "border-green-500"
+                      )}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium">
+                          {geAreaMap(area.category)}
+                        </span>
+                        {area.completed && (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
                       </div>
-                    ) : geSubjects[area] ? (
-                      <div className="space-y-4">
-                        {geSubjects[area].map((subject, subjectIndex) => (
-                          <Collapsible
-                            key={subjectIndex}
-                            onOpenChange={(open) =>
-                              handleSubjectOpen(open, subject, area)
-                            }
-                          >
-                            <CollapsibleTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className="w-full justify-between items-center p-2 text-sm"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <span>{subject}</span>
-                                </div>
-                                <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                              </Button>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="pl-4 py-2">
-                                {isSubjectLoading(area, subject) ? (
-                                  <div className="text-center py-2">
-                                    Loading courses...
-                                  </div>
-                                ) : geCourses[area] &&
-                                  geCourses[area][subject] ? (
-                                  <div className="grid grid-cols-1 gap-2">
-                                    {geCourses[area][subject].map(
-                                      (course, courseIndex) => {
-                                        const courseData: Course = {
-                                          id: course.courseId,
-                                          color: "#DCFDD2",
-                                          units: course.units,
-                                          displayName: course.displayName,
-                                          desc: course.desc,
-                                        };
-                                        return (
-                                          <Droppable
-                                            key={`sidebar-${course.courseId}`}
-                                            droppableId={`sidebar-${course.courseId}-ge`}
-                                          >
-                                            {(provided) => (
-                                              <div
-                                                className="w-full"
-                                                ref={provided.innerRef}
-                                                {...provided.droppableProps}
+                      <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <Card className="p-3 mt-2 border-gray-200 dark:border-gray-800 shadow-inner">
+                      {isAreaLoading(area.category) ? (
+                        <div className="text-center py-4">
+                          Loading subjects...
+                        </div>
+                      ) : subjects[area.category]?.length > 0 ? (
+                        <div className="space-y-4">
+                          {subjects[area.category].map(
+                            ({ subject, completed }) => (
+                              <div key={subject} className="subject-item">
+                                <Collapsible
+                                  onOpenChange={(open) =>
+                                    handleSubjectOpen(
+                                      open,
+                                      subject,
+                                      area.category
+                                    )
+                                  }
+                                >
+                                  <CollapsibleTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      className={`w-full justify-between items-center p-2 text-sm ${
+                                        completed
+                                          ? "border border-green-200 dark:border-green-800"
+                                          : ""
+                                      }`}
+                                    >
+                                      <div className="flex items-center space-x-2">
+                                        <span>{subject}</span>
+                                      </div>
+                                      <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                                    </Button>
+                                  </CollapsibleTrigger>
+                                  <CollapsibleContent>
+                                    <div className="pl-4 py-2">
+                                      {isSubjectLoading(
+                                        area.category,
+                                        subject
+                                      ) ? (
+                                        <div className="text-center py-2">
+                                          Loading courses...
+                                        </div>
+                                      ) : geCourses[area.category] &&
+                                        geCourses[area.category][subject] ? (
+                                        <div className="grid grid-cols-1 gap-2">
+                                          {geCourses[area.category][
+                                            subject
+                                          ].map((course, courseIndex) => {
+                                            const courseData: Course = {
+                                              id: course.courseId,
+                                              color: "#DCFDD2",
+                                              units: course.units,
+                                              displayName: course.displayName,
+                                              desc: course.desc,
+                                            };
+                                            return (
+                                              <Droppable
+                                                key={`sidebar-${course.courseId}`}
+                                                droppableId={`sidebar-${course.courseId}-ge`}
                                               >
-                                                <Draggable
-                                                  key={course.courseId}
-                                                  draggableId={course.courseId}
-                                                  index={courseIndex}
-                                                >
-                                                  {(provided) => (
-                                                    <div
-                                                      ref={provided.innerRef}
-                                                      {...provided.draggableProps}
-                                                      {...provided.dragHandleProps}
-                                                      className="w-full"
+                                                {(provided) => (
+                                                  <div
+                                                    className="w-full"
+                                                    ref={provided.innerRef}
+                                                    {...provided.droppableProps}
+                                                  >
+                                                    <Draggable
+                                                      key={course.courseId}
+                                                      draggableId={
+                                                        course.courseId
+                                                      }
+                                                      index={courseIndex}
                                                     >
-                                                      <SidebarCourse
-                                                        course={courseData}
-                                                      />
-                                                    </div>
-                                                  )}
-                                                </Draggable>
-                                                {provided.placeholder}
-                                              </div>
-                                            )}
-                                          </Droppable>
-                                        );
-                                      }
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div className="text-center py-2 text-gray-500">
-                                    Click to load courses
-                                  </div>
-                                )}
+                                                      {(provided) => (
+                                                        <div
+                                                          ref={
+                                                            provided.innerRef
+                                                          }
+                                                          {...provided.draggableProps}
+                                                          {...provided.dragHandleProps}
+                                                          className="w-full"
+                                                        >
+                                                          <SidebarCourse
+                                                            course={courseData}
+                                                          />
+                                                        </div>
+                                                      )}
+                                                    </Draggable>
+                                                    {provided.placeholder}
+                                                  </div>
+                                                )}
+                                              </Droppable>
+                                            );
+                                          })}
+                                        </div>
+                                      ) : (
+                                        <div className="text-center py-2 text-gray-500">
+                                          Click to load courses
+                                        </div>
+                                      )}
+                                    </div>
+                                  </CollapsibleContent>
+                                </Collapsible>
                               </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-4 text-gray-500">
-                        Click to load subjects for this area
-                      </div>
-                    )}
-                  </Card>
-                </CollapsibleContent>
-              </Collapsible>
-            ))
+                            )
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4 text-gray-500">
+                          Click to load subjects for this area
+                        </div>
+                      )}
+                    </Card>
+                  </CollapsibleContent>
+                </Collapsible>
+              ))}
+            </>
           )}
         </div>
       </CollapsibleContentWrapper>

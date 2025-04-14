@@ -178,16 +178,55 @@ export const getCourseInfo = async (
   }
 };
 
-export const getGeAreas = async (catalogYear: string): Promise<string[]> => {
+export const getGeAreas = async (
+  catalogYear: string,
+  completedCourseIds: string[]
+): Promise<{ category: string; completed: boolean }[]> => {
   if (!catalogYear) {
     catalogYear = "2022-2026";
   }
   try {
     const geAreas = await geCollection.findGeAreas(catalogYear);
-    // remove duplicates and make them alphabetical
-    const uniqueGeAreas = [...new Set(geAreas.map((area) => area.category))]
-      .sort()
-      .map((area) => area);
+    const geAreasWithIds = geAreas.map((area) => ({
+      ...area,
+      id: area.id,
+    }));
+
+    // Get unique categories and sort them alphabetically
+    const uniqueCategories = [
+      ...new Set(geAreasWithIds.map((area) => area.category)),
+    ].sort();
+
+    // Create a map to track which courses have been used
+    const usedCourseIds = new Set<string>();
+
+    // Process each category in alphabetical order
+    const uniqueGeAreas = uniqueCategories.map((category) => {
+      // Find all areas with this category
+      const areasWithCategory = geAreasWithIds.filter(
+        (area) => area.category === category
+      );
+
+      // Check if any of the completed course IDs match any of the area IDs
+      // Only consider courses that haven't been used yet
+      const isCompleted = areasWithCategory.some((area) => {
+        if (
+          completedCourseIds.includes(area.id) &&
+          !usedCourseIds.has(area.id)
+        ) {
+          // Mark this course as used
+          usedCourseIds.add(area.id);
+          return true;
+        }
+        return false;
+      });
+
+      return {
+        category,
+        completed: isCompleted,
+      };
+    });
+
     return uniqueGeAreas;
   } catch (error) {
     if (environment === "dev") {
@@ -199,19 +238,46 @@ export const getGeAreas = async (catalogYear: string): Promise<string[]> => {
 
 export const getGeSubjects = async (
   area: string,
-  catalogYear: string
-): Promise<string[]> => {
+  catalogYear: string,
+  completedCourseIds: string[]
+): Promise<{ subject: string; completed: boolean }[]> => {
   if (!catalogYear) {
     catalogYear = "2022-2026";
   }
   try {
     const geSubjects = await geCollection.findGeSubjects(area, catalogYear);
-    // remove duplicates and make them alphabetical
+
+    // Create a map to track which courses have been used
+    const usedCourseIds = new Set<string>();
+
+    // Process each subject
     const uniqueGeSubjects = [
       ...new Set(geSubjects.map((subject) => subject.subject)),
     ]
       .sort()
-      .map((subject) => subject);
+      .map((subject) => {
+        // Find all subjects with this name
+        const subjectsWithName = geSubjects.filter(
+          (s) => s.subject === subject
+        );
+
+        // Check if any of the completed course IDs match any of the subject IDs
+        // Only consider courses that haven't been used yet
+        const isCompleted = subjectsWithName.some((s) => {
+          if (completedCourseIds.includes(s.id) && !usedCourseIds.has(s.id)) {
+            // Mark this course as used
+            usedCourseIds.add(s.id);
+            return true;
+          }
+          return false;
+        });
+
+        return {
+          subject,
+          completed: isCompleted,
+        };
+      });
+
     return uniqueGeSubjects;
   } catch (error) {
     if (environment === "dev") {

@@ -38,7 +38,7 @@ export const findGeSubjects = async (
   try {
     const ge = await geCollection
       .find({ catalog: catalogYear, category: area })
-      .project({ _id: 0, subject: 1 })
+      .project({ _id: 0, subject: 1, id: 1 })
       .toArray();
 
     return ge as geData[];
@@ -55,7 +55,7 @@ export const findGeAreas = async (catalogYear: string): Promise<geData[]> => {
   try {
     const ge = await geCollection
       .find({ catalog: catalogYear })
-      .project({ _id: 0, category: 1 })
+      .project({ _id: 0, category: 1, id: 1 })
       .toArray();
 
     return ge as geData[];

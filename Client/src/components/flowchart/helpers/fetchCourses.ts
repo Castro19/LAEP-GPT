@@ -115,14 +115,22 @@ export const fetchCoursesBySubjectAPI = async (
 /**
  * Fetches GE areas for a given catalog year
  * @param catalogYear The catalog year to fetch GE areas for
- * @returns An array of GE area names
+ * @param completedCourseIds Array of completed course IDs
+ * @returns An array of GE areas with completion status
  */
 export const fetchGeAreasAPI = async (
-  catalogYear: string
-): Promise<string[]> => {
+  catalogYear: string,
+  completedCourseIds: string[]
+): Promise<{ category: string; completed: boolean }[]> => {
+  const params = new URLSearchParams();
+  params.append("catalogYear", catalogYear);
+  if (completedCourseIds.length > 0) {
+    params.append("completedCourseIds", completedCourseIds.join(","));
+  }
+
   try {
     const response = await fetch(
-      `${serverUrl}/courses/ge/areas/${catalogYear}`,
+      `${serverUrl}/courses/ge/areas?${params.toString()}`,
       {
         credentials: "include",
       }
@@ -132,7 +140,7 @@ export const fetchGeAreasAPI = async (
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
 
-    const data: string[] = await response.json();
+    const data = await response.json();
     return data;
   } catch (err) {
     if (environment === "dev") {
@@ -144,11 +152,19 @@ export const fetchGeAreasAPI = async (
 
 export const fetchGeSubjectsAPI = async (
   area: string,
-  catalogYear: string
-): Promise<string[]> => {
+  catalogYear: string,
+  completedCourseIds: string[]
+): Promise<{ subject: string; completed: boolean }[]> => {
   try {
+    const params = new URLSearchParams();
+    params.append("area", area);
+    params.append("catalogYear", catalogYear);
+    if (completedCourseIds.length > 0) {
+      params.append("completedCourseIds", completedCourseIds.join(","));
+    }
+
     const response = await fetch(
-      `${serverUrl}/courses/ge/subjects/${area}/${catalogYear}`,
+      `${serverUrl}/courses/ge/subjects?${params.toString()}`,
       {
         credentials: "include",
       }
@@ -158,7 +174,8 @@ export const fetchGeSubjectsAPI = async (
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
 
-    const data: string[] = await response.json();
+    const data: { subject: string; completed: boolean }[] =
+      await response.json();
     return data;
   } catch (err) {
     if (environment === "dev") {
