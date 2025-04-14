@@ -20,6 +20,7 @@ import {
 // Helper functions
 import { toast } from "@/components/ui/use-toast";
 import { serverUrl } from "@/helpers/getEnvironmentVars";
+import { getCatalogYear } from "@/components/flowchart/helpers/findCatalogYear";
 
 interface DragDropContextWrapperProps {
   children: ReactNode;
@@ -30,9 +31,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
-  const { catalog } = useAppSelector(
-    (state) => state.user.userData.flowchartInformation
-  );
+  const catalog = getCatalogYear(flowchartData?.name || "");
 
   const handleDragStart = () => {
     dispatch(layoutActions.setDragState({ isDragging: true, direction: null }));
