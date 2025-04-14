@@ -16,7 +16,7 @@ jobs:
 
       - name: Install Client Dependencies
         run: |
-          cd Client
+          cd packages/client
           npm install
         env:
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
@@ -30,10 +30,10 @@ jobs:
           VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL }}
 
       - name: Run lint
-        run: cd Client && npm run lint
+        run: cd packages/client && npm run lint
 
       - name: Build Client
-        run: cd Client && npm run build
+        run: cd packages/client && npm run build
         env:
           VITE_SENTRY_AUTH_TOKEN: ${{ secrets.VITE_SENTRY_AUTH_TOKEN }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -44,11 +44,10 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
           VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL }}
-      # Add this step to cache the build
       - name: Cache build artifacts
         uses: actions/cache@v3
         with:
-          path: Client/dist
+          path: packages/client/dist
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
   shared-build:
@@ -62,15 +61,15 @@ jobs:
           node-version: "20.x"
 
       - name: Install Shared Dependencies
-        run: cd shared && npm install
+        run: cd packages/shared && npm install
 
       - name: Build Shared Package
-        run: cd shared && npm run build
+        run: cd packages/shared && npm run build
 
       - name: Cache Shared Build
         uses: actions/cache@v3
         with:
-          path: shared/dist
+          path: packages/shared/dist
           key: ${{ runner.os }}-shared-build-${{ github.sha }}
 
   server-setup:
@@ -85,24 +84,22 @@ jobs:
         with:
           node-version: "20.x"
 
-      # Restore client build cache
       - name: Restore build artifacts
         uses: actions/cache@v3
         with:
-          path: Client/dist
+          path: packages/client/dist
           key: ${{ runner.os }}-client-build-${{ github.sha }}
 
-      # Restore shared build cache
       - name: Restore shared build
         uses: actions/cache@v3
         with:
-          path: shared/dist
+          path: packages/shared/dist
           key: ${{ runner.os }}-shared-build-${{ github.sha }}
 
       - name: Install Dependencies and Link Shared
         run: |
           # Install shared package
-          cd shared
+          cd packages/shared
           npm install
           npm run build
           npm link
@@ -113,10 +110,10 @@ jobs:
           npm link @polylink/shared
 
       - name: Run lint
-        run: cd server && npm run lint
+        run: cd packages/server && npm run lint
 
       - name: Build Server
-        run: cd server && npm run build
+        run: cd packages/server && npm run build
 
     # Placeholder for future server-side testing
     # - name: Run Server Tests

@@ -30,16 +30,16 @@ jobs:
 
       # Step 4: Build Shared + Server
       - name: Build Shared
-        run: npm run build:shared
+        run: npm run build --workspace=packages/shared
 
       - name: Build Server
-        run: npm run build:server
+        run: npm run build --workspace=packages/server
 
       # Step 5: Prune down to production dependencies *inside the server folder*
       #         so we only ship what's needed for runtime.
       - name: Prune for Production (Server)
         run: |
-          cd server
+          cd packages/server
           # Remove any old node_modules
           rm -rf node_modules
           # Install ONLY production dependencies, pinned by the root lock file
@@ -50,13 +50,13 @@ jobs:
       # Step 6: Create final deployment artifact with dist + node_modules + package.json
       - name: Create zip artifact
         run: |
-          cd server
+          cd packages/server
           zip -r release.zip dist node_modules package.json
 
       # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
         run: |
-          cd server
+          cd packages/server
           zipinfo release.zip
 
       # Step 8: Upload Artifact
@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: server-app
-          path: server/release.zip
+          path: packages/server/release.zip
 
   deploy:
     runs-on: ubuntu-latest
