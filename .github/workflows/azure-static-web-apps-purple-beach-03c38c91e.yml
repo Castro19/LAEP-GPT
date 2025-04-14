@@ -27,9 +27,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_BEACH_03C38C91E }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "./Client" # Path to the client app source code
-          api_location: "" # Path to API source code, if any
-          output_location: "/dist" # Built app content directory
+          app_location: "./packages/client"
+          api_location: ""
+          output_location: "/dist"
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -51,3 +51,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_BEACH_03C38C91E }}
           action: "close"
+          app_location: "./packages/client"

@@ -42,7 +42,6 @@ install_extension "eamodio.gitlens" "GitLens"
 # Install dependencies
 echo "📦 Installing project dependencies..."
 if [ -f "package.json" ]; then
-    npm run install:all || echo "⚠️ 'npm run install:all' failed. Trying individual installations..."
     npm install || echo "⚠️ 'npm install' failed. Please check your Node.js installation."
 else
     echo "⚠️ package.json not found in the current directory."
@@ -51,22 +50,22 @@ fi
 
 # Build shared package
 echo "🔨 Building shared package..."
-if [ -d "shared" ]; then
-    cd shared
+if [ -d "packages/shared" ]; then
+    cd packages/shared
     npm run build || echo "⚠️ Failed to build shared package. Please check for errors."
-    cd ..
+    cd ../..
 else
-    echo "⚠️ 'shared' directory not found. Skipping shared package build."
+    echo "⚠️ 'packages/shared' directory not found. Skipping shared package build."
 fi
 
 # Run ESLint to verify setup
 echo "🔍 Running ESLint to verify setup..."
-if [ -d "server" ]; then
-    cd server
+if [ -d "packages/server" ]; then
+    cd packages/server
     npm run lint || echo "⚠️ ESLint check failed. Please fix any issues."
-    cd ..
+    cd ../..
 else
-    echo "⚠️ 'server' directory not found. Skipping ESLint check."
+    echo "⚠️ 'packages/server' directory not found. Skipping ESLint check."
 fi
 
 echo "✅ Setup complete! You can now start developing with:"
