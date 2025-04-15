@@ -222,7 +222,10 @@ const SectionForm = ({
     return params.toString();
   }
 
-  const onFormReset = () => {
+  const onFormReset = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     form.reset();
     dispatch(classSearchActions.setIsInitialState(true));
   };
@@ -246,9 +249,7 @@ const SectionForm = ({
               <LeftSectionFooter
                 formText="Apply Filters"
                 buttonText="Reset Filters"
-                onFormSubmit={() => {
-                  onSubmit(form.getValues());
-                }}
+                onFormSubmit={() => {}}
                 onClick={onFormReset}
               />
             </>

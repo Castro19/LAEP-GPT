@@ -141,6 +141,14 @@ const classSearchSlice = createSlice({
     },
     setIsInitialState: (state, action: PayloadAction<boolean>) => {
       state.isInitialState = action.payload;
+      state.page = 1;
+      state.sections = [];
+      state.total = 0;
+      state.totalPages = 0;
+      state.loading = false;
+      state.error = null;
+      state.queryError = null;
+      state.AIQuery = null;
     },
     setSections: (state, action: PayloadAction<Section[]>) => {
       state.sections = action.payload;

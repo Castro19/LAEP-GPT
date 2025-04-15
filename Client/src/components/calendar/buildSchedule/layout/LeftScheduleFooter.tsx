@@ -9,7 +9,7 @@ const LeftSectionFooter = ({
   formText: string;
   onFormSubmit: () => void;
   buttonText: string;
-  onClick: () => void;
+  onClick: (e?: React.MouseEvent) => void;
 }) => {
   return (
     <>
@@ -25,7 +25,7 @@ const LeftSectionFooter = ({
           {formText}
         </Button>
         <Button
-          onClick={onClick}
+          onClick={(e) => onClick(e)}
           variant="secondary"
           className="w-full shadow-lg dark:bg-slate-500 dark:bg-opacity-50 dark:hover:bg-slate-700 dark:hover:bg-opacity-70"
         >
