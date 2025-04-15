@@ -4,7 +4,7 @@ import { CourseObject } from "@polylink/shared/types";
 
 export const fetchCoursesAPI = async (
   catalogYear: string,
-  inputValue?: string
+  inputValue: string
 ) => {
   try {
     const params = new URLSearchParams();

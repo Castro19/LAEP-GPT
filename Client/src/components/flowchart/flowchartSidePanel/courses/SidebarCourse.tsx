@@ -36,8 +36,7 @@ const SidebarCourse = ({ course }: { course: Course }) => {
             <div className="flex flex-col h-full">
               <CardHeader className="flex-shrink-0 space-y-1 p-3">
                 <CardTitle className="text-md font-semibold dark:text-gray-900">
-                  {`${course.id}` || `${course.customId}` || "No Course ID"} -{" "}
-                  {course.displayName}
+                  {`${course.id} - ${course.displayName}`}
                 </CardTitle>
               </CardHeader>
             </div>

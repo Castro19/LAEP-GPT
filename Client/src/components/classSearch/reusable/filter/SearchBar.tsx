@@ -118,7 +118,7 @@ const Searchbar = ({
               return (
                 <CommandItem
                   key={index}
-                  value={item}
+                  value={`${item.courseId} - ${item.displayName}`}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     onSelect(currentValue);
@@ -128,7 +128,7 @@ const Searchbar = ({
                     setData([]);
                   }}
                 >
-                  {item}
+                  {`${item.courseId} - ${item.displayName}`}
                 </CommandItem>
               );
             })}
