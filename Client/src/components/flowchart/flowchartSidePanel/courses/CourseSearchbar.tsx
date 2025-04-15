@@ -111,7 +111,7 @@ const CourseSearchbar = () => {
               return (
                 <CommandItem
                   key={index}
-                  value={course.id!}
+                  value={`${course.id} - ${course.displayName}`}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     // You might want to handle course selection here

@@ -93,7 +93,9 @@ const CourseInformation = ({
               <div>
                 <Searchbar
                   placeholder="Search for a course"
-                  fetchData={fetchCoursesAPI}
+                  fetchData={(inputValue) =>
+                    fetchCoursesAPI("2022-2026", inputValue)
+                  }
                   onSelect={(courseId) => {
                     // Safely update the 'courseIds' array
                     const current = form.getValues("courseIds") || [];

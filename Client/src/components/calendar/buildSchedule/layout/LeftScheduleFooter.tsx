@@ -25,7 +25,7 @@ const LeftSectionFooter = ({
           {formText}
         </Button>
         <Button
-          onClick={(e) => onClick(e)}
+          onClick={() => onClick()}
           variant="secondary"
           className="w-full shadow-lg dark:bg-slate-500 dark:bg-opacity-50 dark:hover:bg-slate-700 dark:hover:bg-opacity-70"
         >
