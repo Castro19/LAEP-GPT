@@ -11,7 +11,7 @@ import { Filter } from "mongodb";
 import { environment } from "../../..";
 import { buildNonConflictingQuery } from "../../../helpers/queryBuilders/scheduling";
 import { fetchPrimarySchedule } from "../schedule/scheduleServices";
-
+import * as summerSectionCollection from "./summerSectionCollection";
 /**
  * Build a filter object that can be passed to the collection query.
  */
@@ -319,9 +319,17 @@ export async function getSectionsByFilter(
     if (environment === "dev") {
       console.log("query", query);
     }
-    // Perform the find operation with skip & limit
-    // and also get a total count so you can return that in the response
-    return await sectionCollection.findSectionsByFilter(query, skip, limit);
+    if (filter.term === "summer2025") {
+      return await summerSectionCollection.findSectionsByFilter(
+        query,
+        skip,
+        limit
+      );
+    } else {
+      // Perform the find operation with skip & limit
+      // and also get a total count so you can return that in the response
+      return await sectionCollection.findSectionsByFilter(query, skip, limit);
+    }
   } catch (error) {
     if (environment === "dev") {
       console.error("Error searching sections by filter:", error);
