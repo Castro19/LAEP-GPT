@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useRef, useEffect, useState } from "react";
 
 const LeftSectionFooter = ({
   formText,
@@ -11,11 +12,41 @@ const LeftSectionFooter = ({
   buttonText: string;
   onClick: () => void;
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [parentIsNarrow, setParentIsNarrow] = useState(false);
+
+  // Check container width on mount and resize
+  useEffect(() => {
+    const checkWidth = () => {
+      if (containerRef.current) {
+        // Use 300px as the breakpoint - adjust as needed
+        setParentIsNarrow(containerRef.current.offsetWidth < 300);
+      }
+    };
+
+    checkWidth();
+
+    // Create a ResizeObserver to detect container size changes
+    const resizeObserver = new ResizeObserver(checkWidth);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
     <>
       <div className="border-t border-gray-200" />
 
-      <div className="sticky bottom-0 mx-4 bg-background/95 backdrop-blur flex gap-2 shadow-lg p-4 h-[20%]">
+      <div
+        ref={containerRef}
+        className={`sticky bottom-0 mx-4 bg-background/95 backdrop-blur flex gap-2 shadow-lg p-4 h-auto ${
+          parentIsNarrow ? "flex-col" : "flex-row h-[20%]"
+        }`}
+      >
         {/* Apply Filters button */}
         <Button
           type="submit"
