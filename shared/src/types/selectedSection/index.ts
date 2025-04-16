@@ -18,9 +18,11 @@ export type SelectedSection = {
   rating: number;
 };
 
+export type CourseTerm = "spring2025" | "summer2025";
+
 export type SelectedSectionItem = {
   sectionId: number;
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
 };
 
 export type SelectedSectionDocument = {
@@ -28,5 +30,11 @@ export type SelectedSectionDocument = {
     $oid: string;
   };
   userId: string;
-  selectedSections: SelectedSectionItem[];
+  selectedSections: {
+    [K in CourseTerm]: {
+      [classNumber: number]: {
+        addedAt: Date;
+      };
+    };
+  };
 };

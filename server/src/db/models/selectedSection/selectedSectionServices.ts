@@ -6,11 +6,13 @@ import {
   Section,
   Meeting,
   InstructorWithRatings,
+  CourseTerm,
 } from "@polylink/shared/types";
 import { getSectionById } from "../section/sectionServices";
 
 export const getSelectedSectionsByUserId = async (
-  userId: string
+  userId: string,
+  term?: CourseTerm
 ): Promise<SelectedSection[]> => {
   try {
     const result =
@@ -19,13 +21,26 @@ export const getSelectedSectionsByUserId = async (
       return [];
     }
 
+    // Check if the document has the correct structure
+    if (
+      !result.selectedSections ||
+      typeof result.selectedSections !== "object"
+    ) {
+      // If the structure is incorrect, return an empty array
+      return [];
+    }
+
     // Fetch full section details for each selected section
     const fullSections: SelectedSection[] = [];
-    for (const sectionItem of result.selectedSections) {
-      try {
-        const sectionDetail: Section | null = await getSectionById(
-          sectionItem.sectionId
+    const sectionsToProcess = term
+      ? Object.keys(result.selectedSections[term] || {}).map(Number)
+      : Object.values(result.selectedSections).flatMap((termSections) =>
+          Object.keys(termSections).map(Number)
         );
+
+    for (const sectionId of sectionsToProcess) {
+      try {
+        const sectionDetail: Section | null = await getSectionById(sectionId);
         if (sectionDetail) {
           // Transform the section detail to a SelectedSection
           const selectedSection: SelectedSection = {
@@ -56,10 +71,7 @@ export const getSelectedSectionsByUserId = async (
         }
       } catch (error) {
         if (environment === "dev") {
-          console.error(
-            `Error fetching section ${sectionItem.sectionId}:`,
-            error
-          );
+          console.error(`Error fetching section ${sectionId}:`, error);
         }
         // Continue with other sections even if one fails
       }
@@ -86,11 +98,7 @@ export const postSelectedSection = async (
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
     if (existingSection) {
-      if (
-        existingSection.selectedSections.some(
-          (s) => s.sectionId === section.sectionId
-        )
-      ) {
+      if (existingSection.selectedSections[section.term]?.[section.sectionId]) {
         return {
           selectedSections: await getSelectedSectionsByUserId(userId),
           message: `Section ${section.sectionId} is already in your schedule`,
@@ -125,7 +133,8 @@ export const postSelectedSection = async (
 
 export const deleteSelectedSection = async (
   userId: string,
-  sectionId: string
+  sectionId: string,
+  term: CourseTerm
 ): Promise<{
   selectedSections: SelectedSection[];
   message: string;
@@ -133,7 +142,8 @@ export const deleteSelectedSection = async (
   try {
     const result = await selectedSelectionModel.deleteSelectedSection(
       userId,
-      parseInt(sectionId)
+      parseInt(sectionId),
+      term
     );
 
     if (result.modifiedCount === 0) {

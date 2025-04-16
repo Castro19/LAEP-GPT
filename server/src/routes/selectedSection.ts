@@ -4,19 +4,23 @@ import { CustomRequest } from "../types/express";
 import {
   deleteSelectedSection,
   postSelectedSection,
-} from "../db/models/selectedSection/sectionServices";
-import { getSelectedSectionsByUserId } from "../db/models/selectedSection/sectionServices";
+} from "../db/models/selectedSection/selectedSectionServices";
+import { getSelectedSectionsByUserId } from "../db/models/selectedSection/selectedSectionServices";
 import { environment } from "../index";
+import { CourseTerm } from "@polylink/shared/types";
 const router = express.Router();
 
-router.get("/", async (req: CustomRequest, res: any) => {
+router.get("/:term", async (req: any, res: any) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const selectedSections = await getSelectedSectionsByUserId(userId);
+    const selectedSections = await getSelectedSectionsByUserId(
+      userId,
+      req.params.term as CourseTerm
+    );
 
     return res.status(200).json({
       message: "Selected sections fetched successfully",
@@ -54,16 +58,17 @@ router.post("/", async (req, res: any) => {
   }
 });
 
-router.delete("/:sectionId", async (req, res: any) => {
+router.delete("/:term/:sectionId", async (req, res: any) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { sectionId } = req.params;
+    const { term, sectionId } = req.params;
     const { selectedSections, message } = await deleteSelectedSection(
       userId,
-      sectionId
+      sectionId,
+      term as CourseTerm
     );
 
     res.status(200).json({
@@ -77,4 +82,5 @@ router.delete("/:sectionId", async (req, res: any) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 export default router;

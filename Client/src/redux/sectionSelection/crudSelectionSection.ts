@@ -3,13 +3,16 @@ import {
   SectionDetail,
   SelectedSection,
   SelectedSectionItem,
+  CourseTerm,
 } from "@polylink/shared/types";
 
-export async function fetchSections(): Promise<{
+export async function fetchSections(term: CourseTerm): Promise<{
   selectedSections: SelectedSection[];
   message: string;
 }> {
-  const response = await fetch(`${serverUrl}/selectedSections`, {
+  const url = `${serverUrl}/selectedSections/${term}`;
+
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +22,7 @@ export async function fetchSections(): Promise<{
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Failed to create flowchart");
+    throw new Error(error.message || "Failed to fetch selected sections");
   }
   const data: {
     selectedSections: SelectedSection[];
@@ -54,18 +57,24 @@ export async function createOrUpdateSection(
   return data;
 }
 
-export async function removeSection(sectionId: number): Promise<{
+export async function removeSection(
+  sectionId: number,
+  term: CourseTerm
+): Promise<{
   selectedSections: SelectedSection[];
   message: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/selectedSections/${sectionId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${serverUrl}/selectedSections/${term}/${sectionId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -87,7 +96,7 @@ export async function removeSection(sectionId: number): Promise<{
 
 export function transformSectionToSelectedSectionItem(
   section: SectionDetail,
-  term: "spring2025" | "summer2025"
+  term: CourseTerm
 ): SelectedSectionItem {
   return {
     sectionId: section.classNumber,

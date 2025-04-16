@@ -120,7 +120,12 @@ const SectionsChosen = () => {
 const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
   const dispatch = useAppDispatch();
   const handleRemove = () => {
-    dispatch(removeSelectedSectionAsync(section.classNumber));
+    dispatch(
+      removeSelectedSectionAsync({
+        sectionId: section.classNumber,
+        term: "spring2025",
+      })
+    );
   };
 
   // Extract and format start & end time
