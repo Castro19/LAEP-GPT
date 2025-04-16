@@ -5,14 +5,14 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { SelectedSection } from "@polylink/shared/types";
-import { CalendarTimeSlots } from "@/components/calendar";
+import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchSingleSection } from "@/redux/classSearch/classSearchSlice";
 import { useAppDispatch } from "@/redux";
 import {
   getConflictGroups,
   buildBackgroundEventsForGroup,
-} from "@/components/calendar/helpers/weeklyCalendarConflicts";
+} from "@/components/scheduleBuilder/helpers/weeklyCalendarConflicts";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 type EventType = {
@@ -26,7 +26,7 @@ type EventType = {
   end_time: string | null;
 };
 
-export type CalendarClassSection = {
+export type ScheduleClassSection = {
   title: string;
   start: Date;
   end: Date;
@@ -53,12 +53,12 @@ const getColorForCourse = (courseId: string): string => {
   return courseColors[index];
 };
 
-type WeeklyCalendarProps = {
+type WeeklyScheduleProps = {
   sections: SelectedSection[];
   height?: string;
 };
 
-const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
+const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
   height = "80vh",
 }) => {
@@ -217,8 +217,8 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               if (arg.event.extendedProps.isOverlay) {
                 return null; // no text
               }
-              return CalendarTimeSlots({
-                event: arg.event as unknown as CalendarClassSection,
+              return ScheduleTimeSlots({
+                event: arg.event as unknown as ScheduleClassSection,
               });
             }}
             eventClick={handleEventClick}
@@ -240,4 +240,4 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   );
 };
 
-export default WeeklyCalendar;
+export default WeeklySchedule;

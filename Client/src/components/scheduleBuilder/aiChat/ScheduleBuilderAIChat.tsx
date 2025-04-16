@@ -1,7 +1,7 @@
 import { NewChat } from "@/components/chat";
 import { ChatContainer } from "@/components/chat";
 
-const CalendarAIChatContainer = () => {
+const ScheduleBuilderAIChat = () => {
   return (
     <>
       <header className="sticky top-0 bg-slate-900 text-white p-1 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
@@ -14,4 +14,4 @@ const CalendarAIChatContainer = () => {
   );
 };
 
-export default CalendarAIChatContainer;
+export default ScheduleBuilderAIChat;

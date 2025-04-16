@@ -9,7 +9,7 @@ import { flowchartReducer } from "./flowchart/flowchartSlice";
 import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 import { classSearchReducer } from "./classSearch/classSearchSlice";
 import { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice";
-import { scheduleReducer } from "./calendar/calendarSlice";
+import { scheduleReducer } from "./schedule/scheduleSlice";
 
 const store = configureStore({
   reducer: {

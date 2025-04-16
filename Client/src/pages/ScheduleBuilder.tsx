@@ -10,26 +10,26 @@ import { useEffect, useRef, useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 // Components
-import CalendarPageLayout from "@/components/layout/CalendarPage/CalendarPageLayout";
-import CalendarBuilderForm from "@/components/calendar/buildSchedule/CalendarBuilderForm";
+import CalendarPageLayout from "@/components/layout/ScheduleBuilderPage/ScheduleBuilderPageLayout";
+import ScheduleBuilderForm from "@/components/scheduleBuilder/buildSchedule/ScheduleBuilderForm";
 import {
   EmptyCalendar,
-  CalendarContainer,
-  CalendarAIChatContainer,
+  ScheduleContainer,
+  ScheduleBuilderAIChat,
   PaginationFooter,
   NoSelectedSections,
-} from "@/components/calendar";
+} from "@/components/scheduleBuilder";
 import { onNewChat } from "@/components/chat";
 // Types
-import { Calendar } from "@polylink/shared/types";
+import { Schedule } from "@polylink/shared/types";
 // UI Components
 import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
-const CalendarPage = () => {
+const ScheduleBuilderPage = () => {
   const isNarrowScreen = useIsNarrowScreen();
-  const { calendarId } = useParams();
+  const { scheduleId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
@@ -65,28 +65,28 @@ const CalendarPage = () => {
 
   // Fetch the current calendar by ID (if it exists)
   useEffect(() => {
-    const fetchCalendar = async () => {
-      if (calendarId) {
+    const fetchSchedule = async () => {
+      if (scheduleId) {
         const response = await dispatch(
-          scheduleActions.getScheduleByIdAsync(calendarId)
+          scheduleActions.getScheduleByIdAsync(scheduleId)
         );
-        const calendar = response.payload as Calendar;
+        const schedule = response.payload as Schedule;
         try {
-          if (calendar.sections) {
-            dispatch(scheduleActions.setCurrentSchedule(calendar));
+          if (schedule.sections) {
+            dispatch(scheduleActions.setCurrentSchedule(schedule));
             dispatch(scheduleActions.setSchedules([]));
             dispatch(scheduleActions.setPage(1));
             dispatch(scheduleActions.setTotalPages(1));
           }
         } catch (error) {
           if (environment === "dev") {
-            console.error("Error fetching calendar: ", error);
+            console.error("Error fetching schedule: ", error);
           }
         }
       }
     };
-    fetchCalendar();
-  }, [calendarId, dispatch]);
+    fetchSchedule();
+  }, [scheduleId, dispatch]);
 
   // Fetch the assistant list
   useEffect(() => {
@@ -132,7 +132,7 @@ const CalendarPage = () => {
   return (
     <CalendarPageLayout>
       {isNarrowScreen ? (
-        <CalendarMobile />
+        <ScheduleBuilderMobile />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
           <div className="col-span-1">
@@ -147,10 +147,10 @@ const CalendarPage = () => {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="Build Schedule">
-                <CalendarBuilderForm onSwitchTab={() => {}} />
+                <ScheduleBuilderForm onSwitchTab={() => {}} />
               </TabsContent>
               <TabsContent value="AI Chat">
-                <CalendarAIChatContainer />
+                <ScheduleBuilderAIChat />
               </TabsContent>
             </Tabs>
           </div>
@@ -165,7 +165,7 @@ const CalendarPage = () => {
               </div>
             ) : (
               <>
-                <CalendarContainer />
+                <ScheduleContainer />
                 <PaginationFooter />
               </>
             )}
@@ -176,7 +176,7 @@ const CalendarPage = () => {
   );
 };
 
-const CalendarMobile = () => {
+const ScheduleBuilderMobile = () => {
   const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
@@ -201,17 +201,17 @@ const CalendarMobile = () => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Build Schedule">
-        <CalendarBuilderForm onSwitchTab={() => setTabValue("Calendar")} />
+        <ScheduleBuilderForm onSwitchTab={() => setTabValue("Calendar")} />
       </TabsContent>
       <TabsContent value="Calendar">
-        <CalendarContainer />
+        <ScheduleContainer />
         <PaginationFooter />
       </TabsContent>
       <TabsContent value="AI Chat">
-        <CalendarAIChatContainer />
+        <ScheduleBuilderAIChat />
       </TabsContent>
     </Tabs>
   );
 };
 
-export default CalendarPage;
+export default ScheduleBuilderPage;

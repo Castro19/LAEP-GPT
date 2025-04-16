@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
-import { CALENDAR_PREFERENCES_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
+import { SCHEDULE_PREFERENCES_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 import { BuildScheduleContainer, SelectedSectionContainer } from "..";
-import { buildSchedule } from "@/components/calendar/helpers";
+import { buildSchedule } from "@/components/scheduleBuilder/helpers";
 import { LeftSectionFooter } from "..";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { useNavigate } from "react-router-dom";
@@ -14,10 +14,10 @@ import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
 export type SchedulePreferencesForm = z.infer<
-  typeof CALENDAR_PREFERENCES_SCHEMA
+  typeof SCHEDULE_PREFERENCES_SCHEMA
 >;
 
-const CalendarBuilderForm = ({
+const ScheduleBuilderForm = ({
   onSwitchTab,
 }: {
   // eslint-disable-next-line no-unused-vars
@@ -30,20 +30,20 @@ const CalendarBuilderForm = ({
     (state) => state.sectionSelection
   );
   const { currentSchedule } = useAppSelector((state) => state.schedule);
-  const calendarPreferences = useAppSelector(
+  const schedulePreferences = useAppSelector(
     (state) => state.schedule.preferences
   );
   const form = useForm<SchedulePreferencesForm>({
-    resolver: zodResolver(CALENDAR_PREFERENCES_SCHEMA),
-    defaultValues: calendarPreferences,
+    resolver: zodResolver(SCHEDULE_PREFERENCES_SCHEMA),
+    defaultValues: schedulePreferences,
   });
   const watchedValues = form.watch();
 
   useEffect(() => {
-    if (JSON.stringify(watchedValues) !== JSON.stringify(calendarPreferences)) {
+    if (JSON.stringify(watchedValues) !== JSON.stringify(schedulePreferences)) {
       dispatch(scheduleActions.setPreferences(watchedValues));
     }
-  }, [watchedValues, dispatch, calendarPreferences]);
+  }, [watchedValues, dispatch, schedulePreferences]);
 
   const onSubmit = (data: SchedulePreferencesForm) => {
     console.log(data);
@@ -82,7 +82,7 @@ const CalendarBuilderForm = ({
     dispatch(scheduleActions.setPage(1));
     dispatch(scheduleActions.setTotalPages(allCombinations.length));
     dispatch(scheduleActions.setCurrentSchedule(allCombinations[0]));
-    navigate("/calendar");
+    navigate("/schedule-builder");
     onSwitchTab("Calendar");
   };
 
@@ -111,4 +111,4 @@ const CalendarBuilderForm = ({
   );
 };
 
-export default CalendarBuilderForm;
+export default ScheduleBuilderForm;

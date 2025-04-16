@@ -13,7 +13,7 @@ import SectionFilters from "@/components/classSearch/courseFilters/SectionFilter
 import {
   BuildScheduleContainer,
   LeftSectionFooter,
-} from "@/components/calendar";
+} from "@/components/scheduleBuilder";
 import { Form } from "@/components/ui/form";
 
 // Types
@@ -26,7 +26,7 @@ import {
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 import useDeviceType from "@/hooks/useDeviceType";
-import MobileBuildScheduleContainer from "@/components/calendar/buildSchedule/layout/MobileBuildScheduleContainer";
+import MobileBuildScheduleContainer from "@/components/scheduleBuilder/buildSchedule/layout/MobileBuildScheduleContainer";
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 
 const SectionForm = ({

@@ -25,7 +25,7 @@ import AboutPage from "@/pages/AboutPage.tsx";
 import ComingSoonPage from "@/pages/ComingSoonPage.tsx";
 import FlowChartPage from "@/pages/FlowchartPage.tsx";
 import ClassSearchPage from "@/pages/ClassSearchPage.tsx";
-import CalendarPage from "@/pages/CalendarPage.tsx";
+import ScheduleBuilderPage from "@/pages/ScheduleBuilder";
 import ErrorPage from "@/pages/ErrorPage/ErrorPage.tsx";
 
 // Auth
@@ -120,12 +120,12 @@ const router = routerChosen(
           element: <ClassSearchPage />,
         },
         {
-          path: "calendar",
-          element: <CalendarPage />,
+          path: "schedule-builder",
+          element: <ScheduleBuilderPage />,
           children: [
             {
-              path: ":calendarId",
-              element: <CalendarPage />,
+              path: ":scheduleId",
+              element: <ScheduleBuilderPage />,
             },
           ],
         },

@@ -14,7 +14,7 @@ export { flowchartReducer } from "./flowchart/flowchartSlice.ts";
 export { flowSelectionReducer } from "./flowSelection/flowSelectionSlice.ts";
 export { classSearchReducer } from "./classSearch/classSearchSlice.ts";
 export { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice.ts";
-export { scheduleReducer } from "./calendar/calendarSlice.ts";
+export { scheduleReducer } from "./schedule/scheduleSlice.ts";
 // Export all actions for easy dispatching in components
 export * as messageActions from "./message/messageSlice.ts";
 export * as assistantActions from "./assistant/assistantSlice.ts";
@@ -26,7 +26,7 @@ export * as flowchartActions from "./flowchart/flowchartSlice.ts";
 export * as flowSelectionActions from "./flowSelection/flowSelectionSlice.ts";
 export * as classSearchActions from "./classSearch/classSearchSlice.ts";
 export * as sectionSelectionActions from "./sectionSelection/sectionSelectionSlice.ts";
-export * as scheduleActions from "./calendar/calendarSlice.ts";
+export * as scheduleActions from "./schedule/scheduleSlice.ts";
 // Custom hooks for using dispatch and selector with TypeScript
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "./store";

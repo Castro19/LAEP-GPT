@@ -2,7 +2,7 @@ import { useAppSelector } from "@/redux";
 import { ScheduleListItem } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { CalendarOptions } from "@/components/calendar";
+import { ScheduleOptions } from "@/components/scheduleBuilder";
 import { useState, useEffect } from "react";
 import { GoPin } from "react-icons/go";
 
@@ -48,7 +48,7 @@ const ScheduleItem = ({
   const navigate = useNavigate();
 
   const handleSelectSchedule = () => {
-    navigate(`/calendar/${schedule.id}`);
+    navigate(`/schedule-builder/${schedule.id}`);
   };
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const ScheduleItem = ({
       <div
         className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
       >
-        <CalendarOptions
+        <ScheduleOptions
           schedule={schedule}
           name={name}
           onNameChange={setName}

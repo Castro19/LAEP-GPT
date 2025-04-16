@@ -1,5 +1,5 @@
 import React from "react";
-import CalendarPageHeader from "./CalendarPageHeader";
+import ScheduleBuilderPageHeader from "./ScheduleBuilderPageHeader";
 import OuterIconSidebar from "../dynamicLayouts/OuterIconSidebar";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileHeader from "../dynamicLayouts/MobileHeader";
@@ -8,7 +8,7 @@ type SectionPageLayoutProps = {
   children: React.ReactNode;
 };
 
-const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
+const ScheduleBuilderPageLayout = ({ children }: SectionPageLayoutProps) => {
   const isNarrowScreen = useIsNarrowScreen();
   return (
     <div className="flex flex-col h-full">
@@ -19,7 +19,7 @@ const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
             isNarrowScreen ? "ml-0" : "ml-2"
           }`}
         >
-          {isNarrowScreen ? <MobileHeader /> : <CalendarPageHeader />}
+          {isNarrowScreen ? <MobileHeader /> : <ScheduleBuilderPageHeader />}
           <div className="flex-1">{children}</div>
         </div>
       </div>
@@ -27,4 +27,4 @@ const CalendarPageLayout = ({ children }: SectionPageLayoutProps) => {
   );
 };
 
-export default CalendarPageLayout;
+export default ScheduleBuilderPageLayout;

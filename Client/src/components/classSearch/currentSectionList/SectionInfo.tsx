@@ -153,7 +153,10 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
         title: `${section.courseId} Added`,
         description: message,
         action: (
-          <ToastAction altText="calendar" onClick={() => navigate("/calendar")}>
+          <ToastAction
+            altText="calendar"
+            onClick={() => navigate("/schedule-builder")}
+          >
             Go to Calendar
           </ToastAction>
         ),

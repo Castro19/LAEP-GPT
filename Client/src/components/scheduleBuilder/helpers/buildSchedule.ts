@@ -3,7 +3,7 @@ import {
   generateAllScheduleCombinations,
   generateScheduleWithConflicts,
 } from ".";
-import { SchedulePreferencesForm } from "../buildSchedule/CalendarBuilderForm";
+import { SchedulePreferencesForm } from "../buildSchedule/ScheduleBuilderForm";
 
 const buildSchedule = (
   selectedSections: SelectedSection[],

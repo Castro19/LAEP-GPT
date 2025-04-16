@@ -20,7 +20,7 @@ import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 import ProfileEmptyState from "@/components/userProfile/ProfileEmptyState";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { WeeklyCalendar } from "@/components/calendar";
+import { WeeklySchedule } from "@/components/scheduleBuilder";
 import { HiOutlineAcademicCap, HiOutlineCalendar } from "react-icons/hi2";
 import ProfilePageLayout from "@/components/layout/ProfilePage/ProfilePageLayout";
 
@@ -54,7 +54,7 @@ const flowchartEmptyState = {
   icon: <HiOutlineAcademicCap className="text-slate-300" size={48} />,
 };
 
-const weeklyCalendarEmptyState = {
+const weeklyScheduleEmptyState = {
   title: "No Calendar Found",
   description:
     "Create a calendar to view your weekly schedule for Spring 2025!",
@@ -309,16 +309,16 @@ function ProfilePage() {
             </TabsContent>
             <TabsContent value="weekly-calendar">
               {currentSchedule ? (
-                <WeeklyCalendar
+                <WeeklySchedule
                   sections={currentSchedule.sections}
                   height="100vh"
                 />
               ) : (
                 <div className="flex flex-col justify-center items-center">
                   <ProfileEmptyState
-                    title={weeklyCalendarEmptyState.title}
-                    description={weeklyCalendarEmptyState.description}
-                    icon={weeklyCalendarEmptyState.icon}
+                    title={weeklyScheduleEmptyState.title}
+                    description={weeklyScheduleEmptyState.description}
+                    icon={weeklyScheduleEmptyState.icon}
                     type="calendar"
                   />
                 </div>

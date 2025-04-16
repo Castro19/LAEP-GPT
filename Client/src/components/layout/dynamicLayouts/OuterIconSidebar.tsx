@@ -93,8 +93,12 @@ function OuterIconSidebar() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat") {
       handleChatClick();
-    } else if (path === "/calendar" && currentSchedule && currentSchedule.id) {
-      navigate(`/calendar/${currentSchedule.id}`);
+    } else if (
+      path === "/schedule-builder" &&
+      currentSchedule &&
+      currentSchedule.id
+    ) {
+      navigate(`/schedule-builder/${currentSchedule.id}`);
     } else {
       navigate(path);
     }
@@ -108,8 +112,12 @@ function OuterIconSidebar() {
       );
     } else if (path === "/chat" && currentChatId) {
       return location.pathname === `/chat/${currentChatId}`;
-    } else if (path === "/calendar" && currentSchedule && currentSchedule.id) {
-      return location.pathname === `/calendar/${currentSchedule.id}`;
+    } else if (
+      path === "/schedule-builder" &&
+      currentSchedule &&
+      currentSchedule.id
+    ) {
+      return location.pathname === `/schedule-builder/${currentSchedule.id}`;
     } else {
       return location.pathname === path;
     }
@@ -192,9 +200,9 @@ function OuterIconSidebar() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => handleNavigation("/calendar")}
+                        onClick={() => handleNavigation("/schedule-builder")}
                         className={`${
-                          isActive("/calendar")
+                          isActive("/schedule-builder")
                             ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                             : "hover:text-slate-600"
                         }`}
@@ -202,7 +210,7 @@ function OuterIconSidebar() {
                         <FaCalendarAlt className="m-auto w-5 h-5" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Schedule Analysis</TooltipContent>
+                    <TooltipContent>Schedule Builder</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </SidebarMenu>

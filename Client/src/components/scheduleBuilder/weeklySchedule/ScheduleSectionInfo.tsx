@@ -39,7 +39,7 @@ const enrollmentStatusDesc = (enrollStatus: "O" | "C" | "W") => {
   }
 };
 
-const CalendarSectionInfo = () => {
+const ScheduleSectionInfo = () => {
   const { calendarSelectedSection, loading } = useAppSelector(
     (state) => state.classSearch
   );
@@ -177,4 +177,4 @@ const CalendarSectionInfo = () => {
   );
 };
 
-export default CalendarSectionInfo;
+export default ScheduleSectionInfo;

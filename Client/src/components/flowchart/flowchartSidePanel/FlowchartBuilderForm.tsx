@@ -4,7 +4,7 @@ import { z } from "zod";
 import { flowchartActions, useAppDispatch } from "@/redux";
 
 // My Components
-import { BuildScheduleContainer } from "@/components/calendar";
+import { BuildScheduleContainer } from "@/components/scheduleBuilder";
 import { SavedFlowchartList, CourseDropdown } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 

@@ -14,7 +14,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
-const CalendarOptions = ({
+const ScheduleOptions = ({
   schedule,
   name,
   onNameChange,
@@ -62,14 +62,14 @@ const CalendarOptions = ({
   };
 
   // Delete flowchart and close popover after deleting
-  const handleDeleteFlowchart = async (calendarId: string) => {
+  const handleDeleteFlowchart = async (scheduleId: string) => {
     if (environment === "dev") {
-      console.log("DELETING CALENDAR", calendarId);
+      console.log("DELETING CALENDAR", scheduleId);
     }
     // Close the popover
-    dispatch(scheduleActions.removeScheduleAsync(calendarId));
+    dispatch(scheduleActions.removeScheduleAsync(scheduleId));
     setOpen(false);
-    navigate("/calendar");
+    navigate("/schedule-builder");
   };
 
   return (
@@ -118,4 +118,4 @@ const CalendarOptions = ({
   );
 };
 
-export default CalendarOptions;
+export default ScheduleOptions;

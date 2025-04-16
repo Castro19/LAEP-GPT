@@ -4,8 +4,8 @@ import { z } from "zod";
 // Components
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 import SectionsChosen from "./SectionsChosen";
-import { SavedSchedules } from "@/components/calendar";
-import Preferences from "@/components/calendar/buildSchedule/preferences/Preferences";
+import { SavedSchedules } from "@/components/scheduleBuilder";
+import Preferences from "@/components/scheduleBuilder/buildSchedule/preferences/Preferences";
 
 // Icons
 import { FaBook, FaCalendar } from "react-icons/fa";

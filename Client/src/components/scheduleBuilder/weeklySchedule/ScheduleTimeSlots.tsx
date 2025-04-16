@@ -1,19 +1,19 @@
 import React from "react";
 import {
-  CalendarClassSection,
-  CalendarSectionInfo,
-} from "@/components/calendar";
+  ScheduleClassSection,
+  ScheduleSectionInfo,
+} from "@/components/scheduleBuilder";
 import { Modal, ModalContent } from "@/components/ui/animated-modal";
 import { CustomModalBody } from "@/components/ui/animated-modal";
 import { CustomModalTriggerButton } from "@/components/ui/animated-modal";
 
 // Add 'conflict' as a prop
-interface CalendarTimeSlotsProps {
-  event: CalendarClassSection;
+interface ScheduleTimeSlotsProps {
+  event: ScheduleClassSection;
   conflict?: boolean;
 }
 
-const CalendarTimeSlots: React.FC<CalendarTimeSlotsProps> = ({ event }) => {
+const ScheduleTimeSlots: React.FC<ScheduleTimeSlotsProps> = ({ event }) => {
   /**
    * If `conflict` is true, we add some Tailwind classes for a red/opacity background.
    * You can also do this on the <div> or the <CustomModalTriggerButton>,
@@ -41,7 +41,7 @@ const CalendarTimeSlots: React.FC<CalendarTimeSlotsProps> = ({ event }) => {
         </CustomModalTriggerButton>
         <CustomModalBody>
           <ModalContent className="dark:bg-slate-950">
-            <CalendarSectionInfo />
+            <ScheduleSectionInfo />
           </ModalContent>
         </CustomModalBody>
       </Modal>
@@ -49,4 +49,4 @@ const CalendarTimeSlots: React.FC<CalendarTimeSlotsProps> = ({ event }) => {
   );
 };
 
-export default CalendarTimeSlots;
+export default ScheduleTimeSlots;

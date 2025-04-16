@@ -1,12 +1,12 @@
 import {
-  CalendarAverageRating,
+  ScheduleAverageRating,
   NoSelectedSections,
-  WeeklyCalendar,
-} from "@/components/calendar";
+  WeeklySchedule,
+} from "@/components/scheduleBuilder";
 import { useAppSelector } from "@/redux";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
-const CalendarContainer = () => {
+const ScheduleContainer = () => {
   const isNarrowScreen = useIsNarrowScreen();
   const { schedules, currentSchedule } = useAppSelector(
     (state) => state.schedule
@@ -27,8 +27,8 @@ const CalendarContainer = () => {
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden no-scroll">
       <div className="overflow-auto no-scroll">
-        <CalendarAverageRating />
-        <WeeklyCalendar
+        <ScheduleAverageRating />
+        <WeeklySchedule
           sections={currentSchedule.sections}
           height={isNarrowScreen ? "70vh" : "80vh"}
         />
@@ -37,4 +37,4 @@ const CalendarContainer = () => {
   );
 };
 
-export default CalendarContainer;
+export default ScheduleContainer;

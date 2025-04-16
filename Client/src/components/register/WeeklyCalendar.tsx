@@ -114,7 +114,7 @@ const TimeSlot = ({
   </div>
 );
 
-const WeeklyCalendar = ({ inReadMode = false }: { inReadMode?: boolean }) => {
+const WeeklySchedule = ({ inReadMode = false }: { inReadMode?: boolean }) => {
   const [isDragging, setIsDragging] = useState(false);
   const { handleChange } = useUserData();
   const userData = useAppSelector((state) => state.user.userData);
@@ -219,4 +219,4 @@ const WeeklyCalendar = ({ inReadMode = false }: { inReadMode?: boolean }) => {
   );
 };
 
-export default WeeklyCalendar;
+export default WeeklySchedule;

@@ -1,6 +1,6 @@
 import { SelectedSection } from "@polylink/shared/types";
-import { SchedulePreferencesForm } from "../buildSchedule/CalendarBuilderForm";
-import { Schedule } from "./";
+import { SchedulePreferencesForm } from "../buildSchedule/ScheduleBuilderForm";
+import { Schedule } from ".";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 function filterSchedules(

@@ -11,7 +11,7 @@ import {
   removeSchedule,
   getScheduleById,
   updateSchedule,
-} from "./crudCalendar";
+} from "./crudSchedule";
 
 export interface Preferences {
   minUnits?: string;

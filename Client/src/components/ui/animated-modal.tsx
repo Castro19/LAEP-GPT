@@ -281,7 +281,7 @@ export const CustomModalBody = ({
     }
   }, [modalRef, ...excludeRefs]);
 
-  // Get the dedicated modal root inside the WeeklyCalendar container
+  // Get the dedicated modal root inside the WeeklySchedule container
   const modalRoot = document.getElementById("calendar-modal-root");
 
   if (!open || !modalRoot) return null;

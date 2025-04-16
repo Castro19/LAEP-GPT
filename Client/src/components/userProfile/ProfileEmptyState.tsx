@@ -20,7 +20,7 @@ const ProfileEmptyState = ({
     if (type === "flowchart") {
       navigate("/flowchart");
     } else if (type === "calendar") {
-      navigate("/calendar");
+      navigate("/schedule-builder");
     }
   };
   return (
