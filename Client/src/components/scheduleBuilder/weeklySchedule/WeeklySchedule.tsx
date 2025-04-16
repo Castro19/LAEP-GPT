@@ -167,7 +167,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     maxHeight = Math.min(maxHeight, availableHeight);
 
     // Calculate responsive height
-    let calculatedHeight = Math.max(minHeight, Math.min(baseHeight, maxHeight));
+    const calculatedHeight = Math.max(
+      minHeight,
+      Math.min(baseHeight, maxHeight)
+    );
 
     // Convert to viewport height units for consistency
     const vhValue = Math.round((calculatedHeight / windowHeight) * 100);
