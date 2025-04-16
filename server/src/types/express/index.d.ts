@@ -31,6 +31,7 @@ interface CustomRequest extends Request {
     isTechElective?: string;
     withNoConflicts?: string;
     isCreditNoCredit?: string;
+    term: "spring2025" | "summer2025";
     page?: string;
   };
 }

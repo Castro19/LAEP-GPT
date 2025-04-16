@@ -4,7 +4,7 @@ import {
   ScheduleListItem,
   SelectedSection,
 } from "@polylink/shared/types";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchSchedules,
   createOrUpdateSchedule,
@@ -38,6 +38,7 @@ export interface ScheduleState {
   primaryScheduleId: string;
   loading: boolean;
   preferences: Preferences;
+  currentScheduleTerm: "spring2025" | "summer2025";
 }
 
 const initialState: ScheduleState = {
@@ -48,6 +49,7 @@ const initialState: ScheduleState = {
   currentSchedule: null,
   primaryScheduleId: "",
   loading: false,
+  currentScheduleTerm: "spring2025",
   preferences: {
     minUnits: "",
     maxUnits: "",
@@ -169,6 +171,12 @@ const scheduleSlice = createSlice({
     setPreferences(state, action) {
       state.preferences = action.payload;
     },
+    setCurrentScheduleTerm(
+      state,
+      action: PayloadAction<"spring2025" | "summer2025">
+    ) {
+      state.currentScheduleTerm = action.payload;
+    },
   },
   extraReducers: (builder) => {
     // Fetch schedule List
@@ -244,6 +252,7 @@ export const {
   setSchedules,
   setCurrentSchedule,
   setPreferences,
+  setCurrentScheduleTerm,
 } = scheduleSlice.actions;
 
 export const scheduleReducer = scheduleSlice.reducer;
