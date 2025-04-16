@@ -87,7 +87,7 @@ const CourseInformation = ({
       <FormField
         control={form.control}
         name="term"
-        render={({ field }) => <TermSelector form={form} />}
+        render={({}) => <TermSelector form={form} />}
         defaultValue="summer2025"
       />
       <FormField
