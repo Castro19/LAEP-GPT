@@ -12,7 +12,7 @@ import { getSectionById } from "../section/sectionServices";
 
 export const getSelectedSectionsByUserId = async (
   userId: string,
-  term?: CourseTerm
+  term: CourseTerm
 ): Promise<SelectedSection[]> => {
   try {
     const result =
@@ -40,7 +40,10 @@ export const getSelectedSectionsByUserId = async (
 
     for (const sectionId of sectionsToProcess) {
       try {
-        const sectionDetail: Section | null = await getSectionById(sectionId);
+        const sectionDetail: Section | null = await getSectionById(
+          sectionId,
+          term as CourseTerm
+        );
         if (sectionDetail) {
           // Transform the section detail to a SelectedSection
           const selectedSection: SelectedSection = {
@@ -100,7 +103,10 @@ export const postSelectedSection = async (
     if (existingSection) {
       if (existingSection.selectedSections[section.term]?.[section.sectionId]) {
         return {
-          selectedSections: await getSelectedSectionsByUserId(userId),
+          selectedSections: await getSelectedSectionsByUserId(
+            userId,
+            section.term
+          ),
           message: `Section ${section.sectionId} is already in your schedule`,
         };
       } else {
@@ -109,7 +115,10 @@ export const postSelectedSection = async (
           section
         );
         return {
-          selectedSections: await getSelectedSectionsByUserId(userId),
+          selectedSections: await getSelectedSectionsByUserId(
+            userId,
+            section.term
+          ),
           message: `Section ${section.sectionId} added to your schedule`,
         };
       }
@@ -119,7 +128,10 @@ export const postSelectedSection = async (
         section
       );
       return {
-        selectedSections: await getSelectedSectionsByUserId(userId),
+        selectedSections: await getSelectedSectionsByUserId(
+          userId,
+          section.term
+        ),
         message: `Section ${section.sectionId} added to your schedule`,
       };
     }
@@ -150,7 +162,10 @@ export const deleteSelectedSection = async (
       throw new Error("Section not found");
     }
     return {
-      selectedSections: await getSelectedSectionsByUserId(userId),
+      selectedSections: await getSelectedSectionsByUserId(
+        userId,
+        term as CourseTerm
+      ),
       message: `Section ${sectionId} removed from your schedule`,
     };
   } catch (error) {

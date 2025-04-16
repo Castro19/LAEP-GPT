@@ -8,7 +8,7 @@ import { SelectedSection } from "@polylink/shared/types";
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchSingleSection } from "@/redux/classSearch/classSearchSlice";
-import { useAppDispatch } from "@/redux";
+import { useAppDispatch, useAppSelector } from "@/redux";
 import {
   getConflictGroups,
   buildBackgroundEventsForGroup,
@@ -63,6 +63,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   height = "80vh",
 }) => {
   const dispatch = useAppDispatch();
+  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [calendarHeight, setCalendarHeight] = useState(height);
@@ -285,7 +286,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
-    dispatch(fetchSingleSection(classNumber));
+    dispatch(fetchSingleSection({ classNumber, term: currentScheduleTerm }));
   };
 
   return (

@@ -35,7 +35,9 @@ const ScheduleBuilderPage = () => {
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-  const { currentSchedule } = useAppSelector((state) => state.schedule);
+  const { currentSchedule, currentScheduleTerm } = useAppSelector(
+    (state) => state.schedule
+  );
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -46,15 +48,14 @@ const ScheduleBuilderPage = () => {
 
   // Ref variables to prevent fetching data multiple times
   const hasFetchedassistantList = useRef(false);
-  const hasFetchedSelectedSections = useRef(false);
   const hasFetchedSchedules = useRef(false);
 
   // Fetch the selected sections
   useEffect(() => {
-    if (hasFetchedSelectedSections.current) return;
-    hasFetchedSelectedSections.current = true;
-    dispatch(sectionSelectionActions.fetchSelectedSectionsAsync("spring2025"));
-  }, [dispatch]);
+    dispatch(
+      sectionSelectionActions.fetchSelectedSectionsAsync(currentScheduleTerm)
+    );
+  }, [dispatch, currentScheduleTerm]);
 
   // Fetch the schedules
   useEffect(() => {

@@ -95,11 +95,10 @@ export async function removeSection(
 }
 
 export function transformSectionToSelectedSectionItem(
-  section: SectionDetail,
-  term: CourseTerm
+  section: SectionDetail
 ): SelectedSectionItem {
   return {
     sectionId: section.classNumber,
-    term,
+    term: section.term,
   };
 }

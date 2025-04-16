@@ -1,4 +1,5 @@
 export type Section = {
+  term: "spring2025" | "summer2025";
   classNumber: number; // unique section number (e.g. 1001)
   courseId: string; // unique course identifier (e.g. "CSC357")
   subject: string; // subject abbreviation (e.g. "CSC")
@@ -124,6 +125,7 @@ export type SectionGroup = {
 
 // Updated SectionDetail to support standalone display
 export type SectionDetail = {
+  term: "spring2025" | "summer2025";
   courseId: string;
   courseName: string;
   classNumber: number;

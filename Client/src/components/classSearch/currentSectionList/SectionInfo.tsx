@@ -137,7 +137,6 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
     const { payload } = await dispatch(
       sectionSelectionActions.createOrUpdateSelectedSectionAsync({
         section,
-        term: "spring2025", // You might want to make this dynamic based on user selection
       })
     );
     const { message } = payload as { message: string };

@@ -1,5 +1,9 @@
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
-import { SectionsFilterParams, Section } from "@polylink/shared/types";
+import {
+  SectionsFilterParams,
+  Section,
+  CourseTerm,
+} from "@polylink/shared/types";
 
 const buildQueryString = (filter: SectionsFilterParams) => {
   const queryParams = new URLSearchParams();
@@ -112,9 +116,12 @@ export async function querySections(
   return { data, page, totalPages };
 }
 
-export async function getSectionByClassNumber(classNumber: string) {
+export async function getSectionByClassNumber(
+  classNumber: string,
+  term: CourseTerm
+) {
   const response = await fetch(
-    `${serverUrl}/classSearch?classNumber=${classNumber}`,
+    `${serverUrl}/classSearch?classNumber=${classNumber}&term=${term}`,
     {
       headers: {
         "Content-Type": "application/json",
