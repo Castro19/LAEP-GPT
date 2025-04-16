@@ -1,6 +1,7 @@
 import {
   SelectedSection,
   SelectedSectionDocument,
+  SelectedSectionItem,
 } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection, UpdateResult } from "mongodb";
@@ -48,7 +49,7 @@ export const deleteSelectedSection = async (
   try {
     const result = await selectedSectionCollection.updateOne(
       { userId },
-      { $pull: { selectedSections: { classNumber: sectionId } } }
+      { $pull: { selectedSections: { sectionId } } }
     );
     if (result.modifiedCount === 0) {
       throw new Error("Section not found");
@@ -64,7 +65,7 @@ export const deleteSelectedSection = async (
 
 export const createOrUpdateSelectedSection = async (
   userId: string,
-  newSection: SelectedSection
+  newSection: SelectedSectionItem
 ): Promise<UpdateResult<SelectedSectionDocument>> => {
   if (!selectedSectionCollection) {
     selectedSectionCollection = initializeCollection();

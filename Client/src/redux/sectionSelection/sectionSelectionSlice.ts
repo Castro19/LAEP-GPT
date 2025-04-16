@@ -3,7 +3,7 @@ import { SectionDetail, SelectedSection } from "@polylink/shared/types";
 import {
   fetchSections,
   createOrUpdateSection,
-  transformSectionToSelectedSection,
+  transformSectionToSelectedSectionItem,
   removeSection,
 } from "./crudSelectionSection";
 import { environment } from "@/helpers/getEnvironmentVars";
@@ -36,10 +36,19 @@ export const fetchSelectedSectionsAsync = createAsyncThunk(
 
 export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
   "sections/createOrUpdateSelectedSection",
-  async (section: SectionDetail) => {
+  async ({
+    section,
+    term,
+  }: {
+    section: SectionDetail;
+    term: "spring2025" | "summer2025";
+  }) => {
     try {
-      const selectedSection = transformSectionToSelectedSection(section);
-      const response = await createOrUpdateSection(selectedSection);
+      const selectedSectionItem = transformSectionToSelectedSectionItem(
+        section,
+        term
+      );
+      const response = await createOrUpdateSection(selectedSectionItem);
       return response;
     } catch (error) {
       if (environment === "dev") {

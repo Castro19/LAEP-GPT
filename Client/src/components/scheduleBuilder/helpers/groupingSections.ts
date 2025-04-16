@@ -2,15 +2,15 @@ import { SelectedSection } from "@polylink/shared/types";
 
 /**
  * Returns true if the two sections are considered a valid pair.
- * That is, if one section’s classPair includes the other’s classNumber.
+ * That is, if one section's classPair matches the other's classNumber.
  */
 function arePaired(
   sectionA: SelectedSection,
   sectionB: SelectedSection
 ): boolean {
   return (
-    sectionA.classPair.includes(sectionB.classNumber) ||
-    sectionB.classPair.includes(sectionA.classNumber)
+    sectionA.classPair === sectionB.classNumber ||
+    sectionB.classPair === sectionA.classNumber
   );
 }
 
@@ -18,8 +18,8 @@ function arePaired(
  * Given all sections for a course (i.e. with the same courseId), return all valid selections.
  *
  * A valid selection is:
- * - A standalone section (if its classPair is empty) OR
- * - A pair of sections that are linked (i.e. one’s classPair includes the other’s classNumber).
+ * - A standalone section (if its classPair is null) OR
+ * - A pair of sections that are linked (i.e. one's classPair matches the other's classNumber).
  */
 function getValidSelectionsForCourse(
   sections: SelectedSection[],
@@ -27,9 +27,10 @@ function getValidSelectionsForCourse(
 ): SelectedSection[][] {
   const validSelections: SelectedSection[][] = [];
   const standaloneSections: SelectedSection[] = [];
-  // Add standalone sections (only if classPair is empty).
+
+  // Add standalone sections (only if classPair is null).
   sections.forEach((section) => {
-    if (section.classPair.length === 0) {
+    if (section.classPair === null) {
       standaloneSections.push(section);
     }
   });
@@ -65,10 +66,12 @@ function getValidSelectionsForCourse(
       }
     }
   }
+
+  // Add unpaired standalone sections
   for (const section of standaloneSections) {
-    // Check if the section classNumber is in the classPair of any other section.
-    const isPaired = sections.some((otherSection) =>
-      otherSection.classPair.includes(section.classNumber)
+    // Check if the section classNumber is the classPair of any other section.
+    const isPaired = sections.some(
+      (otherSection) => otherSection.classPair === section.classNumber
     );
     if (!isPaired) {
       if (isOpenOnly) {
@@ -80,6 +83,7 @@ function getValidSelectionsForCourse(
       }
     }
   }
+
   return validSelections;
 }
 

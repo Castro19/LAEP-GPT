@@ -1,6 +1,13 @@
 import { environment } from "../../..";
 import * as selectedSelectionModel from "./selectedSectionCollection";
-import { SelectedSection } from "@polylink/shared/types";
+import {
+  SelectedSection,
+  SelectedSectionItem,
+  Section,
+  Meeting,
+  InstructorWithRatings,
+} from "@polylink/shared/types";
+import { getSectionById } from "../section/sectionServices";
 
 export const getSelectedSectionsByUserId = async (
   userId: string
@@ -11,7 +18,54 @@ export const getSelectedSectionsByUserId = async (
     if (!result) {
       return [];
     }
-    return result.selectedSections;
+
+    // Fetch full section details for each selected section
+    const fullSections: SelectedSection[] = [];
+    for (const sectionItem of result.selectedSections) {
+      try {
+        const sectionDetail: Section | null = await getSectionById(
+          sectionItem.sectionId
+        );
+        if (sectionDetail) {
+          // Transform the section detail to a SelectedSection
+          const selectedSection: SelectedSection = {
+            courseId: sectionDetail.courseId,
+            courseName: sectionDetail.courseName,
+            classNumber: sectionDetail.classNumber,
+            component: sectionDetail.component,
+            units: sectionDetail.units,
+            enrollmentStatus: sectionDetail.enrollmentStatus,
+            meetings: sectionDetail.meetings.map((meeting: Meeting) => ({
+              ...meeting,
+              days: meeting.days.filter((day) => day),
+            })),
+            classPair: sectionDetail.classPair || null,
+            professors:
+              sectionDetail.instructorsWithRatings?.map(
+                (instructor: InstructorWithRatings) => ({
+                  name: instructor.name,
+                  id: instructor.id,
+                })
+              ) ?? [],
+            rating:
+              sectionDetail.instructorsWithRatings?.[0]?.overallRating ||
+              sectionDetail.instructorsWithRatings?.[1]?.overallRating ||
+              0,
+          };
+          fullSections.push(selectedSection);
+        }
+      } catch (error) {
+        if (environment === "dev") {
+          console.error(
+            `Error fetching section ${sectionItem.sectionId}:`,
+            error
+          );
+        }
+        // Continue with other sections even if one fails
+      }
+    }
+
+    return fullSections;
   } catch (error) {
     if (environment === "dev") {
       console.error(error);
@@ -23,7 +77,7 @@ export const getSelectedSectionsByUserId = async (
 // Creates a new section or updates an existing section
 export const postSelectedSection = async (
   userId: string,
-  section: SelectedSection
+  section: SelectedSectionItem
 ): Promise<{
   selectedSections: SelectedSection[];
   message: string;
@@ -34,12 +88,12 @@ export const postSelectedSection = async (
     if (existingSection) {
       if (
         existingSection.selectedSections.some(
-          (s) => s.classNumber === section.classNumber
+          (s) => s.sectionId === section.sectionId
         )
       ) {
         return {
-          selectedSections: existingSection.selectedSections,
-          message: `Try adding a different section for course ${section.courseId}`,
+          selectedSections: await getSelectedSectionsByUserId(userId),
+          message: `Section ${section.sectionId} is already in your schedule`,
         };
       } else {
         await selectedSelectionModel.createOrUpdateSelectedSection(
@@ -48,7 +102,7 @@ export const postSelectedSection = async (
         );
         return {
           selectedSections: await getSelectedSectionsByUserId(userId),
-          message: `Section ${section.classNumber} added to your schedule`,
+          message: `Section ${section.sectionId} added to your schedule`,
         };
       }
     } else {
@@ -58,7 +112,7 @@ export const postSelectedSection = async (
       );
       return {
         selectedSections: await getSelectedSectionsByUserId(userId),
-        message: `Section ${section.classNumber} added to your schedule`,
+        message: `Section ${section.sectionId} added to your schedule`,
       };
     }
   } catch (error) {
