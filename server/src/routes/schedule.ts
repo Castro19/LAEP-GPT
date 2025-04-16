@@ -8,7 +8,7 @@ import {
   deleteScheduleItem,
   getScheduleById,
   updateScheduleListItem,
-} from "../db/models/calendar/calendarListServices";
+} from "../db/models/schedule/scheduleServices";
 
 const router = express.Router();
 

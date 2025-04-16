@@ -40,15 +40,15 @@ const enrollmentStatusDesc = (enrollStatus: "O" | "C" | "W") => {
 };
 
 const ScheduleSectionInfo = () => {
-  const { calendarSelectedSection, loading } = useAppSelector(
+  const { scheduleSelectedSection, loading } = useAppSelector(
     (state) => state.classSearch
   );
 
   if (loading) return <div className="text-slate-400">Loading...</div>;
-  if (!calendarSelectedSection) return null;
+  if (!scheduleSelectedSection) return null;
 
-  const sectionDetail = transformToSectionDetail(calendarSelectedSection);
-  const instructorRatings = calendarSelectedSection.instructorsWithRatings?.[0];
+  const sectionDetail = transformToSectionDetail(scheduleSelectedSection);
+  const instructorRatings = scheduleSelectedSection.instructorsWithRatings?.[0];
 
   return (
     <div className="w-full rounded-lg border border-slate-600 bg-slate-900 p-3 shadow-xl">
@@ -60,11 +60,11 @@ const ScheduleSectionInfo = () => {
           </h1>
           <div className="mt-2 flex items-center gap-2">
             <span className="text-lg font-medium text-slate-400">
-              {calendarSelectedSection.subject}{" "}
-              {calendarSelectedSection.catalogNumber}
+              {scheduleSelectedSection.subject}{" "}
+              {scheduleSelectedSection.catalogNumber}
             </span>
             <BadgeSection variant="content" className="text-sm">
-              {calendarSelectedSection.units} Units
+              {scheduleSelectedSection.units} Units
             </BadgeSection>
             <BadgeSection variant="content" className="text-sm">
               {sectionDetail.classNumber}
@@ -74,7 +74,7 @@ const ScheduleSectionInfo = () => {
             </BadgeSection>
           </div>
         </div>
-        {enrollmentStatusDesc(calendarSelectedSection.enrollmentStatus)}
+        {enrollmentStatusDesc(scheduleSelectedSection.enrollmentStatus)}
       </div>
 
       {/* Course Details Grid */}
@@ -84,7 +84,7 @@ const ScheduleSectionInfo = () => {
           <h3 className="text-sm font-semibold text-slate-400">Instructor</h3>
           <div className="flex items-center gap-2">
             <p className="text-slate-100">
-              {calendarSelectedSection.instructors?.[0]?.name || "TBA"}
+              {scheduleSelectedSection.instructors?.[0]?.name || "TBA"}
             </p>
             {instructorRatings?.id && (
               <Button
@@ -123,7 +123,7 @@ const ScheduleSectionInfo = () => {
           <SectionEnrollment
             section={{
               ...sectionDetail,
-              instructionMode: calendarSelectedSection.instructionMode
+              instructionMode: scheduleSelectedSection.instructionMode
                 .split(";")
                 .map(
                   (mode: string) =>
@@ -137,11 +137,11 @@ const ScheduleSectionInfo = () => {
         </div>
 
         {/* Course Attributes */}
-        {calendarSelectedSection.courseAttributes?.length > 0 && (
+        {scheduleSelectedSection.courseAttributes?.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-slate-400">Attributes</h3>
             <div className="flex flex-wrap gap-2">
-              {calendarSelectedSection.courseAttributes.map((attr, index) => (
+              {scheduleSelectedSection.courseAttributes.map((attr, index) => (
                 <BadgeSection key={index} variant="content">
                   {attr}
                 </BadgeSection>
@@ -149,10 +149,10 @@ const ScheduleSectionInfo = () => {
             </div>
           </div>
         )}
-        {calendarSelectedSection.prerequisites && (
+        {scheduleSelectedSection.prerequisites && (
           <div className="space-y-2">
             <FormatPrerequisites
-              prerequisites={calendarSelectedSection.prerequisites}
+              prerequisites={scheduleSelectedSection.prerequisites}
             />
           </div>
         )}
@@ -162,7 +162,7 @@ const ScheduleSectionInfo = () => {
         <div className="col-span-2 space-y-2">
           <h3 className="text-sm font-semibold text-slate-400">Description</h3>
           <p className="text-slate-300">
-            {calendarSelectedSection.description}
+            {scheduleSelectedSection.description}
           </p>
         </div>
       </div>

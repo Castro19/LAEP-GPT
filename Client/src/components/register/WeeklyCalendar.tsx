@@ -178,7 +178,7 @@ const WeeklySchedule = ({ inReadMode = false }: { inReadMode?: boolean }) => {
   return (
     <div
       className="flex flex-col justify-center align-center"
-      onMouseLeave={handleMouseUp} // In case the mouse leaves the calendar while dragging
+      onMouseLeave={handleMouseUp} // In case the mouse leaves the schedule builder while dragging
       onMouseUp={handleMouseUp} // Ensure dragging stops when mouse is released
     >
       {daysOfWeek.map((day) => {

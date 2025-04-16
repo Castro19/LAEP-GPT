@@ -62,7 +62,7 @@ const initialState: ScheduleState = {
 
 // When calling fetchSections, pass page and pageSize too.
 export const fetchSchedulesAsync = createAsyncThunk(
-  "calendars/fetchSchedules",
+  "schedules/fetchSchedules",
   async () => {
     try {
       const response = await fetchSchedules();
@@ -78,7 +78,7 @@ export const fetchSchedulesAsync = createAsyncThunk(
 );
 
 export const createOrUpdateSchedulesAsync = createAsyncThunk(
-  "calendars/createOrUpdateSchedule",
+  "schedules/createOrUpdateSchedule",
   async (sections: SelectedSection[]) => {
     try {
       const response = await createOrUpdateSchedule(sections);
@@ -93,9 +93,9 @@ export const createOrUpdateSchedulesAsync = createAsyncThunk(
   }
 );
 
-// Calendar Item
+// schedule Item
 export const removeScheduleAsync = createAsyncThunk(
-  "calendars/removeSchedule",
+  "schedules/removeSchedule",
   async (scheduleId: string) => {
     try {
       const response = await removeSchedule(scheduleId);
@@ -111,7 +111,7 @@ export const removeScheduleAsync = createAsyncThunk(
 );
 
 export const getScheduleByIdAsync = createAsyncThunk(
-  "calendars/getScheduleById",
+  "schedules/getScheduleById",
   async (scheduleId: string) => {
     try {
       const response = await getScheduleById(scheduleId);
@@ -126,7 +126,7 @@ export const getScheduleByIdAsync = createAsyncThunk(
 );
 
 export const updateScheduleAsync = createAsyncThunk(
-  "calendars/updateSchedule",
+  "schedules/updateSchedule",
   async ({
     schedule,
     primaryScheduleId,
@@ -171,7 +171,7 @@ const scheduleSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Fetch Calendar List
+    // Fetch schedule List
     builder.addCase(fetchSchedulesAsync.fulfilled, (state, action) => {
       state.primaryScheduleId = action.payload.primaryScheduleId;
       const scheduleList = action.payload.schedules;
@@ -188,12 +188,12 @@ const scheduleSlice = createSlice({
         state.scheduleList = scheduleList;
       }
     });
-    // Create or Update Calendar
+    // Create or Update schedule
     builder.addCase(createOrUpdateSchedulesAsync.fulfilled, (state, action) => {
       state.primaryScheduleId = action.payload.primaryScheduleId;
       state.scheduleList = action.payload.schedules;
     });
-    // Remove Calendar
+    // Remove schedule
     builder.addCase(removeScheduleAsync.fulfilled, (state, action) => {
       const scheduleList = action.payload.schedules;
       const primaryScheduleId = action.payload.primaryScheduleId;
@@ -216,11 +216,11 @@ const scheduleSlice = createSlice({
         state.primaryScheduleId = "";
       }
     });
-    // Get Calendar By Id
+    // Get schedule By Id
     builder.addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
       state.currentSchedule = action.payload;
     });
-    // Update Calendar
+    // Update schedule
     builder.addCase(updateScheduleAsync.fulfilled, (state, action) => {
       state.scheduleList = action.payload.schedules;
       state.primaryScheduleId = action.payload.primaryScheduleId;
@@ -228,7 +228,7 @@ const scheduleSlice = createSlice({
         (schedule) => schedule.id === action.payload.primaryScheduleId
       );
       if (primarySchedule) {
-        // Re order the calendar list
+        // Re order the schedule list
         const otherSchedules = state.scheduleList.filter(
           (schedule) => schedule.id !== action.payload.primaryScheduleId
         );

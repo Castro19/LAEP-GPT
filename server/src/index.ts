@@ -23,7 +23,7 @@ import teamRouter from "./routes/team";
 import classSearchRouter from "./routes/classSearch";
 import selectedSectionRouter from "./routes/selectedSection";
 import professorRouter from "./routes/professor";
-import scheduleRouter from "./routes/calendar";
+import scheduleRouter from "./routes/schedule";
 // LLM API
 import OpenAI from "openai";
 

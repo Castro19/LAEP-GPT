@@ -53,7 +53,7 @@ const ScheduleOptions = ({
       primaryScheduleId: string;
     };
     if (environment === "dev") {
-      console.log("UPDATED CALENDAR", updatedSchedule);
+      console.log("UPDATED SCHEDULE", updatedSchedule);
     }
 
     dispatch(scheduleActions.updateScheduleAsync(updatedSchedule));
@@ -64,7 +64,7 @@ const ScheduleOptions = ({
   // Delete flowchart and close popover after deleting
   const handleDeleteFlowchart = async (scheduleId: string) => {
     if (environment === "dev") {
-      console.log("DELETING CALENDAR", scheduleId);
+      console.log("DELETING SCHEDULE", scheduleId);
     }
     // Close the popover
     dispatch(scheduleActions.removeScheduleAsync(scheduleId));

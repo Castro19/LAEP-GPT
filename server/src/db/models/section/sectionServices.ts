@@ -10,7 +10,7 @@ import * as sectionCollection from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
 import { buildNonConflictingQuery } from "../../../helpers/queryBuilders/scheduling";
-import { fetchPrimarySchedule } from "../calendar/calendarListServices";
+import { fetchPrimarySchedule } from "../schedule/scheduleServices";
 
 /**
  * Build a filter object that can be passed to the collection query.

@@ -10,7 +10,7 @@ const ScheduleAverageRating: React.FC = () => {
     return null;
   }
 
-  // Get the current calendar using the page value
+  // Get the current schedule using the page value
   const currentSchedule = schedules[page - 1];
   const calculatedAverageRating = currentSchedule.averageRating.toFixed(1);
   const averageRating =

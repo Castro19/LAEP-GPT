@@ -10,10 +10,10 @@ import { useEffect, useRef, useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 // Components
-import CalendarPageLayout from "@/components/layout/ScheduleBuilderPage/ScheduleBuilderPageLayout";
+import ScheduleBuilderPageLayout from "@/components/layout/ScheduleBuilderPage/ScheduleBuilderPageLayout";
 import ScheduleBuilderForm from "@/components/scheduleBuilder/buildSchedule/ScheduleBuilderForm";
 import {
-  EmptyCalendar,
+  EmptySchedule,
   ScheduleContainer,
   ScheduleBuilderAIChat,
   PaginationFooter,
@@ -47,7 +47,7 @@ const ScheduleBuilderPage = () => {
   // Ref variables to prevent fetching data multiple times
   const hasFetchedassistantList = useRef(false);
   const hasFetchedSelectedSections = useRef(false);
-  const hasFetchedCalendars = useRef(false);
+  const hasFetchedSchedules = useRef(false);
 
   // Fetch the selected sections
   useEffect(() => {
@@ -56,14 +56,14 @@ const ScheduleBuilderPage = () => {
     dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
   }, [dispatch]);
 
-  // Fetch the calendars
+  // Fetch the schedules
   useEffect(() => {
-    if (hasFetchedCalendars.current) return;
-    hasFetchedCalendars.current = true;
+    if (hasFetchedSchedules.current) return;
+    hasFetchedSchedules.current = true;
     dispatch(scheduleActions.fetchSchedulesAsync());
   }, [dispatch]);
 
-  // Fetch the current calendar by ID (if it exists)
+  // Fetch the current schedule by ID (if it exists)
   useEffect(() => {
     const fetchSchedule = async () => {
       if (scheduleId) {
@@ -130,15 +130,15 @@ const ScheduleBuilderPage = () => {
   }, [dispatch, navigate]);
 
   return (
-    <CalendarPageLayout>
+    <ScheduleBuilderPageLayout>
       {isNarrowScreen ? (
         <ScheduleBuilderMobile />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
           <div className="col-span-1">
-            <Tabs defaultValue="Build Schedule">
+            <Tabs defaultValue="build-schedule">
               <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
-                <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
+                <TabsTrigger value="build-schedule">Build Schedule</TabsTrigger>
                 <TabsTrigger
                   value="AI Chat"
                   disabled={!currentSchedule || !selectedSections}
@@ -146,7 +146,7 @@ const ScheduleBuilderPage = () => {
                   AI Chat
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="Build Schedule">
+              <TabsContent value="build-schedule">
                 <ScheduleBuilderForm onSwitchTab={() => {}} />
               </TabsContent>
               <TabsContent value="AI Chat">
@@ -160,7 +160,7 @@ const ScheduleBuilderPage = () => {
                 {!selectedSections || selectedSections.length === 0 ? (
                   <NoSelectedSections />
                 ) : (
-                  <EmptyCalendar />
+                  <EmptySchedule />
                 )}
               </div>
             ) : (
@@ -172,7 +172,7 @@ const ScheduleBuilderPage = () => {
           </div>
         </div>
       )}
-    </CalendarPageLayout>
+    </ScheduleBuilderPageLayout>
   );
 };
 
@@ -181,18 +181,21 @@ const ScheduleBuilderMobile = () => {
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const [tabValue, setTabValue] = useState("Build Schedule");
+  const [tabValue, setTabValue] = useState<"build-schedule" | "schedule">(
+    "build-schedule"
+  );
 
   return (
     <Tabs
       value={tabValue}
-      onValueChange={(value) => setTabValue(value)}
-      defaultValue="Build Schedule"
+      onValueChange={(value) =>
+        setTabValue(value as "build-schedule" | "schedule")
+      }
+      defaultValue="build-schedule"
     >
       <TabsList className="grid w-full grid-cols-3 dark:bg-gray-900">
-        <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
-        <TabsTrigger value="Calendar">Calendar</TabsTrigger>
-
+        <TabsTrigger value="build-schedule">Build Schedule</TabsTrigger>
+        <TabsTrigger value="schedule">Schedule</TabsTrigger>
         <TabsTrigger
           value="AI Chat"
           disabled={!currentSchedule || !selectedSections}
@@ -200,10 +203,10 @@ const ScheduleBuilderMobile = () => {
           AI Chat
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="Build Schedule">
-        <ScheduleBuilderForm onSwitchTab={() => setTabValue("Calendar")} />
+      <TabsContent value="build-schedule">
+        <ScheduleBuilderForm onSwitchTab={() => setTabValue("schedule")} />
       </TabsContent>
-      <TabsContent value="Calendar">
+      <TabsContent value="schedule">
         <ScheduleContainer />
         <PaginationFooter />
       </TabsContent>

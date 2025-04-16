@@ -1,6 +1,6 @@
 import { environment } from "../../..";
-import * as scheduleListModel from "./calendarListCollection";
-import * as scheduleCollection from "./calendarCollection";
+import * as scheduleListModel from "./scheduleListCollection";
+import * as scheduleCollection from "./scheduleCollection";
 import {
   Schedule,
   ScheduleListItem,

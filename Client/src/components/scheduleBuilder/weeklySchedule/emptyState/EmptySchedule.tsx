@@ -41,7 +41,7 @@ const COPY = {
     "Not affiliated with Cal Poly SLO administration. Always confirm with official Cal Poly systems final schedule",
 };
 
-const EmptyCalendar = () => {
+const EmptySchedule = () => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -112,4 +112,4 @@ const EmptyCalendar = () => {
   );
 };
 
-export default EmptyCalendar;
+export default EmptySchedule;

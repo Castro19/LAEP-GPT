@@ -74,7 +74,7 @@ const ScheduleBuilderForm = ({
       console.log("Building schedule...");
       console.log("FORM PREFERENCES", form.getValues());
       console.log("SELECTED SECTIONS", selectedSections);
-      console.log("CURRENT CALENDAR", currentSchedule);
+      console.log("CURRENT SCHEDULE", currentSchedule);
     }
     // Create all combinations of sections
     const allCombinations = buildSchedule(selectedSections, form.getValues());
@@ -83,7 +83,7 @@ const ScheduleBuilderForm = ({
     dispatch(scheduleActions.setTotalPages(allCombinations.length));
     dispatch(scheduleActions.setCurrentSchedule(allCombinations[0]));
     navigate("/schedule-builder");
-    onSwitchTab("Calendar");
+    onSwitchTab("schedule-builder");
   };
 
   const handleSaveSchedule = () => {

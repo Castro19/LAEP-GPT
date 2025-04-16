@@ -151,7 +151,7 @@ const Scheduling = ({
                       navigate("/schedule-builder");
                     }}
                   >
-                    {"  "} Calendar
+                    {"  "} Schedule Builder
                   </span>
                 </FormLabel>
               </div>

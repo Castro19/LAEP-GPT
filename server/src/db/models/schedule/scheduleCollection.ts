@@ -10,7 +10,7 @@ const initializeCollection = (): Collection<ScheduleDocument> => {
   return getDb().collection("calendar");
 };
 
-// Create a new calendar with the given sections
+// Create a new schedule with the given sections
 export const createSchedule = async (
   schedule: Schedule
 ): Promise<InsertOneResult<ScheduleDocument>> => {
@@ -30,7 +30,7 @@ export const createSchedule = async (
   }
 };
 
-// Get a calendar by id
+// Get a schedule by id
 export const getScheduleById = async (
   userId: string,
   scheduleId: string
@@ -56,7 +56,7 @@ export const getScheduleById = async (
   }
 };
 
-// Delete /calendars/:id
+// Delete /schedule/:id
 export const deleteSchedule = async (
   userId: string,
   scheduleId: string

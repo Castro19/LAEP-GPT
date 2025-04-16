@@ -5,7 +5,7 @@ import {
   SelectedSection,
 } from "@polylink/shared/types";
 
-// Calendar List
+// Schedule List
 export async function fetchSchedules(): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
@@ -45,7 +45,7 @@ export async function createOrUpdateSchedule(
   }
 }
 
-// Update Calendar List Item
+// Update Schedule List Item
 export async function updateSchedule(
   schedule: Schedule,
   primaryScheduleId: string,
@@ -71,7 +71,7 @@ export async function updateSchedule(
   }
 }
 
-// Calendar Item
+// Schedule Item
 export async function getScheduleById(scheduleId: string): Promise<Schedule> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {

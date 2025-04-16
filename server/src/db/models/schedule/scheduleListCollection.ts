@@ -43,7 +43,7 @@ export const findScheduleListByUserId = async (
   }
 };
 
-// Create a new calendar with the given sections
+// Create a new schedule with the given sections
 export const createOrUpdateScheduleList = async (
   userId: string,
   schedule: ScheduleListItem,

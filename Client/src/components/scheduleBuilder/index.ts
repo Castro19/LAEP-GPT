@@ -1,7 +1,7 @@
-// Weekly Calendar Components
+// Weekly Schedule Components
 export { default as WeeklySchedule } from "./weeklySchedule/WeeklySchedule";
 export { default as ScheduleContainer } from "./layout/ScheduleContainer";
-export { default as EmptyCalendar } from "./weeklySchedule/emptyState/EmptyCalendar";
+export { default as EmptySchedule } from "./weeklySchedule/emptyState/EmptySchedule";
 export { default as NoSelectedSections } from "./weeklySchedule/emptyState/NoSelectedSections";
 export { default as ScheduleAverageRating } from "./weeklySchedule/ScheduleAverageRating";
 export { default as ScheduleTimeSlots } from "./weeklySchedule/ScheduleTimeSlots";
