@@ -360,6 +360,27 @@ export async function getSectionsbyProjection(
 
   return await sectionCollection.findSectionsbyProjection(query, projection);
 }
+
+/**
+ * Get a section by its class number.
+ * @param classNumber The class number of the section to find.
+ * @returns The section with the given class number, or null if not found.
+ */
+export async function getSectionById(
+  classNumber: number
+): Promise<Section | null> {
+  try {
+    const query = { classNumber };
+    const result = await sectionCollection.findSectionsByFilter(query, 0, 1);
+    return result.sections.length > 0 ? result.sections[0] : null;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(`Error fetching section ${classNumber}:`, error);
+    }
+    return null;
+  }
+}
+
 /*
 minUnits: "1"
 maxUnits: "4"

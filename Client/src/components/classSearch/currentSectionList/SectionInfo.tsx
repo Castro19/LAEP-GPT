@@ -135,13 +135,15 @@ export const SectionSchedule: React.FC<SectionScheduleProps> = ({
   // Function to handle adding a section
   const handleAdd = async (section: SectionDetail) => {
     const { payload } = await dispatch(
-      sectionSelectionActions.createOrUpdateSelectedSectionAsync(section)
+      sectionSelectionActions.createOrUpdateSelectedSectionAsync({
+        section,
+        term: "spring2025", // You might want to make this dynamic based on user selection
+      })
     );
     const { message } = payload as { message: string };
 
     if (
-      message ===
-      `Try adding a different section for course ${section.courseId}`
+      message === `Section ${section.classNumber} is already in your schedule`
     ) {
       toast({
         title: `Section ${section.classNumber} Already Exists in schedule`,

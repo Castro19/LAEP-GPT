@@ -14,14 +14,27 @@ export type SelectedSection = {
     start_time: string | null;
     end_time: string | null;
   }>;
-  classPair: number[];
+  classPair: number | null;
   rating: number;
 };
 
-export type SelectedSectionDocument = SelectedSection & {
+export type CourseTerm = "spring2025" | "summer2025";
+
+export type SelectedSectionItem = {
+  sectionId: number;
+  term: CourseTerm;
+};
+
+export type SelectedSectionDocument = {
   _id: {
     $oid: string;
   };
   userId: string;
-  selectedSections: SelectedSection[];
+  selectedSections: {
+    [K in CourseTerm]: {
+      [classNumber: number]: {
+        addedAt: Date;
+      };
+    };
+  };
 };

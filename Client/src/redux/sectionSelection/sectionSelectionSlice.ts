@@ -1,9 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { SectionDetail, SelectedSection } from "@polylink/shared/types";
+import {
+  SectionDetail,
+  SelectedSection,
+  CourseTerm,
+} from "@polylink/shared/types";
 import {
   fetchSections,
   createOrUpdateSection,
-  transformSectionToSelectedSection,
+  transformSectionToSelectedSectionItem,
   removeSection,
 } from "./crudSelectionSection";
 import { environment } from "@/helpers/getEnvironmentVars";
@@ -17,13 +21,12 @@ const initialState: SectionSelectionState = {
   message: "",
 };
 
-// When calling fetchSections, pass page and pageSize too.
+// Fetch selected sections for a specific term or all terms
 export const fetchSelectedSectionsAsync = createAsyncThunk(
   "sections/fetchSections",
-  async () => {
+  async (term: CourseTerm) => {
     try {
-      const response = await fetchSections();
-
+      const response = await fetchSections(term);
       return response.selectedSections;
     } catch (error) {
       if (environment === "dev") {
@@ -36,10 +39,13 @@ export const fetchSelectedSectionsAsync = createAsyncThunk(
 
 export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
   "sections/createOrUpdateSelectedSection",
-  async (section: SectionDetail) => {
+  async ({ section, term }: { section: SectionDetail; term: CourseTerm }) => {
     try {
-      const selectedSection = transformSectionToSelectedSection(section);
-      const response = await createOrUpdateSection(selectedSection);
+      const selectedSectionItem = transformSectionToSelectedSectionItem(
+        section,
+        term
+      );
+      const response = await createOrUpdateSection(selectedSectionItem);
       return response;
     } catch (error) {
       if (environment === "dev") {
@@ -52,9 +58,9 @@ export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
 
 export const removeSelectedSectionAsync = createAsyncThunk(
   "sections/removeSelectedSection",
-  async (sectionId: number) => {
+  async ({ sectionId, term }: { sectionId: number; term: CourseTerm }) => {
     try {
-      const response = await removeSection(sectionId);
+      const response = await removeSection(sectionId, term);
       return response;
     } catch (error) {
       if (environment === "dev") {

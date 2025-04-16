@@ -1,6 +1,7 @@
 import {
-  SelectedSection,
   SelectedSectionDocument,
+  SelectedSectionItem,
+  CourseTerm,
 } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection, UpdateResult } from "mongodb";
@@ -39,7 +40,8 @@ export const findSelectedSectionsByUserId = async (
 // Delete /selectedSections/:id
 export const deleteSelectedSection = async (
   userId: string,
-  sectionId: number
+  sectionId: number,
+  term: CourseTerm
 ): Promise<UpdateResult> => {
   if (!selectedSectionCollection) {
     selectedSectionCollection = initializeCollection();
@@ -48,7 +50,7 @@ export const deleteSelectedSection = async (
   try {
     const result = await selectedSectionCollection.updateOne(
       { userId },
-      { $pull: { selectedSections: { classNumber: sectionId } } }
+      { $unset: { [`selectedSections.${term}.${sectionId}`]: "" } }
     );
     if (result.modifiedCount === 0) {
       throw new Error("Section not found");
@@ -64,15 +66,46 @@ export const deleteSelectedSection = async (
 
 export const createOrUpdateSelectedSection = async (
   userId: string,
-  newSection: SelectedSection
+  newSection: SelectedSectionItem
 ): Promise<UpdateResult<SelectedSectionDocument>> => {
   if (!selectedSectionCollection) {
     selectedSectionCollection = initializeCollection();
   }
   try {
+    // First, check if the document exists and has the correct structure
+    const existingDoc = await selectedSectionCollection.findOne({ userId });
+
+    if (existingDoc) {
+      // Check if the document has the correct structure
+      if (
+        !existingDoc.selectedSections ||
+        typeof existingDoc.selectedSections !== "object"
+      ) {
+        // If the structure is incorrect, initialize it with the correct structure
+        await selectedSectionCollection.updateOne(
+          { userId },
+          {
+            $set: {
+              selectedSections: {
+                spring2025: {},
+                summer2025: {},
+              },
+            },
+          }
+        );
+      }
+    }
+
+    // Now update with the new section
     const updateResult = await selectedSectionCollection.updateOne(
       { userId },
-      { $addToSet: { selectedSections: newSection } },
+      {
+        $set: {
+          [`selectedSections.${newSection.term}.${newSection.sectionId}`]: {
+            addedAt: new Date(),
+          },
+        },
+      },
       { upsert: true }
     );
 

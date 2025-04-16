@@ -53,7 +53,7 @@ const ScheduleBuilderPage = () => {
   useEffect(() => {
     if (hasFetchedSelectedSections.current) return;
     hasFetchedSelectedSections.current = true;
-    dispatch(sectionSelectionActions.fetchSelectedSectionsAsync());
+    dispatch(sectionSelectionActions.fetchSelectedSectionsAsync("spring2025"));
   }, [dispatch]);
 
   // Fetch the schedules

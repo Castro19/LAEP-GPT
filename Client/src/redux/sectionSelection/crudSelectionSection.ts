@@ -1,11 +1,18 @@
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
-import { SectionDetail, SelectedSection } from "@polylink/shared/types";
+import {
+  SectionDetail,
+  SelectedSection,
+  SelectedSectionItem,
+  CourseTerm,
+} from "@polylink/shared/types";
 
-export async function fetchSections(): Promise<{
+export async function fetchSections(term: CourseTerm): Promise<{
   selectedSections: SelectedSection[];
   message: string;
 }> {
-  const response = await fetch(`${serverUrl}/selectedSections`, {
+  const url = `${serverUrl}/selectedSections/${term}`;
+
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -15,7 +22,7 @@ export async function fetchSections(): Promise<{
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Failed to create flowchart");
+    throw new Error(error.message || "Failed to fetch selected sections");
   }
   const data: {
     selectedSections: SelectedSection[];
@@ -24,7 +31,9 @@ export async function fetchSections(): Promise<{
   return data;
 }
 
-export async function createOrUpdateSection(section: SelectedSection): Promise<{
+export async function createOrUpdateSection(
+  section: SelectedSectionItem
+): Promise<{
   selectedSections: SelectedSection[];
   message: string;
 }> {
@@ -39,7 +48,7 @@ export async function createOrUpdateSection(section: SelectedSection): Promise<{
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Failed to create flowchart");
+    throw new Error(error.message || "Failed to create or update section");
   }
   const data: {
     selectedSections: SelectedSection[];
@@ -48,18 +57,24 @@ export async function createOrUpdateSection(section: SelectedSection): Promise<{
   return data;
 }
 
-export async function removeSection(sectionId: number): Promise<{
+export async function removeSection(
+  sectionId: number,
+  term: CourseTerm
+): Promise<{
   selectedSections: SelectedSection[];
   message: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/selectedSections/${sectionId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${serverUrl}/selectedSections/${term}/${sectionId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -79,31 +94,12 @@ export async function removeSection(sectionId: number): Promise<{
   }
 }
 
-export function transformSectionToSelectedSection(
-  section: SectionDetail
-): SelectedSection {
-  const professorRatings = section.instructorsWithRatings?.map(
-    (instructor) => ({
-      name: instructor.name,
-      id: instructor.id,
-    })
-  );
+export function transformSectionToSelectedSectionItem(
+  section: SectionDetail,
+  term: CourseTerm
+): SelectedSectionItem {
   return {
-    courseId: section.courseId,
-    courseName: section.courseName,
-    classNumber: section.classNumber,
-    units: section.units,
-    component: section.component,
-    enrollmentStatus: section.enrollmentStatus,
-    meetings: section.meetings.map((meeting) => ({
-      ...meeting,
-      days: meeting.days.filter((day) => day),
-    })),
-    classPair: section.pairedSections,
-    professors: professorRatings ?? [],
-    rating:
-      section.instructorsWithRatings?.[0]?.overallRating ||
-      section.instructorsWithRatings?.[1]?.overallRating ||
-      0,
+    sectionId: section.classNumber,
+    term,
   };
 }
