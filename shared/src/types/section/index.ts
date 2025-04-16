@@ -88,6 +88,7 @@ export type SectionsFilterParams = {
   };
   withNoConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
   isCreditNoCredit?: boolean;
+  term: "spring2025" | "summer2025";
 };
 
 // ------------------------------------------------------------
