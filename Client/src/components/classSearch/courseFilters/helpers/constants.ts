@@ -46,7 +46,7 @@ export const SECTION_FILTERS_SCHEMA = z.object({
   isCreditNoCredit: z.boolean().optional(),
 });
 
-export const CALENDAR_PREFERENCES_SCHEMA = z.object({
+export const SCHEDULE_PREFERENCES_SCHEMA = z.object({
   minUnits: z.string().optional(),
   maxUnits: z.string().optional(),
   minInstructorRating: z.string().optional(),

@@ -5,7 +5,7 @@ type ProfileEmptyStateProps = {
   title: string;
   description: string;
   icon: React.ReactNode;
-  type: "flowchart" | "calendar";
+  type: "flowchart" | "schedule-builder";
 };
 
 const ProfileEmptyState = ({
@@ -19,8 +19,8 @@ const ProfileEmptyState = ({
   const handleClick = () => {
     if (type === "flowchart") {
       navigate("/flowchart");
-    } else if (type === "calendar") {
-      navigate("/calendar");
+    } else if (type === "schedule-builder") {
+      navigate("/schedule-builder");
     }
   };
   return (

@@ -1,4 +1,4 @@
-import { Calendar, Meeting } from "@polylink/shared/types";
+import { Schedule, Meeting } from "@polylink/shared/types";
 // function buildQuery(sectionInfo: ScheduleBuilderSection[]) {
 //   return sectionInfo.map((section) => section.courseId);
 // }
@@ -11,8 +11,8 @@ import { Calendar, Meeting } from "@polylink/shared/types";
  * Minimal interface for a meeting relevant to time and days
  */
 
-function findMeetingTimes(calendar: Calendar): Meeting[] {
-  return calendar.sections.flatMap((section) => section.meetings) as Meeting[];
+function findMeetingTimes(schedule: Schedule): Meeting[] {
+  return schedule.sections.flatMap((section) => section.meetings) as Meeting[];
 }
 /**
  * Builds a MongoDB filter query to find Sections that have **no** conflicts
@@ -21,10 +21,10 @@ function findMeetingTimes(calendar: Calendar): Meeting[] {
  * A conflict is defined as any overlap in day(s) and time range.
  */
 function buildNonConflictingQuery(
-  primaryCalendar: Calendar
+  primarySchedule: Schedule
 ): Record<string, unknown> {
-  console.log("primaryCalendar", primaryCalendar);
-  const userMeetings = findMeetingTimes(primaryCalendar);
+  console.log("primarySchedule", primarySchedule);
+  const userMeetings = findMeetingTimes(primarySchedule);
   console.log("userMeetings", userMeetings);
   // If the user has no meetings, don't filter anything out.
   if (!userMeetings || userMeetings.length === 0) {

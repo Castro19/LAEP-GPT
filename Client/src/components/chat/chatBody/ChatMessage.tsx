@@ -62,7 +62,7 @@ const ChatMessage = ({ msg }: ChatMessageProps) => {
   const isScreenWidthSmall =
     isNarrowScreen ||
     location.pathname.includes("/class-search") ||
-    location.pathname.includes("/calendar");
+    location.pathname.includes("/schedule-builder");
 
   const handleLike = (id: string) => {
     if (currentChatId) {

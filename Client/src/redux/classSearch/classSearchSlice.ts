@@ -11,7 +11,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 
 export interface ClassSearchState {
   sections: Section[];
-  calendarSelectedSection: Section | null;
+  scheduleSelectedSection: Section | null;
   total: number;
   page: number;
   totalPages: number;
@@ -29,7 +29,7 @@ export interface ClassSearchState {
 
 const initialState: ClassSearchState = {
   sections: [],
-  calendarSelectedSection: null,
+  scheduleSelectedSection: null,
   total: 0,
   page: 1,
   totalPages: 0,
@@ -215,7 +215,7 @@ const classSearchSlice = createSlice({
       })
       .addCase(fetchSingleSection.fulfilled, (state, action) => {
         state.loading = false;
-        state.calendarSelectedSection = action.payload[0];
+        state.scheduleSelectedSection = action.payload[0];
       })
       .addCase(fetchSingleSection.rejected, (state) => {
         state.loading = false;

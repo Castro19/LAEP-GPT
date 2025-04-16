@@ -148,10 +148,10 @@ const Scheduling = ({
                   <span
                     className="text-blue-500 cursor-pointer ml-1"
                     onClick={() => {
-                      navigate("/calendar");
+                      navigate("/schedule-builder");
                     }}
                   >
-                    {"  "} Calendar
+                    {"  "} Schedule Builder
                   </span>
                 </FormLabel>
               </div>

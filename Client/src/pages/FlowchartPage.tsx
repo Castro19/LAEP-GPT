@@ -19,7 +19,7 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileFlowchartLayout from "@/components/layout/FlowchartPage/MobileFlowchartLayout";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarAIChatContainer } from "@/components/calendar";
+import { ScheduleBuilderAIChat } from "@/components/scheduleBuilder";
 import FlowchartBuilderForm from "@/components/flowchart/flowchartSidePanel/FlowchartBuilderForm";
 
 const FlowChartPage = () => {
@@ -122,7 +122,7 @@ const FlowChartPage = () => {
                       <FlowchartBuilderForm />
                     </TabsContent>
                     <TabsContent value="AI Chat">
-                      <CalendarAIChatContainer />
+                      <ScheduleBuilderAIChat />
                     </TabsContent>
                   </Tabs>
                 </div>

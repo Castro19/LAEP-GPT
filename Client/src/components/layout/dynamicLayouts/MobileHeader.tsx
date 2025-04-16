@@ -25,7 +25,7 @@ function MobileHeader() {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
@@ -64,8 +64,8 @@ function MobileHeader() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat") {
       handleChatClick();
-    } else if (path === "/calendar" && currentCalendar) {
-      navigate(`/calendar/${currentCalendar.id}`);
+    } else if (path === "/schedule-builder" && currentSchedule) {
+      navigate(`/schedule-builder/${currentSchedule.id}`);
     } else {
       navigate(path);
     }
@@ -79,8 +79,8 @@ function MobileHeader() {
       );
     } else if (path === "/chat" && currentChatId) {
       return location.pathname === `/chat/${currentChatId}`;
-    } else if (path === "/calendar" && currentCalendar) {
-      return location.pathname === `/calendar/${currentCalendar.id}`;
+    } else if (path === "/schedule-builder" && currentSchedule) {
+      return location.pathname === `/schedule-builder/${currentSchedule.id}`;
     } else {
       return location.pathname === path;
     }
@@ -132,9 +132,9 @@ function MobileHeader() {
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
-                onClick={() => handleNavigation("/calendar")}
+                onClick={() => handleNavigation("/schedule-builder")}
                 className={`${
-                  isActive("/calendar")
+                  isActive("/schedule-builder")
                     ? "text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-600"
                     : "hover:text-slate-600"
                 }`}
@@ -142,7 +142,7 @@ function MobileHeader() {
                 <FaCalendarAlt className="w-5 h-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Weekly Calendar</TooltipContent>
+            <TooltipContent>Schedule Builder</TooltipContent>
           </Tooltip>
         </TooltipProvider>
 

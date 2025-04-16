@@ -1,5 +1,5 @@
 import {
-  calendarActions,
+  scheduleActions,
   flowchartActions,
   useAppDispatch,
   useAppSelector,
@@ -20,7 +20,7 @@ import { Interests } from "@/components/register/SignInFlow/Interests";
 import BasicInformation from "@/components/register/SignInFlow/BasicInformation";
 import ProfileEmptyState from "@/components/userProfile/ProfileEmptyState";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { WeeklyCalendar } from "@/components/calendar";
+import { WeeklySchedule } from "@/components/scheduleBuilder";
 import { HiOutlineAcademicCap, HiOutlineCalendar } from "react-icons/hi2";
 import ProfilePageLayout from "@/components/layout/ProfilePage/ProfilePageLayout";
 
@@ -54,10 +54,10 @@ const flowchartEmptyState = {
   icon: <HiOutlineAcademicCap className="text-slate-300" size={48} />,
 };
 
-const weeklyCalendarEmptyState = {
-  title: "No Calendar Found",
+const weeklyScheduleEmptyState = {
+  title: "No Schedule Found",
   description:
-    "Create a calendar to view your weekly schedule for Spring 2025!",
+    "Create a schedule to view your weekly schedule for Spring 2025!",
   icon: <HiOutlineCalendar className="text-slate-300" size={48} />,
 };
 
@@ -69,14 +69,14 @@ function ProfilePage() {
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
-  const { currentCalendar, primaryCalendarId } = useAppSelector(
-    (state) => state.calendar
+  const { currentSchedule, primaryScheduleId } = useAppSelector(
+    (state) => state.schedule
   );
 
   const initialLoadRef = useRef(false);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
   const flowchartOptionsRef = useRef<HTMLDivElement>(null);
-  const calendarsFetchedRef = useRef(false);
+  const schedulesFetchedRef = useRef(false);
   const previousFlowchartDataRef = useRef(flowchartData);
 
   const { handleSave } = useUserData();
@@ -133,21 +133,21 @@ function ProfilePage() {
   }, [flowchartData]);
 
   useEffect(() => {
-    const fetchCalendars = async () => {
-      if (calendarsFetchedRef.current) return;
-      calendarsFetchedRef.current = true;
+    const fetchSchedules = async () => {
+      if (schedulesFetchedRef.current) return;
+      schedulesFetchedRef.current = true;
 
-      await dispatch(calendarActions.fetchCalendarsAsync());
+      await dispatch(scheduleActions.fetchSchedulesAsync());
     };
 
-    fetchCalendars();
+    fetchSchedules();
   }, [dispatch]);
 
   useEffect(() => {
-    if (primaryCalendarId) {
-      dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
+    if (primaryScheduleId) {
+      dispatch(scheduleActions.getScheduleByIdAsync(primaryScheduleId));
     }
-  }, [primaryCalendarId, dispatch]);
+  }, [primaryScheduleId, dispatch]);
 
   const handleSaveToast = () => {
     handleSave();
@@ -289,7 +289,7 @@ function ProfilePage() {
           <Tabs defaultValue="flowchart">
             <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
               <TabsTrigger value="flowchart">Flowchart</TabsTrigger>
-              <TabsTrigger value="weekly-calendar">Weekly Calendar</TabsTrigger>
+              <TabsTrigger value="weekly-schedule">Weekly Schedule</TabsTrigger>
             </TabsList>
             <TabsContent value="flowchart">
               {flowchartData ? (
@@ -307,19 +307,19 @@ function ProfilePage() {
                 />
               )}
             </TabsContent>
-            <TabsContent value="weekly-calendar">
-              {currentCalendar ? (
-                <WeeklyCalendar
-                  sections={currentCalendar.sections}
+            <TabsContent value="weekly-schedule">
+              {currentSchedule ? (
+                <WeeklySchedule
+                  sections={currentSchedule.sections}
                   height="100vh"
                 />
               ) : (
                 <div className="flex flex-col justify-center items-center">
                   <ProfileEmptyState
-                    title={weeklyCalendarEmptyState.title}
-                    description={weeklyCalendarEmptyState.description}
-                    icon={weeklyCalendarEmptyState.icon}
-                    type="calendar"
+                    title={weeklyScheduleEmptyState.title}
+                    description={weeklyScheduleEmptyState.description}
+                    icon={weeklyScheduleEmptyState.icon}
+                    type="schedule-builder"
                   />
                 </div>
               )}
