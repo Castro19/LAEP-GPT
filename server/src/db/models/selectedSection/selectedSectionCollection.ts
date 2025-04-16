@@ -1,5 +1,4 @@
 import {
-  SelectedSection,
   SelectedSectionDocument,
   SelectedSectionItem,
 } from "@polylink/shared/types";
