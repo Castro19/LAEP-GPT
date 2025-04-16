@@ -9,7 +9,7 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 const CalendarContainer = () => {
   const isNarrowScreen = useIsNarrowScreen();
   const { calendars, currentCalendar } = useAppSelector(
-    (state) => state.calendar
+    (state) => state.schedule
   );
 
   if (!currentCalendar && calendars.length === 0) {

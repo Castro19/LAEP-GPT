@@ -4,7 +4,7 @@ import { Star } from "@/components/classSearch/reusable/sectionInfo/StarRating";
 import { Card } from "@/components/ui/card";
 
 const CalendarAverageRating: React.FC = () => {
-  const { calendars, page } = useAppSelector((state) => state.calendar);
+  const { calendars, page } = useAppSelector((state) => state.schedule);
 
   if (calendars.length === 0) {
     return null;

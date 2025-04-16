@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 const PaginationFooter = () => {
   const dispatch = useAppDispatch();
   const { page, totalPages, loading, calendars } = useAppSelector(
-    (state) => state.calendar
+    (state) => state.schedule
   );
 
   const handlePrev = () => {

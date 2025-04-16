@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import {
-  calendarActions,
+  scheduleActions,
   flowchartActions,
   useAppDispatch,
   useAppSelector,
@@ -40,7 +40,7 @@ const FlowchartBuilderForm = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const calendarPreferences = useAppSelector(
-    (state) => state.calendar.preferences
+    (state) => state.schedule.preferences
   );
 
   const form = useForm<FlowchartPreferencesForm>({
@@ -51,7 +51,7 @@ const FlowchartBuilderForm = ({
 
   useEffect(() => {
     if (JSON.stringify(watchedValues) !== JSON.stringify(calendarPreferences)) {
-      dispatch(calendarActions.setPreferences(watchedValues));
+      dispatch(scheduleActions.setPreferences(watchedValues));
     }
   }, [watchedValues, dispatch, calendarPreferences]);
 

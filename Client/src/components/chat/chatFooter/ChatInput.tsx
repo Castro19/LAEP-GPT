@@ -38,7 +38,7 @@ const ChatInput = ({
   // Redux
   const dispatch = useAppDispatch();
   const currentModel = useAppSelector((state) => state.assistant.currentModel);
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentCalendar } = useAppSelector((state) => state.schedule);
   const { msg, isNewChat, currentChatId, loading, error, messagesByChatId } =
     useAppSelector((state) => state.message);
 

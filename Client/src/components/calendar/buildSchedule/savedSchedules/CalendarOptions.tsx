@@ -11,7 +11,7 @@ import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
 import { Calendar, CalendarListItem } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
-import { calendarActions, useAppDispatch, useAppSelector } from "@/redux";
+import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
 const CalendarOptions = ({
@@ -31,7 +31,7 @@ const CalendarOptions = ({
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { primaryCalendarId } = useAppSelector((state) => state.calendar);
+  const { primaryCalendarId } = useAppSelector((state) => state.schedule);
   // Popover state
   const [open, setOpen] = useState(false);
 
@@ -56,7 +56,7 @@ const CalendarOptions = ({
       console.log("UPDATED CALENDAR", updatedCalendar);
     }
 
-    dispatch(calendarActions.updateCalendarAsync(updatedCalendar));
+    dispatch(scheduleActions.updateScheduleAsync(updatedCalendar));
 
     setOpen(false);
   };
@@ -67,7 +67,7 @@ const CalendarOptions = ({
       console.log("DELETING CALENDAR", calendarId);
     }
     // Close the popover
-    dispatch(calendarActions.removeCalendarAsync(calendarId));
+    dispatch(scheduleActions.removeScheduleAsync(calendarId));
     setOpen(false);
     navigate("/calendar");
   };

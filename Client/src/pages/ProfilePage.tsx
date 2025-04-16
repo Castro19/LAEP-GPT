@@ -1,5 +1,5 @@
 import {
-  calendarActions,
+  scheduleActions,
   flowchartActions,
   useAppDispatch,
   useAppSelector,
@@ -70,7 +70,7 @@ function ProfilePage() {
     (state) => state.flowchart
   );
   const { currentCalendar, primaryCalendarId } = useAppSelector(
-    (state) => state.calendar
+    (state) => state.schedule
   );
 
   const initialLoadRef = useRef(false);
@@ -133,19 +133,19 @@ function ProfilePage() {
   }, [flowchartData]);
 
   useEffect(() => {
-    const fetchCalendars = async () => {
+    const fetchSchedules = async () => {
       if (calendarsFetchedRef.current) return;
       calendarsFetchedRef.current = true;
 
-      await dispatch(calendarActions.fetchCalendarsAsync());
+      await dispatch(scheduleActions.fetchSchedulesAsync());
     };
 
-    fetchCalendars();
+    fetchSchedules();
   }, [dispatch]);
 
   useEffect(() => {
     if (primaryCalendarId) {
-      dispatch(calendarActions.getCalendarByIdAsync(primaryCalendarId));
+      dispatch(scheduleActions.getScheduleByIdAsync(primaryCalendarId));
     }
   }, [primaryCalendarId, dispatch]);
 

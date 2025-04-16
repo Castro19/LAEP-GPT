@@ -1,6 +1,6 @@
 import {
   assistantActions,
-  calendarActions,
+  scheduleActions,
   useAppDispatch,
   useAppSelector,
 } from "@/redux";
@@ -35,7 +35,7 @@ const CalendarPage = () => {
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentCalendar } = useAppSelector((state) => state.schedule);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -60,7 +60,7 @@ const CalendarPage = () => {
   useEffect(() => {
     if (hasFetchedCalendars.current) return;
     hasFetchedCalendars.current = true;
-    dispatch(calendarActions.fetchCalendarsAsync());
+    dispatch(scheduleActions.fetchSchedulesAsync());
   }, [dispatch]);
 
   // Fetch the current calendar by ID (if it exists)
@@ -68,15 +68,15 @@ const CalendarPage = () => {
     const fetchCalendar = async () => {
       if (calendarId) {
         const response = await dispatch(
-          calendarActions.getCalendarByIdAsync(calendarId)
+          scheduleActions.getScheduleByIdAsync(calendarId)
         );
         const calendar = response.payload as Calendar;
         try {
           if (calendar.sections) {
-            dispatch(calendarActions.setCurrentCalendar(calendar));
-            dispatch(calendarActions.setCalendars([]));
-            dispatch(calendarActions.setPage(1));
-            dispatch(calendarActions.setTotalPages(1));
+            dispatch(scheduleActions.setCurrentCalendar(calendar));
+            dispatch(scheduleActions.setCalendars([]));
+            dispatch(scheduleActions.setPage(1));
+            dispatch(scheduleActions.setTotalPages(1));
           }
         } catch (error) {
           if (environment === "dev") {
@@ -177,7 +177,7 @@ const CalendarPage = () => {
 };
 
 const CalendarMobile = () => {
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentCalendar } = useAppSelector((state) => state.schedule);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );

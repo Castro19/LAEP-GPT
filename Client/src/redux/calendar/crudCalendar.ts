@@ -6,7 +6,7 @@ import {
 } from "@polylink/shared/types";
 
 // Calendar List
-export async function fetchCalendars(): Promise<{
+export async function fetchSchedules(): Promise<{
   calendars: CalendarListItem[];
   primaryCalendarId: string;
 }> {

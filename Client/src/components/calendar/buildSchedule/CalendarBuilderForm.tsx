@@ -1,4 +1,4 @@
-import { calendarActions, useAppDispatch, useAppSelector } from "@/redux";
+import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -29,9 +29,9 @@ const CalendarBuilderForm = ({
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentCalendar } = useAppSelector((state) => state.schedule);
   const calendarPreferences = useAppSelector(
-    (state) => state.calendar.preferences
+    (state) => state.schedule.preferences
   );
   const form = useForm<CalendarPreferencesForm>({
     resolver: zodResolver(CALENDAR_PREFERENCES_SCHEMA),
@@ -41,7 +41,7 @@ const CalendarBuilderForm = ({
 
   useEffect(() => {
     if (JSON.stringify(watchedValues) !== JSON.stringify(calendarPreferences)) {
-      dispatch(calendarActions.setPreferences(watchedValues));
+      dispatch(scheduleActions.setPreferences(watchedValues));
     }
   }, [watchedValues, dispatch, calendarPreferences]);
 
@@ -78,10 +78,10 @@ const CalendarBuilderForm = ({
     }
     // Create all combinations of sections
     const allCombinations = buildSchedule(selectedSections, form.getValues());
-    dispatch(calendarActions.setCalendars(allCombinations));
-    dispatch(calendarActions.setPage(1));
-    dispatch(calendarActions.setTotalPages(allCombinations.length));
-    dispatch(calendarActions.setCurrentCalendar(allCombinations[0]));
+    dispatch(scheduleActions.setCalendars(allCombinations));
+    dispatch(scheduleActions.setPage(1));
+    dispatch(scheduleActions.setTotalPages(allCombinations.length));
+    dispatch(scheduleActions.setCurrentCalendar(allCombinations[0]));
     navigate("/calendar");
     onSwitchTab("Calendar");
   };
@@ -89,7 +89,7 @@ const CalendarBuilderForm = ({
   const handleSaveSchedule = () => {
     if (currentCalendar) {
       dispatch(
-        calendarActions.createOrUpdateCalendarAsync(currentCalendar.sections)
+        scheduleActions.createOrUpdateSchedulesAsync(currentCalendar.sections)
       );
     }
   };

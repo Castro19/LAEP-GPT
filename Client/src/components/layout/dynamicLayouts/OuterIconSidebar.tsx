@@ -34,7 +34,7 @@ import { onNewChat } from "../../chat/helpers/newChatHandler";
 function OuterIconSidebar() {
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentCalendar } = useAppSelector((state) => state.schedule);
   const { error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );

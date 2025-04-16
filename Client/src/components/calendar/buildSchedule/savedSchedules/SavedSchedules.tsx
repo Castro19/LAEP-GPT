@@ -8,7 +8,7 @@ import { GoPin } from "react-icons/go";
 
 const SavedSchedules = () => {
   const { calendarList, primaryCalendarId } = useAppSelector(
-    (state) => state.calendar
+    (state) => state.schedule
   );
   return (
     <div>

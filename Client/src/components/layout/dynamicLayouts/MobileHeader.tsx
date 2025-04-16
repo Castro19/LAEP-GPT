@@ -25,7 +25,7 @@ function MobileHeader() {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
-  const { currentCalendar } = useAppSelector((state) => state.calendar);
+  const { currentCalendar } = useAppSelector((state) => state.schedule);
   const { error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
