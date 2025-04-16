@@ -2,8 +2,8 @@ import { environment } from "../../..";
 import * as scheduleListModel from "./calendarListCollection";
 import * as scheduleCollection from "./calendarCollection";
 import {
-  Calendar,
-  CalendarListItem,
+  Schedule,
+  ScheduleListItem,
   SelectedSection,
 } from "@polylink/shared/types";
 import { v4 as uuidv4 } from "uuid";
@@ -11,8 +11,8 @@ import { v4 as uuidv4 } from "uuid";
 export const getScheduleListByUserId = async (
   userId: string
 ): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> => {
   try {
     const result = await scheduleListModel.findScheduleListByUserId(userId);
@@ -22,12 +22,12 @@ export const getScheduleListByUserId = async (
       }
       return {
         schedules: [],
-        primaryCalendarId: "",
+        primaryScheduleId: "",
       };
     }
     return {
-      schedules: result.calendars,
-      primaryCalendarId: result.primaryCalendarId,
+      schedules: result.schedules,
+      primaryScheduleId: result.primaryScheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -42,17 +42,17 @@ export const updateScheduleListItem = async ({
   scheduleId,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   schedule,
-  primaryCalendarId,
+  primaryScheduleId,
   name,
 }: {
   userId: string;
   scheduleId: string;
-  schedule: Calendar;
-  primaryCalendarId: string;
+  schedule: Schedule;
+  primaryScheduleId: string;
   name: string;
 }): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> => {
   const scheduleListItem = {
     id: scheduleId,
@@ -63,7 +63,7 @@ export const updateScheduleListItem = async ({
     const scheduleResult = await scheduleListModel.updateScheduleListItem(
       userId,
       scheduleListItem,
-      primaryCalendarId
+      primaryScheduleId
     );
     if (!scheduleResult) {
       throw new Error("Failed to update schedule");
@@ -73,12 +73,12 @@ export const updateScheduleListItem = async ({
       console.error("No schedules found for the user");
       return {
         schedules: [],
-        primaryCalendarId: "",
+        primaryScheduleId: "",
       };
     }
     return {
-      schedules: schedules.calendars,
-      primaryCalendarId: schedules.primaryCalendarId,
+      schedules: schedules.schedules,
+      primaryScheduleId: schedules.primaryScheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -92,8 +92,8 @@ export const createOrUpdateSchedule = async (
   userId: string,
   sections: SelectedSection[]
 ): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> => {
   try {
     const scheduleId = uuidv4();
@@ -103,7 +103,7 @@ export const createOrUpdateSchedule = async (
       id: scheduleId,
       userId,
       name: scheduleList
-        ? `Schedule ${scheduleList.calendars.length + 1}`
+        ? `Schedule ${scheduleList.schedules.length + 1}`
         : "Schedule 1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -115,7 +115,7 @@ export const createOrUpdateSchedule = async (
     }
     const schedules = await scheduleListModel.findScheduleListByUserId(userId);
     if (schedules) {
-      if (schedules.calendars.length === 0 || !schedules.primaryCalendarId) {
+      if (schedules.schedules.length === 0 || !schedules.primaryScheduleId) {
         await scheduleListModel.createOrUpdateScheduleList(
           userId,
           {
@@ -123,7 +123,7 @@ export const createOrUpdateSchedule = async (
             name: schedule.name,
             updatedAt: schedule.updatedAt,
           },
-          scheduleId // primary calendar
+          scheduleId // primary schedule
         );
       } else {
         await scheduleListModel.createOrUpdateScheduleList(
@@ -133,7 +133,7 @@ export const createOrUpdateSchedule = async (
             name: schedule.name,
             updatedAt: schedule.updatedAt,
           },
-          schedules.primaryCalendarId // not primary calendar
+          schedules.primaryScheduleId // not primary schedule
         );
       }
     }
@@ -143,12 +143,12 @@ export const createOrUpdateSchedule = async (
       console.error("No schedules found for the user");
       return {
         schedules: [],
-        primaryCalendarId: "",
+        primaryScheduleId: "",
       };
     }
     return {
-      schedules: finalSchedules.calendars,
-      primaryCalendarId: finalSchedules.primaryCalendarId,
+      schedules: finalSchedules.schedules,
+      primaryScheduleId: finalSchedules.primaryScheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -162,8 +162,8 @@ export const deleteScheduleItem = async (
   userId: string,
   scheduleId: string
 ): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> => {
   try {
     const scheduleList =
@@ -171,21 +171,21 @@ export const deleteScheduleItem = async (
     if (!scheduleList) {
       throw new Error("No schedules found for the user");
     }
-    if (scheduleList.primaryCalendarId === scheduleId) {
-      // We will need to update the primary calendar id
-      const newPrimaryCalendarId = scheduleList.calendars.find(
+    if (scheduleList.primaryScheduleId === scheduleId) {
+      // We will need to update the primary schedule id
+      const newPrimaryScheduleId = scheduleList.schedules.find(
         (schedule) => schedule.id !== scheduleId
       )?.id;
 
-      await scheduleListModel.updatePrimaryCalendarId(
+      await scheduleListModel.updatePrimaryScheduleId(
         userId,
-        newPrimaryCalendarId
+        newPrimaryScheduleId
       );
     }
 
     const result = await scheduleCollection.deleteSchedule(userId, scheduleId);
     if (!result) {
-      throw new Error("Schedule not found in calendar collection");
+      throw new Error("Schedule not found in schedule collection");
     }
 
     const deletedSchedule = await scheduleListModel.deleteScheduleListItem(
@@ -193,19 +193,19 @@ export const deleteScheduleItem = async (
       scheduleId
     );
     if (!deletedSchedule) {
-      throw new Error("Schedule not found in calendar list");
+      throw new Error("Schedule not found in schedule list");
     }
     const schedules = await scheduleListModel.findScheduleListByUserId(userId);
     if (!schedules) {
       console.error("No schedules found for the user");
       return {
         schedules: [],
-        primaryCalendarId: "",
+        primaryScheduleId: "",
       };
     }
     return {
-      schedules: schedules.calendars,
-      primaryCalendarId: schedules.primaryCalendarId,
+      schedules: schedules.schedules,
+      primaryScheduleId: schedules.primaryScheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -218,7 +218,7 @@ export const deleteScheduleItem = async (
 export const getScheduleById = async (
   userId: string,
   scheduleId: string
-): Promise<CalendarListItem | null> => {
+): Promise<Schedule | null> => {
   try {
     const result = await scheduleCollection.getScheduleById(userId, scheduleId);
     if (!result) {
@@ -235,10 +235,10 @@ export const getScheduleById = async (
 
 export const fetchPrimarySchedule = async (
   userId: string
-): Promise<Calendar | null> => {
+): Promise<Schedule | null> => {
   const scheduleList = await scheduleListModel.findScheduleListByUserId(userId);
 
-  const primaryScheduleId = scheduleList?.primaryCalendarId;
+  const primaryScheduleId = scheduleList?.primaryScheduleId;
   if (primaryScheduleId) {
     const result = await scheduleCollection.getScheduleById(
       userId,

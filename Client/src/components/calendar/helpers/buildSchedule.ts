@@ -3,11 +3,11 @@ import {
   generateAllScheduleCombinations,
   generateScheduleWithConflicts,
 } from ".";
-import { CalendarPreferencesForm } from "../buildSchedule/CalendarBuilderForm";
+import { SchedulePreferencesForm } from "../buildSchedule/CalendarBuilderForm";
 
 const buildSchedule = (
   selectedSections: SelectedSection[],
-  preferences: CalendarPreferencesForm
+  preferences: SchedulePreferencesForm
 ) => {
   let sections = selectedSections;
   if (preferences.openOnly) {

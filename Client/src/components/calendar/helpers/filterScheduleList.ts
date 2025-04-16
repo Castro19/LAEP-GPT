@@ -1,11 +1,11 @@
 import { SelectedSection } from "@polylink/shared/types";
-import { CalendarPreferencesForm } from "../buildSchedule/CalendarBuilderForm";
+import { SchedulePreferencesForm } from "../buildSchedule/CalendarBuilderForm";
 import { Schedule } from "./";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 function filterSchedules(
   allSchedules: SelectedSection[][],
-  preferences: CalendarPreferencesForm
+  preferences: SchedulePreferencesForm
 ): Schedule[] {
   const filteredSchedules: Schedule[] = [];
   //   Loop thru every schedule and identify which one to keep

@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/redux";
-import { CalendarListItem } from "@polylink/shared/types";
+import { ScheduleListItem } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CalendarOptions } from "@/components/calendar";
@@ -7,18 +7,18 @@ import { useState, useEffect } from "react";
 import { GoPin } from "react-icons/go";
 
 const SavedSchedules = () => {
-  const { calendarList, primaryCalendarId } = useAppSelector(
+  const { scheduleList, primaryScheduleId } = useAppSelector(
     (state) => state.schedule
   );
   return (
     <div>
       <div className="flex flex-col items-start justify-start gap-2">
-        {calendarList && calendarList.length > 0 ? (
-          calendarList.map((calendar: CalendarListItem) => (
+        {scheduleList && scheduleList.length > 0 ? (
+          scheduleList.map((schedule: ScheduleListItem) => (
             <ScheduleItem
-              key={calendar.id}
-              calendar={calendar}
-              isPrimary={calendar.id === primaryCalendarId}
+              key={schedule.id}
+              schedule={schedule}
+              isPrimary={schedule.id === primaryScheduleId}
             />
           ))
         ) : (
@@ -36,19 +36,19 @@ const SavedSchedules = () => {
 };
 
 const ScheduleItem = ({
-  calendar,
+  schedule,
   isPrimary,
 }: {
-  calendar: CalendarListItem;
+  schedule: ScheduleListItem;
   isPrimary: boolean;
 }) => {
-  const [name, setName] = useState(calendar.name);
+  const [name, setName] = useState(schedule.name);
   const [primaryOption, setPrimaryOption] = useState(isPrimary);
 
   const navigate = useNavigate();
 
   const handleSelectSchedule = () => {
-    navigate(`/calendar/${calendar.id}`);
+    navigate(`/calendar/${schedule.id}`);
   };
 
   useEffect(() => {
@@ -68,10 +68,10 @@ const ScheduleItem = ({
 
         <div className="flex-1 min-w-0 flex flex-col items-start justify-start gap-1 p-2">
           <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-            {calendar.name}
+            {schedule.name}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {new Date(calendar.updatedAt).toLocaleString(undefined, {
+            {new Date(schedule.updatedAt).toLocaleString(undefined, {
               month: "2-digit",
               day: "2-digit",
               hour: "2-digit",
@@ -84,7 +84,7 @@ const ScheduleItem = ({
         className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
       >
         <CalendarOptions
-          calendar={calendar}
+          schedule={schedule}
           name={name}
           onNameChange={setName}
           primaryOption={primaryOption}

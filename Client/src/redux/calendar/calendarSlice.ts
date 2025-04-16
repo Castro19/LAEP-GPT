@@ -1,7 +1,7 @@
 import { environment } from "@/helpers/getEnvironmentVars";
 import {
-  Calendar,
-  CalendarListItem,
+  Schedule,
+  ScheduleListItem,
   SelectedSection,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -27,15 +27,15 @@ export interface Preferences {
 export interface ScheduleState {
   page: number;
   totalPages: number;
-  calendars: {
+  schedules: {
     sections: SelectedSection[];
     averageRating: number;
     withConflicts?: boolean;
     conflictGroups?: SelectedSection[];
   }[];
-  calendarList: CalendarListItem[];
-  currentCalendar: Calendar | null;
-  primaryCalendarId: string;
+  scheduleList: ScheduleListItem[];
+  currentSchedule: Schedule | null;
+  primaryScheduleId: string;
   loading: boolean;
   preferences: Preferences;
 }
@@ -43,10 +43,10 @@ export interface ScheduleState {
 const initialState: ScheduleState = {
   page: 1,
   totalPages: 1,
-  calendars: [],
-  calendarList: [],
-  currentCalendar: null,
-  primaryCalendarId: "",
+  schedules: [],
+  scheduleList: [],
+  currentSchedule: null,
+  primaryScheduleId: "",
   loading: false,
   preferences: {
     minUnits: "",
@@ -66,8 +66,8 @@ export const fetchSchedulesAsync = createAsyncThunk(
   async () => {
     try {
       const response = await fetchSchedules();
-      const { schedules, primaryCalendarId } = response;
-      return { schedules, primaryCalendarId };
+      const { schedules, primaryScheduleId } = response;
+      return { schedules, primaryScheduleId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error fetching schedules:", error);
@@ -82,8 +82,8 @@ export const createOrUpdateSchedulesAsync = createAsyncThunk(
   async (sections: SelectedSection[]) => {
     try {
       const response = await createOrUpdateSchedule(sections);
-      const { schedules, primaryCalendarId } = response;
-      return { schedules, primaryCalendarId };
+      const { schedules, primaryScheduleId } = response;
+      return { schedules, primaryScheduleId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error creating or updating schedule:", error);
@@ -99,8 +99,8 @@ export const removeScheduleAsync = createAsyncThunk(
   async (scheduleId: string) => {
     try {
       const response = await removeSchedule(scheduleId);
-      const { schedules, primaryCalendarId } = response;
-      return { schedules, primaryCalendarId, scheduleId };
+      const { schedules, primaryScheduleId } = response;
+      return { schedules, primaryScheduleId, scheduleId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error removing schedule:", error);
@@ -129,18 +129,18 @@ export const updateScheduleAsync = createAsyncThunk(
   "calendars/updateSchedule",
   async ({
     schedule,
-    primaryCalendarId,
+    primaryScheduleId,
     name,
   }: {
-    schedule: Calendar;
-    primaryCalendarId: string;
+    schedule: Schedule;
+    primaryScheduleId: string;
     name: string;
   }) => {
     try {
-      const response = await updateSchedule(schedule, primaryCalendarId, name);
-      const { schedules, primaryCalendarId: newPrimaryCalendarId } = response;
+      const response = await updateSchedule(schedule, primaryScheduleId, name);
+      const { schedules, primaryScheduleId: newPrimaryScheduleId } = response;
 
-      return { schedules, primaryCalendarId: newPrimaryCalendarId };
+      return { schedules, primaryScheduleId: newPrimaryScheduleId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error updating schedule:", error);
@@ -154,8 +154,8 @@ const scheduleSlice = createSlice({
   name: "schedule",
   initialState,
   reducers: {
-    setCalendars(state, action) {
-      state.calendars = action.payload;
+    setSchedules(state, action) {
+      state.schedules = action.payload;
     },
     setPage(state, action) {
       state.page = action.payload;
@@ -163,8 +163,8 @@ const scheduleSlice = createSlice({
     setTotalPages(state, action) {
       state.totalPages = action.payload;
     },
-    setCurrentCalendar(state, action) {
-      state.currentCalendar = action.payload;
+    setCurrentSchedule(state, action) {
+      state.currentSchedule = action.payload;
     },
     setPreferences(state, action) {
       state.preferences = action.payload;
@@ -173,66 +173,66 @@ const scheduleSlice = createSlice({
   extraReducers: (builder) => {
     // Fetch Calendar List
     builder.addCase(fetchSchedulesAsync.fulfilled, (state, action) => {
-      state.primaryCalendarId = action.payload.primaryCalendarId;
+      state.primaryScheduleId = action.payload.primaryScheduleId;
       const scheduleList = action.payload.schedules;
-      const primaryCalendar = scheduleList.find(
-        (schedule) => schedule.id === state.primaryCalendarId
+      const primarySchedule = scheduleList.find(
+        (schedule) => schedule.id === state.primaryScheduleId
       );
-      if (primaryCalendar) {
-        // Put the primary calendar at the top of the list
-        const otherCalendars = scheduleList.filter(
-          (schedule) => schedule.id !== state.primaryCalendarId
+      if (primarySchedule) {
+        // Put the primary schedule at the top of the list
+        const otherSchedules = scheduleList.filter(
+          (schedule) => schedule.id !== state.primaryScheduleId
         );
-        state.calendarList = [primaryCalendar, ...otherCalendars];
+        state.scheduleList = [primarySchedule, ...otherSchedules];
       } else {
-        state.calendarList = scheduleList;
+        state.scheduleList = scheduleList;
       }
     });
     // Create or Update Calendar
     builder.addCase(createOrUpdateSchedulesAsync.fulfilled, (state, action) => {
-      state.primaryCalendarId = action.payload.primaryCalendarId;
-      state.calendarList = action.payload.schedules;
+      state.primaryScheduleId = action.payload.primaryScheduleId;
+      state.scheduleList = action.payload.schedules;
     });
     // Remove Calendar
     builder.addCase(removeScheduleAsync.fulfilled, (state, action) => {
       const scheduleList = action.payload.schedules;
-      const primaryCalendarId = action.payload.primaryCalendarId;
-      const primaryCalendar = scheduleList.find(
-        (schedule) => schedule.id === primaryCalendarId
+      const primaryScheduleId = action.payload.primaryScheduleId;
+      const primarySchedule = scheduleList.find(
+        (schedule) => schedule.id === primaryScheduleId
       );
-      if (primaryCalendar) {
-        // Put the primary calendar at the top of the list
-        const otherCalendars = scheduleList.filter(
-          (schedule) => schedule.id !== primaryCalendarId
+      if (primarySchedule) {
+        // Put the primary schedule at the top of the list
+        const otherSchedules = scheduleList.filter(
+          (schedule) => schedule.id !== primaryScheduleId
         );
-        state.calendarList = [primaryCalendar, ...otherCalendars];
+        state.scheduleList = [primarySchedule, ...otherSchedules];
 
-        state.calendarList = state.calendarList.filter(
+        state.scheduleList = state.scheduleList.filter(
           (schedule) => schedule.id !== action.payload.scheduleId
         );
-        state.primaryCalendarId = action.payload.primaryCalendarId;
+        state.primaryScheduleId = action.payload.primaryScheduleId;
       } else {
-        state.calendarList = scheduleList;
-        state.primaryCalendarId = "";
+        state.scheduleList = scheduleList;
+        state.primaryScheduleId = "";
       }
     });
     // Get Calendar By Id
     builder.addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
-      state.currentCalendar = action.payload;
+      state.currentSchedule = action.payload;
     });
     // Update Calendar
     builder.addCase(updateScheduleAsync.fulfilled, (state, action) => {
-      state.calendarList = action.payload.schedules;
-      state.primaryCalendarId = action.payload.primaryCalendarId;
-      const primaryCalendar = state.calendarList.find(
-        (schedule) => schedule.id === action.payload.primaryCalendarId
+      state.scheduleList = action.payload.schedules;
+      state.primaryScheduleId = action.payload.primaryScheduleId;
+      const primarySchedule = state.scheduleList.find(
+        (schedule) => schedule.id === action.payload.primaryScheduleId
       );
-      if (primaryCalendar) {
+      if (primarySchedule) {
         // Re order the calendar list
-        const otherCalendars = state.calendarList.filter(
-          (schedule) => schedule.id !== action.payload.primaryCalendarId
+        const otherSchedules = state.scheduleList.filter(
+          (schedule) => schedule.id !== action.payload.primaryScheduleId
         );
-        state.calendarList = [primaryCalendar, ...otherCalendars];
+        state.scheduleList = [primarySchedule, ...otherSchedules];
       }
     });
   },
@@ -241,8 +241,8 @@ const scheduleSlice = createSlice({
 export const {
   setPage,
   setTotalPages,
-  setCalendars,
-  setCurrentCalendar,
+  setSchedules,
+  setCurrentSchedule,
   setPreferences,
 } = scheduleSlice.actions;
 

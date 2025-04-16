@@ -38,7 +38,7 @@ const ChatInput = ({
   // Redux
   const dispatch = useAppDispatch();
   const currentModel = useAppSelector((state) => state.assistant.currentModel);
-  const { currentCalendar } = useAppSelector((state) => state.schedule);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { msg, isNewChat, currentChatId, loading, error, messagesByChatId } =
     useAppSelector((state) => state.message);
 
@@ -96,10 +96,10 @@ const ChatInput = ({
             // Include sections only for Schedule Analysis model
             sections:
               currentModel.title === "Schedule Analysis" &&
-              currentCalendar &&
-              currentCalendar.sections
+              currentSchedule &&
+              currentSchedule.sections
                 ? transformSectionsToScheduleBuilderSections(
-                    currentCalendar.sections
+                    currentSchedule.sections
                   )
                 : [],
           })

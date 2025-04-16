@@ -19,13 +19,13 @@ router.get("/", async (req: CustomRequest, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { schedules, primaryCalendarId } =
+    const { schedules, primaryScheduleId } =
       await getScheduleListByUserId(userId);
 
     return res.status(200).json({
       message: "Schedules fetched successfully",
       schedules,
-      primaryCalendarId,
+      primaryScheduleId,
     });
   } catch (error) {
     if (environment === "dev") {
@@ -46,7 +46,7 @@ router.post("/", async (req, res: any) => {
     return res.status(200).json({
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
-      primaryCalendarId: result.primaryCalendarId,
+      primaryScheduleId: result.primaryScheduleId,
     });
   } catch (error) {
     if (environment === "dev") {
@@ -86,18 +86,18 @@ router.put("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { schedule, primaryCalendarId, name } = req.body;
+    const { schedule, primaryScheduleId, name } = req.body;
     const result = await updateScheduleListItem({
       userId,
       scheduleId,
       schedule,
-      primaryCalendarId,
+      primaryScheduleId,
       name,
     });
     return res.status(200).json({
       message: "Schedule updated successfully",
       schedules: result.schedules,
-      primaryCalendarId: result.primaryCalendarId,
+      primaryScheduleId: result.primaryScheduleId,
     });
   } catch (error) {
     if (environment === "dev") {
@@ -114,7 +114,7 @@ router.delete("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { schedules, primaryCalendarId } = await deleteScheduleItem(
+    const { schedules, primaryScheduleId } = await deleteScheduleItem(
       userId,
       scheduleId
     );
@@ -122,7 +122,7 @@ router.delete("/:scheduleId", async (req, res: any) => {
     res.status(200).json({
       message: "Schedule deleted successfully",
       schedules,
-      primaryCalendarId,
+      primaryScheduleId,
     });
   } catch (error) {
     if (environment === "dev") {

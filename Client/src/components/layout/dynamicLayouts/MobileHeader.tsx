@@ -25,7 +25,7 @@ function MobileHeader() {
   const dispatch = useAppDispatch();
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
-  const { currentCalendar } = useAppSelector((state) => state.schedule);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
@@ -64,8 +64,8 @@ function MobileHeader() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat") {
       handleChatClick();
-    } else if (path === "/calendar" && currentCalendar) {
-      navigate(`/calendar/${currentCalendar.id}`);
+    } else if (path === "/calendar" && currentSchedule) {
+      navigate(`/calendar/${currentSchedule.id}`);
     } else {
       navigate(path);
     }
@@ -79,8 +79,8 @@ function MobileHeader() {
       );
     } else if (path === "/chat" && currentChatId) {
       return location.pathname === `/chat/${currentChatId}`;
-    } else if (path === "/calendar" && currentCalendar) {
-      return location.pathname === `/calendar/${currentCalendar.id}`;
+    } else if (path === "/calendar" && currentSchedule) {
+      return location.pathname === `/calendar/${currentSchedule.id}`;
     } else {
       return location.pathname === path;
     }

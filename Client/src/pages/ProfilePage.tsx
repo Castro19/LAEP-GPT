@@ -69,7 +69,7 @@ function ProfilePage() {
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
-  const { currentCalendar, primaryCalendarId } = useAppSelector(
+  const { currentSchedule, primaryScheduleId } = useAppSelector(
     (state) => state.schedule
   );
 
@@ -144,10 +144,10 @@ function ProfilePage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (primaryCalendarId) {
-      dispatch(scheduleActions.getScheduleByIdAsync(primaryCalendarId));
+    if (primaryScheduleId) {
+      dispatch(scheduleActions.getScheduleByIdAsync(primaryScheduleId));
     }
-  }, [primaryCalendarId, dispatch]);
+  }, [primaryScheduleId, dispatch]);
 
   const handleSaveToast = () => {
     handleSave();
@@ -308,9 +308,9 @@ function ProfilePage() {
               )}
             </TabsContent>
             <TabsContent value="weekly-calendar">
-              {currentCalendar ? (
+              {currentSchedule ? (
                 <WeeklyCalendar
-                  sections={currentCalendar.sections}
+                  sections={currentSchedule.sections}
                   height="100vh"
                 />
               ) : (

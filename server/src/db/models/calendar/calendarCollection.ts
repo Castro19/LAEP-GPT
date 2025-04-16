@@ -1,25 +1,25 @@
 import { InsertOneResult, DeleteResult } from "mongodb";
 import { environment } from "../../..";
-import { Calendar, CalendarDocument } from "@polylink/shared/types";
+import { Schedule, ScheduleDocument } from "@polylink/shared/types";
 import { Collection } from "mongodb";
 import { getDb } from "../../connection";
 
-let scheduleCollection: Collection<CalendarDocument>;
+let scheduleCollection: Collection<ScheduleDocument>;
 
-const initializeCollection = (): Collection<CalendarDocument> => {
+const initializeCollection = (): Collection<ScheduleDocument> => {
   return getDb().collection("calendar");
 };
 
 // Create a new calendar with the given sections
 export const createSchedule = async (
-  schedule: Calendar
-): Promise<InsertOneResult<CalendarDocument>> => {
+  schedule: Schedule
+): Promise<InsertOneResult<ScheduleDocument>> => {
   if (!scheduleCollection) {
     scheduleCollection = initializeCollection();
   }
   try {
     const result = await scheduleCollection.insertOne(
-      schedule as CalendarDocument
+      schedule as ScheduleDocument
     );
     return result;
   } catch (error) {
@@ -34,7 +34,7 @@ export const createSchedule = async (
 export const getScheduleById = async (
   userId: string,
   scheduleId: string
-): Promise<CalendarDocument | null> => {
+): Promise<ScheduleDocument | null> => {
   if (!scheduleCollection) {
     scheduleCollection = initializeCollection();
   }
@@ -84,10 +84,3 @@ export const deleteSchedule = async (
     throw error;
   }
 };
-
-/*
-    userId: string;
-    calendars: string[];
-    primaryCalendarId: string;
-};
-*/

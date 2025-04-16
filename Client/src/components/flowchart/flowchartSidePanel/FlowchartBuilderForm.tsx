@@ -1,14 +1,7 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-import {
-  scheduleActions,
-  flowchartActions,
-  useAppDispatch,
-  useAppSelector,
-} from "@/redux";
+import { flowchartActions, useAppDispatch } from "@/redux";
 
 // My Components
 import { BuildScheduleContainer } from "@/components/calendar";
@@ -39,21 +32,6 @@ const FlowchartBuilderForm = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const calendarPreferences = useAppSelector(
-    (state) => state.schedule.preferences
-  );
-
-  const form = useForm<FlowchartPreferencesForm>({
-    defaultValues: {},
-  });
-
-  const watchedValues = form.watch();
-
-  useEffect(() => {
-    if (JSON.stringify(watchedValues) !== JSON.stringify(calendarPreferences)) {
-      dispatch(scheduleActions.setPreferences(watchedValues));
-    }
-  }, [watchedValues, dispatch, calendarPreferences]);
 
   const handleCreateFlowchart = () => {
     dispatch(flowchartActions.setCreateFlowchart(true));

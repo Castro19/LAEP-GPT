@@ -1,6 +1,6 @@
 import { environment } from "@/helpers/getEnvironmentVars";
 import { SelectedSection } from "@polylink/shared/types";
-import { CalendarPreferencesForm } from "../buildSchedule/CalendarBuilderForm";
+import { SchedulePreferencesForm } from "../buildSchedule/CalendarBuilderForm";
 import {
   hasConflict,
   getValidSelectionsForCourse,
@@ -69,7 +69,7 @@ function combineCourseSelections(
  */
 function generateAllScheduleCombinations(
   sections: SelectedSection[],
-  preferences: CalendarPreferencesForm
+  preferences: SchedulePreferencesForm
 ): Schedule[] {
   // Group sections by courseId.
   const coursesMap = new Map<string, SelectedSection[]>();

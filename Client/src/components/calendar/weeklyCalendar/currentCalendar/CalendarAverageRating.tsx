@@ -4,21 +4,21 @@ import { Star } from "@/components/classSearch/reusable/sectionInfo/StarRating";
 import { Card } from "@/components/ui/card";
 
 const CalendarAverageRating: React.FC = () => {
-  const { calendars, page } = useAppSelector((state) => state.schedule);
+  const { schedules, page } = useAppSelector((state) => state.schedule);
 
-  if (calendars.length === 0) {
+  if (schedules.length === 0) {
     return null;
   }
 
   // Get the current calendar using the page value
-  const currentCalendar = calendars[page - 1];
-  const calculatedAverageRating = currentCalendar.averageRating.toFixed(1);
+  const currentSchedule = schedules[page - 1];
+  const calculatedAverageRating = currentSchedule.averageRating.toFixed(1);
   const averageRating =
     calculatedAverageRating === "NaN" ? null : calculatedAverageRating;
   const stars = Array.from({ length: 4 }, (_, index) => {
     const fillPercentage = Math.max(
       0,
-      Math.min(1, currentCalendar.averageRating - index)
+      Math.min(1, currentSchedule.averageRating - index)
     );
     return <Star key={index} fillPercentage={fillPercentage} />;
   });

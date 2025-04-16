@@ -34,7 +34,7 @@ import { onNewChat } from "../../chat/helpers/newChatHandler";
 function OuterIconSidebar() {
   const { userData } = useAppSelector((state) => state.user);
   const { currentChatId } = useAppSelector((state) => state.message);
-  const { currentCalendar } = useAppSelector((state) => state.schedule);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
@@ -93,8 +93,8 @@ function OuterIconSidebar() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat") {
       handleChatClick();
-    } else if (path === "/calendar" && currentCalendar && currentCalendar.id) {
-      navigate(`/calendar/${currentCalendar.id}`);
+    } else if (path === "/calendar" && currentSchedule && currentSchedule.id) {
+      navigate(`/calendar/${currentSchedule.id}`);
     } else {
       navigate(path);
     }
@@ -108,8 +108,8 @@ function OuterIconSidebar() {
       );
     } else if (path === "/chat" && currentChatId) {
       return location.pathname === `/chat/${currentChatId}`;
-    } else if (path === "/calendar" && currentCalendar && currentCalendar.id) {
-      return location.pathname === `/calendar/${currentCalendar.id}`;
+    } else if (path === "/calendar" && currentSchedule && currentSchedule.id) {
+      return location.pathname === `/calendar/${currentSchedule.id}`;
     } else {
       return location.pathname === path;
     }

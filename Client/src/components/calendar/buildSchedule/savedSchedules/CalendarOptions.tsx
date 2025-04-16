@@ -9,19 +9,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
-import { Calendar, CalendarListItem } from "@polylink/shared/types";
+import { Schedule, ScheduleListItem } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
 const CalendarOptions = ({
-  calendar,
+  schedule,
   name,
   onNameChange,
   primaryOption,
   onPrimaryChange,
 }: {
-  calendar: CalendarListItem;
+  schedule: ScheduleListItem;
   name: string;
   // eslint-disable-next-line no-unused-vars
   onNameChange: (name: string) => void;
@@ -31,7 +31,7 @@ const CalendarOptions = ({
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { primaryCalendarId } = useAppSelector((state) => state.schedule);
+  const { primaryScheduleId } = useAppSelector((state) => state.schedule);
   // Popover state
   const [open, setOpen] = useState(false);
 
@@ -44,13 +44,13 @@ const CalendarOptions = ({
   // Update flowchart data and close popover after saving
   const handleUpdateData = async () => {
     const updatedSchedule = {
-      schedule: calendar,
+      schedule: schedule,
       name: name,
-      primaryCalendarId: primaryOption ? calendar.id : primaryCalendarId,
+      primaryScheduleId: primaryOption ? schedule.id : primaryScheduleId,
     } as {
-      schedule: Calendar;
+      schedule: Schedule;
       name: string;
-      primaryCalendarId: string;
+      primaryScheduleId: string;
     };
     if (environment === "dev") {
       console.log("UPDATED CALENDAR", updatedSchedule);
@@ -86,7 +86,7 @@ const CalendarOptions = ({
             <Label htmlFor="name">Modify Name</Label>
             <Input
               id="name"
-              defaultValue={calendar.name}
+              defaultValue={schedule.name}
               onChange={handleNameChange}
             />
           </div>
@@ -107,7 +107,7 @@ const CalendarOptions = ({
             </Button>
             <Button
               variant="destructive"
-              onClick={() => handleDeleteFlowchart(calendar.id)}
+              onClick={() => handleDeleteFlowchart(schedule.id)}
             >
               Delete
             </Button>

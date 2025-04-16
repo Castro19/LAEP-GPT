@@ -8,11 +8,11 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const CalendarContainer = () => {
   const isNarrowScreen = useIsNarrowScreen();
-  const { calendars, currentCalendar } = useAppSelector(
+  const { schedules, currentSchedule } = useAppSelector(
     (state) => state.schedule
   );
 
-  if (!currentCalendar && calendars.length === 0) {
+  if (!currentSchedule && schedules.length === 0) {
     return (
       <div className="items-start justify-start">
         <NoSelectedSections />
@@ -20,7 +20,7 @@ const CalendarContainer = () => {
     );
   }
 
-  if (!currentCalendar) {
+  if (!currentSchedule) {
     return <div>Build a schedule first</div>;
   }
 
@@ -29,7 +29,7 @@ const CalendarContainer = () => {
       <div className="overflow-auto no-scroll">
         <CalendarAverageRating />
         <WeeklyCalendar
-          sections={currentCalendar.sections}
+          sections={currentSchedule.sections}
           height={isNarrowScreen ? "70vh" : "80vh"}
         />
       </div>

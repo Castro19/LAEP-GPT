@@ -35,7 +35,7 @@ const CalendarPage = () => {
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-  const { currentCalendar } = useAppSelector((state) => state.schedule);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -73,8 +73,8 @@ const CalendarPage = () => {
         const calendar = response.payload as Calendar;
         try {
           if (calendar.sections) {
-            dispatch(scheduleActions.setCurrentCalendar(calendar));
-            dispatch(scheduleActions.setCalendars([]));
+            dispatch(scheduleActions.setCurrentSchedule(calendar));
+            dispatch(scheduleActions.setSchedules([]));
             dispatch(scheduleActions.setPage(1));
             dispatch(scheduleActions.setTotalPages(1));
           }
@@ -141,7 +141,7 @@ const CalendarPage = () => {
                 <TabsTrigger value="Build Schedule">Build Schedule</TabsTrigger>
                 <TabsTrigger
                   value="AI Chat"
-                  disabled={!currentCalendar || !selectedSections}
+                  disabled={!currentSchedule || !selectedSections}
                 >
                   AI Chat
                 </TabsTrigger>
@@ -155,7 +155,7 @@ const CalendarPage = () => {
             </Tabs>
           </div>
           <div className="col-span-3 items-start justify-start">
-            {currentCalendar === null ? (
+            {currentSchedule === null ? (
               <div className="items-start justify-start">
                 {!selectedSections || selectedSections.length === 0 ? (
                   <NoSelectedSections />
@@ -177,7 +177,7 @@ const CalendarPage = () => {
 };
 
 const CalendarMobile = () => {
-  const { currentCalendar } = useAppSelector((state) => state.schedule);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
@@ -195,7 +195,7 @@ const CalendarMobile = () => {
 
         <TabsTrigger
           value="AI Chat"
-          disabled={!currentCalendar || !selectedSections}
+          disabled={!currentSchedule || !selectedSections}
         >
           AI Chat
         </TabsTrigger>

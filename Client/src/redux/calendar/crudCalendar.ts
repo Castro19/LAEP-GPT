@@ -1,14 +1,14 @@
 import { serverUrl } from "@/helpers/getEnvironmentVars";
 import {
-  Calendar,
-  CalendarListItem,
+  Schedule,
+  ScheduleListItem,
   SelectedSection,
 } from "@polylink/shared/types";
 
 // Calendar List
 export async function fetchSchedules(): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
@@ -25,8 +25,8 @@ export async function fetchSchedules(): Promise<{
 export async function createOrUpdateSchedule(
   sections: SelectedSection[]
 ): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
@@ -47,17 +47,17 @@ export async function createOrUpdateSchedule(
 
 // Update Calendar List Item
 export async function updateSchedule(
-  schedule: Calendar,
-  primaryCalendarId: string,
+  schedule: Schedule,
+  primaryScheduleId: string,
   name: string
 ): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${schedule.id}`, {
       method: "PUT",
-      body: JSON.stringify({ schedule, primaryCalendarId, name }),
+      body: JSON.stringify({ schedule, primaryScheduleId, name }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -72,7 +72,7 @@ export async function updateSchedule(
 }
 
 // Calendar Item
-export async function getScheduleById(scheduleId: string): Promise<Calendar> {
+export async function getScheduleById(scheduleId: string): Promise<Schedule> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {
       credentials: "include",
@@ -90,8 +90,8 @@ export async function getScheduleById(scheduleId: string): Promise<Calendar> {
 }
 
 export async function removeSchedule(scheduleId: string): Promise<{
-  schedules: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {

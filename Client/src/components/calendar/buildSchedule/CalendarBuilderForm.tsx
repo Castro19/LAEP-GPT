@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
-export type CalendarPreferencesForm = z.infer<
+export type SchedulePreferencesForm = z.infer<
   typeof CALENDAR_PREFERENCES_SCHEMA
 >;
 
@@ -29,11 +29,11 @@ const CalendarBuilderForm = ({
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const { currentCalendar } = useAppSelector((state) => state.schedule);
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const calendarPreferences = useAppSelector(
     (state) => state.schedule.preferences
   );
-  const form = useForm<CalendarPreferencesForm>({
+  const form = useForm<SchedulePreferencesForm>({
     resolver: zodResolver(CALENDAR_PREFERENCES_SCHEMA),
     defaultValues: calendarPreferences,
   });
@@ -45,7 +45,7 @@ const CalendarBuilderForm = ({
     }
   }, [watchedValues, dispatch, calendarPreferences]);
 
-  const onSubmit = (data: CalendarPreferencesForm) => {
+  const onSubmit = (data: SchedulePreferencesForm) => {
     console.log(data);
   };
 
@@ -74,22 +74,22 @@ const CalendarBuilderForm = ({
       console.log("Building schedule...");
       console.log("FORM PREFERENCES", form.getValues());
       console.log("SELECTED SECTIONS", selectedSections);
-      console.log("CURRENT CALENDAR", currentCalendar);
+      console.log("CURRENT CALENDAR", currentSchedule);
     }
     // Create all combinations of sections
     const allCombinations = buildSchedule(selectedSections, form.getValues());
-    dispatch(scheduleActions.setCalendars(allCombinations));
+    dispatch(scheduleActions.setSchedules(allCombinations));
     dispatch(scheduleActions.setPage(1));
     dispatch(scheduleActions.setTotalPages(allCombinations.length));
-    dispatch(scheduleActions.setCurrentCalendar(allCombinations[0]));
+    dispatch(scheduleActions.setCurrentSchedule(allCombinations[0]));
     navigate("/calendar");
     onSwitchTab("Calendar");
   };
 
   const handleSaveSchedule = () => {
-    if (currentCalendar) {
+    if (currentSchedule) {
       dispatch(
-        scheduleActions.createOrUpdateSchedulesAsync(currentCalendar.sections)
+        scheduleActions.createOrUpdateSchedulesAsync(currentSchedule.sections)
       );
     }
   };

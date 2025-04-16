@@ -1,19 +1,18 @@
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { setPage, setCurrentCalendar } from "@/redux/calendar/calendarSlice";
+import { useAppDispatch, useAppSelector, scheduleActions } from "@/redux";
 import { Button } from "@/components/ui/button";
 
 const PaginationFooter = () => {
   const dispatch = useAppDispatch();
-  const { page, totalPages, loading, calendars } = useAppSelector(
+  const { page, totalPages, loading, schedules } = useAppSelector(
     (state) => state.schedule
   );
 
   const handlePrev = () => {
     if (page > 1) {
       const newIndex = page - 2;
-      if (newIndex >= 0 && newIndex < calendars.length) {
-        dispatch(setPage(newIndex + 1));
-        dispatch(setCurrentCalendar(calendars[newIndex]));
+      if (newIndex >= 0 && newIndex < schedules.length) {
+        dispatch(scheduleActions.setPage(newIndex + 1));
+        dispatch(scheduleActions.setCurrentSchedule(schedules[newIndex]));
       }
     }
   };
@@ -21,9 +20,9 @@ const PaginationFooter = () => {
   const handleNext = () => {
     if (page < totalPages) {
       const newIndex = page;
-      if (newIndex >= 0 && newIndex < calendars.length) {
-        dispatch(setPage(newIndex + 1));
-        dispatch(setCurrentCalendar(calendars[newIndex]));
+      if (newIndex >= 0 && newIndex < schedules.length) {
+        dispatch(scheduleActions.setPage(newIndex + 1));
+        dispatch(scheduleActions.setCurrentSchedule(schedules[newIndex]));
       }
     }
   };

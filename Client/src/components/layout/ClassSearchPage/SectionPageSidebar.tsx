@@ -12,7 +12,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import { Calendar, Search, Star, MessageSquare } from "lucide-react";
+import { Schedule, Search, Star, MessageSquare } from "lucide-react";
 
 import { Droppable } from "@hello-pangea/dnd";
 import DraggableComponent from "@/components/classSearch/sidebar/DraggableComponent";
@@ -38,7 +38,7 @@ const ITEMS = [
     title: "Weekly Calendar",
     choice: Choice.Calendar,
     url: "#",
-    icon: Calendar,
+    icon: Schedule,
   },
   {
     title: "Ratings",

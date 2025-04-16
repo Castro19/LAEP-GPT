@@ -1,29 +1,29 @@
 import { SelectedSection } from "../selectedSection";
 
 // Calendar List
-export type CalendarListItem = {
+export type ScheduleListItem = {
   id: string;
   name: string;
   updatedAt: Date;
 };
-export type SavedCalendars = {
+export type SavedSchedules = {
   userId: string;
-  calendars: CalendarListItem[];
-  primaryCalendarId: string;
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
 };
 
-export type CalendarListDocument = SavedCalendars & {
+export type ScheduleListDocument = SavedSchedules & {
   _id: string;
 };
 
-// Calendar
-export type Calendar = {
+// Schedule
+export type Schedule = {
   id: string;
   name: string;
   sections: SelectedSection[];
   createdAt: Date;
   updatedAt: Date;
 };
-export type CalendarDocument = Calendar & {
+export type ScheduleDocument = Schedule & {
   _id: string;
 };
