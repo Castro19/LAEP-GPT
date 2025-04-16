@@ -3,7 +3,7 @@ import { getDb } from "../../connection";
 import { Collection, UpdateResult } from "mongodb";
 import { environment } from "../../..";
 
-let calendarCollection: Collection<CalendarListDocument>;
+let scheduleListCollection: Collection<CalendarListDocument>;
 
 const initializeCollection = (): Collection<CalendarListDocument> => {
   return getDb().collection("calendarList");
@@ -14,15 +14,15 @@ const initializeCollection = (): Collection<CalendarListDocument> => {
  * @param userId The ID of the user to find selected sections for.
  * @returns The selected sections for the user.
  */
-export const findCalendarListByUserId = async (
+export const findScheduleListByUserId = async (
   userId: string
 ): Promise<CalendarListDocument> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleListCollection) {
+    scheduleListCollection = initializeCollection();
   }
   try {
     // Dont return the _id
-    const result = await calendarCollection.findOne(
+    const result = await scheduleListCollection.findOne(
       { userId },
       { projection: { _id: 0 } }
     );
@@ -44,24 +44,24 @@ export const findCalendarListByUserId = async (
 };
 
 // Create a new calendar with the given sections
-export const createOrUpdateCalendarList = async (
+export const createOrUpdateScheduleList = async (
   userId: string,
-  calendar: CalendarListItem,
+  schedule: CalendarListItem,
   primaryCalendarId: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleListCollection) {
+    scheduleListCollection = initializeCollection();
   }
 
   try {
-    const updateResult = await calendarCollection.updateOne(
+    const updateResult = await scheduleListCollection.updateOne(
       { userId },
       {
         $addToSet: {
           calendars: {
-            id: calendar.id,
-            name: calendar.name,
-            updatedAt: calendar.updatedAt,
+            id: schedule.id,
+            name: schedule.name,
+            updatedAt: schedule.updatedAt,
           },
         },
         $set: {
@@ -80,21 +80,21 @@ export const createOrUpdateCalendarList = async (
   }
 };
 
-export const updateCalendarListItem = async (
+export const updateScheduleListItem = async (
   userId: string,
-  calendarListItem: CalendarListItem,
+  scheduleListItem: CalendarListItem,
   primaryCalendarId: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleListCollection) {
+    scheduleListCollection = initializeCollection();
   }
   try {
-    const updateResult = await calendarCollection.updateOne(
-      { userId, "calendars.id": calendarListItem.id },
+    const updateResult = await scheduleListCollection.updateOne(
+      { userId, "calendars.id": scheduleListItem.id },
       {
         $set: {
-          "calendars.$.name": calendarListItem.name,
-          "calendars.$.updatedAt": calendarListItem.updatedAt,
+          "calendars.$.name": scheduleListItem.name,
+          "calendars.$.updatedAt": scheduleListItem.updatedAt,
           primaryCalendarId: primaryCalendarId,
         },
       }
@@ -108,17 +108,17 @@ export const updateCalendarListItem = async (
   }
 };
 
-export const deleteCalendarListItem = async (
+export const deleteScheduleListItem = async (
   userId: string,
-  calendarId: string
+  scheduleId: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleListCollection) {
+    scheduleListCollection = initializeCollection();
   }
   try {
-    const result = await calendarCollection.updateOne(
+    const result = await scheduleListCollection.updateOne(
       { userId },
-      { $pull: { calendars: { id: calendarId } } }
+      { $pull: { calendars: { id: scheduleId } } }
     );
     return result;
   } catch (error) {
@@ -129,15 +129,15 @@ export const deleteCalendarListItem = async (
   }
 };
 
-export const updateCalendarListPrimaryId = async (
+export const updatePrimaryCalendarId = async (
   userId: string,
   newPrimaryCalendarId?: string
 ): Promise<UpdateResult<CalendarListDocument>> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleListCollection) {
+    scheduleListCollection = initializeCollection();
   }
   try {
-    const result = await calendarCollection.updateOne(
+    const result = await scheduleListCollection.updateOne(
       { userId },
       { $set: { primaryCalendarId: newPrimaryCalendarId } }
     );

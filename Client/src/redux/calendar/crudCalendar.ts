@@ -11,7 +11,7 @@ export async function fetchSchedules(): Promise<{
   primaryCalendarId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/calendars`, {
+    const response = await fetch(`${serverUrl}/schedules`, {
       credentials: "include",
     });
     const data = await response.json();
@@ -29,7 +29,7 @@ export async function createOrUpdateSchedule(
   primaryCalendarId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/calendars`, {
+    const response = await fetch(`${serverUrl}/schedules`, {
       method: "POST",
       body: JSON.stringify({ sections }),
       headers: {
@@ -55,7 +55,7 @@ export async function updateSchedule(
   primaryCalendarId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/calendars/${schedule.id}`, {
+    const response = await fetch(`${serverUrl}/schedules/${schedule.id}`, {
       method: "PUT",
       body: JSON.stringify({ schedule, primaryCalendarId, name }),
       headers: {
@@ -74,7 +74,7 @@ export async function updateSchedule(
 // Calendar Item
 export async function getScheduleById(scheduleId: string): Promise<Calendar> {
   try {
-    const response = await fetch(`${serverUrl}/calendars/${scheduleId}`, {
+    const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {
       credentials: "include",
     });
     const data = await response.json();
@@ -94,7 +94,7 @@ export async function removeSchedule(scheduleId: string): Promise<{
   primaryCalendarId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/calendars/${scheduleId}`, {
+    const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {
       method: "DELETE",
       credentials: "include",
     });

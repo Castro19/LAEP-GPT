@@ -4,22 +4,22 @@ import { Calendar, CalendarDocument } from "@polylink/shared/types";
 import { Collection } from "mongodb";
 import { getDb } from "../../connection";
 
-let calendarCollection: Collection<CalendarDocument>;
+let scheduleCollection: Collection<CalendarDocument>;
 
 const initializeCollection = (): Collection<CalendarDocument> => {
   return getDb().collection("calendar");
 };
 
 // Create a new calendar with the given sections
-export const createCalendar = async (
-  calendar: Calendar
+export const createSchedule = async (
+  schedule: Calendar
 ): Promise<InsertOneResult<CalendarDocument>> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleCollection) {
+    scheduleCollection = initializeCollection();
   }
   try {
-    const result = await calendarCollection.insertOne(
-      calendar as CalendarDocument
+    const result = await scheduleCollection.insertOne(
+      schedule as CalendarDocument
     );
     return result;
   } catch (error) {
@@ -31,17 +31,17 @@ export const createCalendar = async (
 };
 
 // Get a calendar by id
-export const getCalendarById = async (
+export const getScheduleById = async (
   userId: string,
-  calendarId: string
+  scheduleId: string
 ): Promise<CalendarDocument | null> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleCollection) {
+    scheduleCollection = initializeCollection();
   }
 
   try {
-    const result = await calendarCollection.findOne(
-      { id: calendarId, userId },
+    const result = await scheduleCollection.findOne(
+      { id: scheduleId, userId },
       { projection: { _id: 0 } }
     );
     if (!result) {
@@ -57,24 +57,24 @@ export const getCalendarById = async (
 };
 
 // Delete /calendars/:id
-export const deleteCalendar = async (
+export const deleteSchedule = async (
   userId: string,
-  calendarId: string
+  scheduleId: string
 ): Promise<DeleteResult> => {
-  if (!calendarCollection) {
-    calendarCollection = initializeCollection();
+  if (!scheduleCollection) {
+    scheduleCollection = initializeCollection();
   }
   if (environment === "dev") {
-    console.log("REMOVING CALENDAR", calendarId);
+    console.log("REMOVING SCHEDULE", scheduleId);
   }
 
   try {
-    const result = await calendarCollection.deleteOne({
-      id: calendarId,
+    const result = await scheduleCollection.deleteOne({
+      id: scheduleId,
       userId,
     });
     if (result.deletedCount === 0) {
-      throw new Error("Calendar not found");
+      throw new Error("Schedule not found");
     }
     return result;
   } catch (error) {

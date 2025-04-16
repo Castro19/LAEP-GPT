@@ -3,12 +3,13 @@ import express from "express";
 import { CustomRequest } from "../types/express";
 import { environment } from "../index";
 import {
-  getCalendarListByUserId,
-  createOrUpdateCalendar,
-  deleteCalendarItem,
-  getCalendarById,
-  updateCalendarListItem,
+  getScheduleListByUserId,
+  createOrUpdateSchedule,
+  deleteScheduleItem,
+  getScheduleById,
+  updateScheduleListItem,
 } from "../db/models/calendar/calendarListServices";
+
 const router = express.Router();
 
 router.get("/", async (req: CustomRequest, res: any) => {
@@ -19,7 +20,7 @@ router.get("/", async (req: CustomRequest, res: any) => {
     }
 
     const { schedules, primaryCalendarId } =
-      await getCalendarListByUserId(userId);
+      await getScheduleListByUserId(userId);
 
     return res.status(200).json({
       message: "Schedules fetched successfully",
@@ -41,7 +42,7 @@ router.post("/", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { sections } = req.body;
-    const result = await createOrUpdateCalendar(userId, sections);
+    const result = await createOrUpdateSchedule(userId, sections);
     return res.status(200).json({
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
@@ -55,14 +56,14 @@ router.post("/", async (req, res: any) => {
   }
 });
 
-router.get("/:calendarId", async (req, res: any) => {
+router.get("/:scheduleId", async (req, res: any) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { calendarId } = req.params;
-    const result = await getCalendarById(userId, calendarId);
+    const { scheduleId } = req.params;
+    const result = await getScheduleById(userId, scheduleId);
     if (!result) {
       return res.status(404).json({ message: "Schedule not found" });
     }
@@ -78,18 +79,18 @@ router.get("/:calendarId", async (req, res: any) => {
   }
 });
 
-router.put("/:calendarId", async (req, res: any) => {
+router.put("/:scheduleId", async (req, res: any) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { calendarId } = req.params;
-    const { calendar, primaryCalendarId, name } = req.body;
-    const result = await updateCalendarListItem({
+    const { scheduleId } = req.params;
+    const { schedule, primaryCalendarId, name } = req.body;
+    const result = await updateScheduleListItem({
       userId,
-      calendarId,
-      calendar,
+      scheduleId,
+      schedule,
       primaryCalendarId,
       name,
     });
@@ -106,16 +107,16 @@ router.put("/:calendarId", async (req, res: any) => {
   }
 });
 
-router.delete("/:calendarId", async (req, res: any) => {
+router.delete("/:scheduleId", async (req, res: any) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { calendarId } = req.params;
-    const { schedules, primaryCalendarId } = await deleteCalendarItem(
+    const { scheduleId } = req.params;
+    const { schedules, primaryCalendarId } = await deleteScheduleItem(
       userId,
-      calendarId
+      scheduleId
     );
 
     res.status(200).json({
