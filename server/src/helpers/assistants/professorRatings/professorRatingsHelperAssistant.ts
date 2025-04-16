@@ -16,7 +16,7 @@ export async function professorRatingsHelper(
   message: string,
   helperInstructions: string
 ): Promise<ProfessorRatingsResponse> {
-  const messageToAdd = message + "\n";
+  const messageToAdd = `Parse this => ${message}\n`;
   if (environment === "dev") {
     console.log("Message to add for Professor Ratings:", messageToAdd);
   }
