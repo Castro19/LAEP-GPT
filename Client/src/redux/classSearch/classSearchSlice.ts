@@ -39,6 +39,7 @@ const initialState: ClassSearchState = {
   isInitialState: true,
   isQueryAI: false,
   filters: {
+    term: "summer2025",
     courseIds: [],
     status: "",
     subject: "",

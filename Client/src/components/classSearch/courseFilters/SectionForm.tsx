@@ -93,6 +93,7 @@ const SectionForm = ({
 
     // Create a filters object matching API's expected shape.
     const updatedFilters: SectionsFilterParams = {
+      term: "summer2025",
       courseIds: watchedValues.courseIds || [],
       status: watchedValues.status || "",
       subject: watchedValues.subject || "",
@@ -132,6 +133,7 @@ const SectionForm = ({
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
 
     const updatedFilters: SectionsFilterParams = {
+      term: "summer2025",
       courseIds: data.courseIds || [],
       minUnits: data.minUnits || "",
       maxUnits: data.maxUnits || "",
