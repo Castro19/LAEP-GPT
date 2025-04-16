@@ -11,22 +11,22 @@ import { v4 as uuidv4 } from "uuid";
 export const getCalendarListByUserId = async (
   userId: string
 ): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> => {
   try {
     const result = await calendarListModel.findCalendarListByUserId(userId);
     if (!result) {
       if (environment === "dev") {
-        console.log("No calendars found for the user");
+        console.log("No schedules found for the user");
       }
       return {
-        calendars: [],
+        schedules: [],
         primaryCalendarId: "",
       };
     }
     return {
-      calendars: result.calendars,
+      schedules: result.calendars,
       primaryCalendarId: result.primaryCalendarId,
     };
   } catch (error) {
@@ -51,7 +51,7 @@ export const updateCalendarListItem = async ({
   primaryCalendarId: string;
   name: string;
 }): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> => {
   const calendarListItem = {
@@ -70,14 +70,14 @@ export const updateCalendarListItem = async ({
     }
     const calendars = await calendarListModel.findCalendarListByUserId(userId);
     if (!calendars) {
-      console.error("No calendars found for the user");
+      console.error("No schedules found for the user");
       return {
-        calendars: [],
+        schedules: [],
         primaryCalendarId: "",
       };
     }
     return {
-      calendars: calendars.calendars,
+      schedules: calendars.calendars,
       primaryCalendarId: calendars.primaryCalendarId,
     };
   } catch (error) {
@@ -92,7 +92,7 @@ export const createOrUpdateCalendar = async (
   userId: string,
   sections: SelectedSection[]
 ): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> => {
   try {
@@ -140,14 +140,14 @@ export const createOrUpdateCalendar = async (
     const finalCalendars =
       await calendarListModel.findCalendarListByUserId(userId);
     if (!finalCalendars) {
-      console.error("No calendars found for the user");
+      console.error("No schedules found for the user");
       return {
-        calendars: [],
+        schedules: [],
         primaryCalendarId: "",
       };
     }
     return {
-      calendars: finalCalendars.calendars,
+      schedules: finalCalendars.calendars,
       primaryCalendarId: finalCalendars.primaryCalendarId,
     };
   } catch (error) {
@@ -160,21 +160,21 @@ export const createOrUpdateCalendar = async (
 
 export const deleteCalendarItem = async (
   userId: string,
-  calendarId: string
+  scheduleId: string
 ): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> => {
   try {
     const calendarList =
       await calendarListModel.findCalendarListByUserId(userId);
     if (!calendarList) {
-      throw new Error("No calendars found for the user");
+      throw new Error("No schedules found for the user");
     }
-    if (calendarList.primaryCalendarId === calendarId) {
+    if (calendarList.primaryCalendarId === scheduleId) {
       // We will need to update the primary calendar id
       const newPrimaryCalendarId = calendarList.calendars.find(
-        (calendar) => calendar.id !== calendarId
+        (schedule) => schedule.id !== scheduleId
       )?.id;
 
       await calendarListModel.updateCalendarListPrimaryId(
@@ -183,28 +183,28 @@ export const deleteCalendarItem = async (
       );
     }
 
-    const result = await calendarCollection.deleteCalendar(userId, calendarId);
+    const result = await calendarCollection.deleteCalendar(userId, scheduleId);
     if (!result) {
-      throw new Error("Calendar not found in calendar collection");
+      throw new Error("Schedule not found in calendar collection");
     }
 
     const deletedCalendar = await calendarListModel.deleteCalendarListItem(
       userId,
-      calendarId
+      scheduleId
     );
     if (!deletedCalendar) {
-      throw new Error("Calendar not found in calendar list");
+      throw new Error("Schedule not found in calendar list");
     }
     const calendars = await calendarListModel.findCalendarListByUserId(userId);
     if (!calendars) {
-      console.error("No calendars found for the user");
+      console.error("No schedules found for the user");
       return {
-        calendars: [],
+        schedules: [],
         primaryCalendarId: "",
       };
     }
     return {
-      calendars: calendars.calendars,
+      schedules: calendars.calendars,
       primaryCalendarId: calendars.primaryCalendarId,
     };
   } catch (error) {
@@ -217,12 +217,12 @@ export const deleteCalendarItem = async (
 
 export const getCalendarById = async (
   userId: string,
-  calendarId: string
-): Promise<Calendar> => {
+  scheduleId: string
+): Promise<CalendarListItem | null> => {
   try {
-    const result = await calendarCollection.getCalendarById(userId, calendarId);
+    const result = await calendarCollection.getCalendarById(userId, scheduleId);
     if (!result) {
-      throw new Error("Calendar not found");
+      throw new Error("Schedule not found");
     }
     return result;
   } catch (error) {
@@ -233,7 +233,7 @@ export const getCalendarById = async (
   }
 };
 
-export const fetchPrimaryCalendar = async (
+export const fetchPrimarySchedule = async (
   userId: string
 ): Promise<Calendar | null> => {
   const calendarList = await calendarListModel.findCalendarListByUserId(userId);

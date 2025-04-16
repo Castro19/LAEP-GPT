@@ -18,17 +18,17 @@ router.get("/", async (req: CustomRequest, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { calendars, primaryCalendarId } =
+    const { schedules, primaryCalendarId } =
       await getCalendarListByUserId(userId);
 
     return res.status(200).json({
-      message: "Calendars fetched successfully",
-      calendars,
+      message: "Schedules fetched successfully",
+      schedules,
       primaryCalendarId,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error fetching calendars:", error);
+      console.error("Error fetching schedules:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -43,13 +43,13 @@ router.post("/", async (req, res: any) => {
     const { sections } = req.body;
     const result = await createOrUpdateCalendar(userId, sections);
     return res.status(200).json({
-      message: "Calendar created or updated successfully",
-      calendars: result.calendars,
+      message: "Schedule created or updated successfully",
+      schedules: result.schedules,
       primaryCalendarId: result.primaryCalendarId,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error creating or updating calendar:", error);
+      console.error("Error creating or updating schedule:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -64,15 +64,15 @@ router.get("/:calendarId", async (req, res: any) => {
     const { calendarId } = req.params;
     const result = await getCalendarById(userId, calendarId);
     if (!result) {
-      return res.status(404).json({ message: "Calendar not found" });
+      return res.status(404).json({ message: "Schedule not found" });
     }
     return res.status(200).json({
-      message: "Calendar fetched successfully",
-      calendar: result,
+      message: "Schedule fetched successfully",
+      schedule: result,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error fetching calendar:", error);
+      console.error("Error fetching schedule:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -94,13 +94,13 @@ router.put("/:calendarId", async (req, res: any) => {
       name,
     });
     return res.status(200).json({
-      message: "Calendar updated successfully",
-      calendars: result.calendars,
+      message: "Schedule updated successfully",
+      schedules: result.schedules,
       primaryCalendarId: result.primaryCalendarId,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error updating calendar:", error);
+      console.error("Error updating schedule:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -113,19 +113,19 @@ router.delete("/:calendarId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { calendarId } = req.params;
-    const { calendars, primaryCalendarId } = await deleteCalendarItem(
+    const { schedules, primaryCalendarId } = await deleteCalendarItem(
       userId,
       calendarId
     );
 
     res.status(200).json({
-      message: "Calendar deleted successfully",
-      calendars,
+      message: "Schedule deleted successfully",
+      schedules,
       primaryCalendarId,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error removing calendar:", error);
+      console.error("Error removing schedule:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }

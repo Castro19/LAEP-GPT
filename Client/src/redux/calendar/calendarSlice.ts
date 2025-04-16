@@ -7,10 +7,10 @@ import {
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   fetchSchedules,
-  createOrUpdateCalendar,
-  removeCalendar,
-  getCalendarById,
-  updateCalendar,
+  createOrUpdateSchedule,
+  removeSchedule,
+  getScheduleById,
+  updateSchedule,
 } from "./crudCalendar";
 
 export interface Preferences {
@@ -66,8 +66,8 @@ export const fetchSchedulesAsync = createAsyncThunk(
   async () => {
     try {
       const response = await fetchSchedules();
-      const { calendars, primaryCalendarId } = response;
-      return { calendars, primaryCalendarId };
+      const { schedules, primaryCalendarId } = response;
+      return { schedules, primaryCalendarId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error fetching schedules:", error);
@@ -81,9 +81,9 @@ export const createOrUpdateSchedulesAsync = createAsyncThunk(
   "calendars/createOrUpdateSchedule",
   async (sections: SelectedSection[]) => {
     try {
-      const response = await createOrUpdateCalendar(sections);
-      const { calendars, primaryCalendarId } = response;
-      return { calendars, primaryCalendarId };
+      const response = await createOrUpdateSchedule(sections);
+      const { schedules, primaryCalendarId } = response;
+      return { schedules, primaryCalendarId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error creating or updating schedule:", error);
@@ -96,11 +96,11 @@ export const createOrUpdateSchedulesAsync = createAsyncThunk(
 // Calendar Item
 export const removeScheduleAsync = createAsyncThunk(
   "calendars/removeSchedule",
-  async (calendarId: string) => {
+  async (scheduleId: string) => {
     try {
-      const response = await removeCalendar(calendarId);
-      const { calendars, primaryCalendarId } = response;
-      return { calendars, primaryCalendarId, calendarId };
+      const response = await removeSchedule(scheduleId);
+      const { schedules, primaryCalendarId } = response;
+      return { schedules, primaryCalendarId, scheduleId };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error removing schedule:", error);
@@ -111,10 +111,10 @@ export const removeScheduleAsync = createAsyncThunk(
 );
 
 export const getScheduleByIdAsync = createAsyncThunk(
-  "calendars/getCalendarById",
-  async (calendarId: string) => {
+  "calendars/getScheduleById",
+  async (scheduleId: string) => {
     try {
-      const response = await getCalendarById(calendarId);
+      const response = await getScheduleById(scheduleId);
       return response;
     } catch (error) {
       if (environment === "dev") {
@@ -128,22 +128,22 @@ export const getScheduleByIdAsync = createAsyncThunk(
 export const updateScheduleAsync = createAsyncThunk(
   "calendars/updateSchedule",
   async ({
-    calendar,
+    schedule,
     primaryCalendarId,
     name,
   }: {
-    calendar: Calendar;
+    schedule: Calendar;
     primaryCalendarId: string;
     name: string;
   }) => {
     try {
-      const response = await updateCalendar(calendar, primaryCalendarId, name);
-      const { calendars, primaryCalendarId: newPrimaryCalendarId } = response;
+      const response = await updateSchedule(schedule, primaryCalendarId, name);
+      const { schedules, primaryCalendarId: newPrimaryCalendarId } = response;
 
-      return { calendars, primaryCalendarId: newPrimaryCalendarId };
+      return { schedules, primaryCalendarId: newPrimaryCalendarId };
     } catch (error) {
       if (environment === "dev") {
-        console.error("Error updating calendar:", error);
+        console.error("Error updating schedule:", error);
       }
       throw error;
     }
@@ -174,45 +174,45 @@ const scheduleSlice = createSlice({
     // Fetch Calendar List
     builder.addCase(fetchSchedulesAsync.fulfilled, (state, action) => {
       state.primaryCalendarId = action.payload.primaryCalendarId;
-      const calendarList = action.payload.calendars;
-      const primaryCalendar = calendarList.find(
-        (calendar) => calendar.id === state.primaryCalendarId
+      const scheduleList = action.payload.schedules;
+      const primaryCalendar = scheduleList.find(
+        (schedule) => schedule.id === state.primaryCalendarId
       );
       if (primaryCalendar) {
         // Put the primary calendar at the top of the list
-        const otherCalendars = calendarList.filter(
-          (calendar) => calendar.id !== state.primaryCalendarId
+        const otherCalendars = scheduleList.filter(
+          (schedule) => schedule.id !== state.primaryCalendarId
         );
         state.calendarList = [primaryCalendar, ...otherCalendars];
       } else {
-        state.calendarList = calendarList;
+        state.calendarList = scheduleList;
       }
     });
     // Create or Update Calendar
     builder.addCase(createOrUpdateSchedulesAsync.fulfilled, (state, action) => {
       state.primaryCalendarId = action.payload.primaryCalendarId;
-      state.calendarList = action.payload.calendars;
+      state.calendarList = action.payload.schedules;
     });
     // Remove Calendar
     builder.addCase(removeScheduleAsync.fulfilled, (state, action) => {
-      const calendarList = action.payload.calendars;
+      const scheduleList = action.payload.schedules;
       const primaryCalendarId = action.payload.primaryCalendarId;
-      const primaryCalendar = calendarList.find(
-        (calendar) => calendar.id === primaryCalendarId
+      const primaryCalendar = scheduleList.find(
+        (schedule) => schedule.id === primaryCalendarId
       );
       if (primaryCalendar) {
         // Put the primary calendar at the top of the list
-        const otherCalendars = calendarList.filter(
-          (calendar) => calendar.id !== primaryCalendarId
+        const otherCalendars = scheduleList.filter(
+          (schedule) => schedule.id !== primaryCalendarId
         );
         state.calendarList = [primaryCalendar, ...otherCalendars];
 
         state.calendarList = state.calendarList.filter(
-          (calendar) => calendar.id !== action.payload.calendarId
+          (schedule) => schedule.id !== action.payload.scheduleId
         );
         state.primaryCalendarId = action.payload.primaryCalendarId;
       } else {
-        state.calendarList = calendarList;
+        state.calendarList = scheduleList;
         state.primaryCalendarId = "";
       }
     });
@@ -222,15 +222,15 @@ const scheduleSlice = createSlice({
     });
     // Update Calendar
     builder.addCase(updateScheduleAsync.fulfilled, (state, action) => {
-      state.calendarList = action.payload.calendars;
+      state.calendarList = action.payload.schedules;
       state.primaryCalendarId = action.payload.primaryCalendarId;
       const primaryCalendar = state.calendarList.find(
-        (calendar) => calendar.id === action.payload.primaryCalendarId
+        (schedule) => schedule.id === action.payload.primaryCalendarId
       );
       if (primaryCalendar) {
         // Re order the calendar list
         const otherCalendars = state.calendarList.filter(
-          (calendar) => calendar.id !== action.payload.primaryCalendarId
+          (schedule) => schedule.id !== action.payload.primaryCalendarId
         );
         state.calendarList = [primaryCalendar, ...otherCalendars];
       }

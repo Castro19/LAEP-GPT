@@ -7,7 +7,7 @@ import {
 
 // Calendar List
 export async function fetchSchedules(): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> {
   try {
@@ -17,15 +17,15 @@ export async function fetchSchedules(): Promise<{
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching calendars:", error);
+    console.error("Error fetching schedules:", error);
     throw error;
   }
 }
 
-export async function createOrUpdateCalendar(
+export async function createOrUpdateSchedule(
   sections: SelectedSection[]
 ): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> {
   try {
@@ -40,24 +40,24 @@ export async function createOrUpdateCalendar(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creating or updating calendar:", error);
+    console.error("Error creating or updating schedule:", error);
     throw error;
   }
 }
 
 // Update Calendar List Item
-export async function updateCalendar(
-  calendar: Calendar,
+export async function updateSchedule(
+  schedule: Calendar,
   primaryCalendarId: string,
   name: string
 ): Promise<{
-  calendars: CalendarListItem[];
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/calendars/${calendar.id}`, {
+    const response = await fetch(`${serverUrl}/calendars/${schedule.id}`, {
       method: "PUT",
-      body: JSON.stringify({ calendar, primaryCalendarId, name }),
+      body: JSON.stringify({ schedule, primaryCalendarId, name }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -66,41 +66,42 @@ export async function updateCalendar(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error updating calendar list item:", error);
+    console.error("Error updating schedule list item:", error);
     throw error;
   }
 }
 
 // Calendar Item
-export async function getCalendarById(calendarId: string): Promise<Calendar> {
+export async function getScheduleById(scheduleId: string): Promise<Calendar> {
   try {
-    const response = await fetch(`${serverUrl}/calendars/${calendarId}`, {
+    const response = await fetch(`${serverUrl}/calendars/${scheduleId}`, {
       credentials: "include",
     });
     const data = await response.json();
-    if (!data.calendar) {
-      throw new Error("Calendar not found");
+    console.log("data", data);
+    if (!data.schedule) {
+      throw new Error("Schedule not found");
     }
-    return data.calendar;
+    return data.schedule;
   } catch (error) {
-    console.error("Error getting calendar by id:", error);
+    console.error("Error getting schedule by id:", error);
     throw error;
   }
 }
 
-export async function removeCalendar(calendarId: string): Promise<{
-  calendars: CalendarListItem[];
+export async function removeSchedule(scheduleId: string): Promise<{
+  schedules: CalendarListItem[];
   primaryCalendarId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/calendars/${calendarId}`, {
+    const response = await fetch(`${serverUrl}/calendars/${scheduleId}`, {
       method: "DELETE",
       credentials: "include",
     });
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error removing calendar:", error);
+    console.error("Error removing schedule:", error);
     throw error;
   }
 }

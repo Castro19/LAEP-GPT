@@ -43,20 +43,20 @@ const CalendarOptions = ({
 
   // Update flowchart data and close popover after saving
   const handleUpdateData = async () => {
-    const updatedCalendar = {
-      calendar: calendar,
+    const updatedSchedule = {
+      schedule: calendar,
       name: name,
       primaryCalendarId: primaryOption ? calendar.id : primaryCalendarId,
     } as {
-      calendar: Calendar;
+      schedule: Calendar;
       name: string;
       primaryCalendarId: string;
     };
     if (environment === "dev") {
-      console.log("UPDATED CALENDAR", updatedCalendar);
+      console.log("UPDATED CALENDAR", updatedSchedule);
     }
 
-    dispatch(scheduleActions.updateScheduleAsync(updatedCalendar));
+    dispatch(scheduleActions.updateScheduleAsync(updatedSchedule));
 
     setOpen(false);
   };

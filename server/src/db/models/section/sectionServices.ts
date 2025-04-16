@@ -10,7 +10,7 @@ import * as sectionCollection from "./sectionCollection";
 import { Filter } from "mongodb";
 import { environment } from "../../..";
 import { buildNonConflictingQuery } from "../../../helpers/queryBuilders/scheduling";
-import { fetchPrimaryCalendar } from "../calendar/calendarListServices";
+import { fetchPrimarySchedule } from "../calendar/calendarListServices";
 
 /**
  * Build a filter object that can be passed to the collection query.
@@ -295,11 +295,11 @@ export async function getSectionsByFilter(
   try {
     let query = buildSectionsQuery(filter);
     if (filter.withNoConflicts) {
-      const calendar = await fetchPrimaryCalendar(userId);
+      const schedule = await fetchPrimarySchedule(userId);
 
-      if (calendar) {
+      if (schedule) {
         // 1) Build the "no-conflict" portion
-        const noConflictQuery = buildNonConflictingQuery(calendar);
+        const noConflictQuery = buildNonConflictingQuery(schedule);
 
         // 2) If the user actually has meeting times (i.e. noConflictQuery isn't empty),
         //    then combine the two queries under $and
