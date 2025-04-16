@@ -39,12 +39,10 @@ export const fetchSelectedSectionsAsync = createAsyncThunk(
 
 export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
   "sections/createOrUpdateSelectedSection",
-  async ({ section, term }: { section: SectionDetail; term: CourseTerm }) => {
+  async ({ section }: { section: SectionDetail }) => {
     try {
-      const selectedSectionItem = transformSectionToSelectedSectionItem(
-        section,
-        term
-      );
+      const selectedSectionItem =
+        transformSectionToSelectedSectionItem(section);
       const response = await createOrUpdateSection(selectedSectionItem);
       return response;
     } catch (error) {

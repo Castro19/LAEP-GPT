@@ -2,6 +2,7 @@
 // Store the course catalog data in MongoDB
 
 import {
+  CourseTerm,
   Section,
   SectionDocument,
   SectionsFilterParams,
@@ -375,12 +376,22 @@ export async function getSectionsbyProjection(
  * @returns The section with the given class number, or null if not found.
  */
 export async function getSectionById(
-  classNumber: number
+  classNumber: number,
+  term: CourseTerm
 ): Promise<Section | null> {
   try {
     const query = { classNumber };
-    const result = await sectionCollection.findSectionsByFilter(query, 0, 1);
-    return result.sections.length > 0 ? result.sections[0] : null;
+    if (term === "summer2025") {
+      const result = await summerSectionCollection.findSectionsByFilter(
+        query,
+        0,
+        1
+      );
+      return result.sections.length > 0 ? result.sections[0] : null;
+    } else {
+      const result = await sectionCollection.findSectionsByFilter(query, 0, 1);
+      return result.sections.length > 0 ? result.sections[0] : null;
+    }
   } catch (error) {
     if (environment === "dev") {
       console.error(`Error fetching section ${classNumber}:`, error);

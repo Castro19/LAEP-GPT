@@ -189,6 +189,7 @@ export function transformSectionsToCatalog(sections: Section[]): CourseInfo[] {
  */
 export function transformToSectionDetail(section: Section): SectionDetail {
   return {
+    term: section.term,
     courseId: section.courseId,
     courseName: section.courseName,
     classNumber: section.classNumber,

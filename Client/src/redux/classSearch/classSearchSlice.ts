@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Section, SectionsFilterParams } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  Section,
+  SectionsFilterParams,
+} from "@polylink/shared/types";
 import {
   fetchSections,
   getSectionByClassNumber,
@@ -115,9 +119,12 @@ export const queryAIPagination = createAsyncThunk(
 
 export const fetchSingleSection = createAsyncThunk(
   "sections/fetchSingleSection",
-  async (classNumber: string): Promise<any> => {
+  async ({ classNumber, term }: { classNumber: string; term: CourseTerm }) => {
     try {
-      const response: any = await getSectionByClassNumber(classNumber);
+      const response: any = await getSectionByClassNumber(
+        classNumber,
+        term as CourseTerm
+      );
       return response;
     } catch (error) {
       if (environment === "dev") {

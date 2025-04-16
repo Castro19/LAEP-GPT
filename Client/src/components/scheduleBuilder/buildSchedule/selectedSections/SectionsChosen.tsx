@@ -119,11 +119,12 @@ const SectionsChosen = () => {
 
 const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
   const dispatch = useAppDispatch();
+  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
   const handleRemove = () => {
     dispatch(
       removeSelectedSectionAsync({
         sectionId: section.classNumber,
-        term: "spring2025",
+        term: currentScheduleTerm,
       })
     );
   };
