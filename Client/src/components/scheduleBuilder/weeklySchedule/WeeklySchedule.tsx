@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -63,6 +63,137 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   height = "80vh",
 }) => {
   const dispatch = useAppDispatch();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [calendarHeight, setCalendarHeight] = useState(height);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  // Update window height on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Measure container height
+  useEffect(() => {
+    if (containerRef.current) {
+      const updateContainerHeight = () => {
+        const height =
+          containerRef.current?.getBoundingClientRect().height || 0;
+        setContainerHeight(height);
+      };
+
+      updateContainerHeight();
+
+      // Create a ResizeObserver to detect container size changes
+      const resizeObserver = new ResizeObserver(updateContainerHeight);
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current);
+      }
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, []);
+
+  // Calculate calendar height based on window height and container
+  useEffect(() => {
+    // Define CSS custom properties for consistent spacing
+    const root = document.documentElement;
+    root.style.setProperty("--calendar-padding-top", "2rem");
+    root.style.setProperty("--calendar-padding-bottom", "2rem");
+    root.style.setProperty("--calendar-min-height", "400px");
+    root.style.setProperty("--footer-height", "4rem"); // Approximate footer height
+    root.style.setProperty("--footer-margin", "1rem"); // Additional margin for safety
+
+    // Get the actual padding values from CSS
+    const computedStyle = getComputedStyle(root);
+    const paddingTop =
+      parseFloat(computedStyle.getPropertyValue("--calendar-padding-top")) ||
+      32;
+    const paddingBottom =
+      parseFloat(computedStyle.getPropertyValue("--calendar-padding-bottom")) ||
+      32;
+    const minHeight =
+      parseFloat(computedStyle.getPropertyValue("--calendar-min-height")) ||
+      400;
+    const footerHeight =
+      parseFloat(computedStyle.getPropertyValue("--footer-height")) || 64;
+    const footerMargin =
+      parseFloat(computedStyle.getPropertyValue("--footer-margin")) || 16;
+
+    // Calculate total space needed for footer (height + margin)
+    const totalFooterSpace = footerHeight + footerMargin;
+
+    // Calculate available space, accounting for footer
+    const availableHeight =
+      windowHeight - paddingTop - paddingBottom - totalFooterSpace;
+
+    // Device-specific adjustments based on measurements
+    let heightPercentage = 0.8; // Default 80%
+
+    // Adjust based on device width (for landscape vs portrait)
+    const isLandscape = window.innerWidth > window.innerHeight;
+
+    // Adjust based on device type and orientation
+    if (window.innerWidth <= 768) {
+      // Mobile devices
+      heightPercentage = isLandscape ? 0.7 : 0.75;
+    } else if (window.innerWidth <= 1024) {
+      // Tablets
+      heightPercentage = isLandscape ? 0.72 : 0.77;
+    } else {
+      // Desktop
+      heightPercentage = isLandscape ? 0.73 : 0.75;
+    }
+
+    // For very small screens, use a more conservative approach
+    if (windowHeight < 600) {
+      heightPercentage = 0.65; // Even more conservative for very small screens
+    }
+
+    // Calculate responsive height with precise measurements
+    const baseHeight = windowHeight * heightPercentage;
+
+    // Use container height if available, otherwise use calculated height
+    let maxHeight = containerHeight > 0 ? containerHeight : availableHeight;
+
+    // Ensure we don't exceed available height
+    maxHeight = Math.min(maxHeight, availableHeight);
+
+    // Calculate responsive height
+    let calculatedHeight = Math.max(minHeight, Math.min(baseHeight, maxHeight));
+
+    // Convert to viewport height units for consistency
+    const vhValue = Math.round((calculatedHeight / windowHeight) * 100);
+    setCalendarHeight(`${vhValue}vh`);
+
+    if (environment === "dev") {
+      console.log({
+        windowHeight,
+        availableHeight,
+        calculatedHeight,
+        vhValue,
+        containerHeight,
+        deviceType:
+          window.innerWidth <= 768
+            ? "mobile"
+            : window.innerWidth <= 1024
+              ? "tablet"
+              : "desktop",
+        orientation: isLandscape ? "landscape" : "portrait",
+        heightPercentage,
+        footerHeight,
+        totalFooterSpace,
+      });
+    }
+  }, [windowHeight, containerHeight]);
+
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
   const dayIndexMap: Record<
@@ -136,7 +267,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   // 1) Split all normal events into conflict groups
   const groups = getConflictGroups(events as unknown as EventType[]);
-  console.log("Groups", groups);
   // 2) Build background events for each group (only if group size > 1? up to you)
   let backgroundEvents: any[] = [];
   for (const group of groups) {
@@ -146,23 +276,19 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       backgroundEvents = backgroundEvents.concat(bg);
     }
   }
-  console.log("Background events", backgroundEvents);
 
   // 3) Combine
   const finalEvents = [...backgroundEvents, ...events];
-  if (environment === "dev") {
-    console.log("Final events", finalEvents);
-  }
+
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
     dispatch(fetchSingleSection(classNumber));
   };
 
   return (
-    <div className="relative">
-      {" "}
-      {/* This container is now the modal's scope */}
+    <div className="relative w-full h-full">
       <div
+        ref={containerRef}
         className="
         border
         border-slate-200
@@ -174,10 +300,18 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
         dark:text-slate-100
         custom-tr-height
         custom-td-color
-        overflow-auto flex-1 no-scroll
+        overflow-hidden
+        w-full
+        h-full
+        flex
+        flex-col
+        max-h-[calc(100vh-15rem)]
+        sm:max-h-[calc(100vh-12rem)]
+        md:max-h-[calc(100vh-10rem)]
+        lg:max-h-[calc(100vh-8rem)]
       "
       >
-        <ScrollArea className="h-full min-w-full mb-4 pb-12">
+        <ScrollArea className="h-full w-full">
           <FullCalendar
             plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
             initialView="timeGridWeek"
@@ -190,7 +324,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             slotMaxTime="21:00:00"
             hiddenDays={[0, 6]}
             events={finalEvents}
-            contentHeight={height}
+            contentHeight={calendarHeight}
+            expandRows={true}
             titleFormat={{}} // (Empty: no title text on top)
             dayHeaderContent={(args: any) => {
               const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
