@@ -133,7 +133,7 @@ const SectionForm = ({
       data.startTime && data.endTime ? `${data.startTime}-${data.endTime}` : "";
 
     const updatedFilters: SectionsFilterParams = {
-      term: "summer2025",
+      term: data.term || "summer2025",
       courseIds: data.courseIds || [],
       minUnits: data.minUnits || "",
       maxUnits: data.maxUnits || "",
