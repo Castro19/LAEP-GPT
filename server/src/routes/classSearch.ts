@@ -40,6 +40,7 @@ router.get("/", async (req: Request, res: any) => {
       isTechElective, // e.g., true or false
       withNoConflicts, // e.g., true or false
       isCreditNoCredit, // e.g., true or false
+      term, // e.g., "spring2025" or "summer2025"
     } = req.query;
 
     // Access the flattened techElectives values from the query.
@@ -97,6 +98,7 @@ router.get("/", async (req: Request, res: any) => {
       isTechElective: isTechElective === "true", // Converts the string "true" to boolean true, any other value becomes false
       withNoConflicts: withNoConflicts === "true", // convert str to boolean
       isCreditNoCredit: isCreditNoCredit === "true", // convert str to boolean
+      term: term as "spring2025" | "summer2025",
     };
 
     // Call the service with the parsed query object
