@@ -31,6 +31,7 @@ import {
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import SUBJECTS from "@/components/classSearch/courseFilters/helpers/api/subjects";
 import CatalogNumberSlider from "./CatalogNumberSlider";
+import TermSelector from "@/components/classSearch/TermSelector";
 
 const CourseInformation = ({
   form,
@@ -83,6 +84,12 @@ const CourseInformation = ({
 
   return (
     <CollapsibleContentWrapper title="Course Information" icon={FaBook}>
+      <FormField
+        control={form.control}
+        name="term"
+        render={({ field }) => <TermSelector form={form} />}
+        defaultValue="summer2025"
+      />
       <FormField
         control={form.control}
         name="courseIds"
