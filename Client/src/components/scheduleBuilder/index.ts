@@ -21,5 +21,3 @@ export { default as ScheduleBuilderAIChat } from "./aiChat/ScheduleBuilderAIChat
 // Types
 export type { ScheduleClassSection } from "./weeklySchedule/WeeklySchedule";
 export type { Schedule } from "./helpers/generateAllScheduleCombinations";
-
-export { default as TermSelector } from "./TermSelector";

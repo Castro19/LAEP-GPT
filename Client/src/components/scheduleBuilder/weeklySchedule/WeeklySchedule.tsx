@@ -13,7 +13,7 @@ import {
   getConflictGroups,
   buildBackgroundEventsForGroup,
 } from "@/components/scheduleBuilder/helpers/weeklyCalendarConflicts";
-import { environment } from "@/helpers/getEnvironmentVars";
+// import { environment } from "@/helpers/getEnvironmentVars";
 
 type EventType = {
   courseName: string;
@@ -177,25 +177,25 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     const vhValue = Math.round((calculatedHeight / windowHeight) * 100);
     setCalendarHeight(`${vhValue}vh`);
 
-    if (environment === "dev") {
-      console.log({
-        windowHeight,
-        availableHeight,
-        calculatedHeight,
-        vhValue,
-        containerHeight,
-        deviceType:
-          window.innerWidth <= 768
-            ? "mobile"
-            : window.innerWidth <= 1024
-              ? "tablet"
-              : "desktop",
-        orientation: isLandscape ? "landscape" : "portrait",
-        heightPercentage,
-        footerHeight,
-        totalFooterSpace,
-      });
-    }
+    // if (environment === "dev") {
+    //   console.log({
+    //     windowHeight,
+    //     availableHeight,
+    //     calculatedHeight,
+    //     vhValue,
+    //     containerHeight,
+    //     deviceType:
+    //       window.innerWidth <= 768
+    //         ? "mobile"
+    //         : window.innerWidth <= 1024
+    //           ? "tablet"
+    //           : "desktop",
+    //     orientation: isLandscape ? "landscape" : "portrait",
+    //     heightPercentage,
+    //     footerHeight,
+    //     totalFooterSpace,
+    //   });
+    // }
   }, [windowHeight, containerHeight]);
 
   // Map meeting day abbreviations to an offset relative to Monday.
@@ -365,7 +365,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             eventDidMount={(info: any) => {
               // If this is a background event, style it on the fly
               if (info.event.display === "background") {
-                console.log("Background event", info.event);
                 info.el.style.zIndex = "9999";
                 info.el.style.pointerEvents = "none";
                 info.el.style.backgroundColor = info.event.extendedProps.color;
