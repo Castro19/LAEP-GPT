@@ -7,7 +7,11 @@ import {
   UpdateResult,
 } from "mongodb";
 import { getDb } from "../../connection";
-import { FlowchartData, FlowchartDocument } from "@polylink/shared/types";
+import {
+  FlowchartData,
+  FlowchartDocument,
+  FlowInfoDocument,
+} from "@polylink/shared/types";
 
 let flowchartCollection: Collection<FlowchartDocument>;
 
@@ -21,7 +25,8 @@ export const createFlowchart = async (
   flowchartData: FlowchartData,
   name: string,
   primaryOption: boolean,
-  userId: string
+  userId: string,
+  flowInfo: FlowInfoDocument
 ): Promise<InsertOneResult<FlowchartDocument>> => {
   if (!flowchartCollection) initializeCollection();
   try {
@@ -35,6 +40,7 @@ export const createFlowchart = async (
       name,
       primaryOption,
       userId,
+      flowInfo,
       createdAt: new Date(), // Adding timestamp for better tracking
       updatedAt: new Date(),
     } as FlowchartDocument);

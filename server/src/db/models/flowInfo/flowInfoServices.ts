@@ -147,3 +147,22 @@ export const findAlternateFlowchartCode = async (
 
   return null;
 };
+
+// Get the flowinfo for a given code
+export const getFlowInfoByCode = async (
+  code: string
+): Promise<FlowInfoDocument | null> => {
+  // Pass an empty projection to get all fields
+  const result = await flowInfoModel.searchFlowInfo({ code: code }, {
+    id: 0,
+    _id: 0,
+    majorName: 1,
+    concName: 1,
+    code: 1,
+    dataLink: 1,
+  } as FlowInfoProjection);
+  if (Array.isArray(result) && result.length > 0) {
+    return result[0] as FlowInfoDocument;
+  }
+  return null;
+};

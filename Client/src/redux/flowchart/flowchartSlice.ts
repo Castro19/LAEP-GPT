@@ -367,7 +367,12 @@ const flowchartSlice = createSlice({
         const { flowchartId, name, primaryOption } = action.payload;
 
         if (primaryOption) {
-          state.currentFlowchart = { flowchartId, name, primaryOption };
+          state.currentFlowchart = {
+            ...state.currentFlowchart,
+            flowchartId,
+            name,
+            primaryOption,
+          };
         }
         if (state.flowchartList) {
           state.flowchartList = state.flowchartList

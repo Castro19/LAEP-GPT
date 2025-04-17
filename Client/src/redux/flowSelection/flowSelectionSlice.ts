@@ -1,8 +1,9 @@
 import { serverUrl } from "@/helpers/getEnvironmentVars";
-import { ConcentrationInfo } from "@polylink/shared/types";
+import { ConcentrationInfo, FlowInfoDocument } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface FlowSelectionState {
+  flowInfo: FlowInfoDocument | null;
   catalogOptions: string[];
   majorOptions: string[];
   concentrationOptions: ConcentrationInfo[];
@@ -19,6 +20,21 @@ export interface FlowSelectionState {
   };
   error: string | null;
 }
+
+export const fetchFlowInfo = createAsyncThunk(
+  "flowchart/fetchFlowInfo",
+  async (code: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${serverUrl}/flowInfo/${code}`);
+      if (!response.ok) {
+        return rejectWithValue("Failed to fetch flow info.");
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue("Failed to fetch flow info.");
+    }
+  }
+);
 
 /**
  * Fetches the list of major options based on the selected catalog.
@@ -75,6 +91,7 @@ export const fetchConcentrationOptions = createAsyncThunk(
 
 // Initial state
 const initialState: FlowSelectionState = {
+  flowInfo: null,
   catalogOptions: ["2019-2020", "2020-2021", "2021-2022", "2022-2026"],
   majorOptions: [],
   concentrationOptions: [],
@@ -118,6 +135,10 @@ const flowSelectionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // fetchFlowInfo
+      .addCase(fetchFlowInfo.fulfilled, (state, action) => {
+        state.flowInfo = action.payload;
+      })
       // fetchMajorOptions
       .addCase(fetchMajorOptions.pending, (state) => {
         state.loading.fetchMajorOptions = true;

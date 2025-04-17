@@ -7,7 +7,7 @@ import { flowchartActions, useAppDispatch } from "@/redux";
 import { BuildScheduleContainer } from "@/components/scheduleBuilder";
 import { SavedFlowchartList, CourseDropdown } from "@/components/flowchart";
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
-
+import FlowchartInfo from "./flowchartInfo/FlowchartInfo";
 // UI Components
 import { Button } from "@/components/ui/button";
 
@@ -51,6 +51,12 @@ const FlowchartBuilderForm = ({
         {/* Placeholder for flowchart components */}
         <div className="flex flex-col h-full">
           <div className="flex flex-col gap-4">
+            <CollapsibleContentWrapper
+              title="Flowchart Info"
+              icon={HiOutlineAcademicCap}
+            >
+              <FlowchartInfo />
+            </CollapsibleContentWrapper>
             <CollapsibleContentWrapper
               title="Flowchart"
               icon={HiOutlineAcademicCap}
