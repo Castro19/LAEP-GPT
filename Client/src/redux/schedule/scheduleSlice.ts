@@ -4,6 +4,7 @@ import {
   ScheduleListItem,
   CourseTerm,
   SelectedSection,
+  GeneratedSchedule,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -13,6 +14,7 @@ import {
   getScheduleById,
   updateSchedule,
 } from "./crudSchedule";
+import { scheduleToGeneratedSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
 
 export interface Preferences {
   minUnits?: string;
@@ -28,14 +30,9 @@ export interface Preferences {
 export interface ScheduleState {
   scheduleList: ScheduleListItem[];
   primaryScheduleId: string;
-  currentSchedule: Schedule | null;
+  currentSchedule: GeneratedSchedule | null;
   message: string;
-  schedules: {
-    sections: SelectedSection[];
-    averageRating: number;
-    withConflicts?: boolean;
-    conflictGroups?: SelectedSection[];
-  }[];
+  schedules: GeneratedSchedule[];
   page: number;
   totalPages: number;
   loading: boolean;
@@ -152,7 +149,7 @@ export const getScheduleByIdAsync = createAsyncThunk(
   async (scheduleId: string) => {
     try {
       const schedule = await getScheduleById(scheduleId);
-      return schedule;
+      return scheduleToGeneratedSchedule(schedule);
     } catch (error) {
       if (environment === "dev") {
         console.error("Error getting schedule by id:", error);

@@ -18,6 +18,15 @@ export type ScheduleListDocument = SavedSchedules & {
   _id: string;
 };
 
+// Generated Schedule (for schedule combinations)
+export type GeneratedSchedule = {
+  sections: SelectedSection[];
+  averageRating: number;
+  name?: string;
+  withConflicts?: boolean;
+  conflictGroups?: SelectedSection[];
+};
+
 // Schedule
 export type Schedule = {
   id: string;
