@@ -22,6 +22,7 @@ export type ScheduleListDocument = SavedSchedules & {
 export type GeneratedSchedule = {
   sections: SelectedSection[];
   averageRating: number;
+  id?: string;
   name?: string;
   withConflicts?: boolean;
   conflictGroups?: SelectedSection[];
