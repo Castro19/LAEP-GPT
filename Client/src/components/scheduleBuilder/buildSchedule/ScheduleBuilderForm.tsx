@@ -29,7 +29,9 @@ const ScheduleBuilderForm = ({
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const { currentSchedule } = useAppSelector((state) => state.schedule);
+  const { currentSchedule, currentScheduleTerm } = useAppSelector(
+    (state) => state.schedule
+  );
   const schedulePreferences = useAppSelector(
     (state) => state.schedule.preferences
   );
@@ -89,7 +91,10 @@ const ScheduleBuilderForm = ({
   const handleSaveSchedule = () => {
     if (currentSchedule) {
       dispatch(
-        scheduleActions.createOrUpdateSchedulesAsync(currentSchedule.sections)
+        scheduleActions.createOrUpdateScheduleAsync({
+          sections: currentSchedule.sections,
+          term: currentScheduleTerm,
+        })
       );
     }
   };

@@ -1,5 +1,5 @@
 import { SelectedSection } from "../selectedSection";
-
+import { CourseTerm } from "../selectedSection";
 // Calendar List
 export type ScheduleListItem = {
   id: string;
@@ -8,7 +8,9 @@ export type ScheduleListItem = {
 };
 export type SavedSchedules = {
   userId: string;
-  schedules: ScheduleListItem[];
+  schedules: {
+    [K in CourseTerm]: ScheduleListItem[];
+  };
   primaryScheduleId: string;
 };
 

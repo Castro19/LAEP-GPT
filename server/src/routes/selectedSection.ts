@@ -1,34 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express from "express";
-import { CustomRequest } from "../types/express";
-import {
-  deleteSelectedSection,
-  postSelectedSection,
-} from "../db/models/selectedSection/selectedSectionServices";
-import { getSelectedSectionsByUserId } from "../db/models/selectedSection/selectedSectionServices";
 import { environment } from "../index";
+import {
+  getSelectedSectionsByUserId,
+  postSelectedSection,
+  deleteSelectedSection,
+} from "../db/models/selectedSection/selectedSectionServices";
 import { CourseTerm } from "@polylink/shared/types";
+
 const router = express.Router();
 
-router.get("/:term", async (req: any, res: any) => {
+router.get("/:term", async (req, res: any) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
+    const { term } = req.params;
     const selectedSections = await getSelectedSectionsByUserId(
       userId,
-      req.params.term as CourseTerm
+      term as CourseTerm
     );
-
     return res.status(200).json({
       message: "Selected sections fetched successfully",
       selectedSections,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error fetching sections:", error);
+      console.error("Error fetching selected sections:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -40,7 +39,6 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
     const { section } = req.body;
     const { selectedSections, message } = await postSelectedSection(
       userId,
@@ -70,14 +68,13 @@ router.delete("/:term/:sectionId", async (req, res: any) => {
       sectionId,
       term as CourseTerm
     );
-
-    res.status(200).json({
+    return res.status(200).json({
       message,
       selectedSections,
     });
   } catch (error) {
     if (environment === "dev") {
-      console.error("Error removing section:", error);
+      console.error("Error removing selected section:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
