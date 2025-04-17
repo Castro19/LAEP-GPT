@@ -203,6 +203,10 @@ const scheduleSlice = createSlice({
     },
     setCurrentScheduleTerm(state, action: PayloadAction<CourseTerm>) {
       state.currentScheduleTerm = action.payload;
+      state.page = 1;
+      state.totalPages = 1;
+      state.schedules = [];
+      state.currentSchedule = null;
     },
   },
   extraReducers: (builder) => {

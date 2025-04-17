@@ -97,14 +97,13 @@ router.put("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { schedule, primaryScheduleId, name, term } = req.body;
+    const { primaryScheduleId, name, term } = req.body;
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
     const result = await updateScheduleListItem({
       userId,
       scheduleId,
-      schedule,
       primaryScheduleId,
       name,
       term,
