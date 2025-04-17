@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express from "express";
-import {
-  getFlowInfoByCode,
-  searchFlowInfo,
-} from "../db/models/flowInfo/flowInfoServices";
+import { searchFlowInfo } from "../db/models/flowInfo/flowInfoServices";
 
 const router = express.Router();
 
