@@ -5,33 +5,74 @@ import { useNavigate } from "react-router-dom";
 import { ScheduleOptions } from "@/components/scheduleBuilder";
 import { useState, useEffect } from "react";
 import { GoPin } from "react-icons/go";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SavedSchedules = () => {
   const { scheduleList, primaryScheduleId } = useAppSelector(
     (state) => state.schedule
   );
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
+        delay: 0.1, // Slight delay to ensure loading state has started fading out
+      }}
+    >
       <div className="flex flex-col items-start justify-start gap-2">
-        {scheduleList && scheduleList.length > 0 ? (
-          scheduleList.map((schedule: ScheduleListItem) => (
-            <ScheduleItem
-              key={schedule.id}
-              schedule={schedule}
-              isPrimary={schedule.id === primaryScheduleId}
-            />
-          ))
-        ) : (
-          <div className="p-2 text-gray-500 dark:text-gray-400 text-sm">
-            Press the{" "}
-            <strong className="text-slate-400 font-semibold">
-              Save Schedule
-            </strong>{" "}
-            button to save your schedule
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {scheduleList && scheduleList.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5 }}
+              transition={{
+                duration: 0.4,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="w-full"
+            >
+              {scheduleList.map((schedule: ScheduleListItem, index: number) => (
+                <motion.div
+                  key={schedule.id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: 0.1 + index * 0.03,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  <ScheduleItem
+                    schedule={schedule}
+                    isPrimary={schedule.id === primaryScheduleId}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.4,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="p-2 text-gray-500 dark:text-gray-400 text-sm"
+            >
+              Press the{" "}
+              <strong className="text-slate-400 font-semibold">
+                Save Schedule
+              </strong>{" "}
+              button to save your schedule
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
