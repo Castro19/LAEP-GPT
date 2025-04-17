@@ -7,7 +7,7 @@ import { getDb } from "../../connection";
 let scheduleCollection: Collection<ScheduleDocument>;
 
 const initializeCollection = (): Collection<ScheduleDocument> => {
-  return getDb().collection("calendar");
+  return getDb().collection("schedule");
 };
 
 // Create a new schedule with the given sections

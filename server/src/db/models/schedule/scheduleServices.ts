@@ -113,6 +113,7 @@ export const createOrUpdateSchedule = async (
       createdAt: new Date(),
       updatedAt: new Date(),
       sections,
+      term,
     };
     const scheduleResult = await scheduleCollection.createSchedule(schedule);
     if (!scheduleResult) {
@@ -234,6 +235,7 @@ export const getScheduleById = async (
     if (!result) {
       throw new Error("Schedule not found");
     }
+
     return result;
   } catch (error) {
     if (environment === "dev") {

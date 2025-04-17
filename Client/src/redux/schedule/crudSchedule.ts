@@ -81,7 +81,6 @@ export async function getScheduleById(scheduleId: string): Promise<Schedule> {
       credentials: "include",
     });
     const data = await response.json();
-    console.log("data", data);
     if (!data.schedule) {
       throw new Error("Schedule not found");
     }

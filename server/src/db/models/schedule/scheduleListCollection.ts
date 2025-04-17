@@ -10,7 +10,7 @@ import { environment } from "../../..";
 let scheduleListCollection: Collection<ScheduleListDocument>;
 
 const initializeCollection = (): Collection<ScheduleListDocument> => {
-  return getDb().collection("calendarList");
+  return getDb().collection("scheduleList");
 };
 
 /**
