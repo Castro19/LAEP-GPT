@@ -1,5 +1,8 @@
 import * as flowchartModel from "./flowchartCollection";
-import { searchFlowInfo } from "../flowInfo/flowInfoServices";
+import {
+  searchFlowInfo,
+  getFlowInfoByCode,
+} from "../flowInfo/flowInfoServices";
 import { getUserByFirebaseId, updateUser } from "../user/userServices";
 import {
   ConcentrationInfo,
@@ -38,11 +41,16 @@ export const createFlowchart = async (
       flowchartList.length === 0 ||
       flowchartList.every((flowchart) => !flowchart.primaryOption);
     try {
+      const flowInfo = await getFlowInfoByCode(name);
+      if (!flowInfo) {
+        throw new Error("Flow info not found");
+      }
       const result = await flowchartModel.createFlowchart(
         flowchartData,
         flowchartName,
         primaryOption,
-        userId
+        userId,
+        flowInfo
       );
       return {
         flowchartId: result.insertedId.toString(),
@@ -75,6 +83,7 @@ export const fetchFlowchart = async (
       flowchartId: result._id.toString(),
       name: result.name,
       primaryOption: result.primaryOption,
+      flowInfo: result.flowInfo,
     };
     return {
       flowchartData: result.flowchartData,

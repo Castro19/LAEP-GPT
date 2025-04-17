@@ -1,6 +1,7 @@
 // types.ts
 
 import { ObjectId } from "bson";
+import { FlowInfoDocument } from "../flowInfo";
 
 // 1-1 match #FEFD9A --> Major, #FCD09E --> Support, #DCFDD2 --> GE, #F5F5DC --> Other
 type colors = "#FEFD9A" | "#FCD09E" | "#DCFDD2" | "#F5F5DC";
@@ -104,6 +105,7 @@ export type FetchedFlowchartObject = {
   flowchartId: string;
   name: string;
   primaryOption?: boolean;
+  flowInfo?: FlowInfoDocument;
 };
 
 export type DeleteFlowchartResponse = {
@@ -119,6 +121,7 @@ export type FlowchartDocument = {
   name: string;
   primaryOption: boolean;
   userId: string;
+  flowInfo: FlowInfoDocument;
   createdAt: Date;
   updatedAt: Date;
 };
