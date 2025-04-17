@@ -1,7 +1,7 @@
 import {
   NoSelectedSections,
+  ScheduleAverageRating,
   WeeklySchedule,
-  TermSelector,
 } from "@/components/scheduleBuilder";
 import { useAppSelector } from "@/redux";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
@@ -27,7 +27,7 @@ const ScheduleContainer = () => {
   return (
     <div className="flex flex-col gap-4 w-full overflow-hidden no-scroll">
       <div className="overflow-auto no-scroll">
-        <TermSelector />
+        <ScheduleAverageRating />
         <WeeklySchedule
           sections={currentSchedule.sections}
           height={isNarrowScreen ? "70vh" : "80vh"}
