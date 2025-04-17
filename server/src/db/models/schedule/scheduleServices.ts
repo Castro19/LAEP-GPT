@@ -106,6 +106,14 @@ export const createOrUpdateSchedule = async (
     // Initialize schedules array for the term if it doesn't exist
     const currentSchedules = scheduleList?.schedules[term] || [];
 
+    // Check if there are any schedules in either term
+    const hasAnySchedules =
+      scheduleList &&
+      ((scheduleList.schedules.spring2025 &&
+        scheduleList.schedules.spring2025.length > 0) ||
+        (scheduleList.schedules.summer2025 &&
+          scheduleList.schedules.summer2025.length > 0));
+
     const schedule = {
       id: scheduleId,
       userId,
@@ -121,7 +129,8 @@ export const createOrUpdateSchedule = async (
     }
     const schedules = await scheduleListModel.findScheduleListByUserId(userId);
     if (schedules) {
-      if (currentSchedules.length === 0 || !schedules.primaryScheduleId) {
+      // Only set as primary if there are no schedules in either term
+      if (!hasAnySchedules || !schedules.primaryScheduleId) {
         await scheduleListModel.createOrUpdateScheduleList(
           userId,
           {
