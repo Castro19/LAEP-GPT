@@ -1,5 +1,5 @@
 import { environment } from "@/helpers/getEnvironmentVars";
-import { SelectedSection } from "@polylink/shared/types";
+import { SelectedSection, GeneratedSchedule } from "@polylink/shared/types";
 import { SchedulePreferencesForm } from "../buildSchedule/ScheduleBuilderForm";
 import {
   hasConflict,
@@ -8,10 +8,7 @@ import {
 } from "./index";
 
 // Define a type for a full weekly schedule.
-export type Schedule = {
-  sections: SelectedSection[]; // all sections chosen (note: a valid course selection may include one section or a pair)
-  averageRating: number;
-};
+export type Schedule = GeneratedSchedule;
 
 function combineCourseSelections(
   courseGroups: SelectedSection[][][],
@@ -42,7 +39,7 @@ function combineCourseSelections(
     }
   }
 
-  // If no valid selection was found for this course group, then there’s no valid schedule.
+  // If no valid selection was found for this course group, then there's no valid schedule.
   if (!validSelectionFound) {
     const subCombinations = combineCourseSelections(
       courseGroups,

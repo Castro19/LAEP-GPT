@@ -4,23 +4,22 @@ import { Star } from "@/components/classSearch/reusable/sectionInfo/StarRating";
 import { Card } from "@/components/ui/card";
 
 const ScheduleAverageRating: React.FC = () => {
-  const { currentSchedule, schedules, page, currentScheduleTerm } =
-    useAppSelector((state) => state.schedule);
+  const { currentSchedule, currentScheduleTerm } = useAppSelector(
+    (state) => state.schedule
+  );
 
-  if (schedules.length === 0) {
+  if (!currentSchedule) {
     return null;
   }
 
-  // Get the current schedule using the page value
-  const schedule = schedules[page - 1];
-  const calculatedAverageRating = schedule.averageRating.toFixed(1);
+  const calculatedAverageRating = currentSchedule.averageRating.toFixed(1);
   const averageRating =
     calculatedAverageRating === "NaN" ? null : calculatedAverageRating;
 
   const stars = Array.from({ length: 4 }, (_, index) => {
     const fillPercentage = Math.max(
       0,
-      Math.min(1, schedule.averageRating - index)
+      Math.min(1, currentSchedule.averageRating - index)
     );
     return <Star key={index} fillPercentage={fillPercentage} />;
   });
@@ -35,23 +34,23 @@ const ScheduleAverageRating: React.FC = () => {
   };
 
   // Count lectures and labs
-  const lectureCount = schedule.sections.filter(
+  const lectureCount = currentSchedule.sections.filter(
     (section) => section.component === "LEC"
   ).length;
-  const labCount = schedule.sections.filter(
+  const labCount = currentSchedule.sections.filter(
     (section) => section.component === "LAB"
   ).length;
 
   // Count unique courses (by courseId)
   const uniqueCourses = new Set(
-    schedule.sections.map((section) => section.courseId)
+    currentSchedule.sections.map((section) => section.courseId)
   ).size;
 
   return (
     <Card className="p-3 bg-card/50 border-border/50">
       <div className="flex flex-col gap-2">
         <h2 className="text-xl font-bold">
-          {formatTermDisplay(currentScheduleTerm)}: {currentSchedule?.name}
+          {formatTermDisplay(currentScheduleTerm)}: {currentSchedule.name}
         </h2>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
