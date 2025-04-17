@@ -31,7 +31,9 @@ const ScheduleOptions = ({
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { primaryScheduleId } = useAppSelector((state) => state.schedule);
+  const { primaryScheduleId, currentScheduleTerm } = useAppSelector(
+    (state) => state.schedule
+  );
   // Popover state
   const [open, setOpen] = useState(false);
 
@@ -43,10 +45,11 @@ const ScheduleOptions = ({
 
   // Update flowchart data and close popover after saving
   const handleUpdateData = async () => {
+    const isPrimary = primaryOption ? schedule.id : primaryScheduleId;
     const updatedSchedule = {
       schedule: schedule,
       name: name,
-      primaryScheduleId: primaryOption ? schedule.id : primaryScheduleId,
+      primaryScheduleId: isPrimary,
     } as {
       schedule: Schedule;
       name: string;
@@ -56,7 +59,14 @@ const ScheduleOptions = ({
       console.log("UPDATED SCHEDULE", updatedSchedule);
     }
 
-    dispatch(scheduleActions.updateScheduleAsync(updatedSchedule));
+    dispatch(
+      scheduleActions.updateScheduleAsync({
+        schedule: updatedSchedule.schedule,
+        primaryScheduleId: isPrimary,
+        name: updatedSchedule.name,
+        term: currentScheduleTerm,
+      })
+    );
 
     setOpen(false);
   };
@@ -67,7 +77,12 @@ const ScheduleOptions = ({
       console.log("DELETING SCHEDULE", scheduleId);
     }
     // Close the popover
-    dispatch(scheduleActions.removeScheduleAsync(scheduleId));
+    dispatch(
+      scheduleActions.removeScheduleAsync({
+        scheduleId,
+        term: currentScheduleTerm,
+      })
+    );
     setOpen(false);
     navigate("/schedule-builder");
   };
