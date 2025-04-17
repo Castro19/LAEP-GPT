@@ -3,15 +3,16 @@ import {
   Schedule,
   ScheduleListItem,
   SelectedSection,
+  CourseTerm,
 } from "@polylink/shared/types";
 
 // Schedule List
-export async function fetchSchedules(): Promise<{
+export async function fetchSchedules(term: CourseTerm): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/schedules`, {
+    const response = await fetch(`${serverUrl}/schedules?term=${term}`, {
       credentials: "include",
     });
     const data = await response.json();
@@ -23,7 +24,8 @@ export async function fetchSchedules(): Promise<{
 }
 
 export async function createOrUpdateSchedule(
-  sections: SelectedSection[]
+  sections: SelectedSection[],
+  term: CourseTerm
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
@@ -31,7 +33,7 @@ export async function createOrUpdateSchedule(
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
       method: "POST",
-      body: JSON.stringify({ sections }),
+      body: JSON.stringify({ sections, term }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -49,7 +51,8 @@ export async function createOrUpdateSchedule(
 export async function updateSchedule(
   schedule: Schedule,
   primaryScheduleId: string,
-  name: string
+  name: string,
+  term: CourseTerm
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
@@ -57,7 +60,7 @@ export async function updateSchedule(
   try {
     const response = await fetch(`${serverUrl}/schedules/${schedule.id}`, {
       method: "PUT",
-      body: JSON.stringify({ schedule, primaryScheduleId, name }),
+      body: JSON.stringify({ schedule, primaryScheduleId, name, term }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -89,15 +92,21 @@ export async function getScheduleById(scheduleId: string): Promise<Schedule> {
   }
 }
 
-export async function removeSchedule(scheduleId: string): Promise<{
+export async function removeSchedule(
+  scheduleId: string,
+  term: CourseTerm
+): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
 }> {
   try {
-    const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${serverUrl}/schedules/${scheduleId}?term=${term}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
     const data = await response.json();
     return data;
   } catch (error) {

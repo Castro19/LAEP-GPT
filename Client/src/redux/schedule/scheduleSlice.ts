@@ -2,6 +2,7 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import {
   Schedule,
   ScheduleListItem,
+  CourseTerm,
   SelectedSection,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -25,29 +26,31 @@ export interface Preferences {
 }
 
 export interface ScheduleState {
-  page: number;
-  totalPages: number;
+  scheduleList: ScheduleListItem[];
+  primaryScheduleId: string;
+  currentSchedule: Schedule | null;
+  message: string;
   schedules: {
     sections: SelectedSection[];
     averageRating: number;
     withConflicts?: boolean;
     conflictGroups?: SelectedSection[];
   }[];
-  scheduleList: ScheduleListItem[];
-  currentSchedule: Schedule | null;
-  primaryScheduleId: string;
+  page: number;
+  totalPages: number;
   loading: boolean;
   preferences: Preferences;
-  currentScheduleTerm: "spring2025" | "summer2025";
+  currentScheduleTerm: CourseTerm;
 }
 
 const initialState: ScheduleState = {
+  scheduleList: [],
+  primaryScheduleId: "",
+  currentSchedule: null,
+  message: "",
   page: 1,
   totalPages: 1,
   schedules: [],
-  scheduleList: [],
-  currentSchedule: null,
-  primaryScheduleId: "",
   loading: false,
   currentScheduleTerm: "spring2025",
   preferences: {
@@ -62,14 +65,17 @@ const initialState: ScheduleState = {
   },
 };
 
-// When calling fetchSections, pass page and pageSize too.
+// Fetch schedules for a specific term
 export const fetchSchedulesAsync = createAsyncThunk(
-  "schedules/fetchSchedules",
-  async () => {
+  "schedule/fetchSchedules",
+  async (term: CourseTerm) => {
     try {
-      const response = await fetchSchedules();
-      const { schedules, primaryScheduleId } = response;
-      return { schedules, primaryScheduleId };
+      const response = await fetchSchedules(term);
+      return {
+        schedules: response.schedules,
+        primaryScheduleId: response.primaryScheduleId,
+        term,
+      };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error fetching schedules:", error);
@@ -79,13 +85,23 @@ export const fetchSchedulesAsync = createAsyncThunk(
   }
 );
 
-export const createOrUpdateSchedulesAsync = createAsyncThunk(
-  "schedules/createOrUpdateSchedule",
-  async (sections: SelectedSection[]) => {
+// Create or update schedule
+export const createOrUpdateScheduleAsync = createAsyncThunk(
+  "schedule/createOrUpdateSchedule",
+  async ({
+    sections,
+    term,
+  }: {
+    sections: SelectedSection[];
+    term: CourseTerm;
+  }) => {
     try {
-      const response = await createOrUpdateSchedule(sections);
-      const { schedules, primaryScheduleId } = response;
-      return { schedules, primaryScheduleId };
+      const response = await createOrUpdateSchedule(sections, term);
+      return {
+        schedules: response.schedules,
+        primaryScheduleId: response.primaryScheduleId,
+        term,
+      };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error creating or updating schedule:", error);
@@ -95,29 +111,48 @@ export const createOrUpdateSchedulesAsync = createAsyncThunk(
   }
 );
 
-// schedule Item
-export const removeScheduleAsync = createAsyncThunk(
-  "schedules/removeSchedule",
-  async (scheduleId: string) => {
+// Update schedule list item
+export const updateScheduleAsync = createAsyncThunk(
+  "schedule/updateSchedule",
+  async ({
+    schedule,
+    primaryScheduleId,
+    name,
+    term,
+  }: {
+    schedule: Schedule;
+    primaryScheduleId: string;
+    name: string;
+    term: CourseTerm;
+  }) => {
     try {
-      const response = await removeSchedule(scheduleId);
-      const { schedules, primaryScheduleId } = response;
-      return { schedules, primaryScheduleId, scheduleId };
+      const response = await updateSchedule(
+        schedule,
+        primaryScheduleId,
+        name,
+        term
+      );
+      return {
+        schedules: response.schedules,
+        primaryScheduleId: response.primaryScheduleId,
+        term,
+      };
     } catch (error) {
       if (environment === "dev") {
-        console.error("Error removing schedule:", error);
+        console.error("Error updating schedule:", error);
       }
       throw error;
     }
   }
 );
 
+// Get schedule by id
 export const getScheduleByIdAsync = createAsyncThunk(
-  "schedules/getScheduleById",
+  "schedule/getScheduleById",
   async (scheduleId: string) => {
     try {
-      const response = await getScheduleById(scheduleId);
-      return response;
+      const schedule = await getScheduleById(scheduleId);
+      return schedule;
     } catch (error) {
       if (environment === "dev") {
         console.error("Error getting schedule by id:", error);
@@ -127,25 +162,20 @@ export const getScheduleByIdAsync = createAsyncThunk(
   }
 );
 
-export const updateScheduleAsync = createAsyncThunk(
-  "schedules/updateSchedule",
-  async ({
-    schedule,
-    primaryScheduleId,
-    name,
-  }: {
-    schedule: Schedule;
-    primaryScheduleId: string;
-    name: string;
-  }) => {
+// Remove schedule
+export const removeScheduleAsync = createAsyncThunk(
+  "schedule/removeSchedule",
+  async ({ scheduleId, term }: { scheduleId: string; term: CourseTerm }) => {
     try {
-      const response = await updateSchedule(schedule, primaryScheduleId, name);
-      const { schedules, primaryScheduleId: newPrimaryScheduleId } = response;
-
-      return { schedules, primaryScheduleId: newPrimaryScheduleId };
+      const response = await removeSchedule(scheduleId, term);
+      return {
+        schedules: response.schedules,
+        primaryScheduleId: response.primaryScheduleId,
+        term,
+      };
     } catch (error) {
       if (environment === "dev") {
-        console.error("Error updating schedule:", error);
+        console.error("Error removing schedule:", error);
       }
       throw error;
     }
@@ -171,78 +201,31 @@ const scheduleSlice = createSlice({
     setPreferences(state, action) {
       state.preferences = action.payload;
     },
-    setCurrentScheduleTerm(
-      state,
-      action: PayloadAction<"spring2025" | "summer2025">
-    ) {
+    setCurrentScheduleTerm(state, action: PayloadAction<CourseTerm>) {
       state.currentScheduleTerm = action.payload;
     },
   },
   extraReducers: (builder) => {
-    // Fetch schedule List
-    builder.addCase(fetchSchedulesAsync.fulfilled, (state, action) => {
-      state.primaryScheduleId = action.payload.primaryScheduleId;
-      const scheduleList = action.payload.schedules;
-      const primarySchedule = scheduleList.find(
-        (schedule) => schedule.id === state.primaryScheduleId
-      );
-      if (primarySchedule) {
-        // Put the primary schedule at the top of the list
-        const otherSchedules = scheduleList.filter(
-          (schedule) => schedule.id !== state.primaryScheduleId
-        );
-        state.scheduleList = [primarySchedule, ...otherSchedules];
-      } else {
-        state.scheduleList = scheduleList;
-      }
-    });
-    // Create or Update schedule
-    builder.addCase(createOrUpdateSchedulesAsync.fulfilled, (state, action) => {
-      state.primaryScheduleId = action.payload.primaryScheduleId;
-      state.scheduleList = action.payload.schedules;
-    });
-    // Remove schedule
-    builder.addCase(removeScheduleAsync.fulfilled, (state, action) => {
-      const scheduleList = action.payload.schedules;
-      const primaryScheduleId = action.payload.primaryScheduleId;
-      const primarySchedule = scheduleList.find(
-        (schedule) => schedule.id === primaryScheduleId
-      );
-      if (primarySchedule) {
-        // Put the primary schedule at the top of the list
-        const otherSchedules = scheduleList.filter(
-          (schedule) => schedule.id !== primaryScheduleId
-        );
-        state.scheduleList = [primarySchedule, ...otherSchedules];
-
-        state.scheduleList = state.scheduleList.filter(
-          (schedule) => schedule.id !== action.payload.scheduleId
-        );
+    builder
+      .addCase(fetchSchedulesAsync.fulfilled, (state, action) => {
+        state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
-      } else {
-        state.scheduleList = scheduleList;
-        state.primaryScheduleId = "";
-      }
-    });
-    // Get schedule By Id
-    builder.addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
-      state.currentSchedule = action.payload;
-    });
-    // Update schedule
-    builder.addCase(updateScheduleAsync.fulfilled, (state, action) => {
-      state.scheduleList = action.payload.schedules;
-      state.primaryScheduleId = action.payload.primaryScheduleId;
-      const primarySchedule = state.scheduleList.find(
-        (schedule) => schedule.id === action.payload.primaryScheduleId
-      );
-      if (primarySchedule) {
-        // Re order the schedule list
-        const otherSchedules = state.scheduleList.filter(
-          (schedule) => schedule.id !== action.payload.primaryScheduleId
-        );
-        state.scheduleList = [primarySchedule, ...otherSchedules];
-      }
-    });
+      })
+      .addCase(createOrUpdateScheduleAsync.fulfilled, (state, action) => {
+        state.scheduleList = action.payload.schedules;
+        state.primaryScheduleId = action.payload.primaryScheduleId;
+      })
+      .addCase(updateScheduleAsync.fulfilled, (state, action) => {
+        state.scheduleList = action.payload.schedules;
+        state.primaryScheduleId = action.payload.primaryScheduleId;
+      })
+      .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
+        state.currentSchedule = action.payload;
+      })
+      .addCase(removeScheduleAsync.fulfilled, (state, action) => {
+        state.scheduleList = action.payload.schedules;
+        state.primaryScheduleId = action.payload.primaryScheduleId;
+      });
   },
 });
 

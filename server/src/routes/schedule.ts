@@ -9,8 +9,11 @@ import {
   getScheduleById,
   updateScheduleListItem,
 } from "../db/models/schedule/scheduleServices";
+import { CourseTerm } from "@polylink/shared/types";
 
 const router = express.Router();
+
+const VALID_TERMS = ["spring2025", "summer2025"] as const;
 
 router.get("/", async (req: CustomRequest, res: any) => {
   try {
@@ -18,9 +21,14 @@ router.get("/", async (req: CustomRequest, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
-    const { schedules, primaryScheduleId } =
-      await getScheduleListByUserId(userId);
+    const { term } = req.query;
+    if (!term || !VALID_TERMS.includes(term as CourseTerm)) {
+      return res.status(400).json({ message: "Invalid term" });
+    }
+    const { schedules, primaryScheduleId } = await getScheduleListByUserId(
+      userId,
+      term as CourseTerm
+    );
 
     return res.status(200).json({
       message: "Schedules fetched successfully",
@@ -41,8 +49,11 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { sections } = req.body;
-    const result = await createOrUpdateSchedule(userId, sections);
+    const { sections, term } = req.body;
+    if (!term || !VALID_TERMS.includes(term)) {
+      return res.status(400).json({ message: "Invalid term" });
+    }
+    const result = await createOrUpdateSchedule(userId, sections, term);
     return res.status(200).json({
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
@@ -86,13 +97,17 @@ router.put("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { schedule, primaryScheduleId, name } = req.body;
+    const { schedule, primaryScheduleId, name, term } = req.body;
+    if (!term || !VALID_TERMS.includes(term)) {
+      return res.status(400).json({ message: "Invalid term" });
+    }
     const result = await updateScheduleListItem({
       userId,
       scheduleId,
       schedule,
       primaryScheduleId,
       name,
+      term,
     });
     return res.status(200).json({
       message: "Schedule updated successfully",
@@ -114,9 +129,14 @@ router.delete("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
+    const { term } = req.query;
+    if (!term || !VALID_TERMS.includes(term as CourseTerm)) {
+      return res.status(400).json({ message: "Invalid term" });
+    }
     const { schedules, primaryScheduleId } = await deleteScheduleItem(
       userId,
-      scheduleId
+      scheduleId,
+      term as CourseTerm
     );
 
     res.status(200).json({

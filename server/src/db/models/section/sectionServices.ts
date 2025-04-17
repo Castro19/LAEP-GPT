@@ -296,7 +296,7 @@ export async function getSectionsByFilter(
   try {
     let query = buildSectionsQuery(filter);
     if (filter.withNoConflicts) {
-      const schedule = await fetchPrimarySchedule(userId);
+      const schedule = await fetchPrimarySchedule(userId, filter.term);
 
       if (schedule) {
         // 1) Build the "no-conflict" portion

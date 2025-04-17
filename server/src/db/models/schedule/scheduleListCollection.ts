@@ -1,4 +1,8 @@
-import { ScheduleListItem, ScheduleListDocument } from "@polylink/shared/types";
+import {
+  ScheduleListItem,
+  ScheduleListDocument,
+  CourseTerm,
+} from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection, UpdateResult } from "mongodb";
 import { environment } from "../../..";
@@ -29,7 +33,10 @@ export const findScheduleListByUserId = async (
     if (!result) {
       return {
         userId,
-        schedules: [],
+        schedules: {
+          spring2025: [],
+          summer2025: [],
+        },
         primaryScheduleId: "",
         _id: "",
       };
@@ -47,24 +54,41 @@ export const findScheduleListByUserId = async (
 export const createOrUpdateScheduleList = async (
   userId: string,
   schedule: ScheduleListItem,
-  primaryScheduleId: string
+  primaryScheduleId: string,
+  term: CourseTerm
 ): Promise<UpdateResult<ScheduleListDocument>> => {
   if (!scheduleListCollection) {
     scheduleListCollection = initializeCollection();
   }
 
   try {
+    // Get current document
+    const currentDoc = await scheduleListCollection.findOne({ userId });
+
+    // Initialize schedules object with proper type
+    let schedules: { [K in CourseTerm]: ScheduleListItem[] } = {
+      spring2025: [],
+      summer2025: [],
+    };
+
+    // If document exists and has valid schedules, use them
+    if (currentDoc?.schedules && !Array.isArray(currentDoc.schedules)) {
+      schedules = currentDoc.schedules;
+    }
+
+    // Add the new schedule
+    schedules[term].push({
+      id: schedule.id,
+      name: schedule.name,
+      updatedAt: schedule.updatedAt,
+    });
+
+    // Update the document
     const updateResult = await scheduleListCollection.updateOne(
       { userId },
       {
-        $addToSet: {
-          schedules: {
-            id: schedule.id,
-            name: schedule.name,
-            updatedAt: schedule.updatedAt,
-          },
-        },
         $set: {
+          schedules,
           primaryScheduleId,
         },
       },
@@ -83,18 +107,19 @@ export const createOrUpdateScheduleList = async (
 export const updateScheduleListItem = async (
   userId: string,
   scheduleListItem: ScheduleListItem,
-  primaryScheduleId: string
+  primaryScheduleId: string,
+  term: CourseTerm
 ): Promise<UpdateResult<ScheduleListDocument>> => {
   if (!scheduleListCollection) {
     scheduleListCollection = initializeCollection();
   }
   try {
     const updateResult = await scheduleListCollection.updateOne(
-      { userId, "schedules.id": scheduleListItem.id },
+      { userId, [`schedules.${term}.id`]: scheduleListItem.id },
       {
         $set: {
-          "schedules.$.name": scheduleListItem.name,
-          "schedules.$.updatedAt": scheduleListItem.updatedAt,
+          [`schedules.${term}.$.name`]: scheduleListItem.name,
+          [`schedules.${term}.$.updatedAt`]: scheduleListItem.updatedAt,
           primaryScheduleId: primaryScheduleId,
         },
       }
@@ -110,7 +135,8 @@ export const updateScheduleListItem = async (
 
 export const deleteScheduleListItem = async (
   userId: string,
-  scheduleId: string
+  scheduleId: string,
+  term: CourseTerm
 ): Promise<UpdateResult<ScheduleListDocument>> => {
   if (!scheduleListCollection) {
     scheduleListCollection = initializeCollection();
@@ -118,7 +144,7 @@ export const deleteScheduleListItem = async (
   try {
     const result = await scheduleListCollection.updateOne(
       { userId },
-      { $pull: { schedules: { id: scheduleId } } }
+      { $pull: { [`schedules.${term}`]: { id: scheduleId } } }
     );
     return result;
   } catch (error) {

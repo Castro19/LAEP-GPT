@@ -35,7 +35,7 @@ const ScheduleBuilderPage = () => {
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-  const { currentSchedule, currentScheduleTerm } = useAppSelector(
+  const { currentScheduleTerm, currentSchedule } = useAppSelector(
     (state) => state.schedule
   );
   const { selectedSections } = useAppSelector(
@@ -48,7 +48,6 @@ const ScheduleBuilderPage = () => {
 
   // Ref variables to prevent fetching data multiple times
   const hasFetchedassistantList = useRef(false);
-  const hasFetchedSchedules = useRef(false);
 
   // Fetch the selected sections
   useEffect(() => {
@@ -59,10 +58,8 @@ const ScheduleBuilderPage = () => {
 
   // Fetch the schedules
   useEffect(() => {
-    if (hasFetchedSchedules.current) return;
-    hasFetchedSchedules.current = true;
-    dispatch(scheduleActions.fetchSchedulesAsync());
-  }, [dispatch]);
+    dispatch(scheduleActions.fetchSchedulesAsync(currentScheduleTerm));
+  }, [dispatch, currentScheduleTerm]);
 
   // Fetch the current schedule by ID (if it exists)
   useEffect(() => {
