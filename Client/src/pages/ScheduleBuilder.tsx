@@ -141,6 +141,7 @@ const ScheduleBuilderPage = () => {
         value as "spring2025" | "summer2025"
       )
     );
+    navigate(`/schedule-builder`);
   };
 
   return (
@@ -227,13 +228,14 @@ const ScheduleBuilderMobile = () => {
     "spring2025" | "summer2025" | "schedule" | "AI Chat"
   >(currentScheduleTerm);
   const dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
   const handleTermChange = (value: string) => {
     dispatch(
       scheduleActions.setCurrentScheduleTerm(
         value as "spring2025" | "summer2025"
       )
     );
+    navigate(`/schedule-builder`);
   };
 
   return (
