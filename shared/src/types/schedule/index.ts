@@ -34,6 +34,7 @@ export type Schedule = {
   sections: SelectedSection[];
   createdAt: Date;
   updatedAt: Date;
+  term: CourseTerm;
 };
 export type ScheduleDocument = Schedule & {
   _id: string;

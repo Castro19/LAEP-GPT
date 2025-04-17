@@ -149,7 +149,20 @@ export const getScheduleByIdAsync = createAsyncThunk(
   async (scheduleId: string) => {
     try {
       const schedule = await getScheduleById(scheduleId);
-      return scheduleToGeneratedSchedule(schedule);
+      const generatedSchedule = scheduleToGeneratedSchedule(schedule);
+
+      // If the schedule has a term, update the currentScheduleTerm
+      if (schedule.term) {
+        return {
+          schedule: generatedSchedule,
+          term: schedule.term,
+        };
+      }
+
+      return {
+        schedule: generatedSchedule,
+        term: "spring2025",
+      };
     } catch (error) {
       if (environment === "dev") {
         console.error("Error getting schedule by id:", error);
@@ -221,7 +234,10 @@ const scheduleSlice = createSlice({
         state.primaryScheduleId = action.payload.primaryScheduleId;
       })
       .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
-        state.currentSchedule = action.payload;
+        state.currentSchedule = action.payload.schedule;
+        if (action.payload.term) {
+          state.currentScheduleTerm = action.payload.term as CourseTerm;
+        }
       })
       .addCase(removeScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
