@@ -14,11 +14,13 @@ import { environment } from "@/helpers/getEnvironmentVars";
 export interface SectionSelectionState {
   selectedSections: SelectedSection[];
   message: string;
+  fetchSelectedSectionsLoading: boolean;
 }
 
 const initialState: SectionSelectionState = {
   selectedSections: [],
   message: "",
+  fetchSelectedSectionsLoading: false,
 };
 
 // Fetch selected sections for a specific term or all terms
@@ -74,9 +76,17 @@ const sectionSelectionSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchSelectedSectionsAsync.fulfilled, (state, action) => {
-      state.selectedSections = action.payload;
-    });
+    builder
+      .addCase(fetchSelectedSectionsAsync.pending, (state) => {
+        state.fetchSelectedSectionsLoading = true;
+      })
+      .addCase(fetchSelectedSectionsAsync.fulfilled, (state, action) => {
+        state.selectedSections = action.payload;
+        state.fetchSelectedSectionsLoading = false;
+      })
+      .addCase(fetchSelectedSectionsAsync.rejected, (state) => {
+        state.fetchSelectedSectionsLoading = false;
+      });
     builder.addCase(
       createOrUpdateSelectedSectionAsync.fulfilled,
       (state, action) => {

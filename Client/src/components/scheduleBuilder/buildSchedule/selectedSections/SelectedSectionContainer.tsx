@@ -1,11 +1,13 @@
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import { useAppSelector } from "@/redux";
 
 // Components
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 import SectionsChosen from "./SectionsChosen";
 import { SavedSchedules } from "@/components/scheduleBuilder";
 import Preferences from "@/components/scheduleBuilder/buildSchedule/preferences/Preferences";
+import LoadingContainer from "../layout/LoadingContainer";
 
 // Icons
 import { FaBook, FaCalendar } from "react-icons/fa";
@@ -18,14 +20,22 @@ const SelectedSectionContainer = ({
 }: {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
+  const { fetchSchedulesLoading } = useAppSelector((state) => state.schedule);
+  const { fetchSelectedSectionsLoading } = useAppSelector(
+    (state) => state.sectionSelection
+  );
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col gap-4">
         <CollapsibleContentWrapper title="Classes" icon={FaBook}>
-          <SectionsChosen />
+          {fetchSelectedSectionsLoading ? (
+            <LoadingContainer />
+          ) : (
+            <SectionsChosen />
+          )}
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
-          <SavedSchedules />
+          {fetchSchedulesLoading ? <LoadingContainer /> : <SavedSchedules />}
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Preferences" icon={FaCalendar}>
           <Preferences form={form} />

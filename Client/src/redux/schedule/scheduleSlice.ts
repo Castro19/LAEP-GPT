@@ -35,7 +35,7 @@ export interface ScheduleState {
   schedules: GeneratedSchedule[];
   page: number;
   totalPages: number;
-  loading: boolean;
+  fetchSchedulesLoading: boolean;
   preferences: Preferences;
   currentScheduleTerm: CourseTerm;
 }
@@ -48,7 +48,7 @@ const initialState: ScheduleState = {
   page: 1,
   totalPages: 1,
   schedules: [],
-  loading: false,
+  fetchSchedulesLoading: false,
   currentScheduleTerm: "spring2025",
   preferences: {
     minUnits: "",
@@ -221,9 +221,16 @@ const scheduleSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchSchedulesAsync.pending, (state) => {
+        state.fetchSchedulesLoading = true;
+      })
       .addCase(fetchSchedulesAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        state.fetchSchedulesLoading = false;
+      })
+      .addCase(fetchSchedulesAsync.rejected, (state) => {
+        state.fetchSchedulesLoading = false;
       })
       .addCase(createOrUpdateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
