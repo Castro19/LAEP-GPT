@@ -46,6 +46,9 @@ const ScheduleBuilderPage = () => {
   );
   const userId = useAppSelector((state) => state.auth.userId);
 
+  const [tabValue, setTabValue] = useState<
+    "spring2025" | "summer2025" | "AI Chat"
+  >(currentScheduleTerm);
   // Ref variables to prevent fetching data multiple times
   const hasFetchedassistantList = useRef(false);
 
@@ -127,6 +130,11 @@ const ScheduleBuilderPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, navigate]);
 
+  // Update tabValue when currentScheduleTerm changes
+  useEffect(() => {
+    setTabValue(currentScheduleTerm);
+  }, [currentScheduleTerm]);
+
   const handleTermChange = (value: string) => {
     dispatch(
       scheduleActions.setCurrentScheduleTerm(
@@ -142,7 +150,13 @@ const ScheduleBuilderPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
           <div className="col-span-1">
-            <Tabs defaultValue="spring2025">
+            <Tabs
+              value={tabValue}
+              onValueChange={(value) =>
+                setTabValue(value as "spring2025" | "summer2025" | "AI Chat")
+              }
+              defaultValue={tabValue}
+            >
               <TabsList className="grid w-full grid-cols-3 dark:bg-gray-900">
                 <TabsTrigger
                   value="spring2025"
@@ -211,7 +225,7 @@ const ScheduleBuilderMobile = () => {
   );
   const [tabValue, setTabValue] = useState<
     "spring2025" | "summer2025" | "schedule" | "AI Chat"
-  >("spring2025");
+  >(currentScheduleTerm);
   const dispatch = useAppDispatch();
 
   const handleTermChange = (value: string) => {
@@ -230,7 +244,7 @@ const ScheduleBuilderMobile = () => {
           value as "spring2025" | "summer2025" | "schedule" | "AI Chat"
         )
       }
-      defaultValue="spring2025"
+      defaultValue={currentScheduleTerm}
     >
       <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900">
         <TabsTrigger
