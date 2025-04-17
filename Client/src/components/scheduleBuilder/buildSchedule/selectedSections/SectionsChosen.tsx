@@ -12,6 +12,8 @@ import {
 } from "@radix-ui/react-collapsible";
 import { removeSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
 import { useNavigate } from "react-router-dom";
+import LabelSection from "@/components/classSearch/reusable/sectionInfo/LabelSection";
+import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
 
 const SectionsChosen = () => {
   const navigate = useNavigate();
@@ -69,7 +71,7 @@ const SectionsChosen = () => {
         ease: [0.22, 1, 0.36, 1],
         delay: 0.1,
       }}
-      className="grid grid-cols-1 gap-2"
+      className="grid grid-cols-1 gap-2 w-full overflow-hidden"
     >
       <AnimatePresence mode="wait">
         {Object.entries(groupedSections).map(
@@ -84,17 +86,18 @@ const SectionsChosen = () => {
                 delay: 0.1 + courseIndex * 0.03,
                 ease: [0.22, 1, 0.36, 1],
               }}
+              className="w-full"
             >
-              <Collapsible className="group/collapsible">
-                <div className="bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-700">
+              <Collapsible className="group/collapsible w-full">
+                <div className="bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-700 w-full">
                   <CollapsibleTrigger asChild>
-                    <div className="bg-slate-800 flex justify-between items-center p-2 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors cursor-pointer rounded-md">
-                      <div className="flex items-center gap-3">
-                        <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                        <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
+                    <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-gray-100 dark:border-slate-700 w-full">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <ChevronRight className="flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90 text-gray-400 dark:text-gray-500" />
+                        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-200 truncate">
                           {courseId}
                         </h2>
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+                        <span className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-300 flex-shrink-0">
                           {Object.values(professorGroups).flat().length}{" "}
                           sections
                         </span>
@@ -125,8 +128,8 @@ const SectionsChosen = () => {
                             >
                               <div className=" border-gray-100 dark:border-slate-700 pt-2">
                                 <CollapsibleTrigger asChild>
-                                  <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 px-2 py-1 rounded">
-                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                  <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded">
+                                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
                                       {professor
                                         .split(" ")
                                         .map(
@@ -199,6 +202,10 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
     ? convertTo12HourFormat(meetings[0].end_time)
     : "N/A";
 
+  // Remove any duplicate days
+  const days = meetings.map((meeting) => meeting.days).flat();
+  const uniqueDays = [...new Set(days)];
+
   return (
     <div className="border border-gray-200 dark:border-slate-700 rounded-md p-2 bg-transparent transition-colors flex flex-col">
       <div className="space-y-1 flex-1">
@@ -227,42 +234,43 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
         </div>
 
         {/* Days - Bubble Style */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">Days</span>
-          <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
-            {meetings?.[0]?.days || "N/A"}
-          </span>
-        </div>
-
-        {/* Time & Remove Button - On the Same Line */}
-        <div className="flex justify-between items-center">
-          {/* Time - Bubble Style */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              Time
-            </span>
-            <div className="flex items-center gap-1">
-              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
-                {startTime}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                to
-              </span>
-              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
-                {endTime}
-              </span>
-            </div>
+        <div className="flex flex-row gap-2 items-center">
+          <LabelSection>Days</LabelSection>
+          <div className="flex flex-row gap-2">
+            {uniqueDays.length > 0 ? (
+              uniqueDays.map((day: string) => (
+                <BadgeSection key={day} variant="content">
+                  {day}
+                </BadgeSection>
+              ))
+            ) : (
+              <BadgeSection variant="content">N/A</BadgeSection>
+            )}
           </div>
-
-          {/* Remove Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRemove}
-            className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-          >
-            Remove
-          </Button>
+        </div>
+        {/* Time & Remove Button - Flexible Layout */}
+        <div className="flex flex-col justify-start gap-4">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center">
+              <LabelSection>Time</LabelSection>
+              <div className="flex flex-row gap-2 items-center">
+                <BadgeSection variant="content">{startTime}</BadgeSection>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  to
+                </span>
+                <BadgeSection variant="content">{endTime}</BadgeSection>
+              </div>
+            </div>
+            {/* Remove Button - Will wrap to new line only when needed */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRemove}
+              className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 ml-auto"
+            >
+              Remove
+            </Button>
+          </div>
         </div>
       </div>
     </div>
