@@ -97,7 +97,11 @@ const ScheduleBuilderForm = ({
   const handleSaveSchedule = () => {
     if (currentSchedule) {
       // Convert GeneratedSchedule to Schedule type for saving
-      const scheduleToSave = generatedScheduleToSchedule(currentSchedule);
+      const scheduleToSave = generatedScheduleToSchedule(
+        currentSchedule,
+        currentSchedule.name,
+        currentScheduleTerm
+      );
 
       dispatch(
         scheduleActions.createOrUpdateScheduleAsync({

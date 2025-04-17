@@ -64,7 +64,11 @@ function MobileHeader() {
       navigate(`/flowchart/${userData.flowchartInformation.flowchartId}`);
     } else if (path === "/chat") {
       handleChatClick();
-    } else if (path === "/schedule-builder" && currentSchedule) {
+    } else if (
+      path === "/schedule-builder" &&
+      currentSchedule &&
+      currentSchedule.id
+    ) {
       navigate(`/schedule-builder/${currentSchedule.id}`);
     } else {
       navigate(path);

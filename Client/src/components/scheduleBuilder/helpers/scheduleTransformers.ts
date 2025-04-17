@@ -2,6 +2,7 @@ import {
   Schedule,
   GeneratedSchedule,
   SelectedSection,
+  CourseTerm,
 } from "@polylink/shared/types";
 import hasConflict from "./conflicts";
 import { getConflictGroups } from "./weeklyCalendarConflicts";
@@ -75,6 +76,8 @@ export const scheduleToGeneratedSchedule = (
     professorWithRatingCount > 0 ? ratingCount / professorWithRatingCount : 0;
 
   return {
+    id: schedule.id,
+    name: schedule.name,
     sections: schedule.sections,
     averageRating,
     withConflicts,
@@ -90,11 +93,13 @@ export const scheduleToGeneratedSchedule = (
  */
 export const generatedScheduleToSchedule = (
   generatedSchedule: GeneratedSchedule,
-  name: string = "New Schedule"
+  name: string = "New Schedule",
+  term: CourseTerm
 ): Schedule => {
   return {
     id: "", // This will be set by the backend
     name,
+    term,
     sections: generatedSchedule.sections,
     createdAt: new Date(),
     updatedAt: new Date(),
