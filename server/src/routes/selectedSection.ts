@@ -6,7 +6,7 @@ import {
   postSelectedSection,
   deleteSelectedSection,
 } from "../db/models/selectedSection/selectedSectionServices";
-import { CourseTerm, SectionDetail } from "@polylink/shared/types";
+import { CourseTerm } from "@polylink/shared/types";
 
 const router = express.Router();
 

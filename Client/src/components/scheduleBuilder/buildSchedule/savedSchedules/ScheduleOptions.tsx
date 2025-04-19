@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Switch } from "@/components/ui/switch";
-import { Schedule, ScheduleListItem } from "@polylink/shared/types";
+import { ScheduleListItem } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
