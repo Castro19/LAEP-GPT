@@ -8,10 +8,10 @@ import {
   useState,
   forwardRef,
 } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "./button";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { MdEdit } from "react-icons/md";
-import { createPortal } from "react-dom";
 
 interface ModalContextType {
   open: boolean;
@@ -350,3 +350,99 @@ export const CustomModalBody = ({
     modalRoot
   );
 };
+
+export const NarrowScreenModal = forwardRef<
+  HTMLDivElement,
+  {
+    children: ReactNode;
+    className?: string;
+    excludeRefs?: React.RefObject<HTMLElement>[];
+    disableOutsideClick?: boolean;
+  }
+>(
+  (
+    { children, className, excludeRefs = [], disableOutsideClick = false },
+    ref
+  ) => {
+    const { open, setOpen } = useModal();
+
+    // Create a ref for the modal content
+    const modalContentRef = useRef<HTMLDivElement>(null);
+
+    // Use the provided ref or the local one
+    const modalRef = ref || modalContentRef;
+
+    useOutsideClick(
+      modalRef as React.RefObject<HTMLDivElement>,
+      () => {
+        if (!disableOutsideClick) {
+          setOpen(false);
+        }
+      },
+      [modalRef as React.RefObject<HTMLDivElement>, ...excludeRefs]
+    );
+
+    // Get the dedicated modal root
+    const modalRoot = document.getElementById("calendar-modal-root");
+
+    // If not open, don't render anything
+    if (!open) return null;
+
+    // If no modal root, create a fallback portal to body
+    const portalTarget = modalRoot || document.body;
+
+    return createPortal(
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+              backdropFilter: "blur(10px)",
+            }}
+            exit={{
+              opacity: 0,
+              backdropFilter: "blur(0px)",
+            }}
+            className="fixed inset-0 h-full w-full flex items-center justify-center z-[9999]"
+          >
+            <Overlay />
+
+            <motion.div
+              ref={modalRef}
+              className={cn(
+                "h-full w-full bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 relative z-[10000] flex flex-col overflow-hidden",
+                className
+              )}
+              initial={{
+                opacity: 0,
+                y: 100,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                y: 100,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 15,
+              }}
+            >
+              <CloseIcon />
+              {children}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      portalTarget
+    );
+  }
+);
+
+NarrowScreenModal.displayName = "NarrowScreenModal";

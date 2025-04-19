@@ -1,9 +1,13 @@
-import { forwardRef } from "react";
+import { forwardRef, useRef } from "react";
 import {
   ScheduleClassSection,
   ScheduleSectionInfo,
 } from "@/components/scheduleBuilder";
-import { Modal, ModalContent } from "@/components/ui/animated-modal";
+import {
+  Modal,
+  ModalContent,
+  NarrowScreenModal,
+} from "@/components/ui/animated-modal";
 import { CustomModalBody } from "@/components/ui/animated-modal";
 import { CustomModalTriggerButton } from "@/components/ui/animated-modal";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
@@ -14,7 +18,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+import NarrowScreenScheduleSectionInfo from "./NarrowScreenScheduleSectionInfo";
 // Add 'conflict' as a prop
 interface ScheduleTimeSlotsProps {
   event: ScheduleClassSection;
@@ -23,6 +28,8 @@ interface ScheduleTimeSlotsProps {
 
 const ScheduleTimeSlots = forwardRef<HTMLDivElement, ScheduleTimeSlotsProps>(
   ({ event }, ref) => {
+    const isNarrowScreen = useIsNarrowScreen();
+    const modalRef = useRef<HTMLDivElement>(null);
     const startTime = event.extendedProps.start_time
       ? convertTo12HourFormat(event.extendedProps.start_time)
       : "";
@@ -71,11 +78,17 @@ const ScheduleTimeSlots = forwardRef<HTMLDivElement, ScheduleTimeSlotsProps>(
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <CustomModalBody>
-            <ModalContent className="dark:bg-slate-950">
-              <ScheduleSectionInfo />
-            </ModalContent>
-          </CustomModalBody>
+          {isNarrowScreen ? (
+            <NarrowScreenModal ref={modalRef}>
+              <NarrowScreenScheduleSectionInfo />
+            </NarrowScreenModal>
+          ) : (
+            <CustomModalBody>
+              <ModalContent className="dark:bg-slate-950">
+                <ScheduleSectionInfo />
+              </ModalContent>
+            </CustomModalBody>
+          )}
         </Modal>
       </div>
     );
