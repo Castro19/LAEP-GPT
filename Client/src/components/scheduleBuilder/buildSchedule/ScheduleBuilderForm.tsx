@@ -8,7 +8,6 @@ import { SCHEDULE_PREFERENCES_SCHEMA } from "@/components/classSearch/courseFilt
 import { BuildScheduleContainer, SelectedSectionContainer } from "..";
 import { buildSchedule } from "@/components/scheduleBuilder/helpers";
 import { LeftSectionFooter } from "..";
-import { environment } from "@/helpers/getEnvironmentVars";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -27,7 +26,7 @@ const ScheduleBuilderForm = ({
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
-  const { selectedSections } = useAppSelector(
+  const { selectedSections, sectionsForSchedule } = useAppSelector(
     (state) => state.sectionSelection
   );
   const { currentSchedule, currentScheduleTerm } = useAppSelector(
@@ -73,14 +72,23 @@ const ScheduleBuilderForm = ({
       });
       return;
     }
-    if (environment === "dev") {
-      console.log("Building schedule...");
-      console.log("FORM PREFERENCES", form.getValues());
-      console.log("SELECTED SECTIONS", selectedSections);
-      console.log("CURRENT SCHEDULE", currentSchedule);
+
+    // Check if any sections are selected for the schedule
+    if (sectionsForSchedule.length === 0) {
+      toast({
+        title: "No sections selected",
+        description:
+          "Please select at least one section to include in your schedule",
+        variant: "destructive",
+      });
+      return;
     }
+
     // Create all combinations of sections
-    const allCombinations = buildSchedule(selectedSections, form.getValues());
+    const allCombinations = buildSchedule(
+      sectionsForSchedule,
+      form.getValues()
+    );
     dispatch(scheduleActions.setSchedules(allCombinations));
     dispatch(scheduleActions.setPage(1));
     dispatch(scheduleActions.setTotalPages(allCombinations.length));

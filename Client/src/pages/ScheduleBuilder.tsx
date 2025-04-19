@@ -38,9 +38,12 @@ const ScheduleBuilderPage = () => {
   const { currentScheduleTerm, currentSchedule } = useAppSelector(
     (state) => state.schedule
   );
-  const { selectedSections } = useAppSelector(
-    (state) => state.sectionSelection
-  );
+
+  const {
+    selectedSections,
+    sectionsForSchedule,
+    fetchSelectedSectionsLoading,
+  } = useAppSelector((state) => state.sectionSelection);
   const assistantList = useAppSelector(
     (state) => state.assistant.assistantList
   );
