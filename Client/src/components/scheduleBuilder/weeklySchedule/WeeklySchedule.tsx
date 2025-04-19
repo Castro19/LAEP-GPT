@@ -19,7 +19,7 @@ type EventType = {
   courseName: string;
   classNumber: string;
   enrollmentStatus: "O" | "C" | "W";
-  professor: string[];
+  professors: Array<{ name: string; id: string | null }>;
   color: string;
   days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
   start_time: string | null;
@@ -60,7 +60,7 @@ type WeeklyScheduleProps = {
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-  height = "80vh",
+  height = "75vh",
 }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
@@ -106,27 +106,27 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   useEffect(() => {
     // Define CSS custom properties for consistent spacing
     const root = document.documentElement;
-    root.style.setProperty("--calendar-padding-top", "2rem");
-    root.style.setProperty("--calendar-padding-bottom", "2rem");
-    root.style.setProperty("--calendar-min-height", "400px");
-    root.style.setProperty("--footer-height", "4rem"); // Approximate footer height
-    root.style.setProperty("--footer-margin", "1rem"); // Additional margin for safety
+    root.style.setProperty("--calendar-padding-top", "1rem");
+    root.style.setProperty("--calendar-padding-bottom", "1rem");
+    root.style.setProperty("--calendar-min-height", "350px");
+    root.style.setProperty("--footer-height", "3rem"); // Reduced footer height
+    root.style.setProperty("--footer-margin", "0.5rem"); // Reduced margin
 
     // Get the actual padding values from CSS
     const computedStyle = getComputedStyle(root);
     const paddingTop =
       parseFloat(computedStyle.getPropertyValue("--calendar-padding-top")) ||
-      32;
+      16;
     const paddingBottom =
       parseFloat(computedStyle.getPropertyValue("--calendar-padding-bottom")) ||
-      32;
+      16;
     const minHeight =
       parseFloat(computedStyle.getPropertyValue("--calendar-min-height")) ||
-      400;
+      350;
     const footerHeight =
-      parseFloat(computedStyle.getPropertyValue("--footer-height")) || 64;
+      parseFloat(computedStyle.getPropertyValue("--footer-height")) || 48;
     const footerMargin =
-      parseFloat(computedStyle.getPropertyValue("--footer-margin")) || 16;
+      parseFloat(computedStyle.getPropertyValue("--footer-margin")) || 8;
 
     // Calculate total space needed for footer (height + margin)
     const totalFooterSpace = footerHeight + footerMargin;
@@ -136,7 +136,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       windowHeight - paddingTop - paddingBottom - totalFooterSpace;
 
     // Device-specific adjustments based on measurements
-    let heightPercentage = 0.8; // Default 80%
+    let heightPercentage = 0.75; // Default 75% (increased from 65%)
 
     // Adjust based on device width (for landscape vs portrait)
     const isLandscape = window.innerWidth > window.innerHeight;
@@ -155,7 +155,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
     // For very small screens, use a more conservative approach
     if (windowHeight < 600) {
-      heightPercentage = 0.65; // Even more conservative for very small screens
+      heightPercentage = 0.65; // Increased from 0.55
     }
 
     // Calculate responsive height with precise measurements
@@ -309,8 +309,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
         h-full
         flex
         flex-col
-        max-h-[calc(100vh-15rem)]
-        sm:max-h-[calc(100vh-12rem)]
+        max-h-[calc(100vh-16rem)]
+        sm:max-h-[calc(100vh-13rem)]
         md:max-h-[calc(100vh-10rem)]
         lg:max-h-[calc(100vh-8rem)]
       "
@@ -326,6 +326,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             allDaySlot={false}
             slotMinTime="07:00:00"
             slotMaxTime="21:00:00"
+            slotDuration="01:00:00"
             hiddenDays={[0, 6]}
             events={finalEvents}
             contentHeight={calendarHeight}

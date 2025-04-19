@@ -4,4 +4,5 @@ export { default as filterSchedules } from "./filterScheduleList";
 export { default as generateAllScheduleCombinations } from "./generateAllScheduleCombinations";
 export { default as buildSchedule } from "./buildSchedule";
 export { default as generateScheduleWithConflicts } from "./scheduleWithConflicts";
+export { formatProfessorNames } from "./formatting";
 export type { Schedule } from "./generateAllScheduleCombinations";
