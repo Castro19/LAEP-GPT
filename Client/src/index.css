@@ -98,7 +98,7 @@ body {
 }
 
 .custom-tr-height tr {
-  height: 40px; /* Adjust the height as needed */
+  height: 60px; /* Increased from 40px to better fit content */
   border: 1px solid #64748b !important;
   color: #ffffff !important;
   font-size: 20px !important;
