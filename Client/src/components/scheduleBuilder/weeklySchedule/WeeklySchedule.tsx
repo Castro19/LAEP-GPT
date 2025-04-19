@@ -19,7 +19,7 @@ type EventType = {
   courseName: string;
   classNumber: string;
   enrollmentStatus: "O" | "C" | "W";
-  professor: string[];
+  professors: Array<{ name: string; id: string | null }>;
   color: string;
   days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
   start_time: string | null;

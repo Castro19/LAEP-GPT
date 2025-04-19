@@ -38,7 +38,7 @@ export const scheduleToGeneratedSchedule = (
       courseName: section.courseName,
       classNumber: section.classNumber.toString(),
       enrollmentStatus: section.enrollmentStatus,
-      professor: section.professors.map((p) => p.name),
+      professors: section.professors,
       color: "",
       days: section.meetings.flatMap((m) => m.days),
       start_time: section.meetings[0]?.start_time || null,
