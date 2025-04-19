@@ -16,6 +16,10 @@ export type SelectedSection = {
   }>;
   classPair: number | null;
   rating: number;
+  color: string;
+  // Generated on frontend
+  isVisible?: boolean;
+  isLocked?: boolean;
 };
 
 export type CourseTerm = "spring2025" | "summer2025";
@@ -33,7 +37,7 @@ export type SelectedSectionDocument = {
   selectedSections: {
     [K in CourseTerm]: {
       [classNumber: number]: {
-        addedAt: Date;
+        color: string;
       };
     };
   };

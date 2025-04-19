@@ -69,6 +69,8 @@ export const getSelectedSectionsByUserId = async (
               sectionDetail.instructorsWithRatings?.[0]?.overallRating ||
               sectionDetail.instructorsWithRatings?.[1]?.overallRating ||
               0,
+            color:
+              result.selectedSections[term]?.[sectionId]?.color || "#000000",
           };
           fullSections.push(selectedSection);
         }

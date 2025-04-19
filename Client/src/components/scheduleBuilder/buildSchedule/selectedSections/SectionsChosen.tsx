@@ -31,11 +31,11 @@ const SectionsChosen = () => {
           ease: [0.22, 1, 0.36, 1],
           delay: 0.1,
         }}
-        className="p-2 text-gray-500 dark:text-gray-400 text-sm"
+        className="p-2 text-gray-700 dark:text-gray-800 text-sm"
       >
         The sections you select from the{" "}
         <strong
-          className="text-blue-300/80 cursor-pointer"
+          className="text-blue-600/80 dark:text-blue-800 cursor-pointer"
           onClick={() => navigate("/class-search")}
         >
           Class Search
@@ -89,15 +89,51 @@ const SectionsChosen = () => {
               className="w-full"
             >
               <Collapsible className="group/collapsible w-full">
-                <div className="bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-700 w-full">
+                <div
+                  className="rounded-md border border-gray-200 dark:border-slate-700 w-full"
+                  style={{
+                    backgroundColor:
+                      professorGroups[Object.keys(professorGroups)[0]][0]
+                        .color || "#ffffff",
+                    borderColor:
+                      professorGroups[Object.keys(professorGroups)[0]][0]
+                        .color || "#e5e7eb",
+                  }}
+                >
                   <CollapsibleTrigger asChild>
-                    <div className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-gray-100 dark:border-slate-700 w-full">
+                    <div
+                      className="flex justify-between items-center p-3 transition-colors cursor-pointer border-b border-gray-100 dark:border-slate-700 w-full"
+                      style={{
+                        backgroundColor:
+                          professorGroups[Object.keys(professorGroups)[0]][0]
+                            .color || "#ffffff",
+                      }}
+                      onMouseOver={(e) => {
+                        const target = e.currentTarget;
+                        const currentColor =
+                          professorGroups[Object.keys(professorGroups)[0]][0]
+                            .color || "#ffffff";
+                        // Create a more subtle darker version of the color
+                        const darkerColor = adjustColorBrightness(
+                          currentColor,
+                          -5
+                        );
+                        target.style.backgroundColor = darkerColor;
+                      }}
+                      onMouseOut={(e) => {
+                        const target = e.currentTarget;
+                        const currentColor =
+                          professorGroups[Object.keys(professorGroups)[0]][0]
+                            .color || "#ffffff";
+                        target.style.backgroundColor = currentColor;
+                      }}
+                    >
                       <div className="flex items-center gap-2 min-w-0">
-                        <ChevronRight className="flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90 text-gray-400 dark:text-gray-500" />
-                        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-200 truncate">
+                        <ChevronRight className="flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90 text-gray-700 dark:text-gray-800" />
+                        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-900 truncate">
                           {courseId}
                         </h2>
-                        <span className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-300 flex-shrink-0">
+                        <span className="text-xs px-2 py-0.5 rounded-md bg-gray-200/80 text-gray-800 dark:bg-gray-300/80 dark:text-gray-900 flex-shrink-0">
                           {Object.values(professorGroups).flat().length}{" "}
                           sections
                         </span>
@@ -128,8 +164,32 @@ const SectionsChosen = () => {
                             >
                               <div className=" border-gray-100 dark:border-slate-700 pt-2">
                                 <CollapsibleTrigger asChild>
-                                  <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded">
-                                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                                  <div
+                                    className="flex justify-between items-center mb-2 cursor-pointer px-2 py-1 rounded transition-colors"
+                                    style={{
+                                      backgroundColor: "transparent",
+                                    }}
+                                    onMouseOver={(e) => {
+                                      const target = e.currentTarget;
+                                      const currentColor =
+                                        professorGroups[
+                                          Object.keys(professorGroups)[0]
+                                        ][0].color || "#ffffff";
+                                      // Create a more subtle darker version of the color
+                                      const darkerColor = adjustColorBrightness(
+                                        currentColor,
+                                        -5
+                                      );
+                                      target.style.backgroundColor =
+                                        darkerColor;
+                                    }}
+                                    onMouseOut={(e) => {
+                                      const target = e.currentTarget;
+                                      target.style.backgroundColor =
+                                        "transparent";
+                                    }}
+                                  >
+                                    <h3 className="text-sm font-medium text-slate-700 dark:text-gray-800">
                                       {professor
                                         .split(" ")
                                         .map(
@@ -211,7 +271,7 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
       <div className="space-y-1 flex-1">
         {/* First Row: Format as 'LAB 3500' */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-gray-700 dark:text-gray-800">
             {`${section.component.toUpperCase()} ${section.classNumber}`}
           </span>
 
@@ -219,10 +279,10 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
           <span
             className={`text-xxs px-1.5 py-0.5 rounded ${
               section.enrollmentStatus === "O"
-                ? "bg-[#204139] text-green-800 dark:bg-[#204139] dark:text-[#5EB752]" // Open
+                ? "dark:bg-black/80 text-green-400 bg-white/80 dark:text-green-400" // Open
                 : section.enrollmentStatus === "W"
-                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400" // Waitlist
-                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400" // Closed
+                  ? "dark:bg-black/80 text-yellow-400 bg-white/80 dark:text-yellow-400" // Waitlist
+                  : "dark:bg-black/80 text-red-400 bg-white/80 dark:text-red-400" // Closed
             }`}
           >
             {section.enrollmentStatus === "O"
@@ -235,16 +295,18 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
 
         {/* Days - Bubble Style */}
         <div className="flex flex-row gap-2 items-center">
-          <LabelSection>Days</LabelSection>
+          <LabelSection className="text-gray-700 dark:text-gray-800">
+            Days
+          </LabelSection>
           <div className="flex flex-row gap-2">
             {uniqueDays.length > 0 ? (
               uniqueDays.map((day: string) => (
-                <BadgeSection key={day} variant="content">
+                <BadgeSection key={day} variant="selected">
                   {day}
                 </BadgeSection>
               ))
             ) : (
-              <BadgeSection variant="content">N/A</BadgeSection>
+              <BadgeSection variant="selected">N/A</BadgeSection>
             )}
           </div>
         </div>
@@ -252,13 +314,15 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
         <div className="flex flex-col justify-start gap-4">
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex flex-row gap-2 items-center">
-              <LabelSection>Time</LabelSection>
+              <LabelSection className="text-gray-700 dark:text-gray-800">
+                Time
+              </LabelSection>
               <div className="flex flex-row gap-2 items-center">
-                <BadgeSection variant="content">{startTime}</BadgeSection>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <BadgeSection variant="selected">{startTime}</BadgeSection>
+                <span className="text-xs text-gray-700 dark:text-gray-800">
                   to
                 </span>
-                <BadgeSection variant="content">{endTime}</BadgeSection>
+                <BadgeSection variant="selected">{endTime}</BadgeSection>
               </div>
             </div>
             {/* Remove Button - Will wrap to new line only when needed */}
@@ -266,7 +330,21 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
               variant="ghost"
               size="sm"
               onClick={handleRemove}
-              className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 ml-auto"
+              className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-700 dark:hover:text-red-900 ml-auto transition-colors"
+              style={{
+                backgroundColor: "transparent",
+              }}
+              onMouseOver={(e) => {
+                const target = e.currentTarget;
+                const currentColor = section.color || "#ffffff";
+                // Create a more subtle darker version of the color
+                const darkerColor = adjustColorBrightness(currentColor, -5);
+                target.style.backgroundColor = darkerColor;
+              }}
+              onMouseOut={(e) => {
+                const target = e.currentTarget;
+                target.style.backgroundColor = "transparent";
+              }}
             >
               Remove
             </Button>
@@ -275,6 +353,26 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
       </div>
     </div>
   );
+};
+
+// Helper function to adjust color brightness
+const adjustColorBrightness = (hex: string, percent: number): string => {
+  // Convert hex to RGB
+  let r = parseInt(hex.substring(1, 3), 16);
+  let g = parseInt(hex.substring(3, 5), 16);
+  let b = parseInt(hex.substring(5, 7), 16);
+
+  // Adjust brightness
+  r = Math.max(0, Math.min(255, r + (r * percent) / 100));
+  g = Math.max(0, Math.min(255, g + (g * percent) / 100));
+  b = Math.max(0, Math.min(255, b + (b * percent) / 100));
+
+  // Convert back to hex
+  const rHex = Math.round(r).toString(16).padStart(2, "0");
+  const gHex = Math.round(g).toString(16).padStart(2, "0");
+  const bHex = Math.round(b).toString(16).padStart(2, "0");
+
+  return `#${rHex}${gHex}${bHex}`;
 };
 
 export default SectionsChosen;

@@ -33,26 +33,6 @@ export type ScheduleClassSection = {
   extendedProps: EventType;
 };
 
-// Define six pastel colors.
-const courseColors = [
-  "#E5FFB9", // light lime
-  "#B9E5FF", // light blue
-  "#B5E5B9", // light green
-  "#FFB7A3", // light coral
-  "#FFE5A3", // light yellow
-  "#E5B9FF", // light purple
-];
-
-// Returns one of the colors based on the courseId string.
-const getColorForCourse = (courseId: string): string => {
-  let hash = 0;
-  for (let i = 0; i < courseId.length; i++) {
-    hash = courseId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % courseColors.length;
-  return courseColors[index];
-};
-
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
   height?: string;
@@ -260,7 +240,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           professors: section.professors,
           start,
           end,
-          color: getColorForCourse(section.courseId),
+          color: section.color,
           days: meeting.days,
           start_time: meeting.start_time,
           end_time: meeting.end_time,

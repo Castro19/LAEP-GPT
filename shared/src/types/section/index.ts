@@ -56,6 +56,7 @@ export type Section = {
 
   classPair: number | null; // class number of the section paired with (e.g. 1002)
   isCreditNoCredit: boolean;
+  color: string;
 };
 
 export type SectionDocument = Section & {
