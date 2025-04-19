@@ -4,10 +4,11 @@ import * as scheduleCollection from "./scheduleCollection";
 import {
   Schedule,
   ScheduleListItem,
-  SelectedSection,
   CourseTerm,
+  ScheduleResponse,
 } from "@polylink/shared/types";
 import { v4 as uuidv4 } from "uuid";
+import { transformClassNumbersToSelectedSections } from "./transformSection";
 
 export const getScheduleListByUserId = async (
   userId: string,
@@ -92,7 +93,7 @@ export const updateScheduleListItem = async ({
 
 export const createOrUpdateSchedule = async (
   userId: string,
-  sections: SelectedSection[],
+  sections: number[],
   term: CourseTerm
 ): Promise<{
   schedules: ScheduleListItem[];
@@ -238,14 +239,29 @@ export const deleteScheduleItem = async (
 export const getScheduleById = async (
   userId: string,
   scheduleId: string
-): Promise<Schedule | null> => {
+): Promise<ScheduleResponse | null> => {
   try {
     const result = await scheduleCollection.getScheduleById(userId, scheduleId);
     if (!result) {
       throw new Error("Schedule not found");
     }
 
-    return result;
+    // Transform the schedule to a ScheduleResponse using the comprehensive utility function
+    const selectedSections = await transformClassNumbersToSelectedSections(
+      userId,
+      result.sections,
+      result.term
+    );
+
+    // Create and return the ScheduleResponse
+    return {
+      id: result.id,
+      name: result.name,
+      sections: selectedSections,
+      createdAt: result.createdAt,
+      updatedAt: result.updatedAt,
+      term: result.term,
+    };
   } catch (error) {
     if (environment === "dev") {
       console.error(error);

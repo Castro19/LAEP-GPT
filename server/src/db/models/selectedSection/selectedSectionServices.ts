@@ -3,21 +3,25 @@ import * as selectedSelectionModel from "./selectedSectionCollection";
 import {
   SelectedSection,
   SelectedSectionItem,
-  Section,
   Meeting,
   InstructorWithRatings,
   CourseTerm,
 } from "@polylink/shared/types";
-import { getSectionById } from "../section/sectionServices";
+import { transformClassNumbersToSelectedSections } from "../schedule/transformSection";
 
 export const getSelectedSectionsByUserId = async (
   userId: string,
   term: CourseTerm
 ): Promise<SelectedSection[]> => {
   try {
+    console.log(
+      `Getting selected sections for user ${userId} and term ${term}`
+    );
+
     const result =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
     if (!result) {
+      console.log("No selected sections document found for user");
       return [];
     }
 
@@ -26,66 +30,36 @@ export const getSelectedSectionsByUserId = async (
       !result.selectedSections ||
       typeof result.selectedSections !== "object"
     ) {
-      // If the structure is incorrect, return an empty array
+      console.log("Selected sections document has incorrect structure");
       return [];
     }
 
-    // Fetch full section details for each selected section
-    const fullSections: SelectedSection[] = [];
-    const sectionsToProcess = term
-      ? Object.keys(result.selectedSections[term] || {}).map(Number)
-      : Object.values(result.selectedSections).flatMap((termSections) =>
-          Object.keys(termSections).map(Number)
-        );
+    // Get all class numbers for the given term
+    const classNumbers = Object.keys(result.selectedSections[term] || {}).map(
+      Number
+    );
+    console.log(
+      `Found ${classNumbers.length} class numbers for term ${term}:`,
+      classNumbers
+    );
 
-    for (const sectionId of sectionsToProcess) {
-      try {
-        const sectionDetail: Section | null = await getSectionById(
-          sectionId,
-          term as CourseTerm
-        );
-        if (sectionDetail) {
-          // Transform the section detail to a SelectedSection
-          const selectedSection: SelectedSection = {
-            courseId: sectionDetail.courseId,
-            courseName: sectionDetail.courseName,
-            classNumber: sectionDetail.classNumber,
-            component: sectionDetail.component,
-            units: sectionDetail.units,
-            enrollmentStatus: sectionDetail.enrollmentStatus,
-            meetings: sectionDetail.meetings.map((meeting: Meeting) => ({
-              ...meeting,
-              days: meeting.days.filter((day) => day),
-            })),
-            classPair: sectionDetail.classPair || null,
-            professors:
-              sectionDetail.instructorsWithRatings?.map(
-                (instructor: InstructorWithRatings) => ({
-                  name: instructor.name,
-                  id: instructor.id,
-                })
-              ) ?? [],
-            rating:
-              sectionDetail.instructorsWithRatings?.[0]?.overallRating ||
-              sectionDetail.instructorsWithRatings?.[1]?.overallRating ||
-              0,
-            color:
-              result.selectedSections[term]?.[sectionId]?.color || "#000000",
-          };
-          fullSections.push(selectedSection);
-        }
-      } catch (error) {
-        if (environment === "dev") {
-          console.error(`Error fetching section ${sectionId}:`, error);
-        }
-        // Continue with other sections even if one fails
-      }
+    if (classNumbers.length === 0) {
+      console.log("No class numbers found for term, returning empty array");
+      return [];
     }
 
-    return fullSections;
+    // Use the utility function to transform class numbers into SelectedSection objects
+    const selectedSections = await transformClassNumbersToSelectedSections(
+      userId,
+      classNumbers,
+      term
+    );
+    console.log(`Returning ${selectedSections.length} selected sections`);
+
+    return selectedSections;
   } catch (error) {
     if (environment === "dev") {
-      console.error(error);
+      console.error("Error in getSelectedSectionsByUserId:", error);
     }
     throw error;
   }
