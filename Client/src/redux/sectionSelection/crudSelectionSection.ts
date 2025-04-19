@@ -43,7 +43,7 @@ export async function createOrUpdateSection(
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify({ section }),
+    body: JSON.stringify({ sectionId: section.sectionId, term: section.term }),
   });
 
   if (!response.ok) {

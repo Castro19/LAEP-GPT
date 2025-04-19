@@ -66,7 +66,9 @@ export const deleteSelectedSection = async (
 
 export const createOrUpdateSelectedSection = async (
   userId: string,
-  newSection: SelectedSectionItem
+  newSection: number,
+  term: CourseTerm,
+  color: string
 ): Promise<UpdateResult<SelectedSectionDocument>> => {
   if (!selectedSectionCollection) {
     selectedSectionCollection = initializeCollection();
@@ -101,8 +103,8 @@ export const createOrUpdateSelectedSection = async (
       { userId },
       {
         $set: {
-          [`selectedSections.${newSection.term}.${newSection.sectionId}`]: {
-            addedAt: new Date(),
+          [`selectedSections.${term}.${newSection}`]: {
+            color: color,
           },
         },
       },

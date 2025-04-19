@@ -103,26 +103,16 @@ export async function transformClassNumbersToSelectedSections(
   term: CourseTerm
 ): Promise<SelectedSection[]> {
   try {
-    console.log(
-      `Transforming ${classNumbers.length} class numbers for term ${term}`
-    );
-
     // 1. Fetch the sections from the appropriate collection based on term
     const sections = await getSectionsByIds(classNumbers, term);
-    console.log(`Fetched ${sections?.length || 0} sections from database`);
 
     if (!sections || sections.length === 0) {
-      console.log("No sections found, returning empty array");
       return [];
     }
 
     // 2. Fetch the selected sections document to get colors
     const selectedSectionsDoc =
       await selectedSectionModel.findSelectedSectionsByUserId(userId);
-    console.log(
-      "Selected sections document:",
-      JSON.stringify(selectedSectionsDoc, null, 2)
-    );
 
     // 3. Transform each section to a SelectedSection with the appropriate color
 
@@ -133,15 +123,10 @@ export async function transformClassNumbersToSelectedSections(
         selectedSectionsDoc?.selectedSections[term]?.[section.classNumber]
           ?.color || "#000000";
 
-      console.log(`Section ${section.classNumber} color: ${color}`);
-
       // Transform the section to a SelectedSection
       return transformSectionToSelectedSection(section, color);
     });
 
-    console.log(
-      `Transformed ${selectedSections.length} sections to SelectedSection objects`
-    );
     return selectedSections;
   } catch (error) {
     console.error(

@@ -6,7 +6,7 @@ import {
   postSelectedSection,
   deleteSelectedSection,
 } from "../db/models/selectedSection/selectedSectionServices";
-import { CourseTerm } from "@polylink/shared/types";
+import { CourseTerm, SectionDetail } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -39,11 +39,15 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { section } = req.body;
-    const { selectedSections, message } = await postSelectedSection(
-      userId,
-      section
-    );
+    const { sectionId, term } = req.body as {
+      sectionId: number;
+      term: CourseTerm;
+    };
+
+    const { selectedSections, message } = await postSelectedSection(userId, {
+      sectionId,
+      term,
+    });
     return res.status(200).json({
       message,
       selectedSections,
@@ -63,11 +67,10 @@ router.delete("/:term/:sectionId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { term, sectionId } = req.params;
-    const { selectedSections, message } = await deleteSelectedSection(
-      userId,
-      sectionId,
-      term as CourseTerm
-    );
+    const { selectedSections, message } = await deleteSelectedSection(userId, {
+      sectionId: parseInt(sectionId),
+      term: term as CourseTerm,
+    });
     return res.status(200).json({
       message,
       selectedSections,
