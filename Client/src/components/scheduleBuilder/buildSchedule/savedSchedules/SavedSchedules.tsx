@@ -6,11 +6,18 @@ import { ScheduleOptions } from "@/components/scheduleBuilder";
 import { useState, useEffect } from "react";
 import { GoPin } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+import useDeviceType from "@/hooks/useDeviceType";
 
-const SavedSchedules = () => {
+const SavedSchedules = ({
+  onSwitchTab,
+}: {
+  onSwitchTab?: (tab: string) => void;
+}) => {
   const { scheduleList, primaryScheduleId } = useAppSelector(
     (state) => state.schedule
   );
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -48,6 +55,7 @@ const SavedSchedules = () => {
                   <ScheduleItem
                     schedule={schedule}
                     isPrimary={schedule.id === primaryScheduleId}
+                    onSwitchTab={onSwitchTab}
                   />
                 </motion.div>
               ))}
@@ -79,17 +87,24 @@ const SavedSchedules = () => {
 const ScheduleItem = ({
   schedule,
   isPrimary,
+  onSwitchTab,
 }: {
   schedule: ScheduleListItem;
   isPrimary: boolean;
+  onSwitchTab?: (tab: string) => void;
 }) => {
   const [name, setName] = useState(schedule.name);
   const [primaryOption, setPrimaryOption] = useState(isPrimary);
 
+  const isNarrowScreen = useIsNarrowScreen();
+  const deviceType = useDeviceType();
   const navigate = useNavigate();
 
   const handleSelectSchedule = () => {
     navigate(`/schedule-builder/${schedule.id}`);
+    if (isNarrowScreen || deviceType !== "desktop") {
+      onSwitchTab?.("schedule");
+    }
   };
 
   useEffect(() => {

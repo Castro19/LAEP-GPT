@@ -126,7 +126,7 @@ const ScheduleBuilderForm = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <BuildScheduleContainer>
-          <SelectedSectionContainer form={form} />
+          <SelectedSectionContainer form={form} onSwitchTab={onSwitchTab} />
         </BuildScheduleContainer>
         <LeftSectionFooter
           formText="Generate Schedule"

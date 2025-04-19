@@ -17,8 +17,10 @@ import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/h
 
 const SelectedSectionContainer = ({
   form,
+  onSwitchTab,
 }: {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
+  onSwitchTab?: (tab: string) => void;
 }) => {
   const { fetchSchedulesLoading } = useAppSelector((state) => state.schedule);
   const { fetchSelectedSectionsLoading } = useAppSelector(
@@ -35,7 +37,11 @@ const SelectedSectionContainer = ({
           )}
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
-          {fetchSchedulesLoading ? <LoadingContainer /> : <SavedSchedules />}
+          {fetchSchedulesLoading ? (
+            <LoadingContainer />
+          ) : (
+            <SavedSchedules onSwitchTab={onSwitchTab} />
+          )}
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Preferences" icon={FaCalendar}>
           <Preferences form={form} />
