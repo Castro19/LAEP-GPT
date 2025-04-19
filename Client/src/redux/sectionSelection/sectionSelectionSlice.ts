@@ -13,12 +13,14 @@ import {
 import { environment } from "@/helpers/getEnvironmentVars";
 export interface SectionSelectionState {
   selectedSections: SelectedSection[];
+  sectionsForSchedule: SelectedSection[];
   message: string;
   fetchSelectedSectionsLoading: boolean;
 }
 
 const initialState: SectionSelectionState = {
   selectedSections: [],
+  sectionsForSchedule: [],
   message: "",
   fetchSelectedSectionsLoading: false,
 };
@@ -74,7 +76,36 @@ export const removeSelectedSectionAsync = createAsyncThunk(
 const sectionSelectionSlice = createSlice({
   name: "sectionSelection",
   initialState,
-  reducers: {},
+  reducers: {
+    toggleSectionForSchedule: (state, action) => {
+      const sectionId = action.payload;
+      const section = state.selectedSections.find(
+        (s) => s.classNumber === sectionId
+      );
+
+      if (section) {
+        const isAlreadySelected = state.sectionsForSchedule.some(
+          (s) => s.classNumber === sectionId
+        );
+
+        if (isAlreadySelected) {
+          state.sectionsForSchedule = state.sectionsForSchedule.filter(
+            (s) => s.classNumber !== sectionId
+          );
+        } else {
+          state.sectionsForSchedule.push(section);
+        }
+      }
+    },
+    selectAllSectionsForSchedule: (state) => {
+      state.sectionsForSchedule = state.selectedSections.filter(
+        (section) => section
+      );
+    },
+    deselectAllSectionsForSchedule: (state) => {
+      state.sectionsForSchedule = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSelectedSectionsAsync.pending, (state) => {
@@ -83,6 +114,7 @@ const sectionSelectionSlice = createSlice({
       .addCase(fetchSelectedSectionsAsync.fulfilled, (state, action) => {
         state.selectedSections = action.payload;
         state.fetchSelectedSectionsLoading = false;
+        state.sectionsForSchedule = action.payload;
       })
       .addCase(fetchSelectedSectionsAsync.rejected, (state) => {
         state.fetchSelectedSectionsLoading = false;
@@ -94,11 +126,33 @@ const sectionSelectionSlice = createSlice({
         state.message = action.payload.message;
       }
     );
-    builder.addCase(removeSelectedSectionAsync.fulfilled, (state, action) => {
-      state.selectedSections = action.payload.selectedSections;
-      state.message = action.payload.message;
-    });
+    builder
+      .addCase(removeSelectedSectionAsync.pending, (state, action) => {
+        // Remove the section from both arrays immediately for better UX
+        const sectionId = action.meta.arg.sectionId;
+
+        // Remove from selectedSections
+        state.selectedSections = state.selectedSections.filter(
+          (section) => section.classNumber !== sectionId
+        );
+
+        // Remove from sectionsForSchedule
+        state.sectionsForSchedule = state.sectionsForSchedule.filter(
+          (section) => section.classNumber !== sectionId
+        );
+      })
+      .addCase(removeSelectedSectionAsync.fulfilled, (state, action) => {
+        // Update with the server response
+        state.selectedSections = action.payload.selectedSections;
+        state.message = action.payload.message;
+        state.fetchSelectedSectionsLoading = false;
+      });
   },
 });
 
+export const {
+  toggleSectionForSchedule,
+  selectAllSectionsForSchedule,
+  deselectAllSectionsForSchedule,
+} = sectionSelectionSlice.actions;
 export const sectionSelectionReducer = sectionSelectionSlice.reducer;

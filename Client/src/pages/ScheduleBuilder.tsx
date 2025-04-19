@@ -38,6 +38,7 @@ const ScheduleBuilderPage = () => {
   const { currentScheduleTerm, currentSchedule } = useAppSelector(
     (state) => state.schedule
   );
+
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );

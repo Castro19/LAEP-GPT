@@ -1,8 +1,4 @@
-import {
-  SelectedSectionDocument,
-  SelectedSectionItem,
-  CourseTerm,
-} from "@polylink/shared/types";
+import { SelectedSectionDocument, CourseTerm } from "@polylink/shared/types";
 import { getDb } from "../../connection";
 import { Collection, UpdateResult } from "mongodb";
 import { environment } from "../../../index";

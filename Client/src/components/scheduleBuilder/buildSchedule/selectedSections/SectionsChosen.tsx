@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { ChevronRight } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
@@ -10,16 +11,23 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import { removeSelectedSectionAsync } from "@/redux/sectionSelection/sectionSelectionSlice";
+import {
+  removeSelectedSectionAsync,
+  toggleSectionForSchedule,
+  selectAllSectionsForSchedule,
+  deselectAllSectionsForSchedule,
+} from "@/redux/sectionSelection/sectionSelectionSlice";
 import { useNavigate } from "react-router-dom";
 import LabelSection from "@/components/classSearch/reusable/sectionInfo/LabelSection";
 import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
 
 const SectionsChosen = () => {
   const navigate = useNavigate();
-  const { selectedSections } = useAppSelector(
+  const dispatch = useAppDispatch();
+  const { selectedSections, sectionsForSchedule } = useAppSelector(
     (state) => state.sectionSelection
   );
+
   // Group sections by courseId and professor
   if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
     return (
@@ -62,6 +70,16 @@ const SectionsChosen = () => {
     {} as Record<string, Record<string, SelectedSection[]>>
   );
 
+  // Handle select all sections
+  const handleSelectAll = () => {
+    dispatch(selectAllSectionsForSchedule());
+  };
+
+  // Handle deselect all sections
+  const handleDeselectAll = () => {
+    dispatch(deselectAllSectionsForSchedule());
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -73,6 +91,31 @@ const SectionsChosen = () => {
       }}
       className="grid grid-cols-1 gap-2 w-full overflow-hidden"
     >
+      {/* Header with select/deselect all buttons */}
+      <div className="flex justify-between items-center mb-2 px-2">
+        <div className="text-sm font-medium text-slate-700 dark:text-gray-200">
+          Select sections to include in schedule:
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSelectAll}
+            className="text-xs"
+          >
+            Select All
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDeselectAll}
+            className="text-xs"
+          >
+            Deselect All
+          </Button>
+        </div>
+      </div>
+
       <AnimatePresence mode="wait">
         {Object.entries(groupedSections).map(
           ([courseId, professorGroups], courseIndex) => (
@@ -219,7 +262,19 @@ const SectionsChosen = () => {
                                           ease: [0.22, 1, 0.36, 1],
                                         }}
                                       >
-                                        <SectionCard section={section} />
+                                        <SectionCard
+                                          section={section}
+                                          isSelected={
+                                            Array.isArray(
+                                              sectionsForSchedule
+                                            ) &&
+                                            sectionsForSchedule.some(
+                                              (s) =>
+                                                s.classNumber ===
+                                                section.classNumber
+                                            )
+                                          }
+                                        />
                                       </motion.div>
                                     ))}
                                   </div>
@@ -241,9 +296,13 @@ const SectionsChosen = () => {
   );
 };
 
-const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
+const SectionCard: React.FC<{
+  section: SelectedSection;
+  isSelected: boolean;
+}> = ({ section, isSelected }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+
   const handleRemove = () => {
     dispatch(
       removeSelectedSectionAsync({
@@ -251,6 +310,10 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
         term: currentScheduleTerm,
       })
     );
+  };
+
+  const handleToggleSelection = () => {
+    dispatch(toggleSectionForSchedule(section.classNumber));
   };
 
   // Extract and format start & end time
@@ -269,28 +332,38 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
   return (
     <div className="border border-gray-200 dark:border-slate-700 rounded-md p-2 bg-transparent transition-colors flex flex-col">
       <div className="space-y-1 flex-1">
-        {/* First Row: Format as 'LAB 3500' */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-700 dark:text-gray-800">
-            {`${section.component.toUpperCase()} ${section.classNumber}`}
-          </span>
+        {/* First Row: Format as 'LAB 3500' with checkbox on the right */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-700 dark:text-gray-800">
+              {`${section.component.toUpperCase()} ${section.classNumber}`}
+            </span>
 
-          {/* Enrollment Status (Open/Closed/Waitlist) */}
-          <span
-            className={`text-xxs px-1.5 py-0.5 rounded ${
-              section.enrollmentStatus === "O"
-                ? "dark:bg-black/80 text-green-400 bg-white/80 dark:text-green-400" // Open
+            {/* Enrollment Status (Open/Closed/Waitlist) */}
+            <span
+              className={`text-xxs px-1.5 py-0.5 rounded ${
+                section.enrollmentStatus === "O"
+                  ? "dark:bg-black/80 text-green-400 bg-white/80 dark:text-green-400" // Open
+                  : section.enrollmentStatus === "W"
+                    ? "dark:bg-black/80 text-yellow-400 bg-white/80 dark:text-yellow-400" // Waitlist
+                    : "dark:bg-black/80 text-red-400 bg-white/80 dark:text-red-400" // Closed
+              }`}
+            >
+              {section.enrollmentStatus === "O"
+                ? "Open"
                 : section.enrollmentStatus === "W"
-                  ? "dark:bg-black/80 text-yellow-400 bg-white/80 dark:text-yellow-400" // Waitlist
-                  : "dark:bg-black/80 text-red-400 bg-white/80 dark:text-red-400" // Closed
-            }`}
-          >
-            {section.enrollmentStatus === "O"
-              ? "Open"
-              : section.enrollmentStatus === "W"
-                ? "Waitlist"
-                : "Closed"}
-          </span>
+                  ? "Waitlist"
+                  : "Closed"}
+            </span>
+          </div>
+
+          {/* Checkbox moved to the right */}
+          <Checkbox
+            id={`section-${section.classNumber}`}
+            checked={isSelected}
+            onCheckedChange={handleToggleSelection}
+            className="h-4 w-4 border-gray-700 dark:border-slate-900"
+          />
         </div>
 
         {/* Days - Bubble Style */}
