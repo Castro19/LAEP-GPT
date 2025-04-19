@@ -25,8 +25,8 @@ const ScheduleContainer = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full overflow-hidden no-scroll">
-      <div className="overflow-auto no-scroll">
+    <div className="flex flex-col h-full w-full overflow-hidden no-scroll">
+      <div className="overflow-auto no-scroll flex-grow">
         <ScheduleAverageRating />
         <WeeklySchedule
           sections={currentSchedule.sections}
