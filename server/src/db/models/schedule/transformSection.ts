@@ -6,9 +6,14 @@ import {
   ScheduleResponse,
   CourseTerm,
 } from "@polylink/shared/types";
+import { courseColors } from "@polylink/shared/constants";
+
 import { getSectionsByIds } from "../section/sectionServices";
 import * as selectedSectionModel from "../selectedSection/selectedSectionCollection";
 
+function getRandomColor(): string {
+  return courseColors[Math.floor(Math.random() * courseColors.length)];
+}
 /**
  * Transforms a Section or SectionDetail to a SelectedSection
  * @param section The Section or SectionDetail to transform
@@ -17,7 +22,7 @@ import * as selectedSectionModel from "../selectedSection/selectedSectionCollect
  */
 export function transformSectionToSelectedSection(
   section: Section | SectionDetail,
-  color: string = "#000000"
+  color: string = getRandomColor()
 ): SelectedSection {
   // Extract the first instructor's rating or default to 0
   const rating = section.instructorsWithRatings?.[0]?.overallRating || 0;
@@ -114,14 +119,53 @@ export async function transformClassNumbersToSelectedSections(
     const selectedSectionsDoc =
       await selectedSectionModel.findSelectedSectionsByUserId(userId);
 
-    // 3. Transform each section to a SelectedSection with the appropriate color
+    // 3. Create a map to track colors by courseId
+    const courseIdToColorMap = new Map<string, string>();
 
+    // 4. First pass: Try to find existing colors for each courseId
+    sections.forEach((section) => {
+      // Check if we already have a color for this courseId
+      if (!courseIdToColorMap.has(section.courseId)) {
+        // Try to find a color from the selected sections document
+        // First check if the current classNumber has a color
+        let color =
+          selectedSectionsDoc?.selectedSections[term]?.[section.classNumber]
+            ?.color;
+
+        // If no color found for this classNumber, look for any classNumber with the same courseId
+        if (!color) {
+          // Look through all classNumbers in the selected sections document for this term
+          const termSections =
+            selectedSectionsDoc?.selectedSections[term] || {};
+          for (const [classNum, sectionData] of Object.entries(termSections)) {
+            // Find a section with the same courseId
+            const matchingSection = sections.find(
+              (s) =>
+                s.classNumber === Number(classNum) &&
+                s.courseId === section.courseId
+            );
+            if (matchingSection) {
+              color = sectionData.color;
+              break;
+            }
+          }
+        }
+
+        // If still no color found, generate a random one
+        if (!color) {
+          color = getRandomColor();
+        }
+
+        // Store the color for this courseId
+        courseIdToColorMap.set(section.courseId, color);
+      }
+    });
+
+    // 5. Transform each section to a SelectedSection with the appropriate color
     const selectedSections: SelectedSection[] = sections.map((section) => {
-      // Get the color from the selected sections document if available
-      // The structure is selectedSectionsDoc.selectedSections[term][classNumber].color
+      // Get the color from our map
       const color =
-        selectedSectionsDoc?.selectedSections[term]?.[section.classNumber]
-          ?.color || "#000000";
+        courseIdToColorMap.get(section.courseId) || getRandomColor();
 
       // Transform the section to a SelectedSection
       return transformSectionToSelectedSection(section, color);
