@@ -4,7 +4,7 @@ import { SelectedSection, CourseTerm } from "@polylink/shared/types";
 import { transformClassNumbersToSelectedSections } from "../schedule/transformSection";
 import * as sectionCollection from "../section/sectionCollection";
 import * as summerSectionCollection from "../section/summerSectionCollection";
-import { courseColors } from "@polylink/shared/constants";
+import { courseColors } from "../../../constants/colors";
 // Map to store courseId to color mapping
 const courseIdToColorMap = new Map<string, string>();
 

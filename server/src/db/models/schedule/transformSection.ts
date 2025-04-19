@@ -6,7 +6,7 @@ import {
   ScheduleResponse,
   CourseTerm,
 } from "@polylink/shared/types";
-import { courseColors } from "@polylink/shared/constants";
+import { courseColors } from "../../../constants/colors";
 
 import { getSectionsByIds } from "../section/sectionServices";
 import * as selectedSectionModel from "../selectedSection/selectedSectionCollection";
