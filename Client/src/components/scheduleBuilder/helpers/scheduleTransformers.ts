@@ -1,8 +1,8 @@
 import {
-  Schedule,
   GeneratedSchedule,
   SelectedSection,
   CourseTerm,
+  ScheduleResponse,
 } from "@polylink/shared/types";
 import hasConflict from "./conflicts";
 import { getConflictGroups } from "./weeklyCalendarConflicts";
@@ -13,7 +13,7 @@ import { getConflictGroups } from "./weeklyCalendarConflicts";
  * @returns A GeneratedSchedule with the same sections and calculated properties
  */
 export const scheduleToGeneratedSchedule = (
-  schedule: Schedule
+  schedule: ScheduleResponse
 ): GeneratedSchedule => {
   // Calculate if there are conflicts in the schedule
   const sections = schedule.sections;
@@ -95,7 +95,7 @@ export const generatedScheduleToSchedule = (
   generatedSchedule: GeneratedSchedule,
   name: string = "New Schedule",
   term: CourseTerm
-): Schedule => {
+): ScheduleResponse => {
   return {
     id: "", // This will be set by the backend
     name,

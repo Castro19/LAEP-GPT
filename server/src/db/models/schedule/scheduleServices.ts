@@ -93,7 +93,7 @@ export const updateScheduleListItem = async ({
 
 export const createOrUpdateSchedule = async (
   userId: string,
-  sections: number[],
+  classNumbers: number[],
   term: CourseTerm
 ): Promise<{
   schedules: ScheduleListItem[];
@@ -121,7 +121,7 @@ export const createOrUpdateSchedule = async (
       name: `Schedule ${currentSchedules.length + 1}`,
       createdAt: new Date(),
       updatedAt: new Date(),
-      sections,
+      sections: classNumbers,
       term,
     };
     const scheduleResult = await scheduleCollection.createSchedule(schedule);

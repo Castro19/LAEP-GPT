@@ -1,9 +1,8 @@
 import { serverUrl } from "@/helpers/getEnvironmentVars";
 import {
-  Schedule,
   ScheduleListItem,
-  SelectedSection,
   CourseTerm,
+  ScheduleResponse,
 } from "@polylink/shared/types";
 
 // Schedule List
@@ -24,7 +23,7 @@ export async function fetchSchedules(term: CourseTerm): Promise<{
 }
 
 export async function createOrUpdateSchedule(
-  sections: SelectedSection[],
+  classNumbers: number[],
   term: CourseTerm
 ): Promise<{
   schedules: ScheduleListItem[];
@@ -33,7 +32,7 @@ export async function createOrUpdateSchedule(
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
       method: "POST",
-      body: JSON.stringify({ sections, term }),
+      body: JSON.stringify({ classNumbers, term }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -49,7 +48,7 @@ export async function createOrUpdateSchedule(
 
 // Update Schedule List Item
 export async function updateSchedule(
-  schedule: Schedule,
+  schedule: ScheduleListItem,
   primaryScheduleId: string,
   name: string,
   term: CourseTerm
@@ -75,7 +74,9 @@ export async function updateSchedule(
 }
 
 // Schedule Item
-export async function getScheduleById(scheduleId: string): Promise<Schedule> {
+export async function getScheduleById(
+  scheduleId: string
+): Promise<ScheduleResponse> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${scheduleId}`, {
       credentials: "include",

@@ -9,7 +9,7 @@ import {
   getScheduleById,
   updateScheduleListItem,
 } from "../db/models/schedule/scheduleServices";
-import { CourseTerm } from "@polylink/shared/types";
+import { CourseTerm, ScheduleListItem } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -49,11 +49,15 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { sections, term } = req.body;
+    const { classNumbers, term } = req.body as {
+      classNumbers: number[];
+      term: CourseTerm;
+    };
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
-    const result = await createOrUpdateSchedule(userId, sections, term);
+
+    const result = await createOrUpdateSchedule(userId, classNumbers, term);
     return res.status(200).json({
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
@@ -97,7 +101,18 @@ router.put("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { primaryScheduleId, name, term } = req.body;
+    const { schedule, primaryScheduleId, name, term } = req.body as {
+      schedule: ScheduleListItem;
+      primaryScheduleId: string;
+      name: string;
+      term: CourseTerm;
+    };
+    if (environment === "dev") {
+      console.log("Schedule:", schedule);
+      console.log("Primary schedule ID:", primaryScheduleId);
+      console.log("Name:", name);
+      console.log("Term:", term);
+    }
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
