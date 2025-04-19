@@ -4,6 +4,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "constants": "./dist/constants/colors.js",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -11,7 +12,13 @@
     },
     "./types": {
       "import": "./dist/types/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./constants": {
+      "import": "./dist/constants/colors.js",
+      "types": "./dist/constants/colors.d.ts",
+      "default": "./dist/constants/colors.js"
     }
   },
   "scripts": {
