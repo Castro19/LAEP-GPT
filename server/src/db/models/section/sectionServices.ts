@@ -13,6 +13,7 @@ import { environment } from "../../..";
 import { buildNonConflictingQuery } from "../../../helpers/queryBuilders/scheduling";
 import { fetchPrimarySchedule } from "../schedule/scheduleServices";
 import * as summerSectionCollection from "./summerSectionCollection";
+import { transformScheduleToScheduleResponse } from "../schedule/transformSection";
 /**
  * Build a filter object that can be passed to the collection query.
  */
@@ -297,10 +298,11 @@ export async function getSectionsByFilter(
     let query = buildSectionsQuery(filter);
     if (filter.withNoConflicts) {
       const schedule = await fetchPrimarySchedule(userId, filter.term);
-
       if (schedule) {
+        const scheduleResponse =
+          await transformScheduleToScheduleResponse(schedule);
         // 1) Build the "no-conflict" portion
-        const noConflictQuery = buildNonConflictingQuery(schedule);
+        const noConflictQuery = buildNonConflictingQuery(scheduleResponse);
 
         // 2) If the user actually has meeting times (i.e. noConflictQuery isn't empty),
         //    then combine the two queries under $and
@@ -375,26 +377,30 @@ export async function getSectionsbyProjection(
  * @param classNumber The class number of the section to find.
  * @returns The section with the given class number, or null if not found.
  */
-export async function getSectionById(
-  classNumber: number,
+export async function getSectionsByIds(
+  classNumbers: number[],
   term: CourseTerm
-): Promise<Section | null> {
+): Promise<Section[] | null> {
   try {
-    const query = { classNumber };
+    const query = { classNumber: { $in: classNumbers } };
     if (term === "summer2025") {
       const result = await summerSectionCollection.findSectionsByFilter(
         query,
         0,
-        1
+        classNumbers.length // Set limit to match the number of class numbers
       );
-      return result.sections.length > 0 ? result.sections[0] : null;
+      return result.sections;
     } else {
-      const result = await sectionCollection.findSectionsByFilter(query, 0, 1);
-      return result.sections.length > 0 ? result.sections[0] : null;
+      const result = await sectionCollection.findSectionsByFilter(
+        query,
+        0,
+        classNumbers.length
+      );
+      return result.sections;
     }
   } catch (error) {
     if (environment === "dev") {
-      console.error(`Error fetching section ${classNumber}:`, error);
+      console.error(`Error fetching section ${classNumbers}:`, error);
     }
     return null;
   }

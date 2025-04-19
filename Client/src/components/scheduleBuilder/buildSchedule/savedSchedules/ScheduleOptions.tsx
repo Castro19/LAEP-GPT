@@ -51,7 +51,7 @@ const ScheduleOptions = ({
       name: name,
       primaryScheduleId: isPrimary,
     } as {
-      schedule: Schedule;
+      schedule: ScheduleListItem;
       name: string;
       primaryScheduleId: string;
     };

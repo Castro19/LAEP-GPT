@@ -43,7 +43,7 @@ export async function createOrUpdateSection(
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify({ section }),
+    body: JSON.stringify({ sectionId: section.sectionId, term: section.term }),
   });
 
   if (!response.ok) {
@@ -94,7 +94,7 @@ export async function removeSection(
   }
 }
 
-export function transformSectionToSelectedSectionItem(
+export function transformSectionDetailToSelectedSectionItem(
   section: SectionDetail
 ): SelectedSectionItem {
   return {

@@ -1,14 +1,85 @@
 import { environment } from "../../..";
 import * as selectedSelectionModel from "./selectedSectionCollection";
-import {
-  SelectedSection,
-  SelectedSectionItem,
-  Section,
-  Meeting,
-  InstructorWithRatings,
-  CourseTerm,
-} from "@polylink/shared/types";
-import { getSectionById } from "../section/sectionServices";
+import { SelectedSection, CourseTerm } from "@polylink/shared/types";
+import { transformClassNumbersToSelectedSections } from "../schedule/transformSection";
+import * as sectionCollection from "../section/sectionCollection";
+import * as summerSectionCollection from "../section/summerSectionCollection";
+
+// Color palette for course sections
+const courseColors = [
+  "#E5FFB9", // light lime
+  "#B9E5FF", // light blue
+  "#B5E5B9", // light green
+  "#FFB7A3", // light coral
+  "#FFE5A3", // light yellow
+  "#E5B9FF", // light purple
+  "#A3D8FF", // light sky blue
+  "#D8A3FF", // light lavender
+  "#FFA3D8", // light pink
+  "#A3FFD8", // light mint
+  "#FFD8A3", // light peach
+  "#D8FFA3", // light chartreuse
+  "#A3A3FF", // light periwinkle
+  "#FFA3A3", // light salmon
+  "#A3FFA3", // light seafoam
+  "#D8D8FF", // light indigo
+  "#FFD8D8", // light rose
+  "#D8FFD8", // light spring green
+];
+
+// Map to store courseId to color mapping
+const courseIdToColorMap = new Map<string, string>();
+
+/**
+ * Get a color for a courseId, ensuring the same courseId always gets the same color
+ */
+function getColorForCourseId(courseId: string): string {
+  if (courseIdToColorMap.has(courseId)) {
+    return courseIdToColorMap.get(courseId)!;
+  }
+
+  // Assign a random color to this courseId
+  const randomIndex = Math.floor(Math.random() * courseColors.length);
+  const color = courseColors[randomIndex];
+  courseIdToColorMap.set(courseId, color);
+  return color;
+}
+
+/**
+ * Get the courseId for a given classNumber in either the sections or summer2025 collection
+ * based on the term.
+ */
+async function getCourseIdByClassNumber(
+  classNumber: number,
+  term: CourseTerm
+): Promise<string | null> {
+  try {
+    // Determine which collection to use based on the term
+    if (term === "summer2025") {
+      const section = await summerSectionCollection.findSectionsByFilter(
+        { classNumber },
+        0,
+        1
+      );
+      return section.sections.length > 0 ? section.sections[0].courseId : null;
+    } else {
+      const section = await sectionCollection.findSectionsByFilter(
+        { classNumber },
+        0,
+        1
+      );
+      return section.sections.length > 0 ? section.sections[0].courseId : null;
+    }
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(
+        `Error looking up courseId for classNumber ${classNumber}:`,
+        error
+      );
+    }
+    return null;
+  }
+}
 
 export const getSelectedSectionsByUserId = async (
   userId: string,
@@ -26,64 +97,29 @@ export const getSelectedSectionsByUserId = async (
       !result.selectedSections ||
       typeof result.selectedSections !== "object"
     ) {
-      // If the structure is incorrect, return an empty array
       return [];
     }
 
-    // Fetch full section details for each selected section
-    const fullSections: SelectedSection[] = [];
-    const sectionsToProcess = term
-      ? Object.keys(result.selectedSections[term] || {}).map(Number)
-      : Object.values(result.selectedSections).flatMap((termSections) =>
-          Object.keys(termSections).map(Number)
-        );
+    // Get all class numbers for the given term
+    const classNumbers = Object.keys(result.selectedSections[term] || {}).map(
+      Number
+    );
 
-    for (const sectionId of sectionsToProcess) {
-      try {
-        const sectionDetail: Section | null = await getSectionById(
-          sectionId,
-          term as CourseTerm
-        );
-        if (sectionDetail) {
-          // Transform the section detail to a SelectedSection
-          const selectedSection: SelectedSection = {
-            courseId: sectionDetail.courseId,
-            courseName: sectionDetail.courseName,
-            classNumber: sectionDetail.classNumber,
-            component: sectionDetail.component,
-            units: sectionDetail.units,
-            enrollmentStatus: sectionDetail.enrollmentStatus,
-            meetings: sectionDetail.meetings.map((meeting: Meeting) => ({
-              ...meeting,
-              days: meeting.days.filter((day) => day),
-            })),
-            classPair: sectionDetail.classPair || null,
-            professors:
-              sectionDetail.instructorsWithRatings?.map(
-                (instructor: InstructorWithRatings) => ({
-                  name: instructor.name,
-                  id: instructor.id,
-                })
-              ) ?? [],
-            rating:
-              sectionDetail.instructorsWithRatings?.[0]?.overallRating ||
-              sectionDetail.instructorsWithRatings?.[1]?.overallRating ||
-              0,
-          };
-          fullSections.push(selectedSection);
-        }
-      } catch (error) {
-        if (environment === "dev") {
-          console.error(`Error fetching section ${sectionId}:`, error);
-        }
-        // Continue with other sections even if one fails
-      }
+    if (classNumbers.length === 0) {
+      return [];
     }
 
-    return fullSections;
+    // Use the utility function to transform class numbers into SelectedSection objects
+    const selectedSections = await transformClassNumbersToSelectedSections(
+      userId,
+      classNumbers,
+      term
+    );
+
+    return selectedSections;
   } catch (error) {
     if (environment === "dev") {
-      console.error(error);
+      console.error("Error in getSelectedSectionsByUserId:", error);
     }
     throw error;
   }
@@ -92,7 +128,10 @@ export const getSelectedSectionsByUserId = async (
 // Creates a new section or updates an existing section
 export const postSelectedSection = async (
   userId: string,
-  section: SelectedSectionItem
+  section: {
+    sectionId: number;
+    term: CourseTerm;
+  }
 ): Promise<{
   selectedSections: SelectedSection[];
   message: string;
@@ -100,6 +139,18 @@ export const postSelectedSection = async (
   try {
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+
+    // Get the courseId for this section
+    const courseId = await getCourseIdByClassNumber(
+      section.sectionId,
+      section.term
+    );
+
+    // Get a color for this courseId
+    const color = courseId
+      ? getColorForCourseId(courseId)
+      : courseColors[Math.floor(Math.random() * courseColors.length)];
+
     if (existingSection) {
       if (existingSection.selectedSections[section.term]?.[section.sectionId]) {
         return {
@@ -112,7 +163,9 @@ export const postSelectedSection = async (
       } else {
         await selectedSelectionModel.createOrUpdateSelectedSection(
           userId,
-          section
+          section.sectionId,
+          section.term,
+          color
         );
         return {
           selectedSections: await getSelectedSectionsByUserId(
@@ -125,7 +178,9 @@ export const postSelectedSection = async (
     } else {
       await selectedSelectionModel.createOrUpdateSelectedSection(
         userId,
-        section
+        section.sectionId,
+        section.term,
+        color
       );
       return {
         selectedSections: await getSelectedSectionsByUserId(
@@ -145,8 +200,10 @@ export const postSelectedSection = async (
 
 export const deleteSelectedSection = async (
   userId: string,
-  sectionId: string,
-  term: CourseTerm
+  section: {
+    sectionId: number;
+    term: CourseTerm;
+  }
 ): Promise<{
   selectedSections: SelectedSection[];
   message: string;
@@ -154,19 +211,16 @@ export const deleteSelectedSection = async (
   try {
     const result = await selectedSelectionModel.deleteSelectedSection(
       userId,
-      parseInt(sectionId),
-      term
+      section.sectionId,
+      section.term
     );
 
     if (result.modifiedCount === 0) {
       throw new Error("Section not found");
     }
     return {
-      selectedSections: await getSelectedSectionsByUserId(
-        userId,
-        term as CourseTerm
-      ),
-      message: `Section ${sectionId} removed from your schedule`,
+      selectedSections: await getSelectedSectionsByUserId(userId, section.term),
+      message: `Section ${section.sectionId} removed from your schedule`,
     };
   } catch (error) {
     if (environment === "dev") {

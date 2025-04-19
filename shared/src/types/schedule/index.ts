@@ -28,11 +28,21 @@ export type GeneratedSchedule = {
   conflictGroups?: SelectedSection[];
 };
 
+// ScheduleResponse
+export type ScheduleResponse = {
+  id: string;
+  name: string;
+  sections: SelectedSection[];
+  createdAt: Date;
+  updatedAt: Date;
+  term: CourseTerm;
+};
+
 // Schedule
 export type Schedule = {
   id: string;
   name: string;
-  sections: SelectedSection[];
+  sections: number[];
   createdAt: Date;
   updatedAt: Date;
   term: CourseTerm;

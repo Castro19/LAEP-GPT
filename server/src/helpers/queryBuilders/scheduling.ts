@@ -1,4 +1,4 @@
-import { Schedule, Meeting } from "@polylink/shared/types";
+import { Meeting, ScheduleResponse } from "@polylink/shared/types";
 // function buildQuery(sectionInfo: ScheduleBuilderSection[]) {
 //   return sectionInfo.map((section) => section.courseId);
 // }
@@ -11,7 +11,7 @@ import { Schedule, Meeting } from "@polylink/shared/types";
  * Minimal interface for a meeting relevant to time and days
  */
 
-function findMeetingTimes(schedule: Schedule): Meeting[] {
+function findMeetingTimes(schedule: ScheduleResponse): Meeting[] {
   return schedule.sections.flatMap((section) => section.meetings) as Meeting[];
 }
 /**
@@ -21,11 +21,10 @@ function findMeetingTimes(schedule: Schedule): Meeting[] {
  * A conflict is defined as any overlap in day(s) and time range.
  */
 function buildNonConflictingQuery(
-  primarySchedule: Schedule
+  primarySchedule: ScheduleResponse
 ): Record<string, unknown> {
-  console.log("primarySchedule", primarySchedule);
   const userMeetings = findMeetingTimes(primarySchedule);
-  console.log("userMeetings", userMeetings);
+
   // If the user has no meetings, don't filter anything out.
   if (!userMeetings || userMeetings.length === 0) {
     return {};

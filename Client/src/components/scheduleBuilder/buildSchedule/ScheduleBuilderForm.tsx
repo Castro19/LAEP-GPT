@@ -105,7 +105,9 @@ const ScheduleBuilderForm = ({
 
       dispatch(
         scheduleActions.createOrUpdateScheduleAsync({
-          sections: scheduleToSave.sections,
+          classNumbers: scheduleToSave.sections.map(
+            (section) => section.classNumber
+          ),
           term: currentScheduleTerm,
         })
       );

@@ -1,9 +1,7 @@
 import { environment } from "@/helpers/getEnvironmentVars";
 import {
-  Schedule,
   ScheduleListItem,
   CourseTerm,
-  SelectedSection,
   GeneratedSchedule,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -86,14 +84,14 @@ export const fetchSchedulesAsync = createAsyncThunk(
 export const createOrUpdateScheduleAsync = createAsyncThunk(
   "schedule/createOrUpdateSchedule",
   async ({
-    sections,
+    classNumbers,
     term,
   }: {
-    sections: SelectedSection[];
+    classNumbers: number[];
     term: CourseTerm;
   }) => {
     try {
-      const response = await createOrUpdateSchedule(sections, term);
+      const response = await createOrUpdateSchedule(classNumbers, term);
       return {
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
@@ -117,7 +115,7 @@ export const updateScheduleAsync = createAsyncThunk(
     name,
     term,
   }: {
-    schedule: Schedule;
+    schedule: ScheduleListItem;
     primaryScheduleId: string;
     name: string;
     term: CourseTerm;
