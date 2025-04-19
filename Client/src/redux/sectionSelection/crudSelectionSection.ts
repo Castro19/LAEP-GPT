@@ -94,7 +94,7 @@ export async function removeSection(
   }
 }
 
-export function transformSectionToSelectedSectionItem(
+export function transformSectionDetailToSelectedSectionItem(
   section: SectionDetail
 ): SelectedSectionItem {
   return {

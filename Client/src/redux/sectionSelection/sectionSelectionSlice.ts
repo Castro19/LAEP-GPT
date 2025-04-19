@@ -7,8 +7,8 @@ import {
 import {
   fetchSections,
   createOrUpdateSection,
-  transformSectionToSelectedSectionItem,
   removeSection,
+  transformSectionDetailToSelectedSectionItem,
 } from "./crudSelectionSection";
 import { environment } from "@/helpers/getEnvironmentVars";
 export interface SectionSelectionState {
@@ -44,7 +44,7 @@ export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
   async ({ section }: { section: SectionDetail }) => {
     try {
       const selectedSectionItem =
-        transformSectionToSelectedSectionItem(section);
+        transformSectionDetailToSelectedSectionItem(section);
       const response = await createOrUpdateSection(selectedSectionItem);
       return response;
     } catch (error) {
