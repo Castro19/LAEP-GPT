@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from "react";
 import {
   ScheduleClassSection,
   ScheduleSectionInfo,
@@ -8,6 +8,12 @@ import { CustomModalBody } from "@/components/ui/animated-modal";
 import { CustomModalTriggerButton } from "@/components/ui/animated-modal";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 import { formatProfessorNames } from "@/components/scheduleBuilder/helpers";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Add 'conflict' as a prop
 interface ScheduleTimeSlotsProps {
@@ -15,47 +21,67 @@ interface ScheduleTimeSlotsProps {
   conflict?: boolean;
 }
 
-const ScheduleTimeSlots: React.FC<ScheduleTimeSlotsProps> = ({ event }) => {
-  const startTime = event.extendedProps.start_time
-    ? convertTo12HourFormat(event.extendedProps.start_time)
-    : "";
-  const endTime = event.extendedProps.end_time
-    ? convertTo12HourFormat(event.extendedProps.end_time)
-    : "";
+const ScheduleTimeSlots = forwardRef<HTMLDivElement, ScheduleTimeSlotsProps>(
+  ({ event }, ref) => {
+    const startTime = event.extendedProps.start_time
+      ? convertTo12HourFormat(event.extendedProps.start_time)
+      : "";
+    const endTime = event.extendedProps.end_time
+      ? convertTo12HourFormat(event.extendedProps.end_time)
+      : "";
 
-  const professorNames = formatProfessorNames(event.extendedProps.professors);
-  /**
-   * If `conflict` is true, we add some Tailwind classes for a red/opacity background.
-   * You can also do this on the <div> or the <CustomModalTriggerButton>,
-   * depending on the exact design you want.
-   */
-  return (
-    <div className="flex items-center justify-start w-full h-full">
-      <Modal>
-        <CustomModalTriggerButton
-          color={event.extendedProps.color}
-          className="rounded-md hover:opacity-90 transition-opacity cursor-pointer min-h-full w-full"
-        >
-          <div className="flex flex-col items-start justify-center p-2">
-            <div className="text-xs text-gray-700 dark:text-gray-700">
-              {startTime} - {endTime}
-            </div>
-            <div className="text-sm font-bold text-gray-700 dark:text-gray-700">
-              {event.title}
-            </div>
-            <div className="text-sm font-bold text-gray-700 dark:text-gray-700 truncate">
-              {professorNames}
-            </div>
-          </div>
-        </CustomModalTriggerButton>
-        <CustomModalBody>
-          <ModalContent className="dark:bg-slate-950">
-            <ScheduleSectionInfo />
-          </ModalContent>
-        </CustomModalBody>
-      </Modal>
-    </div>
-  );
-};
+    const professorNames = formatProfessorNames(event.extendedProps.professors);
+
+    /**
+     * If `conflict` is true, we add some Tailwind classes for a red/opacity background.
+     * You can also do this on the <div> or the <CustomModalTriggerButton>,
+     * depending on the exact design you want.
+     */
+    return (
+      <div ref={ref} className="flex items-center justify-start w-full h-full">
+        <Modal>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CustomModalTriggerButton
+                  color={event.extendedProps.color}
+                  className="rounded-md hover:opacity-90 transition-opacity cursor-pointer min-h-full w-full"
+                >
+                  <div className="flex flex-col items-start justify-center p-1 sm:p-2 w-full">
+                    <div className="text-[10px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
+                      {startTime} - {endTime}
+                    </div>
+                    <div className="text-xxs sm:text-sm font-bold text-gray-700 dark:text-gray-700 truncate w-full">
+                      {event.title}
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-bold text-gray-700 dark:text-gray-700 truncate w-full">
+                      {professorNames}
+                    </div>
+                  </div>
+                </CustomModalTriggerButton>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-[200px]">
+                <div className="text-xs">
+                  <div className="font-bold">{event.title}</div>
+                  <div>
+                    {startTime} - {endTime}
+                  </div>
+                  <div>{professorNames}</div>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <CustomModalBody>
+            <ModalContent className="dark:bg-slate-950">
+              <ScheduleSectionInfo />
+            </ModalContent>
+          </CustomModalBody>
+        </Modal>
+      </div>
+    );
+  }
+);
+
+ScheduleTimeSlots.displayName = "ScheduleTimeSlots";
 
 export default ScheduleTimeSlots;

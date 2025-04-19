@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ReactNode, createContext, useContext, useRef, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  forwardRef,
+} from "react";
 import { Button } from "./button";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { MdEdit } from "react-icons/md";
@@ -61,19 +68,19 @@ export const ModalTriggerButton = ({
   );
 };
 
-export const CustomModalTriggerButton = ({
-  className,
-  children,
-  color,
-}: {
-  className?: string;
-  children: ReactNode;
-  color?: string;
-}) => {
+export const CustomModalTriggerButton = forwardRef<
+  HTMLDivElement,
+  {
+    className?: string;
+    children: ReactNode;
+    color?: string;
+  }
+>(({ className, children, color }, ref) => {
   const { setOpen } = useModal();
 
   return (
     <div
+      ref={ref}
       className={className}
       style={{ backgroundColor: color }}
       onClick={() => setOpen(true)}
@@ -81,7 +88,9 @@ export const CustomModalTriggerButton = ({
       {children}
     </div>
   );
-};
+});
+
+CustomModalTriggerButton.displayName = "CustomModalTriggerButton";
 
 export const ModalBody = ({
   children,

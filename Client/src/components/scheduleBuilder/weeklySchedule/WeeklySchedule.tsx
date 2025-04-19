@@ -337,9 +337,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               if (arg.event.extendedProps.isOverlay) {
                 return null; // no text
               }
-              return ScheduleTimeSlots({
-                event: arg.event as unknown as ScheduleClassSection,
-              });
+              return (
+                <ScheduleTimeSlots
+                  event={arg.event as unknown as ScheduleClassSection}
+                />
+              );
             }}
             eventClick={handleEventClick}
             nowIndicator={false}
