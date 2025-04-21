@@ -69,9 +69,8 @@ function ProfilePage() {
   const { flowchartData, loading, currentFlowchart } = useAppSelector(
     (state) => state.flowchart
   );
-  const { currentSchedule, primaryScheduleId } = useAppSelector(
-    (state) => state.schedule
-  );
+  const { currentSchedule, primaryScheduleId, currentScheduleTerm } =
+    useAppSelector((state) => state.schedule);
 
   const initialLoadRef = useRef(false);
   const interestDropdownRef = useRef<HTMLDivElement>(null);
@@ -137,7 +136,7 @@ function ProfilePage() {
       if (schedulesFetchedRef.current) return;
       schedulesFetchedRef.current = true;
 
-      await dispatch(scheduleActions.fetchSchedulesAsync());
+      await dispatch(scheduleActions.fetchSchedulesAsync(currentScheduleTerm));
     };
 
     fetchSchedules();
@@ -312,6 +311,7 @@ function ProfilePage() {
                 <WeeklySchedule
                   sections={currentSchedule.sections}
                   height="100vh"
+                  isProfilePage={true}
                 />
               ) : (
                 <div className="flex flex-col justify-center items-center">

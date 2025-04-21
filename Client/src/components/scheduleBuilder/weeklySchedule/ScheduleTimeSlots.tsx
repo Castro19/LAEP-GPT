@@ -18,10 +18,11 @@ import NarrowScreenScheduleSectionInfo from "./NarrowScreenScheduleSectionInfo";
 interface ScheduleTimeSlotsProps {
   event: ScheduleClassSection;
   conflict?: boolean;
+  onClick: () => void;
 }
 
 const ScheduleTimeSlots = forwardRef<HTMLDivElement, ScheduleTimeSlotsProps>(
-  ({ event }, ref) => {
+  ({ event, onClick }, ref) => {
     const isNarrowScreen = useIsNarrowScreen();
     const modalRef = useRef<HTMLDivElement>(null);
     const startTime = event.extendedProps.start_time
@@ -44,6 +45,7 @@ const ScheduleTimeSlots = forwardRef<HTMLDivElement, ScheduleTimeSlotsProps>(
           <CustomModalTriggerButton
             color={event.extendedProps.color}
             className="rounded-md hover:opacity-90 transition-opacity cursor-pointer min-h-full w-full"
+            onClick={onClick}
           >
             <div className="flex flex-col items-start justify-center p-1 sm:p-2 w-full">
               <div className="text-[10px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
