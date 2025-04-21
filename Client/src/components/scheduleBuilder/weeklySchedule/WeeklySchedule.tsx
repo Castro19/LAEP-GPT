@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
 
 // My components
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
-import AsyncCourses from "./AsyncCourses";
 // UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -19,6 +18,7 @@ import {
 } from "@/components/scheduleBuilder";
 // Types
 import { SelectedSection } from "@polylink/shared/types";
+// import { environment } from "@/helpers/getEnvironmentVars";
 
 type EventType = {
   courseName: string;
@@ -41,12 +41,14 @@ export type ScheduleClassSection = {
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  height?: string;
+  asyncCoursesHeight: number;
+  height: string;
 };
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-  height = "75vh",
+  asyncCoursesHeight,
+  height,
 }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
@@ -117,9 +119,13 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     // Calculate total space needed for footer (height + margin)
     const totalFooterSpace = footerHeight + footerMargin;
 
-    // Calculate available space, accounting for footer
+    // Calculate available space, accounting for footer and AsyncCourses
     const availableHeight =
-      windowHeight - paddingTop - paddingBottom - totalFooterSpace;
+      windowHeight -
+      paddingTop -
+      paddingBottom -
+      totalFooterSpace -
+      asyncCoursesHeight;
 
     // Device-specific adjustments based on measurements
     let heightPercentage = 0.75; // Default 75% (increased from 65%)
@@ -161,7 +167,16 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
     // Convert to viewport height units for consistency
     const vhValue = Math.round((calculatedHeight / windowHeight) * 100);
-    setCalendarHeight(`${vhValue}vh`);
+
+    // Adjust vhValue based on asyncCoursesHeight to ensure proper scaling
+    // When asyncCoursesHeight increases, we need to decrease the vhValue proportionally
+    const asyncCoursesHeightPercentage = asyncCoursesHeight / windowHeight;
+    const adjustedVhValue = Math.max(
+      Math.round(vhValue - asyncCoursesHeightPercentage * 100),
+      Math.round((minHeight / windowHeight) * 100) // Ensure we don't go below minHeight
+    );
+
+    setCalendarHeight(`${adjustedVhValue}vh`);
 
     // if (environment === "dev") {
     //   console.log({
@@ -169,7 +184,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     //     availableHeight,
     //     calculatedHeight,
     //     vhValue,
+    //     adjustedVhValue,
     //     containerHeight,
+    //     asyncCoursesHeight,
+    //     asyncCoursesHeightPercentage,
     //     deviceType:
     //       window.innerWidth <= 768
     //         ? "mobile"
@@ -182,7 +200,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     //     totalFooterSpace,
     //   });
     // }
-  }, [windowHeight, containerHeight]);
+  }, [windowHeight, containerHeight, asyncCoursesHeight]);
 
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
@@ -296,9 +314,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   return (
     <div className="relative w-full h-full">
-      {/* Add the AsyncCoursesHeader component above the calendar */}
-      <AsyncCourses sections={sections} />
-
       <div
         ref={containerRef}
         className="
