@@ -2,11 +2,13 @@ import React from "react";
 import { useAppSelector } from "@/redux";
 import { Star } from "@/components/classSearch/reusable/sectionInfo/StarRating";
 import { Card } from "@/components/ui/card";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const ScheduleAverageRating: React.FC = () => {
   const { currentSchedule, currentScheduleTerm } = useAppSelector(
     (state) => state.schedule
   );
+  const isNarrowScreen = useIsNarrowScreen();
 
   if (!currentSchedule) {
     return null;
@@ -21,7 +23,13 @@ const ScheduleAverageRating: React.FC = () => {
       0,
       Math.min(1, currentSchedule.averageRating - index)
     );
-    return <Star key={index} fillPercentage={fillPercentage} />;
+    return (
+      <Star
+        key={index}
+        fillPercentage={fillPercentage}
+        isNarrowScreen={isNarrowScreen}
+      />
+    );
   });
 
   const formatTermDisplay = (term: string) => {
@@ -48,26 +56,28 @@ const ScheduleAverageRating: React.FC = () => {
 
   return (
     <Card className="p-3 bg-card/50 border-border/50">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-bold">
+      <div className="flex flex-col gap-1.5">
+        <h2 className="text-lg sm:text-xl font-bold truncate">
           {formatTermDisplay(currentScheduleTerm)}: {currentSchedule.name}
         </h2>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rating:</span>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs sm:text-sm text-muted-foreground">
+              Rating:
+            </span>
             {averageRating ? (
               <>
-                <div className="flex items-center gap-1">{stars}</div>
-                <span className="font-medium">{averageRating}</span>
-                <span className="text-muted-foreground">/ 4</span>
+                <div className="flex items-center gap-0.5">{stars}</div>
+                <span className="text-sm font-medium">{averageRating}</span>
+                <span className="text-xs text-muted-foreground">/ 4</span>
               </>
             ) : (
-              <span className="text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 No ratings available
               </span>
             )}
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-xs sm:text-sm text-muted-foreground">
             {uniqueCourses} {uniqueCourses === 1 ? "Course" : "Courses"} •{" "}
             {lectureCount} {lectureCount === 1 ? "Lecture" : "Lectures"} •{" "}
             {labCount} {labCount === 1 ? "Lab" : "Labs"}

@@ -2,29 +2,38 @@ import { ProfessorGroup } from "@polylink/shared/types";
 
 interface StarRatingProps {
   group: ProfessorGroup;
+  isNarrowScreen?: boolean;
 }
 
 interface StarProps {
   fillPercentage: number; // A value between 0 (empty) and 1 (full)
+  isNarrowScreen?: boolean;
 }
 
 // A Star component that renders an SVG star with a filled overlay.
-export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
+export const Star: React.FC<StarProps> = ({
+  fillPercentage,
+  isNarrowScreen = false,
+}) => {
+  const starSize = isNarrowScreen ? 14 : 18;
+  const svgSize = isNarrowScreen ? 12 : 16;
+  const marginRight = isNarrowScreen ? 1 : 2;
+
   return (
     <div
       style={{
         position: "relative",
         display: "inline-block",
-        width: "24px",
-        height: "24px",
-        marginRight: "4px",
+        width: `${starSize}px`,
+        height: `${starSize}px`,
+        marginRight: `${marginRight}px`,
       }}
     >
       {/* The empty star (background) */}
       <svg
         viewBox="0 0 24 24"
-        width="22"
-        height="22"
+        width={svgSize}
+        height={svgSize}
         fill="none"
         stroke="#ccc"
         strokeWidth="2"
@@ -45,8 +54,8 @@ export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
       >
         <svg
           viewBox="0 0 24 24"
-          width="22"
-          height="22"
+          width={svgSize}
+          height={svgSize}
           fill="white"
           stroke="white"
           strokeWidth="1"
@@ -60,7 +69,10 @@ export const Star: React.FC<StarProps> = ({ fillPercentage }) => {
   );
 };
 
-const StarRating: React.FC<StarRatingProps> = ({ group }) => {
+const StarRating: React.FC<StarRatingProps> = ({
+  group,
+  isNarrowScreen = false,
+}) => {
   const totalStars = 4;
 
   // Calculate the fill level for each star:
@@ -71,11 +83,17 @@ const StarRating: React.FC<StarRatingProps> = ({ group }) => {
       0,
       Math.min(1, group.overallRating - index)
     );
-    return <Star key={index} fillPercentage={fillPercentage} />;
+    return (
+      <Star
+        key={index}
+        fillPercentage={fillPercentage}
+        isNarrowScreen={isNarrowScreen}
+      />
+    );
   });
 
   return (
-    <div className="flex items-center gap-2 font-sans">
+    <div className="flex items-center gap-1 font-sans">
       <div className="flex items-center">{stars}</div>
     </div>
   );
