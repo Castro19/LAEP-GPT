@@ -18,6 +18,7 @@ import {
 } from "@/components/scheduleBuilder";
 // Types
 import { SelectedSection } from "@polylink/shared/types";
+import AsyncCourses from "./AsyncCourses";
 // import { environment } from "@/helpers/getEnvironmentVars";
 
 type EventType = {
@@ -41,14 +42,14 @@ export type ScheduleClassSection = {
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  asyncCoursesHeight: number;
   height: string;
+  isProfilePage?: boolean;
 };
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-  asyncCoursesHeight,
   height,
+  isProfilePage = false,
 }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
@@ -56,6 +57,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [calendarHeight, setCalendarHeight] = useState(height);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [asyncCoursesHeight, setAsyncCoursesHeight] = useState(0);
 
   // Update window height on resize
   useEffect(() => {
@@ -92,6 +94,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   // Calculate calendar height based on window height and container
   useEffect(() => {
+    if (isProfilePage) return; // Skip all calculations for ProfilePage
+
     // Define CSS custom properties for consistent spacing
     const root = document.documentElement;
     root.style.setProperty("--calendar-padding-top", "1rem");
@@ -117,7 +121,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       parseFloat(computedStyle.getPropertyValue("--footer-margin")) || 8;
 
     // Calculate total space needed for footer (height + margin)
-    const totalFooterSpace = footerHeight + footerMargin;
+    const totalFooterSpace = isProfilePage ? 0 : footerHeight + footerMargin;
 
     // Calculate available space, accounting for footer and AsyncCourses
     const availableHeight =
@@ -128,7 +132,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       asyncCoursesHeight;
 
     // Device-specific adjustments based on measurements
-    let heightPercentage = 0.75; // Default 75% (increased from 65%)
+    let heightPercentage = 0.75; // Default 75%
 
     // Adjust based on device width (for landscape vs portrait)
     const isLandscape = window.innerWidth > window.innerHeight;
@@ -147,7 +151,12 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
     // For very small screens, use a more conservative approach
     if (windowHeight < 600) {
-      heightPercentage = 0.65; // Increased from 0.55
+      heightPercentage = 0.65;
+    }
+
+    // If in profile page, use full height
+    if (isProfilePage) {
+      heightPercentage = 1;
     }
 
     // Calculate responsive height with precise measurements
@@ -200,7 +209,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     //     totalFooterSpace,
     //   });
     // }
-  }, [windowHeight, containerHeight, asyncCoursesHeight]);
+  }, [windowHeight, containerHeight, asyncCoursesHeight, isProfilePage]);
 
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
@@ -311,12 +320,21 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       })
     );
   };
+  // Handle AsyncCourses height changes
+  const handleAsyncCoursesHeightChange = (height: number) => {
+    setAsyncCoursesHeight(height);
+  };
 
   return (
     <div className="relative w-full h-full">
+      {/* Add the AsyncCourses component above the calendar */}
+      <AsyncCourses
+        sections={sections}
+        onHeightChange={handleAsyncCoursesHeightChange}
+      />
       <div
         ref={containerRef}
-        className="
+        className={`
         border
         border-slate-200
         dark:border-slate-700
@@ -332,11 +350,17 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
         h-full
         flex
         flex-col
+        ${
+          !isProfilePage
+            ? `
         max-h-[calc(100vh-16rem)]
         sm:max-h-[calc(100vh-13rem)]
         md:max-h-[calc(100vh-10rem)]
         lg:max-h-[calc(100vh-8rem)]
-      "
+        `
+            : ""
+        }
+      `}
       >
         <ScrollArea className="h-full w-full">
           <FullCalendar
@@ -352,7 +376,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             slotDuration="01:00:00"
             hiddenDays={[0, 6]}
             events={finalEvents}
-            contentHeight={calendarHeight}
+            contentHeight={isProfilePage ? "80vh" : calendarHeight}
             expandRows={true}
             titleFormat={{}} // (Empty: no title text on top)
             dayHeaderContent={(args: any) => {
