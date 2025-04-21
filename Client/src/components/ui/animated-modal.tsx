@@ -88,6 +88,14 @@ export const CustomModalTriggerButton = forwardRef<
         setOpen(true);
         onClick?.();
       }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+      }}
+      onTouchEnd={(e) => {
+        e.stopPropagation();
+        setOpen(true);
+        onClick?.();
+      }}
     >
       {children}
     </div>

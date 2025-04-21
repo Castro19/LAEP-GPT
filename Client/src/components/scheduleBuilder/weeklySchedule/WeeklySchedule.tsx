@@ -407,10 +407,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               return (
                 <ScheduleTimeSlots
                   event={arg.event as unknown as ScheduleClassSection}
+                  onClick={() => handleEventClick(arg)}
                 />
               );
             }}
-            eventClick={handleEventClick}
             nowIndicator={false}
             eventDidMount={(info: any) => {
               // If this is a background event, style it on the fly
