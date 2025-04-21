@@ -1,12 +1,15 @@
 import { useAppSelector } from "@/redux";
-import { Button } from "@/components/ui/button";
+// My Components
 import {
   SectionEnrollment,
   SectionSchedule,
 } from "@/components/classSearch/currentSectionList/SectionInfo";
-import { transformToSectionDetail } from "@/helpers/transformSection";
-import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
 import { FormatPrerequisites } from "@/components/classSearch/reusable/sectionInfo/FormatPrereq";
+import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
+// UI Components
+import { Button } from "@/components/ui/button";
+// Helpers
+import { transformToSectionDetail } from "@/helpers/transformSection";
 
 const instructionModeMap = {
   PA: "Synchronous",
@@ -165,13 +168,6 @@ const ScheduleSectionInfo = () => {
             {scheduleSelectedSection.description}
           </p>
         </div>
-      </div>
-
-      {/* Action Footer */}
-      <div className="mt-6 flex justify-end gap-4 border-t border-slate-800 pt-6">
-        <Button variant="outline" className="border-slate-700 text-slate-300">
-          Remove from Schedule
-        </Button>
       </div>
     </div>
   );

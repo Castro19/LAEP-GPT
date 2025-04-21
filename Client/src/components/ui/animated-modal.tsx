@@ -74,8 +74,9 @@ export const CustomModalTriggerButton = forwardRef<
     className?: string;
     children: ReactNode;
     color?: string;
+    onClick?: () => void;
   }
->(({ className, children, color }, ref) => {
+>(({ className, children, color, onClick }, ref) => {
   const { setOpen } = useModal();
 
   return (
@@ -83,7 +84,10 @@ export const CustomModalTriggerButton = forwardRef<
       ref={ref}
       className={className}
       style={{ backgroundColor: color }}
-      onClick={() => setOpen(true)}
+      onClick={() => {
+        setOpen(true);
+        onClick?.();
+      }}
     >
       {children}
     </div>

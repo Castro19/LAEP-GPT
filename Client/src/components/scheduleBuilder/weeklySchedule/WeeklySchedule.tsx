@@ -4,15 +4,20 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { SelectedSection } from "@polylink/shared/types";
+import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
+
+// My components
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
+// UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fetchSingleSection } from "@/redux/classSearch/classSearchSlice";
-import { useAppDispatch, useAppSelector } from "@/redux";
+
+// Helpers
 import {
   getConflictGroups,
   buildBackgroundEventsForGroup,
-} from "@/components/scheduleBuilder/helpers/weeklyCalendarConflicts";
+} from "@/components/scheduleBuilder";
+// Types
+import { SelectedSection } from "@polylink/shared/types";
 // import { environment } from "@/helpers/getEnvironmentVars";
 
 type EventType = {
@@ -24,6 +29,7 @@ type EventType = {
   days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
   start_time: string | null;
   end_time: string | null;
+  isAsynchronous?: boolean;
 };
 
 export type ScheduleClassSection = {
@@ -35,12 +41,14 @@ export type ScheduleClassSection = {
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  height?: string;
+  asyncCoursesHeight: number;
+  height: string;
 };
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-  height = "75vh",
+  asyncCoursesHeight,
+  height,
 }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
@@ -111,9 +119,13 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     // Calculate total space needed for footer (height + margin)
     const totalFooterSpace = footerHeight + footerMargin;
 
-    // Calculate available space, accounting for footer
+    // Calculate available space, accounting for footer and AsyncCourses
     const availableHeight =
-      windowHeight - paddingTop - paddingBottom - totalFooterSpace;
+      windowHeight -
+      paddingTop -
+      paddingBottom -
+      totalFooterSpace -
+      asyncCoursesHeight;
 
     // Device-specific adjustments based on measurements
     let heightPercentage = 0.75; // Default 75% (increased from 65%)
@@ -155,7 +167,16 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
     // Convert to viewport height units for consistency
     const vhValue = Math.round((calculatedHeight / windowHeight) * 100);
-    setCalendarHeight(`${vhValue}vh`);
+
+    // Adjust vhValue based on asyncCoursesHeight to ensure proper scaling
+    // When asyncCoursesHeight increases, we need to decrease the vhValue proportionally
+    const asyncCoursesHeightPercentage = asyncCoursesHeight / windowHeight;
+    const adjustedVhValue = Math.max(
+      Math.round(vhValue - asyncCoursesHeightPercentage * 100),
+      Math.round((minHeight / windowHeight) * 100) // Ensure we don't go below minHeight
+    );
+
+    setCalendarHeight(`${adjustedVhValue}vh`);
 
     // if (environment === "dev") {
     //   console.log({
@@ -163,7 +184,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     //     availableHeight,
     //     calculatedHeight,
     //     vhValue,
+    //     adjustedVhValue,
     //     containerHeight,
+    //     asyncCoursesHeight,
+    //     asyncCoursesHeightPercentage,
     //     deviceType:
     //       window.innerWidth <= 768
     //         ? "mobile"
@@ -176,7 +200,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     //     totalFooterSpace,
     //   });
     // }
-  }, [windowHeight, containerHeight]);
+  }, [windowHeight, containerHeight, asyncCoursesHeight]);
 
   // Map meeting day abbreviations to an offset relative to Monday.
   // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
@@ -207,8 +231,21 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   const monday = getCurrentWeekMonday();
 
   // Create an event for each meeting in every section.
-  const events = sections.flatMap((section) =>
-    section.meetings.flatMap((meeting) => {
+  const events = sections.flatMap((section) => {
+    // Check if this is an asynchronous class (no meetings or meetings with no times)
+    const isAsynchronous =
+      section.meetings.length === 0 ||
+      section.meetings.every(
+        (meeting) => !meeting.start_time || !meeting.end_time
+      );
+
+    // Skip asynchronous classes - they will only appear in the header
+    if (isAsynchronous) {
+      return [];
+    }
+
+    // For regular classes with meetings, create events as before
+    return section.meetings.flatMap((meeting) => {
       // Only create events if both start_time and end_time are provided.
       if (!meeting.start_time || !meeting.end_time) return [];
       return meeting.days.map((day) => {
@@ -244,10 +281,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           days: meeting.days,
           start_time: meeting.start_time,
           end_time: meeting.end_time,
+          isAsynchronous: false,
         };
       });
-    })
-  );
+    });
+  });
 
   // 1) Split all normal events into conflict groups
   const groups = getConflictGroups(events as unknown as EventType[]);
@@ -266,7 +304,12 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
-    dispatch(fetchSingleSection({ classNumber, term: currentScheduleTerm }));
+    dispatch(
+      classSearchActions.fetchSingleSection({
+        classNumber,
+        term: currentScheduleTerm,
+      })
+    );
   };
 
   return (

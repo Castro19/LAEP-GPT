@@ -18,6 +18,13 @@ export { default as ScheduleOptions } from "./buildSchedule/savedSchedules/Sched
 // AI Chat Components
 export { default as ScheduleBuilderAIChat } from "./aiChat/ScheduleBuilderAIChat";
 
+// Helpers
+export { formatProfessorNames } from "./helpers";
+export {
+  getConflictGroups,
+  buildBackgroundEventsForGroup,
+} from "./helpers/weeklyCalendarConflicts";
+
 // Types
 export type { ScheduleClassSection } from "./weeklySchedule/WeeklySchedule";
 export type { Schedule } from "./helpers/generateAllScheduleCombinations";
