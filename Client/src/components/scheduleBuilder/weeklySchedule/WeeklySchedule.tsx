@@ -140,7 +140,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     // Adjust based on device type and orientation
     if (window.innerWidth <= 768) {
       // Mobile devices
-      heightPercentage = isLandscape ? 0.7 : 0.75;
+      heightPercentage = isLandscape ? 0.7 : 0.65;
     } else if (window.innerWidth <= 1024) {
       // Tablets
       heightPercentage = isLandscape ? 0.72 : 0.77;
