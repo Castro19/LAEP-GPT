@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Components
 import NarrowScreenScheduleSectionInfo from "./NarrowScreenScheduleSectionInfo";
@@ -99,69 +100,95 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
   }
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
-      className="w-full mb-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700"
+      className="w-full mb-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700"
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
     >
       <div
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h3 className="text-xs font-semibold">
+        <h3 className="text-xs sm:text-sm font-semibold">
           Asynchronous Courses ({asyncSections.length})
         </h3>
-        <span className="text-xs">{isExpanded ? "▼" : "▶"}</span>
+        <motion.span
+          className="text-xs sm:text-sm"
+          animate={{ rotate: isExpanded ? 180 : 0 }}
+        >
+          {isExpanded ? "▼" : "▶"}
+        </motion.span>
       </div>
 
-      {isExpanded && (
-        <div className="mt-1">
-          <div className={`grid gap-1 w-full ${getGridCols()}`}>
-            {asyncSections.map((section) => {
-              const professorNames = formatProfessorNames(section.professors);
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            className="mt-1"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            <div className={`grid gap-1 w-full ${getGridCols()}`}>
+              {asyncSections.map((section, index) => {
+                const professorNames = formatProfessorNames(section.professors);
 
-              return (
-                <div key={section.classNumber} className="w-full">
-                  <Modal>
-                    <CustomModalTriggerButton
-                      color={section.color}
-                      className="rounded-md hover:opacity-90 transition-opacity cursor-pointer w-full"
-                      onClick={() =>
-                        handleCourseClick(section.classNumber.toString())
-                      }
-                    >
-                      <div className="flex flex-col items-start justify-between p-1 w-full h-full">
-                        <div className="flex flex-col items-start justify-center w-full">
-                          <div className="text-[9px] text-gray-700 dark:text-gray-700 whitespace-nowrap">
-                            Asynchronous
+                return (
+                  <motion.div
+                    key={section.classNumber}
+                    className="w-full"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.2,
+                      delay: index * 0.03,
+                      ease: "easeOut",
+                    }}
+                  >
+                    <Modal>
+                      <CustomModalTriggerButton
+                        color={section.color}
+                        className="rounded-md hover:opacity-90 transition-opacity cursor-pointer w-full my-2"
+                        onClick={() =>
+                          handleCourseClick(section.classNumber.toString())
+                        }
+                      >
+                        <div className="flex flex-col items-start justify-between p-1 w-full h-full">
+                          <div className="flex flex-col items-start justify-center w-full">
+                            <div className="text-[9px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
+                              Asynchronous
+                            </div>
+                            <div className="text-xxs sm:text-sm font-bold text-gray-700 dark:text-gray-700 truncate w-full">
+                              {section.courseId}
+                            </div>
                           </div>
-                          <div className="text-xxs font-bold text-gray-700 dark:text-gray-700 truncate w-full">
-                            {section.courseId}
+                          <div className="text-[9px] sm:text-xs font-bold text-gray-700 dark:text-gray-700 truncate w-full text-left self-start">
+                            {professorNames}
                           </div>
                         </div>
-                        <div className="text-[9px] font-bold text-gray-700 dark:text-gray-700 truncate w-full text-right self-end">
-                          {professorNames}
-                        </div>
-                      </div>
-                    </CustomModalTriggerButton>
-                    {isNarrowScreen ? (
-                      <NarrowScreenModal>
-                        <NarrowScreenScheduleSectionInfo />
-                      </NarrowScreenModal>
-                    ) : (
-                      <CustomModalBody>
-                        <ModalContent className="dark:bg-slate-950">
-                          <ScheduleSectionInfo />
-                        </ModalContent>
-                      </CustomModalBody>
-                    )}
-                  </Modal>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
+                      </CustomModalTriggerButton>
+                      {isNarrowScreen ? (
+                        <NarrowScreenModal>
+                          <NarrowScreenScheduleSectionInfo />
+                        </NarrowScreenModal>
+                      ) : (
+                        <CustomModalBody>
+                          <ModalContent className="dark:bg-slate-950">
+                            <ScheduleSectionInfo />
+                          </ModalContent>
+                        </CustomModalBody>
+                      )}
+                    </Modal>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
