@@ -22,6 +22,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    exclude: ["axios"],
+  },
   css: {
     modules: {
       localsConvention: "camelCaseOnly",
