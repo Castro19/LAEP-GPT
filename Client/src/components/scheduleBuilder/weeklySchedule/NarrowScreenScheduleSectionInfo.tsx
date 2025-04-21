@@ -1,13 +1,16 @@
 import { useAppSelector } from "@/redux";
-import { Button } from "@/components/ui/button";
+// My Components
 import {
   SectionEnrollment,
   SectionSchedule,
 } from "@/components/classSearch/currentSectionList/SectionInfo";
-import { transformToSectionDetail } from "@/helpers/transformSection";
-import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
 import { FormatPrerequisites } from "@/components/classSearch/reusable/sectionInfo/FormatPrereq";
+import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
+// UI Components
+import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/ui/animated-modal";
+// Helpers
+import { transformToSectionDetail } from "@/helpers/transformSection";
 import { X } from "lucide-react";
 
 const instructionModeMap = {
@@ -184,15 +187,6 @@ const NarrowScreenScheduleSectionInfo = () => {
           <p className="text-slate-300 text-sm">
             {scheduleSelectedSection.description}
           </p>
-        </div>
-      </div>
-
-      {/* Action Footer - Fixed at bottom */}
-      <div className="p-4 border-t border-slate-800 bg-slate-900 sticky bottom-0 z-10">
-        <div className="flex justify-end gap-4">
-          <Button variant="outline" className="border-slate-700 text-slate-300">
-            Remove from Schedule
-          </Button>
         </div>
       </div>
     </div>

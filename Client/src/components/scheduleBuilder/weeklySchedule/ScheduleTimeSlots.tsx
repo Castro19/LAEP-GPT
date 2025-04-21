@@ -12,12 +12,6 @@ import { CustomModalBody } from "@/components/ui/animated-modal";
 import { CustomModalTriggerButton } from "@/components/ui/animated-modal";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 import { formatProfessorNames } from "@/components/scheduleBuilder/helpers";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import NarrowScreenScheduleSectionInfo from "./NarrowScreenScheduleSectionInfo";
 // Add 'conflict' as a prop
@@ -47,37 +41,22 @@ const ScheduleTimeSlots = forwardRef<HTMLDivElement, ScheduleTimeSlotsProps>(
     return (
       <div ref={ref} className="flex items-center justify-start w-full h-full">
         <Modal>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <CustomModalTriggerButton
-                  color={event.extendedProps.color}
-                  className="rounded-md hover:opacity-90 transition-opacity cursor-pointer min-h-full w-full"
-                >
-                  <div className="flex flex-col items-start justify-center p-1 sm:p-2 w-full">
-                    <div className="text-[10px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
-                      {startTime} - {endTime}
-                    </div>
-                    <div className="text-xxs sm:text-sm font-bold text-gray-700 dark:text-gray-700 truncate w-full">
-                      {event.title}
-                    </div>
-                    <div className="text-[10px] sm:text-xs font-bold text-gray-700 dark:text-gray-700 truncate w-full">
-                      {professorNames}
-                    </div>
-                  </div>
-                </CustomModalTriggerButton>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-[200px]">
-                <div className="text-xs">
-                  <div className="font-bold">{event.title}</div>
-                  <div>
-                    {startTime} - {endTime}
-                  </div>
-                  <div>{professorNames}</div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CustomModalTriggerButton
+            color={event.extendedProps.color}
+            className="rounded-md hover:opacity-90 transition-opacity cursor-pointer min-h-full w-full"
+          >
+            <div className="flex flex-col items-start justify-center p-1 sm:p-2 w-full">
+              <div className="text-[10px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
+                {startTime} - {endTime}
+              </div>
+              <div className="text-xxs sm:text-sm font-bold text-gray-700 dark:text-gray-700 truncate w-full">
+                {event.title}
+              </div>
+              <div className="text-[10px] sm:text-xs font-bold text-gray-700 dark:text-gray-700 truncate w-full">
+                {professorNames}
+              </div>
+            </div>
+          </CustomModalTriggerButton>
           {isNarrowScreen ? (
             <NarrowScreenModal ref={modalRef}>
               <NarrowScreenScheduleSectionInfo />
