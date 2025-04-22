@@ -1,6 +1,6 @@
 import express, { RequestHandler } from "express";
 import {
-  getLogsByUser,
+  getLogsByPage,
   getLogById,
   updateLog,
   deleteLog,
@@ -14,14 +14,17 @@ import { environment } from "../index";
 
 const router = express.Router();
 
-// Get the entire LogList by userId: (Read)
+// Get the partial LogList by userId: (Read)
 router.get("/", (async (req, res) => {
   try {
     const userId = req.user?.uid;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const logs = await getLogsByUser(userId);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+
+    const logs = await getLogsByPage(userId, page, limit);
     res.status(200).json(logs);
   } catch (error) {
     if (environment === "dev") {

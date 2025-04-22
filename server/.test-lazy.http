@@ -1,0 +1,23 @@
+
+@sessionCookieValue = eyJhbGciOiJSUzI1NiIsImtpZCI6InJQV1pUZyJ9.eyJpc3MiOiJodHRwczovL3Nlc3Npb24uZmlyZWJhc2UuZ29vZ2xlLmNvbS9sYWVwLWdwdC0zMTIyZCIsIm5hbWUiOiJLZXZpbiBCZWx0cmFuIE1vbnJveSIsImF1ZCI6ImxhZXAtZ3B0LTMxMjJkIiwiYXV0aF90aW1lIjoxNzQ1MzM5MTA0LCJ1c2VyX2lkIjoiTVI3dFdleUl5cVNZZ0g4MTF5dURkUzFMMjZIMiIsInN1YiI6Ik1SN3RXZXlJeXFTWWdIODExeXVEZFMxTDI2SDIiLCJpYXQiOjE3NDUzMzkxMDksImV4cCI6MTc0NTc3MTEwOSwiZW1haWwiOiJrYmVsdHIwM0BjYWxwb2x5LmVkdSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJtaWNyb3NvZnQuY29tIjpbIjEyYmJhMTI5LWIwNDQtNDZlNi1iZTYzLWJhNTFiOGQ4MjVjMSJdLCJlbWFpbCI6WyJrYmVsdHIwM0BjYWxwb2x5LmVkdSJdfSwic2lnbl9pbl9wcm92aWRlciI6Im1pY3Jvc29mdC5jb20ifX0.MHpor-uW-DSwuMtXXgeWYCWOsA7oPwSfVv8al8u0BpyJo5B7JOfaO-nEeTOnzvQJztYzQYqWVm3plsMlDkcYO9RHcZK0fcBQRnpBHvl9za0VhjTWC6IxcuOQmoesCnIa391qJ0Qb-NAvodSGItAxzs2THlfaKFAd8dOCkqGWteqslJKXIJSAl3rCaKujHoNtL4_C9LIcdnqjaEw3bGkgbCTva5NFPoFiAbQ4888CV4vJS_TIGvvOOEHKTpqMeqZHed49lUMcHhvooxQiLRz6p04cK4l8C6VeXs1Basl4DkVF9ZkCeQkxvVTjlLFa-WaL6JcdkSjgTNyjdRzmcWVORA
+@baseUrl = http://localhost:4000/chatLogs
+
+### first page
+GET {{baseUrl}}?page=1&limit=2
+Cookie: session={{sessionCookieValue}}
+
+### second page
+GET {{baseUrl}}?page=2&limit=2
+Cookie: session={{sessionCookieValue}}
+
+#### third page
+GET {{baseUrl}}?page=3&limit=2
+Cookie: session={{sessionCookieValue}}
+
+### default limit of 20
+GET {{baseUrl}}
+Cookie: session={{sessionCookieValue}}
+
+### Test fetching with limit but no page (should default to page 1)
+GET {{baseUrl}}?limit=15
+Cookie: session={{sessionCookieValue}}
