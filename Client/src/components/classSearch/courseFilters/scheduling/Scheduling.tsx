@@ -25,7 +25,6 @@ import {
   SECTION_FILTERS_SCHEMA,
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "@/redux";
 
 const Scheduling = ({
   form,
@@ -171,13 +170,9 @@ const DaysSelector = ({
   field: ControllerRenderProps<z.infer<typeof SECTION_FILTERS_SCHEMA>, "days">;
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
-  const reduxFilters = useAppSelector((state) => state.classSearch.filters);
-
   // Ensure field.value is always an array, even when reset
   const selectedDays = Array.isArray(field.value) ? field.value : [];
 
-  console.log("field.value", field.value);
-  console.log("reduxFilters", reduxFilters);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
       {DAYS.map((day) => {
