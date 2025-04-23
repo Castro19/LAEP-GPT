@@ -101,8 +101,12 @@ const Scheduling = ({
             <FormControl>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  ["In-Person", "P"],
-                  ["Online", "A"],
+                  ["In-Person", "PS"],
+                  ["Asynchronous", "SA"],
+                  ["Synchronous", "PA"],
+                  ["In-Person/Async Hybrid", "P"],
+                  ["In-Person/Sync Hybrid", "AM"],
+                  ["Sync/Async Hybrid", "SM"],
                 ].map(([mode, code]) => (
                   <Button
                     key={mode}

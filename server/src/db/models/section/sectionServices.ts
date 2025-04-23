@@ -211,15 +211,30 @@ function buildSectionsQuery(
   if (filter.instructionMode) {
     let allowedCodes: string[] = [];
 
-    if (filter.instructionMode.includes("P")) {
-      allowedCodes = allowedCodes.concat(["P", "PS", "AM"]);
+    // Map the single instruction mode code to the appropriate codes
+    switch (filter.instructionMode) {
+      case "P": // In-Person
+        allowedCodes = ["P"];
+        break;
+      case "A": // Online
+        allowedCodes = ["A"];
+        break;
+      case "AM": // In-Person/Sync Hybrid
+        allowedCodes = ["AM"];
+        break;
+      case "PS": // In-Person/Async Hybrid
+        allowedCodes = ["PS"];
+        break;
+      case "SA": // Asynchronous
+        allowedCodes = ["SA"];
+        break;
+      case "SM": // Sync/Async Hybrid
+        allowedCodes = ["SM"];
+        break;
+      default:
+        // If the code doesn't match any known code, just use it as is
+        allowedCodes = [filter.instructionMode];
     }
-    if (filter.instructionMode.includes("A")) {
-      allowedCodes = allowedCodes.concat(["PA", "SM", "SA"]);
-    }
-
-    // Ensure there are no duplicates (if that matters)
-    allowedCodes = Array.from(new Set(allowedCodes));
 
     query.instructionMode = { $in: allowedCodes };
   }

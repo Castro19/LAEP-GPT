@@ -35,7 +35,9 @@ export const SECTION_FILTERS_SCHEMA = z.object({
   maxCatalogNumber: z.string().optional(),
   // Allow multiple course attributes
   courseAttributes: z.array(z.enum(COURSE_ATTRIBUTES)).optional(),
-  instructionMode: z.string(z.enum(["P", "A"])).optional(),
+  instructionMode: z
+    .string(z.enum(["P", "A", "AM", "PS", "SA", "SM"]))
+    .optional(),
   instructors: z.array(z.string()).optional(),
   isTechElective: z.boolean().optional(),
   techElectives: z
