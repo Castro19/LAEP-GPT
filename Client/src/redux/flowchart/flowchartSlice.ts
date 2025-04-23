@@ -20,6 +20,7 @@ export interface FlowchartState {
   flowchartList: FetchedFlowchartObject[] | null;
   currentFlowchart: FetchedFlowchartObject | null;
   completedCourseIds: string[];
+  isFullTimelineView: boolean;
   loading: {
     fetchFlowchartData: boolean;
     setFlowchart: boolean;
@@ -37,6 +38,7 @@ const initialState: FlowchartState = {
   flowchartList: null,
   currentFlowchart: null,
   completedCourseIds: [],
+  isFullTimelineView: false,
   loading: {
     fetchFlowchartData: false,
     setFlowchart: false,
@@ -288,6 +290,9 @@ const flowchartSlice = createSlice({
         .map((course) => course.id || course.customId || "")
         .filter(Boolean);
     },
+    setFullTimelineView: (state, action: PayloadAction<boolean>) => {
+      state.isFullTimelineView = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -452,6 +457,7 @@ export const {
   setCreateFlowchart,
   setLoading,
   updateCompletedCourses,
+  setFullTimelineView,
 } = flowchartSlice.actions;
 
 export const flowchartReducer = flowchartSlice.reducer;

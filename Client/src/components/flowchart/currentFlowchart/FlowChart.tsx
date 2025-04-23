@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/carousel";
 import useDeviceType from "@/hooks/useDeviceType";
 import YearSelector from "./YearSelector";
+import FullScreenFlowchart from "./FullScreenFlowchart";
 
 // Add custom styles for the bounce animation
 const bounceStyles = `
@@ -47,6 +48,18 @@ const TERM_MAP = {
   13: "Fall",
   14: "Winter",
   15: "Spring",
+  17: "Fall",
+  18: "Winter",
+  19: "Spring",
+  21: "Fall",
+  22: "Winter",
+  23: "Spring",
+  25: "Fall",
+  26: "Winter",
+  27: "Spring",
+  29: "Fall",
+  30: "Winter",
+  31: "Spring",
 };
 
 const Flowchart = ({
@@ -59,6 +72,7 @@ const Flowchart = ({
   const device = useDeviceType();
 
   const { isDragging } = useAppSelector((state) => state.layout);
+  const { isFullTimelineView } = useAppSelector((state) => state.flowchart);
   const [api, setApi] = useState<CarouselApi>();
 
   // Add refs for hover timers
@@ -216,8 +230,8 @@ const Flowchart = ({
   return (
     <div
       // On desktop: use left/right margin. On mobile/tablet: remove them.
-      className={`flex flex-col ${
-        device === "desktop" ? "ml-16 mr-16" : "mx-2"
+      className={`flex flex-col min-h-full ${
+        device === "desktop" && !isFullTimelineView ? "ml-16 mr-16" : "mx-2"
       }`}
     >
       <style>{bounceStyles}</style>
@@ -228,80 +242,83 @@ const Flowchart = ({
         scrollToYear={scrollToYear}
         isNarrowScreen={isNarrowScreen}
       />
-
-      <div className="relative">
-        <Carousel
-          setApi={setApi}
-          opts={{
-            align: "start",
-            containScroll: "trimSnaps",
-            dragFree: true,
-            skipSnaps: true,
-            duration: 20,
-            slidesToScroll: 1,
-            inViewThreshold: 0.5,
-            direction: isDragging ? "ltr" : undefined,
-          }}
-        >
-          <CarouselContent
-            // On mobile/tablet, remove negative margins to maximize space
-            className={`${
-              device === "desktop" ? "-ml-2 md:-ml-4" : "mx-0"
-            } flex`}
+      {isFullTimelineView ? (
+        <FullScreenFlowchart flowchartData={flowchartData} />
+      ) : (
+        <div className="relative">
+          <Carousel
+            setApi={setApi}
+            opts={{
+              align: "start",
+              containScroll: "trimSnaps",
+              dragFree: true,
+              skipSnaps: true,
+              duration: 20,
+              slidesToScroll: 1,
+              inViewThreshold: 0.5,
+              direction: isDragging ? "ltr" : undefined,
+            }}
           >
-            {termsData.map((term) => {
-              const termName = getTermName(term.tIndex);
-              return (
-                <CarouselItem
-                  key={term.tIndex + termName}
-                  // On mobile/tablet, each item becomes full width
-                  className={`${
-                    device === "desktop"
-                      ? "pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 "
-                      : "w-full"
-                  }`}
-                >
-                  <TermContainer
-                    term={term}
-                    termName={termName}
-                    onCourseToggleComplete={onCourseToggleComplete}
-                  />
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
+            <CarouselContent
+              // On mobile/tablet, remove negative margins to maximize space
+              className={`${
+                device === "desktop" ? "-ml-2 md:-ml-4" : "mx-0"
+              } flex`}
+            >
+              {termsData.map((term) => {
+                const termName = getTermName(term.tIndex);
+                return (
+                  <CarouselItem
+                    key={term.tIndex + termName}
+                    // On mobile/tablet, each item becomes full width
+                    className={`${
+                      device === "desktop"
+                        ? "pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 "
+                        : "w-full"
+                    }`}
+                  >
+                    <TermContainer
+                      term={term}
+                      termName={termName}
+                      onCourseToggleComplete={onCourseToggleComplete}
+                    />
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
 
-          {/* Hide arrows if not desktop */}
-          {device === "desktop" && (
-            <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
-              <div
-                className="pointer-events-auto z-10"
-                onMouseEnter={handlePrevHoverStart}
-                onMouseLeave={handlePrevHoverEnd}
-                onClick={handlePrevClick}
-              >
-                <CarouselPrevious
-                  className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
-                    prevBounceCount > 0 ? "pulse-animation" : ""
-                  }`}
-                />
+            {/* Hide arrows if not desktop */}
+            {device === "desktop" && (
+              <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
+                <div
+                  className="pointer-events-auto z-10"
+                  onMouseEnter={handlePrevHoverStart}
+                  onMouseLeave={handlePrevHoverEnd}
+                  onClick={handlePrevClick}
+                >
+                  <CarouselPrevious
+                    className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
+                      prevBounceCount > 0 ? "pulse-animation" : ""
+                    }`}
+                  />
+                </div>
+                <div
+                  className="pointer-events-auto z-10"
+                  onMouseEnter={handleNextHoverStart}
+                  onMouseLeave={handleNextHoverEnd}
+                  onClick={handleNextClick}
+                >
+                  <CarouselNext
+                    className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
+                      nextBounceCount > 0 ? "pulse-animation" : ""
+                    }`}
+                  />
+                </div>
               </div>
-              <div
-                className="pointer-events-auto z-10"
-                onMouseEnter={handleNextHoverStart}
-                onMouseLeave={handleNextHoverEnd}
-                onClick={handleNextClick}
-              >
-                <CarouselNext
-                  className={`h-full w-12 rounded-none opacity-30 transition-opacity duration-300 ${
-                    nextBounceCount > 0 ? "pulse-animation" : ""
-                  }`}
-                />
-              </div>
-            </div>
-          )}
-        </Carousel>
-      </div>
+            )}
+          </Carousel>
+        </div>
+      )}
     </div>
   );
 };
