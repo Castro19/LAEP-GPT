@@ -24,12 +24,14 @@ type SearchbarProps = {
   onSelect: (value: string) => void;
   fetchData: (value: string) => Promise<any[]>;
   placeholder?: string;
+  type?: "course" | "instructor";
 };
 
 const Searchbar = ({
   onSelect,
   fetchData,
   placeholder = "Search",
+  type = "course",
 }: SearchbarProps) => {
   const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -118,7 +120,11 @@ const Searchbar = ({
               return (
                 <CommandItem
                   key={index}
-                  value={`${item.courseId} - ${item.displayName}`}
+                  value={
+                    type === "course"
+                      ? `${item.courseId} - ${item.displayName}`
+                      : item.name
+                  }
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     onSelect(currentValue);
@@ -128,7 +134,9 @@ const Searchbar = ({
                     setData([]);
                   }}
                 >
-                  {`${item.courseId} - ${item.displayName}`}
+                  {type === "course"
+                    ? `${item.courseId} - ${item.displayName}`
+                    : item}
                 </CommandItem>
               );
             })}

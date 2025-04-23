@@ -147,9 +147,13 @@ const CourseInformation = ({
                   label: subject.description,
                 }))}
                 handleChangeItem={(_, selectedValue) => {
-                  form.setValue("subject", selectedValue);
+                  // If "none" is selected, set the value to an empty string
+                  form.setValue(
+                    "subject",
+                    selectedValue === "none" ? "" : selectedValue
+                  );
                 }}
-                selectedItem={field.value || ""}
+                selectedItem={field.value === "none" ? "" : field.value || ""}
               />
             </FormControl>
           </FormItem>
