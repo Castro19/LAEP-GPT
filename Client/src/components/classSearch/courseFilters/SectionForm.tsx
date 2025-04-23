@@ -23,6 +23,7 @@ import { SectionsFilterParams } from "@polylink/shared/types";
 import {
   COURSE_ATTRIBUTES,
   DAYS,
+  getInitialFilterValues,
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 import useDeviceType from "@/hooks/useDeviceType";
@@ -228,7 +229,18 @@ const SectionForm = ({
     if (e) {
       e.preventDefault();
     }
+
+    // Reset the form to default values
     form.reset();
+
+    // Reset the Redux state filters to initial values
+    dispatch(
+      classSearchActions.setFilters(
+        getInitialFilterValues(major, concentration)
+      )
+    );
+
+    // Set initial state flag
     dispatch(classSearchActions.setIsInitialState(true));
   };
 

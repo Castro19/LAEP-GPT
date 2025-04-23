@@ -12,6 +12,7 @@ import {
   querySections,
 } from "./crudClassSearch";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { getInitialFilterValues } from "@/components/classSearch/courseFilters/helpers/constants";
 
 export interface ClassSearchState {
   sections: Section[];
@@ -42,27 +43,7 @@ const initialState: ClassSearchState = {
   queryError: null,
   isInitialState: true,
   isQueryAI: false,
-  filters: {
-    term: "summer2025",
-    courseIds: [],
-    status: "",
-    subject: "",
-    days: "",
-    timeRange: "",
-    minInstructorRating: "",
-    maxInstructorRating: "",
-    includeUnratedInstructors: undefined,
-    minUnits: "",
-    maxUnits: "",
-    minCatalogNumber: "",
-    maxCatalogNumber: "",
-    courseAttribute: [],
-    instructionMode: "",
-    techElectives: { major: "", concentration: "" },
-    isTechElective: false,
-    withNoConflicts: false,
-    isCreditNoCredit: false,
-  },
+  filters: getInitialFilterValues(),
   AIQuery: null,
 };
 
