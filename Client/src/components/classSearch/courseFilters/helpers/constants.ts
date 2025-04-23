@@ -1,3 +1,4 @@
+import { SectionsFilterParams } from "@polylink/shared/types";
 import { z } from "zod";
 
 // Days allowed (used in the Zod enum)
@@ -57,3 +58,35 @@ export const SCHEDULE_PREFERENCES_SCHEMA = z.object({
   startTime: z.string().optional(),
   endTime: z.string().optional(),
 });
+
+// Utility function to get initial filter values
+export const getInitialFilterValues = (
+  major = "",
+  concentration = ""
+): SectionsFilterParams => {
+  return {
+    term: "summer2025",
+    courseIds: [],
+    status: "",
+    subject: "",
+    days: "",
+    timeRange: "",
+    minInstructorRating: "",
+    maxInstructorRating: "",
+    includeUnratedInstructors: undefined,
+    minUnits: "",
+    maxUnits: "",
+    minCatalogNumber: "",
+    maxCatalogNumber: "",
+    courseAttribute: [],
+    instructionMode: "",
+    instructors: [],
+    isTechElective: false,
+    techElectives: {
+      major,
+      concentration,
+    },
+    withNoConflicts: false,
+    isCreditNoCredit: false,
+  };
+};

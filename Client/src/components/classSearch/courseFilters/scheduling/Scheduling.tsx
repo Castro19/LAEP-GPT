@@ -25,6 +25,7 @@ import {
   SECTION_FILTERS_SCHEMA,
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/redux";
 
 const Scheduling = ({
   form,
@@ -79,7 +80,7 @@ const Scheduling = ({
                     onClick={() =>
                       form.setValue(
                         "status",
-                        field.value === option.value ? undefined : option.value
+                        field.value === option.value ? "" : option.value
                       )
                     }
                   >
@@ -111,7 +112,7 @@ const Scheduling = ({
                     onClick={() =>
                       form.setValue(
                         "instructionMode",
-                        field.value === code ? undefined : code
+                        field.value === code ? "" : code
                       )
                     }
                     className="h-8 text-sm"
@@ -170,10 +171,17 @@ const DaysSelector = ({
   field: ControllerRenderProps<z.infer<typeof SECTION_FILTERS_SCHEMA>, "days">;
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
+  const reduxFilters = useAppSelector((state) => state.classSearch.filters);
+
+  // Ensure field.value is always an array, even when reset
+  const selectedDays = Array.isArray(field.value) ? field.value : [];
+
+  console.log("field.value", field.value);
+  console.log("reduxFilters", reduxFilters);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
       {DAYS.map((day) => {
-        const isSelected = field.value?.includes(day);
+        const isSelected = selectedDays.includes(day);
         return (
           <Button
             key={day}
@@ -184,11 +192,11 @@ const DaysSelector = ({
                 // remove from array
                 form.setValue(
                   "days",
-                  field.value?.filter((d: string) => d !== day) || []
+                  selectedDays.filter((d: string) => d !== day)
                 );
               } else {
                 // add to array
-                form.setValue("days", [...(field.value || []), day]);
+                form.setValue("days", [...selectedDays, day]);
               }
             }}
             className="h-8"
@@ -222,7 +230,7 @@ export const TimeRangeSelector = ({
         render={({ field }) => {
           const selectedLabel = valueToLabel(field.value ?? "");
 
-          // Update the form's “HH:MM” value whenever user picks a new label
+          // Update the form's "HH:MM" value whenever user picks a new label
           const handleChangeItem = (_: string, label: string) => {
             field.onChange(labelToValue(label));
           };
@@ -272,33 +280,33 @@ function hourIntToLabel(h24: number): string {
 function valueToLabel(value: string): string {
   // If empty or missing, return an empty string.
   if (!value) return "";
-  // Expecting “HH:MM”
+  // Expecting "HH:MM"
   const [hourStr] = value.split(":");
   const hourInt = parseInt(hourStr, 10) || 0;
   return hourIntToLabel(hourInt);
 }
 
 /**
- * Convert a label like “1:00PM” => “13:00” (24-hour string).
+ * Convert a label like "1:00PM" => "13:00" (24-hour string).
  */
 function labelToValue(label: string): string {
-  // e.g. “1:00PM” => hour=1, amPm=“PM” => “13:00”
+  // e.g. "1:00PM" => hour=1, amPm="PM" => "13:00"
   // Quick parse:
-  // - split by “:” => [“1”, “00PM”]
+  // - split by ":" => ["1", "00PM"]
   // - hour12 = 1
-  // - last 2 chars => “PM”
-  // - so if “PM” and hour12 < 12 => hour12 + 12
-  // - handle “12:00AM” => “00:00”
-  const [hrStr, rest] = label.split(":"); // e.g. [“1”, “00PM”]
+  // - last 2 chars => "PM"
+  // - so if "PM" and hour12 < 12 => hour12 + 12
+  // - handle "12:00AM" => "00:00"
+  const [hrStr, rest] = label.split(":"); // e.g. ["1", "00PM"]
   const hour12 = parseInt(hrStr, 10);
-  const amPm = rest.slice(-2); // e.g. “PM”
+  const amPm = rest.slice(-2); // e.g. "PM"
   let hour24 = hour12;
   if (amPm === "PM" && hour12 !== 12) {
     hour24 += 12;
   } else if (amPm === "AM" && hour12 === 12) {
     hour24 = 0;
   }
-  // Return zero-padded, plus “:00”
+  // Return zero-padded, plus ":00"
   return String(hour24).padStart(2, "0") + ":00";
 }
 
