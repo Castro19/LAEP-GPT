@@ -30,8 +30,6 @@ const YearSelector = ({
   const handleChange = (value: string) => {
     if (value === "full") {
       dispatch(flowchartActions.setFullTimelineView(true));
-      console.log("Full Timeline selected");
-      return;
     }
 
     dispatch(flowchartActions.setFullTimelineView(false));
