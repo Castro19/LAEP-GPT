@@ -19,7 +19,7 @@ async function connectToDb(): Promise<Db> {
     await client.connect();
     await client.db("admin").command({ ping: 1 });
 
-    db = client.db("laep");
+    db = client.db("polylink");
     return db;
   } catch (err) {
     if (environment === "dev") {
