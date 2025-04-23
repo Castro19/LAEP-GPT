@@ -1,4 +1,5 @@
 const SUBJECTS = [
+  { subject: "none", description: "No Subject" },
   { subject: "AERO", description: "Aerospace Engineering" },
   { subject: "AGB", description: "Agribusiness" },
   { subject: "AGC", description: "Agricultural Communication" },

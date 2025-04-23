@@ -55,6 +55,7 @@ const Instructor = ({
                       form.setValue("instructors", [...current, instructor]);
                     }
                   }}
+                  type="instructor"
                 />
                 <DeletableTags
                   tags={form.getValues("instructors") || []}
