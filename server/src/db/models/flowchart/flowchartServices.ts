@@ -25,13 +25,14 @@ export const createFlowchart = async (
   let flowchartName = "Untitled Flowchart";
   let primaryOption = false;
   let flowchartList = [];
+  const codeWithoutPdf = name.replace(".pdf", "");
   try {
     const flowchartInfo =
       (
         await searchFlowInfo({
           catalog: undefined,
           majorName: undefined,
-          code: name,
+          code: codeWithoutPdf,
         })
       )?.[0] || "Untitled Flowchart";
     flowchartName = (flowchartInfo as ConcentrationInfo).concName;
@@ -41,7 +42,7 @@ export const createFlowchart = async (
       flowchartList.length === 0 ||
       flowchartList.every((flowchart) => !flowchart.primaryOption);
     try {
-      const flowInfo = await getFlowInfoByCode(name);
+      const flowInfo = await getFlowInfoByCode(codeWithoutPdf);
       if (!flowInfo) {
         throw new Error("Flow info not found");
       }

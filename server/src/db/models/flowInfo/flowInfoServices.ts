@@ -153,7 +153,9 @@ export const getFlowInfoByCode = async (
   code: string
 ): Promise<FlowInfoDocument | null> => {
   // Pass an empty projection to get all fields
-  const result = await flowInfoModel.searchFlowInfo({ code: code }, {
+  // remove the string ".pdf" if it exists in the code
+  const codeWithoutPdf = code.replace(".pdf", "");
+  const result = await flowInfoModel.searchFlowInfo({ code: codeWithoutPdf }, {
     id: 0,
     _id: 0,
     majorName: 1,

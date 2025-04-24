@@ -23,8 +23,7 @@ const FlowchartInfo = () => {
   }
 
   const { flowInfo } = currentFlowchart;
-  console.log("CURRENT FLOWCHART", currentFlowchart);
-  console.log("FLOWINFO", flowInfo);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
