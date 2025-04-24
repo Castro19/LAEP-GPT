@@ -14,7 +14,7 @@ const ErrorPage = () => {
 
   return (
     <SplashLayout>
-      <div className="bg-slate-900 dark:bg-slate-900 min-h-screen flex items-center justify-center -mt-20">
+      <div className="bg-background dark:bg-background min-h-screen flex items-center justify-center -mt-20">
         <div className="text-center space-y-4 w-full max-w-[40rem] px-6">
           <div className="space-y-4">
             <h1
@@ -36,7 +36,7 @@ const ErrorPage = () => {
             <Button
               variant="default"
               onClick={() => navigate(-1)}
-              className="w-full lg:w-[20rem] hover:bg-slate-800 text-xl lg:text-2xl py-8 lg:py-10 px-12"
+              className="w-full lg:w-[20rem] hover:bg-card text-xl lg:text-2xl py-8 lg:py-10 px-12"
               aria-label="Go back to previous page"
             >
               {ERROR_TEXT.backButtonText}

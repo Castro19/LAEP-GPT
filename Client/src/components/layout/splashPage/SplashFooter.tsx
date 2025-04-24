@@ -8,7 +8,7 @@ const SplashFooter = () => {
   };
 
   return (
-    <footer className="bg-slate-900 text-white p-8 border-t-2 border-zinc-800 dark:border-x-gray-500">
+    <footer className="bg-background text-white p-8 border-t-2 border-zinc-800 dark:border-x-gray-500">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Brand Section */}
         <div className="space-y-4">

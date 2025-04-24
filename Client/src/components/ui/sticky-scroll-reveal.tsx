@@ -98,7 +98,7 @@ export const StickyScroll = ({
         <div
           style={{ background: "var(--slate-900)" }}
           className={cn(
-            "hidden lg:block rounded-md bg-white sticky top-5 overflow-hidden",
+            "hidden lg:block rounded-md bg-slate-800 sticky top-5 overflow-hidden",
             contentClassName
           )}
         >

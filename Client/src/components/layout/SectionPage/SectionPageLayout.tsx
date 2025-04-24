@@ -20,7 +20,7 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
       <div className="flex">
         {isNarrowScreen ? null : <OuterIconSidebar />}
         <div
-          className={`bg-slate-900 text-white flex flex-col no-scroll w-full ${
+          className={`bg-background text-white flex flex-col no-scroll w-full ${
             isNarrowScreen ? "ml-0" : "ml-2"
           }`}
         >

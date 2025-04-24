@@ -44,7 +44,7 @@ const ChatHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 bg-slate-900 text-white p-4 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
+    <header className="sticky top-0 bg-background text-white p-4 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={toggleSidebar}>
           <FiSidebar className="m-auto w-5 h-5" />

@@ -7,7 +7,7 @@ import FeaturesGrid from "@/components/splashPage/FeatureSection";
 const SplashPage = () => {
   return (
     <SplashLayout>
-      <div className="bg-slate-900 relative">
+      <div className="bg-background relative">
         {/* SVG Background Overlays */}
         <svg
           width="100%"

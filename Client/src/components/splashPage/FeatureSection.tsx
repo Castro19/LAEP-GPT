@@ -38,7 +38,7 @@ const FeatureSection = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.4 }}
-      className="group relative p-4 w-full rounded-2xl bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 cursor-default"
+      className="group relative p-4 w-full rounded-2xl bg-slate-800/5 backdrop-blur-sm hover:bg-slate-800/10 transition-all duration-300 cursor-default"
     >
       <div className="flex flex-col space-y-2">
         <div className="flex items-center space-x-4">

@@ -32,7 +32,7 @@ const SplashHeader = () => {
     "text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-100 font-bold tracking-wide drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.3)] transition-all duration-300 hover:drop-shadow-[0_1.2px_1.2px_rgba(0,204,255,0.5)]";
 
   return (
-    <header className="sticky top-0 bg-slate-900 text-white p-4 z-50 border-b-2  border-zinc-800 dark:border-x-gray-500 shadow-md">
+    <header className="sticky top-0 bg-background text-white p-4 z-50 border-b-2  border-zinc-800 dark:border-x-gray-500 shadow-md">
       <div className="flex items-center justify-between">
         <SplashHeaderButton />
         {isNarrowScreen ? (
@@ -46,7 +46,7 @@ const SplashHeader = () => {
 
             {/* Mobile Menu Overlay */}
             <div
-              className={`absolute top-full left-0 right-0 bg-slate-900 border-b-2 border-zinc-800 transform transition-all duration-300 ease-in-out ${
+              className={`absolute top-full left-0 right-0 bg-background border-b-2 border-zinc-800 transform transition-all duration-300 ease-in-out ${
                 isMenuOpen
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 -translate-y-2 pointer-events-none"

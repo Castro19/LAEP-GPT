@@ -71,7 +71,7 @@ const FlowChartPage = () => {
     <>
       <div className="flex overflow-hidden no-scroll">
         {isNarrowScreen ? null : <OuterIconSidebar />}
-        <SidebarProvider className="dark:bg-slate-900">
+        <SidebarProvider className="dark:bg-background">
           <FlowchartLayout>
             {flowchartData ? (
               <Flowchart flowchartData={flowchartData} />

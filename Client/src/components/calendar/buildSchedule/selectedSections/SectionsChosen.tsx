@@ -54,9 +54,9 @@ const SectionsChosen = () => {
     <div className="grid grid-cols-1 gap-2">
       {Object.entries(groupedSections).map(([courseId, professorGroups]) => (
         <Collapsible key={courseId} className="group/collapsible">
-          <div className="bg-white dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-700">
+          <div className="bg-slate-800 dark:bg-background rounded-md border border-gray-200 dark:border-slate-700">
             <CollapsibleTrigger asChild>
-              <div className="bg-slate-800 flex justify-between items-center p-2 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors cursor-pointer rounded-md">
+              <div className="bg-card flex justify-between items-center p-2 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors cursor-pointer rounded-md">
                 <div className="flex items-center gap-3">
                   <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                   <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
@@ -80,7 +80,7 @@ const SectionsChosen = () => {
                     >
                       <div className=" border-gray-100 dark:border-slate-700 pt-2">
                         <CollapsibleTrigger asChild>
-                          <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 px-2 py-1 rounded">
+                          <div className="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-card px-2 py-1 rounded">
                             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                               {professor
                                 .split(" ")

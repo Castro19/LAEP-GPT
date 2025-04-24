@@ -50,7 +50,7 @@ export function Hero() {
     },
   ];
   return (
-    <div className="flex flex-col items-center justify-start bg-white dark:bg-slate-900 bg-opacity-50">
+    <div className="flex flex-col items-center justify-start bg-slate-800 dark:bg-background bg-opacity-50">
       <TypewriterEffectSmooth words={words} />
       <motion.button
         onClick={() => navigate("/team")}

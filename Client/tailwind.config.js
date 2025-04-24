@@ -94,7 +94,7 @@ function addVariablesForColors({ addBase, theme }) {
   //added given formatting
   addBase({
     ":root": {
-      "--background": "255 255 255",        
+      "--background": "255 225 225",        
       "--foreground": "17 24 39",            
       "--card": "240 240 240",
       "--primary": "34 197 94",              
@@ -102,9 +102,9 @@ function addVariablesForColors({ addBase, theme }) {
       "--muted": "120 120 120",
     },
     ".dark": {
-      "--background": "15 23 42",          
+      "--background": "222.2, 47.4%, 11.2%",          
       "--foreground": "255 255 255",
-      "--card": "30 41 59",                
+      "--card": "212, 18%, 33%",         //testing with this one        
       "--primary": "34 197 94",
       "--border": "55 65 81",
       "--muted": "148 163 184",

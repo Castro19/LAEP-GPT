@@ -5,7 +5,7 @@ import SplashFooter from "./SplashFooter";
 
 const ChatPageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-slate-900 min-h-screen relative">
+    <div className="bg-background min-h-screen relative">
       <SplashHeader />
       <div className="relative">
         <div className="flex-1">{children}</div>

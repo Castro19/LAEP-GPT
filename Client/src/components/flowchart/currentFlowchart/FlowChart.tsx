@@ -117,7 +117,7 @@ const Flowchart = ({
             className={`cursor-pointer ${
               selectedYear === index
                 ? "dark:bg-slate-700 text-white"
-                : "text-white hover:dark:bg-slate-800"
+                : "text-white hover:dark:bg-card"
             } ${isNarrowScreen ? "text-xs size-8 px-6" : "text-lg"}`}
           >
             Year {index + 1}
@@ -145,7 +145,7 @@ const Flowchart = ({
           <ScrollBar
             orientation="horizontal"
             data-state="visible"
-            className="bg-white h-4"
+            className="bg-slate-800 h-4"
           />
         </div>
       </ScrollArea>

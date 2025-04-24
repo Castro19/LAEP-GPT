@@ -10,7 +10,7 @@ const Register = () => {
 
   return (
     <SplashLayout>
-      {/* Outer container using bg-slate-900 to match your splash page */}
+      {/* Outer container using bg-background to match your splash page */}
       <div className="relative flex items-center justify-center min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
         {/* SVG decorations (dark, subtle) */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none select-none overflow-hidden">

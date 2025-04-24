@@ -51,7 +51,7 @@ const CalendarSectionInfo = () => {
   const instructorRatings = calendarSelectedSection.instructorsWithRatings?.[0];
 
   return (
-    <div className="w-full rounded-lg border border-slate-600 bg-slate-900 p-3 shadow-xl">
+    <div className="w-full rounded-lg border border-slate-600 bg-background p-3 shadow-xl">
       {/* Header Section */}
       <div className="mb-6 flex items-start justify-between">
         <div>

@@ -23,7 +23,7 @@ const ProfilePageLayout = ({ children }: ProfilePageLayoutProps) => {
       <div className="flex">
         {isNarrowScreen ? null : <OuterIconSidebar />}
         <DragDropContextWrapper>
-          <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full oveflow-hidden">
+          <div className="bg-card text-white min-h-screen flex flex-col no-scroll w-full oveflow-hidden">
             {isNarrowScreen ? <MobileHeader /> : <ProfilePageHeader />}
             <ScrollArea className="overflow-y-auto">
               <div className="flex-1 h-[95vh]">{children}</div>

@@ -124,8 +124,8 @@ const SignInFlow = () => {
 
   return (
     <>
-      {/* Outer container using bg-slate-900 to match your splash page */}
-      <div className="relative flex items-center justify-center min-h-screen w-full bg-slate-900 px-4">
+      {/* Outer container using bg-background to match your splash page */}
+      <div className="relative flex items-center justify-center min-h-screen w-full bg-background px-4">
         {/* SVG decorations (dark, subtle) */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none select-none overflow-hidden">
           {/* Slightly visible shape in the top-left */}
@@ -150,7 +150,7 @@ const SignInFlow = () => {
         {/* Main content container */}
         <div
           className={`relative z-10 flex ${isNarrowScreen ? "flex-col h-auto" : ""} border border-slate-500 
-          ${isNarrowScreen ? "w-[95%]" : "w-3/4"} ${isNarrowScreen ? "min-h-[80vh]" : "h-[80vh]"} bg-white dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
+          ${isNarrowScreen ? "w-[95%]" : "w-3/4"} ${isNarrowScreen ? "min-h-[80vh]" : "h-[80vh]"} bg-slate-800 dark:bg-zinc-800 rounded-lg shadow-lg overflow-hidden`}
         >
           {/* Left Side: Title Card */}
           {!isNarrowScreen && (

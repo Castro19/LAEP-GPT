@@ -27,8 +27,8 @@ const PersonCard = ({
     window.open(url, "_blank");
   };
   return (
-    <BackgroundGradient className="rounded-[22px] max-w-sm sm:p-10 bg-white dark:bg-zinc-900 min-w-[80vw]">
-      <Card className="rounded-[22px] flex flex-col justify-between space-y-4 w-full h-full bg-white dark:bg-zinc-900 p-4">
+    <BackgroundGradient className="rounded-[22px] max-w-sm sm:p-10 bg-slate-800 dark:bg-zinc-900 min-w-[80vw]">
+      <Card className="rounded-[22px] flex flex-col justify-between space-y-4 w-full h-full bg-slate-800 dark:bg-zinc-900 p-4">
         <div className="flex items-center justify-start space-x-4">
           <Avatar>
             <AvatarImage src={image} />

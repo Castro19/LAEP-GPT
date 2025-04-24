@@ -24,7 +24,7 @@ const AboutSection = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center w-full h-full bg-slate-900 min-h-screen relative overflow-hidden">
+    <div className="flex items-center justify-center w-full h-full bg-background min-h-screen relative overflow-hidden">
       {/* Animated Background Elements */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -123,7 +123,7 @@ const AboutSection = () => {
             <motion.div
               key={item}
               whileHover={{ scale: 1.1 }}
-              className="w-24 h-24 bg-slate-800 rounded-xl backdrop-blur-sm bg-opacity-50 border border-slate-700 shadow-lg flex items-center justify-center"
+              className="w-24 h-24 bg-card rounded-xl backdrop-blur-sm bg-opacity-50 border border-slate-700 shadow-lg flex items-center justify-center"
             >
               <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-emerald-400 rounded-full" />
             </motion.div>

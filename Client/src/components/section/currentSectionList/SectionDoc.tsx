@@ -17,7 +17,7 @@ import { FormatPrerequisites } from "@/components/section/reusable/sectionInfo/F
 
 // -----------------------------------------------------------------------------
 // Parent Container: Renders a list of courses (grouped by courseId)
-// The overall page background is assumed to be bg-slate-800 in dark mode.
+// The overall page background is assumed to be bg-card in dark mode.
 // -----------------------------------------------------------------------------
 type CourseCatalogProps = {
   courses: CourseInfo[];
@@ -245,7 +245,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
     <Collapsible defaultOpen={false} className="group">
       <CollapsibleTrigger asChild>
         <div
-          className="rounded-lg bg-slate-800 px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer pt-5 
+          className="rounded-lg bg-card px-4 py-2 shadow-lg hover:shadow-indigo-500/10 transition-shadow cursor-pointer pt-5 
           group-data-[state=open]:rounded-b-none mt-2"
         >
           <div className="flex items-center justify-between">
@@ -313,7 +313,7 @@ const ProfessorGroupComponent: React.FC<ProfessorGroupProps> = ({ group }) => {
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="bg-slate-800 p-4 space-y-4 rounded-b-lg">
+        <div className="bg-card p-4 space-y-4 rounded-b-lg">
           {/* Render Paired Sections */}
           {pairedCards.length > 0 && (
             <div className="flex flex-col space-y-4">
@@ -366,7 +366,7 @@ type SectionCardProps = {
 
 const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className=" rounded-lg p-3 bg-white dark:bg-gray-900">
+    <div className=" rounded-lg p-3 bg-slate-800 dark:bg-gray-900">
       <SectionHeader section={section} />
       <div className="flex flex-col md:flex-row gap-4 flex-wrap">
         <div className="flex-1">
@@ -382,7 +382,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
 
 const LectureSectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-white dark:bg-gray-900 dark:bg-opacity-30">
+    <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-slate-800 dark:bg-gray-900 dark:bg-opacity-30">
       <SectionHeader section={section} />
       <SectionEnrollment section={section} />
       <div className="flex flex-row gap-2">

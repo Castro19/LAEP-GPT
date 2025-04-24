@@ -149,7 +149,7 @@ export function SidebarFlowchart() {
     <Sidebar
       collapsible="icon-offcanvas"
       className={`
-      flex flex-col h-full ml-16 pl-2 dark:bg-slate-900
+      flex flex-col h-full ml-16 pl-2 dark:bg-background
       transition-all duration-300
       ${open ? "opacity-100" : "opacity-0 -translate-x-16"}
     `}
@@ -214,7 +214,7 @@ export function SidebarFlowchart() {
         </ScrollArea>
         <div className="border-b border-sidebar-border"></div>
 
-        <div className="sticky bottom-0 bg-white dark:bg-gray-800">
+        <div className="sticky bottom-0 bg-slate-800 dark:bg-gray-800">
           <CourseSearchbar />
         </div>
       </SidebarContent>

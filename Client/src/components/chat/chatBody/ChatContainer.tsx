@@ -57,8 +57,8 @@ const ChatContainer = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-900">
-      <div className={`flex flex-col ${chatContainerHeight} bg-slate-900`}>
+    <div className="flex flex-col h-screen bg-background">
+      <div className={`flex flex-col ${chatContainerHeight} bg-background`}>
         {/* Only one flex child grows: our message list */}
         {isNewChat && !loading[currentChatId ?? ""] ? (
           <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />

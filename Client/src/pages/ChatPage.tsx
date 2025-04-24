@@ -132,7 +132,7 @@ const ChatPage = () => {
         ) : (
           <>
             {isNarrowScreen ? null : <OuterIconSidebar />}
-            <SidebarProvider className="dark:bg-slate-900">
+            <SidebarProvider className="dark:bg-background">
               <ChatPageLayout>
                 <ChatContainer />
               </ChatPageLayout>
@@ -146,7 +146,7 @@ const ChatPage = () => {
 
 const MobileChatPage = () => {
   return (
-    <SidebarProvider className="dark:bg-slate-900">
+    <SidebarProvider className="dark:bg-background">
       <MobileChatPageLayout>
         <MobileChatContainer />
       </MobileChatPageLayout>

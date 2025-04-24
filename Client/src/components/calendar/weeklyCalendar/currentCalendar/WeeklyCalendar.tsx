@@ -169,8 +169,8 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         border-slate-200
         dark:border-slate-700
         rounded-md
-        bg-white
-        dark:bg-slate-900
+        bg-slate-800
+        dark:bg-background
         text-slate-900
         dark:text-slate-100
         custom-tr-height
@@ -197,7 +197,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
               return days[args.date.getDay()];
             }}
-            dayHeaderClassNames="bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center"
+            dayHeaderClassNames="bg-gray-100 dark:bg-card border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center"
             slotLabelFormat={{
               hour: "numeric",
               minute: "2-digit",

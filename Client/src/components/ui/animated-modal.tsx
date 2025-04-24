@@ -131,7 +131,7 @@ export const ModalBody = ({
           <motion.div
             ref={modalRef}
             className={cn(
-              "min-h-[50%] max-h-[90%] md:max-w-[60%] bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 md:rounded-2xl relative z-50 flex flex-col flex-1 overflow-hidden",
+              "min-h-[50%] max-h-[90%] md:max-w-[60%] bg-slate-800 dark:bg-neutral-950 border border-transparent dark:border-neutral-800 md:rounded-2xl relative z-50 flex flex-col flex-1 overflow-hidden",
               className
             )}
             initial={{
@@ -308,13 +308,13 @@ export const CustomModalBody = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-slate-900/70" // darker semi-transparent overlay
+            className="absolute inset-0 bg-background/70" // darker semi-transparent overlay
           />
 
           <motion.div
             ref={modalRef}
             className={cn(
-              "min-h-[50%] max-h-[90%] md:max-w-[60%] bg-slate-900 dark:bg-neutral-950 border dark:border-neutral-800 md:rounded-2xl relative z-[1000] flex flex-col overflow-hidden",
+              "min-h-[50%] max-h-[90%] md:max-w-[60%] bg-background dark:bg-neutral-950 border dark:border-neutral-800 md:rounded-2xl relative z-[1000] flex flex-col overflow-hidden",
               className
             )}
             initial={{

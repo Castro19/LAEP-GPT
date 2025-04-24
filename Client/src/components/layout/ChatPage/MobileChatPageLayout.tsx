@@ -8,7 +8,7 @@ const ChatPageLayout = ({ children }: { children: React.ReactNode }) => {
     <>
       <ChatPageSidebar />
       <div
-        className="bg-slate-800 text-white min-h-screen flex flex-col w-full overflow-hidden overscroll-none touch-none"
+        className="bg-card text-white min-h-screen flex flex-col w-full overflow-hidden overscroll-none touch-none"
         style={{
           // Prevent default scrolling on the body
           position: "fixed",

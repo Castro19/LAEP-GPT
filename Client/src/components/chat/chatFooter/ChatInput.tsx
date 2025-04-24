@@ -154,7 +154,7 @@ const ChatInput = ({
 
   return (
     <div
-      className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700"
+      className="w-full mt-4 p-5 bg-background sticky bottom-0 border-t dark:border-slate-700"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {lockedChat ? (
@@ -192,7 +192,7 @@ const ChatInput = ({
             />
             {currentChatId && loading[currentChatId] ? (
               <Button
-                className="dark:bg-transparent hover:bg-gray-800 dark:hover:bg-slate-800 focus:ring-2 focus:ring-red-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base text-white"
+                className="dark:bg-transparent hover:bg-gray-800 dark:hover:bg-card focus:ring-2 focus:ring-red-400 focus:outline-none transition-all duration-300 ease-in-out px-4 py-2 text-base text-white"
                 type="submit"
                 variant="outline"
                 ref={sendButtonRef}

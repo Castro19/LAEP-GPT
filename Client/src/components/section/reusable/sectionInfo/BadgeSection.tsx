@@ -41,7 +41,7 @@ const BadgeSection: React.FC<BadgeProps> = ({
     variantStyles = "text-[#FACC15] bg-[#334155] px-3 py-1";
   } else {
     variantStyles =
-      "bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-gray-300 p-1";
+      "bg-gray-200 text-gray-800 dark:bg-card dark:text-gray-300 p-1";
   }
 
   return (

@@ -7,7 +7,7 @@ const ChatPageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <ChatPageSidebar />
-      <div className="bg-slate-800 text-white min-h-screen flex flex-col no-scroll w-full">
+      <div className="bg-card text-white min-h-screen flex flex-col no-scroll w-full">
         <ChatPageHeader />
         <div className="flex-1">{children}</div>
       </div>

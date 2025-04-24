@@ -15,7 +15,7 @@ const MobileSectionPageLayout = ({
       className="
         flex flex-col 
         min-h-screen 
-        bg-slate-900 
+        bg-background 
         text-white 
         w-full 
         ml-0 
