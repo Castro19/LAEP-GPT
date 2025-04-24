@@ -89,7 +89,10 @@ export const fetchAllFlowcharts = async (
   try {
     // Only return the flowchartId: _id and the name
     const result = await flowchartCollection
-      .find({ userId }, { projection: { _id: 1, name: 1, primaryOption: 1 } })
+      .find(
+        { userId },
+        { projection: { _id: 1, name: 1, primaryOption: 1, updatedAt: 1 } }
+      )
       .toArray();
     return result;
   } catch (error) {

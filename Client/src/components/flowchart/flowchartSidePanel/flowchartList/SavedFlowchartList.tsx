@@ -200,7 +200,7 @@ const FlowchartItem = ({
             {flowchart.name}
           </h3>
           <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
-            {new Date().toLocaleString(undefined, {
+            {new Date(flowchart.updatedAt).toLocaleString(undefined, {
               month: "2-digit",
               day: "2-digit",
               hour: "2-digit",

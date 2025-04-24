@@ -88,7 +88,10 @@ export const fetchFlowchart = async (
     };
     return {
       flowchartData: result.flowchartData,
-      flowchartMeta: flowchartMeta,
+      flowchartMeta: {
+        ...flowchartMeta,
+        updatedAt: result.updatedAt,
+      },
     };
   } catch (error) {
     throw new Error(
@@ -115,6 +118,7 @@ export const fetchAllFlowcharts = async (
         flowchartId: primaryFlowchart._id.toString(),
         name: primaryFlowchart.name,
         primaryOption: primaryFlowchart.primaryOption,
+        updatedAt: primaryFlowchart.updatedAt,
       };
       flowchartList = [primaryFlowchartFormatted].concat(
         result
@@ -124,6 +128,7 @@ export const fetchAllFlowcharts = async (
               flowchartId: flowchart._id.toString(),
               name: flowchart.name,
               primaryOption: flowchart.primaryOption,
+              updatedAt: flowchart.updatedAt,
             };
           })
       );
@@ -133,6 +138,7 @@ export const fetchAllFlowcharts = async (
           flowchartId: flowchart._id.toString(),
           name: flowchart.name,
           primaryOption: flowchart.primaryOption,
+          updatedAt: flowchart.updatedAt,
         };
       });
     }

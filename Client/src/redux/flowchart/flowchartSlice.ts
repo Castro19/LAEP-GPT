@@ -304,11 +304,22 @@ const flowchartSlice = createSlice({
       .addCase(postFlowchartInDB.fulfilled, (state, action) => {
         state.loading.setFlowchart = false;
         if (!state.flowchartList) {
-          state.flowchartList = [action.payload];
+          state.flowchartList = [
+            {
+              ...action.payload,
+              updatedAt: new Date(),
+            },
+          ];
         } else {
-          state.flowchartList.push(action.payload);
+          state.flowchartList.push({
+            ...action.payload,
+            updatedAt: new Date(),
+          });
         }
-        state.currentFlowchart = action.payload;
+        state.currentFlowchart = {
+          ...action.payload,
+          updatedAt: new Date(),
+        };
       })
       .addCase(postFlowchartInDB.rejected, (state, action) => {
         state.loading.setFlowchart = false;
@@ -377,6 +388,7 @@ const flowchartSlice = createSlice({
             flowchartId,
             name,
             primaryOption,
+            updatedAt: new Date(),
           };
         }
         if (state.flowchartList) {

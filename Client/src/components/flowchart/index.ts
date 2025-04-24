@@ -7,8 +7,6 @@ export { default as FlowchartUnitCounts } from "./currentFlowchart/FlowchartUnit
 // Flowchart Creation Components
 export { default as FlowchartOptions } from "./createFlowchart/FlowChartOptions";
 export { default as ProgressBar } from "./createFlowchart/ProgressBar";
-// Flowchart Log Components
-export { default as FlowchartLog } from "./flowchartSidePanel/flowchartList/FlowchartLog";
 export { default as FlowchartLogOptions } from "./flowchartSidePanel/flowchartList/FlowchartLogOptions";
 
 // Flowchart SidePanel Components
