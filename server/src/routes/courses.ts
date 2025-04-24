@@ -71,10 +71,13 @@ router.get("/course", async (req, res) => {
 router.get("/ge/areas", async (req, res) => {
   try {
     const { completedCourseIds, catalogYear } = req.query as {
-      completedCourseIds: string[];
+      completedCourseIds: string | undefined;
       catalogYear: string;
     };
-    const result = await getGeAreas(catalogYear, completedCourseIds);
+    const result = await getGeAreas(
+      catalogYear,
+      completedCourseIds?.split(",") || []
+    );
     res.status(200).json(result);
   } catch (error) {
     if (environment === "dev") {

@@ -74,6 +74,12 @@ const GeDropdown = memo(() => {
 
   // Check if completedCourseIds have changed since last refresh
   useEffect(() => {
+    // If lastRefreshedCourseIds is empty but completedCourseIds has values, we need to refresh
+    if (lastRefreshedCourseIds.length === 0 && completedCourseIds.length > 0) {
+      setNeedsRefresh(true);
+      return;
+    }
+
     if (lastRefreshedCourseIds.length > 0) {
       // Check if the arrays are different
       const hasChanged =
