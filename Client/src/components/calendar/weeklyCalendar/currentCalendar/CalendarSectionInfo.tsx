@@ -95,7 +95,7 @@ const CalendarSectionInfo = () => {
                     `https://polyratings.dev/professor/${instructorRatings.id}`,
                     "_blank"
                   )
-                }
+                } 
               >
                 (View Ratings)
               </Button>
