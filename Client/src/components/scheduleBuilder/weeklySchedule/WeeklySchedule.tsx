@@ -58,7 +58,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   const [calendarHeight, setCalendarHeight] = useState(height);
   const [containerHeight, setContainerHeight] = useState(0);
   const [asyncCoursesHeight, setAsyncCoursesHeight] = useState(0);
-
+  const [invisibleEvents, setInvisibleEvents] = useState<number[]>([]);
   // Update window height on resize
   useEffect(() => {
     const handleResize = () => {
@@ -308,8 +308,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     }
   }
 
-  // 3) Combine
-  const finalEvents = [...backgroundEvents, ...events];
+  // 3) Combine background events and normal events
+  // Instead of using state for finalEvents, compute it directly
+  const filteredEvents = [...backgroundEvents, ...events].filter(
+    (e) => !invisibleEvents.includes(e.classNumber)
+  );
 
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
@@ -320,6 +323,12 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       })
     );
   };
+
+  const handleEyeClick = (event: any) => {
+    const classNumber = event.event.extendedProps.classNumber;
+    setInvisibleEvents((prev) => [...prev, classNumber]);
+  };
+
   // Handle AsyncCourses height changes
   const handleAsyncCoursesHeightChange = (height: number) => {
     setAsyncCoursesHeight(height);
@@ -375,7 +384,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             slotMaxTime="21:00:00"
             slotDuration="01:00:00"
             hiddenDays={[0, 6]}
-            events={finalEvents}
+            events={filteredEvents}
             contentHeight={isProfilePage ? "80vh" : calendarHeight}
             expandRows={true}
             titleFormat={{}} // (Empty: no title text on top)
@@ -408,6 +417,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
                 <ScheduleTimeSlots
                   event={arg.event as unknown as ScheduleClassSection}
                   onClick={() => handleEventClick(arg)}
+                  onEyeClick={() => handleEyeClick(arg)}
                 />
               );
             }}
