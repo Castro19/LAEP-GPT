@@ -12,6 +12,7 @@ import useDeviceType from "@/hooks/useDeviceType";
 const SavedSchedules = ({
   onSwitchTab,
 }: {
+  // eslint-disable-next-line no-unused-vars
   onSwitchTab?: (tab: string) => void;
 }) => {
   const { scheduleList, primaryScheduleId } = useAppSelector(
@@ -91,6 +92,7 @@ const ScheduleItem = ({
 }: {
   schedule: ScheduleListItem;
   isPrimary: boolean;
+  // eslint-disable-next-line no-unused-vars
   onSwitchTab?: (tab: string) => void;
 }) => {
   const [name, setName] = useState(schedule.name);

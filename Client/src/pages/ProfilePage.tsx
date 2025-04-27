@@ -140,7 +140,7 @@ function ProfilePage() {
     };
 
     fetchSchedules();
-  }, [dispatch]);
+  }, [dispatch, currentScheduleTerm]);
 
   useEffect(() => {
     if (primaryScheduleId) {

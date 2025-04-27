@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   forwardRef,
+  useEffect,
 } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "./button";
@@ -78,6 +79,45 @@ export const CustomModalTriggerButton = forwardRef<
   }
 >(({ className, children, color, onClick }, ref) => {
   const { setOpen } = useModal();
+  const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
+  const HOLD_DURATION = 500; // 500ms hold duration
+
+  // Cleanup effect to clear any pending timers when component unmounts
+  useEffect(() => {
+    return () => {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+      }
+    };
+  }, [holdTimer]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    // Start a timer when touch begins
+    const timer = setTimeout(() => {
+      setOpen(true);
+      onClick?.();
+    }, HOLD_DURATION);
+    setHoldTimer(timer);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    // Clear the timer if touch ends before the hold duration
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      setHoldTimer(null);
+    }
+  };
+
+  const handleTouchCancel = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    // Clear the timer if touch is cancelled
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      setHoldTimer(null);
+    }
+  };
 
   return (
     <div
@@ -88,14 +128,9 @@ export const CustomModalTriggerButton = forwardRef<
         setOpen(true);
         onClick?.();
       }}
-      onTouchStart={(e) => {
-        e.stopPropagation();
-      }}
-      onTouchEnd={(e) => {
-        e.stopPropagation();
-        setOpen(true);
-        onClick?.();
-      }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
     >
       {children}
     </div>

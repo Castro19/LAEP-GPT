@@ -25,6 +25,7 @@ import { SelectedSection } from "@polylink/shared/types";
 
 interface AsyncCoursesProps {
   sections: SelectedSection[];
+  // eslint-disable-next-line no-unused-vars
   onHeightChange: (height: number) => void;
 }
 
