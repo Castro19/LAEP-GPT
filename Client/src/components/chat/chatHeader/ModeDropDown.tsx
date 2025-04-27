@@ -112,7 +112,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
             {currentModel.title}
           </NavigationMenuTrigger>
           <NavigationMenuContent className="w-[80vw]">
-            <ul className="grid p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] lg:auto-rows-min bg-slate-800 dark:bg-gray-900">
+            <ul className="grid p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] lg:auto-rows-min bg-card dark:bg-gray-900">
               <li className="row-span-1 mb-3 mr-3 border-b pb-3 lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
                 <div className="text-lg font-medium">{currentModel.title}</div>
                 <p className="text-sm leading-tight text-muted-foreground">

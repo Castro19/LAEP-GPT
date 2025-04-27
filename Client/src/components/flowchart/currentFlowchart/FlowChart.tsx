@@ -145,7 +145,7 @@ const Flowchart = ({
           <ScrollBar
             orientation="horizontal"
             data-state="visible"
-            className="bg-slate-800 h-4"
+            className="bg-card h-4"
           />
         </div>
       </ScrollArea>

@@ -366,7 +366,7 @@ type SectionCardProps = {
 
 const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className=" rounded-lg p-3 bg-slate-800 dark:bg-gray-900">
+    <div className=" rounded-lg p-3 bg-card dark:bg-gray-900">
       <SectionHeader section={section} />
       <div className="flex flex-col md:flex-row gap-4 flex-wrap">
         <div className="flex-1">
@@ -382,7 +382,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ section }) => {
 
 const LectureSectionCard: React.FC<SectionCardProps> = ({ section }) => {
   return (
-    <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-slate-800 dark:bg-gray-900 dark:bg-opacity-30">
+    <div className="border border-gray-300 dark:border-slate-900 rounded-lg p-3 bg-card dark:bg-gray-900 dark:bg-opacity-30">
       <SectionHeader section={section} />
       <SectionEnrollment section={section} />
       <div className="flex flex-row gap-2">

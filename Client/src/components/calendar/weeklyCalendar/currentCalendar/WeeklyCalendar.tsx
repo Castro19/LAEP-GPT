@@ -169,7 +169,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         border-slate-200
         dark:border-slate-700
         rounded-md
-        bg-slate-800
+        bg-card
         dark:bg-background
         text-slate-900
         dark:text-slate-100

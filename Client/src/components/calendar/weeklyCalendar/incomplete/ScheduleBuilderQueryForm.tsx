@@ -238,7 +238,7 @@ const ScheduleBuilderQueryForm = () => {
         <div className="border-t border-gray-200 p-4" />
 
         {/* Sticky footer with Reset and Build */}
-        <div className="sticky bottom-0 mx-6 bg-slate-800/95 backdrop-blur flex gap-2 shadow-lg">
+        <div className="sticky bottom-0 mx-6 bg-card/95 backdrop-blur flex gap-2 shadow-lg">
           {/* Reset button */}
           <Button
             type="button"

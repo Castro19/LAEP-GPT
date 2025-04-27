@@ -63,10 +63,10 @@ export default function Terms() {
         </div>
 
         {/* Sticky Checkbox Section */}
-        <div className="sticky bottom-0 bg-slate-800 dark:bg-gray-900 pt-4">
+        <div className="sticky bottom-0 bg-card dark:bg-gray-900 pt-4">
           <motion.div
             whileHover={{ scale: 1.02 }}
-            className="flex items-center justify-center space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 transition-colors bg-slate-800 dark:bg-gray-900"
+            className="flex items-center justify-center space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 transition-colors bg-card dark:bg-gray-900"
           >
             <Checkbox
               id="terms"

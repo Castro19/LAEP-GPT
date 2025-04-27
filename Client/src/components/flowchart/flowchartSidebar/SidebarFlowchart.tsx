@@ -214,7 +214,7 @@ export function SidebarFlowchart() {
         </ScrollArea>
         <div className="border-b border-sidebar-border"></div>
 
-        <div className="sticky bottom-0 bg-slate-800 dark:bg-gray-800">
+        <div className="sticky bottom-0 bg-card dark:bg-gray-800">
           <CourseSearchbar />
         </div>
       </SidebarContent>

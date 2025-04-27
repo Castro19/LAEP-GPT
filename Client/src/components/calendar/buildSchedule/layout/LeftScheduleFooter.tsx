@@ -15,7 +15,7 @@ const LeftSectionFooter = ({
     <>
       <div className="border-t border-gray-200" />
 
-      <div className="sticky bottom-0 mx-4 bg-slate-800/95 backdrop-blur flex gap-2 shadow-lg p-4 h-[20%]">
+      <div className="sticky bottom-0 mx-4 bg-card/95 backdrop-blur flex gap-2 shadow-lg p-4 h-[20%]">
         {/* Apply Filters button */}
         <Button
           type="submit"
