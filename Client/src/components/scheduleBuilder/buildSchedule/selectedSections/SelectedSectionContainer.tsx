@@ -20,6 +20,7 @@ const SelectedSectionContainer = ({
   onSwitchTab,
 }: {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
+  // eslint-disable-next-line no-unused-vars
   onSwitchTab?: (tab: string) => void;
 }) => {
   const { fetchSchedulesLoading } = useAppSelector((state) => state.schedule);
