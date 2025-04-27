@@ -59,7 +59,7 @@ const FlowchartLog = ({ flowchart, onSelectFlowchart }: FlowchartLogProps) => {
             flowchart.primaryOption
               ? "border-yellow-600 border-2" // Primary flowchart style
               : "border-gray-600"
-          } bg-card rounded-md transition duration-200 ease-in-out transform hover:bg-slate-700 hover:scale-105 ${
+          } bg-card rounded-md transition duration-200 ease-in-out transform hover:bg-buttonHover hover:scale-105 ${
             flowchartId === flowchart.flowchartId ? "bg-slate-600" : ""
           }`}
         >

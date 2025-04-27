@@ -62,7 +62,7 @@ const SectionsChosen = () => {
                   <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">
                     {courseId}
                   </h2>
-                  <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+                  <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-buttonHover text-gray-600 dark:text-gray-300">
                     {Object.values(professorGroups).flat().length} sections
                   </span>
                 </div>
@@ -162,7 +162,7 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
         {/* Days - Bubble Style */}
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500 dark:text-gray-400">Days</span>
-          <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+          <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-buttonHover text-gray-600 dark:text-gray-300">
             {meetings?.[0]?.days || "N/A"}
           </span>
         </div>
@@ -175,13 +175,13 @@ const SectionCard: React.FC<{ section: SelectedSection }> = ({ section }) => {
               Time
             </span>
             <div className="flex items-center gap-1">
-              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-buttonHover text-gray-600 dark:text-gray-300">
                 {startTime}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 to
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300">
+              <span className="text-xs px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-buttonHover text-gray-600 dark:text-gray-300">
                 {endTime}
               </span>
             </div>

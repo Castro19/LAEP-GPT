@@ -44,7 +44,7 @@ const ErrorPage = () => {
             <Button
               variant="default"
               onClick={() => navigate("/chat")}
-              className="w-full lg:w-[20rem] hover:bg-slate-700 text-xl lg:text-2xl py-8 lg:py-10 px-12"
+              className="w-full lg:w-[20rem] hover:bg-buttonHover text-xl lg:text-2xl py-8 lg:py-10 px-12"
               aria-label="Go to home page"
             >
               {ERROR_TEXT.homeButtonText}

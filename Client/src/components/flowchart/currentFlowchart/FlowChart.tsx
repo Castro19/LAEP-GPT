@@ -116,7 +116,7 @@ const Flowchart = ({
             onClick={() => scrollToYear(index)}
             className={`cursor-pointer ${
               selectedYear === index
-                ? "dark:bg-slate-700 text-white"
+                ? "dark:bg-buttonHover text-white"
                 : "text-white hover:dark:bg-card"
             } ${isNarrowScreen ? "text-xs size-8 px-6" : "text-lg"}`}
           >

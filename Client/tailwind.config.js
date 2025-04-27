@@ -49,6 +49,8 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: "hsl(var(--card))",
+        test: "hsl(var(--test))",
+        buttonHover: "hsl(var(--button-hover))",
         primary: "hsl(var(--primary))",
         border: "hsl(var(--border))",
         muted: "hsl(var(--muted))",
@@ -102,9 +104,11 @@ function addVariablesForColors({ addBase, theme }) {
       "--muted": "120 120 120",
     },
     ".dark": {
-      "--background": "222.2, 47.4%, 11.2%",          
+      "--background": "222.2, 47.4%, 11.2%",    //changed--> originally bg-slate-900    
       "--foreground": "255 255 255",
-      "--card": "212, 18%, 33%",         //testing with this one        
+      "--card": "212, 18%, 33%",         //changed--> originally bg-slate-800 
+      //"--test": "350, 100%, 88% ",
+      "--button-hover": "215.3,25%,26.7% ",//changed--> originally bg-slate-700 
       "--primary": "34 197 94",
       "--border": "55 65 81",
       "--muted": "148 163 184",

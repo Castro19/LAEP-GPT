@@ -70,19 +70,19 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({ courses }) => {
             </h2>
 
             {/* Courses Count */}
-            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-buttonHover bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium">
               {courses.length} {courses.length > 1 ? "Courses" : "Course"}
             </span>
 
             {/* Sections Count */}
-            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-buttonHover bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium">
               {totalSections} {totalSections > 1 ? "Sections" : "Section"}
             </span>
           </div>
 
           {/* Expand / Collapse All Button */}
           <button
-            className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium hover:bg-opacity-60 transition w-full sm:w-auto"
+            className="px-2 sm:px-3 py-1 rounded-full bg-buttonHover bg-opacity-50 text-gray-300 text-sm sm:text-lg font-medium hover:bg-opacity-60 transition w-full sm:w-auto"
             onClick={toggleAll}
           >
             {Object.values(expandedCourses).every((state) => !state)
@@ -142,7 +142,7 @@ const CourseSection: React.FC<CourseSectionProps> = ({
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span className="px-2 sm:px-4 py-1 sm:py-2 rounded-full bg-slate-700 bg-opacity-20 text-gray-200 font-semibold text-base sm:text-xl">
+            <span className="px-2 sm:px-4 py-1 sm:py-2 rounded-full bg-buttonHover bg-opacity-20 text-gray-200 font-semibold text-base sm:text-xl">
               <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 {course.subject} {course.catalogNumber}
               </span>
@@ -153,11 +153,11 @@ const CourseSection: React.FC<CourseSectionProps> = ({
             </h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-sm sm:text-lg text-gray-400">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-buttonHover bg-opacity-20 font-semibold text-sm sm:text-lg text-gray-400">
               {course.units} Units
             </span>
 
-            <span className="px-2 sm:px-3 py-1 rounded-full bg-slate-700 bg-opacity-20 font-semibold text-sm sm:text-lg text-gray-400">
+            <span className="px-2 sm:px-3 py-1 rounded-full bg-buttonHover bg-opacity-20 font-semibold text-sm sm:text-lg text-gray-400">
               {length} {length > 1 ? "Sections" : "Section"}
             </span>
           </div>

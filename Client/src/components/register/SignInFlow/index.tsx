@@ -178,7 +178,7 @@ const SignInFlow = () => {
                 {currentStepIndex > 0 && (
                   <button
                     onClick={handlePrevious}
-                    className={`flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
+                    className={`flex items-center px-4 py-2 bg-buttonHover hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
                       isNarrowScreen ? "text-sm" : ""
                     }`}
                   >
@@ -194,7 +194,7 @@ const SignInFlow = () => {
                   isTermsAccepted ? (
                     <button
                       onClick={handleNext}
-                      className={`flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
+                      className={`flex items-center px-4 py-2 bg-buttonHover hover:bg-slate-600 text-white rounded-md border border-slate-600/50 transition-all duration-200 ${
                         isNarrowScreen ? "text-sm" : ""
                       }`}
                     >
