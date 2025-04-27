@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   forwardRef,
+  useEffect,
 } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "./button";
@@ -80,6 +81,15 @@ export const CustomModalTriggerButton = forwardRef<
   const { setOpen } = useModal();
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   const HOLD_DURATION = 500; // 500ms hold duration
+
+  // Cleanup effect to clear any pending timers when component unmounts
+  useEffect(() => {
+    return () => {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+      }
+    };
+  }, [holdTimer]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     e.stopPropagation();
