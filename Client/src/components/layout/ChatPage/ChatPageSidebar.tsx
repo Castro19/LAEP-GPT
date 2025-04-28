@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { logActions, useAppDispatch, useAppSelector } from "@/redux";
 
 // Hooks
@@ -28,27 +28,64 @@ import { handleModeSelection } from "@/components/chat/helpers/handleModeSelecti
 export function ChatPageSidebar() {
   const isNarrowScreen = useIsNarrowScreen();
   const deviceType = useDeviceType();
-
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.message.error);
-
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
 
+  // Track initial fetch
   const hasFetchedLogs = useRef(false);
+  // Ref for the scroll area viewport
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  // Track the loading status to prevent duplicate requests
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   const { open, setOpenMobile } = useSidebar();
 
   const { currentChatId, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
 
+  // Get log state for pagination
+  const { currentPage, hasMoreLogs, isLoading, logList } = useAppSelector(
+    (state) => state.log
+  );
+
+  // Update local loading state when Redux loading state changes
+  useEffect(() => {
+    if (!isLoading) {
+      setIsLoadingMore(false);
+    }
+  }, [isLoading]);
+
+  // Handle scroll event to load more logs
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (!hasMoreLogs || isLoading || isLoadingMore) return;
+
+    const target = e.target as HTMLDivElement;
+    // If we're near the bottom (within 200px), load more logs
+    const isNearBottom =
+      target.scrollHeight - target.scrollTop - target.clientHeight < 200;
+
+    if (isNearBottom) {
+      setIsLoadingMore(true);
+      // Use setTimeout to prevent multiple rapid requests
+      setTimeout(() => {
+        dispatch(logActions.fetchLogs(currentPage + 1));
+      }, 200);
+    }
+  };
+
+  // Initial fetch
   useEffect(() => {
     if (hasFetchedLogs.current) return;
     hasFetchedLogs.current = true;
 
     // Only fetch logs if userId is not null (user is signed in)
     if (userId) {
-      dispatch(logActions.fetchLogs());
+      // Reset pagination state before fetching first page
+      dispatch(logActions.resetLogPagination());
+      dispatch(logActions.fetchLogs(1)); // Fetch first page
     }
   }, [dispatch, userId]);
 
@@ -90,8 +127,11 @@ export function ChatPageSidebar() {
             </div>
           )}
         </SidebarHeader>
-        <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
-          <ScrollArea className="h-full">
+        <SidebarContent
+          className="border-b border-sidebar-border overflow-x-hidden"
+          onScroll={handleScroll}
+        >
+          <ScrollArea className="h-full" ref={scrollAreaRef}>
             <SidebarGroup>
               <SidebarGroupLabel>Assistants</SidebarGroupLabel>
               <SidebarMenu>
@@ -102,6 +142,23 @@ export function ChatPageSidebar() {
               <SidebarMenu>
                 <SidebarGroupLabel>Chat Logs</SidebarGroupLabel>
                 <ChatLogList />
+                {/* Loading indicator at the bottom */}
+                {hasMoreLogs && logList.length > 0 && (
+                  <div className="py-4 w-full flex items-center justify-center">
+                    {isLoading ? (
+                      <div className="text-sm text-gray-500">
+                        Loading logs...
+                      </div>
+                    ) : (
+                      <div className="h-4 w-full"></div>
+                    )}
+                  </div>
+                )}
+                {!hasMoreLogs && logList.length > 0 && !isLoading && (
+                  <div className="text-sm text-gray-500 py-2 text-center">
+                    End of logs
+                  </div>
+                )}
               </SidebarMenu>
             </SidebarGroup>
           </ScrollArea>

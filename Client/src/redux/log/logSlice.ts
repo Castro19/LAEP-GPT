@@ -9,7 +9,7 @@ import { LogData, LogSliceType } from "@polylink/shared/types";
 import { RootState } from "../store";
 import { environment } from "@/helpers/getEnvironmentVars";
 
-const LOGS_PER_PAGE = 3;
+const LOGS_PER_PAGE = 2;
 
 interface PaginatedLogSliceState extends LogSliceType {
   isLoading: boolean;
