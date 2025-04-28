@@ -25,6 +25,7 @@ import { AssistantType } from "@polylink/shared/types";
 import { useNavigate } from "react-router-dom";
 import AssistantSelector from "@/components/chat/chatSideBar/AssistantSelector";
 import { handleModeSelection } from "@/components/chat/helpers/handleModeSelection";
+import { Button } from "@/components/ui/button";
 
 export function ChatPageSidebar() {
   const isNarrowScreen = useIsNarrowScreen();
@@ -146,7 +147,22 @@ export function ChatPageSidebar() {
                         <Loader2 className="h-5 w-5 animate-spin" />
                       </div>
                     ) : hasMoreLogs ? (
-                      <div className="h-8 w-full"></div>
+                      <div className="h-8 w-full flex flex-col items-center justify-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            dispatch(logActions.fetchLogs(currentPage + 1))
+                          }
+                          disabled={isLoading}
+                          className="mt-2"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : null}
+                          Load More
+                        </Button>
+                      </div>
                     ) : (
                       <div className="text-sm text-gray-500 py-2 text-center"></div>
                     )}
