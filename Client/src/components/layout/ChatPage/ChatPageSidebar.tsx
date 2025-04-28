@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { logActions, useAppDispatch, useAppSelector } from "@/redux";
 
 // Hooks
@@ -7,6 +7,7 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 // My components
 import ChatLogList from "@/components/chatLog/ChatLogList";
 import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
+import { Loader2 } from "lucide-react";
 
 // UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -142,14 +143,12 @@ export function ChatPageSidebar() {
                   >
                     {isLoading ? (
                       <div className="text-sm text-gray-500">
-                        Loading logs...
+                        <Loader2 className="h-5 w-5 animate-spin" />
                       </div>
                     ) : hasMoreLogs ? (
                       <div className="h-8 w-full"></div>
                     ) : (
-                      <div className="text-sm text-gray-500 py-2 text-center">
-                        End of logs
-                      </div>
+                      <div className="text-sm text-gray-500 py-2 text-center"></div>
                     )}
                   </div>
                 )}
