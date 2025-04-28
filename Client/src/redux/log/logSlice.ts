@@ -9,7 +9,7 @@ import { LogData, LogSliceType } from "@polylink/shared/types";
 import { RootState } from "../store";
 import { environment } from "@/helpers/getEnvironmentVars";
 
-const LOGS_PER_PAGE = 2;
+const LOGS_PER_PAGE = 10;
 
 interface PaginatedLogSliceState extends LogSliceType {
   isLoading: boolean;
@@ -17,14 +17,10 @@ interface PaginatedLogSliceState extends LogSliceType {
   hasMoreLogs: boolean;
 }
 
-// Thunk to load a specific page of logs (limit is hardcoded to 20)
+// Thunk to load a specific page of logs
 export const fetchLogs = createAsyncThunk(
   "log/fetchLogs",
-  async (page: number, { getState, rejectWithValue }) => {
-    const { isLoading } = (getState() as RootState).log;
-    if (isLoading && page > 1) {
-      return rejectWithValue("Already loading logs.");
-    }
+  async (page: number, { rejectWithValue }) => {
     try {
       const fetchedLogs = await fetchLogsByPage(page, LOGS_PER_PAGE);
       return { logs: fetchedLogs, page };

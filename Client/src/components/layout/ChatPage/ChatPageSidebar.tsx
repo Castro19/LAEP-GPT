@@ -35,10 +35,7 @@ export function ChatPageSidebar() {
 
   // Track initial fetch
   const hasFetchedLogs = useRef(false);
-  // Ref for the scroll area viewport
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  // Track the loading status to prevent duplicate requests
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
 
   const { open, setOpenMobile } = useSidebar();
 
@@ -51,30 +48,28 @@ export function ChatPageSidebar() {
     (state) => state.log
   );
 
-  // Update local loading state when Redux loading state changes
+  // Setup intersection observer for infinite scrolling
   useEffect(() => {
-    if (!isLoading) {
-      setIsLoadingMore(false);
-    }
-  }, [isLoading]);
+    if (!loadMoreTriggerRef.current || !userId || !hasMoreLogs) return;
 
-  // Handle scroll event to load more logs
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (!hasMoreLogs || isLoading || isLoadingMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasMoreLogs && !isLoading) {
+          dispatch(logActions.fetchLogs(currentPage + 1));
+        }
+      },
+      { rootMargin: "100px 0px", threshold: 0.1 }
+    );
 
-    const target = e.target as HTMLDivElement;
-    // If we're near the bottom (within 200px), load more logs
-    const isNearBottom =
-      target.scrollHeight - target.scrollTop - target.clientHeight < 200;
+    observer.observe(loadMoreTriggerRef.current);
 
-    if (isNearBottom) {
-      setIsLoadingMore(true);
-      // Use setTimeout to prevent multiple rapid requests
-      setTimeout(() => {
-        dispatch(logActions.fetchLogs(currentPage + 1));
-      }, 200);
-    }
-  };
+    return () => {
+      if (loadMoreTriggerRef.current) {
+        observer.unobserve(loadMoreTriggerRef.current);
+      }
+    };
+  }, [dispatch, currentPage, hasMoreLogs, isLoading, userId]);
 
   // Initial fetch
   useEffect(() => {
@@ -127,11 +122,8 @@ export function ChatPageSidebar() {
             </div>
           )}
         </SidebarHeader>
-        <SidebarContent
-          className="border-b border-sidebar-border overflow-x-hidden"
-          onScroll={handleScroll}
-        >
-          <ScrollArea className="h-full" ref={scrollAreaRef}>
+        <SidebarContent className="border-b border-sidebar-border overflow-x-hidden">
+          <ScrollArea className="h-full">
             <SidebarGroup>
               <SidebarGroupLabel>Assistants</SidebarGroupLabel>
               <SidebarMenu>
@@ -142,21 +134,23 @@ export function ChatPageSidebar() {
               <SidebarMenu>
                 <SidebarGroupLabel>Chat Logs</SidebarGroupLabel>
                 <ChatLogList />
-                {/* Loading indicator at the bottom */}
-                {hasMoreLogs && logList.length > 0 && (
-                  <div className="py-4 w-full flex items-center justify-center">
+                {/* Loader indicator at the bottom - only show when there are logs */}
+                {logList.length > 0 && (
+                  <div
+                    ref={loadMoreTriggerRef}
+                    className="py-4 w-full flex items-center justify-center"
+                  >
                     {isLoading ? (
                       <div className="text-sm text-gray-500">
                         Loading logs...
                       </div>
+                    ) : hasMoreLogs ? (
+                      <div className="h-8 w-full"></div>
                     ) : (
-                      <div className="h-4 w-full"></div>
+                      <div className="text-sm text-gray-500 py-2 text-center">
+                        End of logs
+                      </div>
                     )}
-                  </div>
-                )}
-                {!hasMoreLogs && logList.length > 0 && !isLoading && (
-                  <div className="text-sm text-gray-500 py-2 text-center">
-                    End of logs
                   </div>
                 )}
               </SidebarMenu>
