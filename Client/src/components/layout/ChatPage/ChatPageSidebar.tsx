@@ -54,6 +54,8 @@ export function ChatPageSidebar() {
   useEffect(() => {
     if (!loadMoreTriggerRef.current || !userId || !hasMoreLogs) return;
 
+    const currentNode = loadMoreTriggerRef.current;
+
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
@@ -64,12 +66,10 @@ export function ChatPageSidebar() {
       { rootMargin: "100px 0px", threshold: 0.1 }
     );
 
-    observer.observe(loadMoreTriggerRef.current);
+    observer.observe(currentNode);
 
     return () => {
-      if (loadMoreTriggerRef.current) {
-        observer.unobserve(loadMoreTriggerRef.current);
-      }
+      observer.unobserve(currentNode);
     };
   }, [dispatch, currentPage, hasMoreLogs, isLoading, userId]);
 
