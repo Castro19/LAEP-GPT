@@ -65,7 +65,8 @@ const ChatPage = () => {
       if (currentModel.id !== "") {
         dispatch(assistantActions.setCurrentAssistant(currentModel.id));
       } else {
-        dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+        // Default to the Calpoly SLO assistant for new chats
+        dispatch(assistantActions.setAssistantByTitle("Calpoly SLO"));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

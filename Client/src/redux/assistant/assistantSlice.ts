@@ -34,6 +34,7 @@ const defaultModel: AssistantType = {
     "What's a good place for coffee near campus?",
     "How do I join a club?",
   ],
+  model: "gpt-4o-mini",
 };
 
 const initialState: AssistantSliceType = {
