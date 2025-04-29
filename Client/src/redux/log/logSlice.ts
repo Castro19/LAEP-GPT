@@ -160,7 +160,6 @@ const logSlice = createSlice({
       })
       .addCase(fetchLogs.fulfilled, (state, action) => {
         const { logs, page } = action.payload;
-        console.log(`Fetched page ${page}, logs received:`, logs.length); // Add log
 
         // If it's the first page, replace the list. Otherwise, append.
         if (page === 1) {

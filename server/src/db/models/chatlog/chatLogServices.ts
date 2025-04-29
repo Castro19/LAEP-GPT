@@ -30,7 +30,7 @@ export const getLogsByPage = async (
   try {
     return await ChatLogModel.fetchLogsByUserId(userId, page, limit);
   } catch (error) {
-    console.error("Service error in getLimitedLogsByUser:", error);
+    console.error("Service error in getLogsByPage:", error);
     throw new Error(
       "Service error fetching limited logs: " + (error as Error).message
     );
