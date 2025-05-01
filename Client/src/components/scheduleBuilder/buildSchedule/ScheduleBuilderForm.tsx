@@ -29,9 +29,8 @@ const ScheduleBuilderForm = ({
   const { selectedSections, sectionsForSchedule } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const { currentSchedule, currentScheduleTerm } = useAppSelector(
-    (state) => state.schedule
-  );
+  const { currentSchedule, currentScheduleTerm, hiddenSections } =
+    useAppSelector((state) => state.schedule);
   const schedulePreferences = useAppSelector(
     (state) => state.schedule.preferences
   );
@@ -111,11 +110,14 @@ const ScheduleBuilderForm = ({
         currentScheduleTerm
       );
 
+      // Filter out hidden sections when saving
+      const visibleSections = scheduleToSave.sections.filter(
+        (section) => !hiddenSections.includes(section.classNumber)
+      );
+
       dispatch(
         scheduleActions.createOrUpdateScheduleAsync({
-          classNumbers: scheduleToSave.sections.map(
-            (section) => section.classNumber
-          ),
+          classNumbers: visibleSections.map((section) => section.classNumber),
           term: currentScheduleTerm,
         })
       );
