@@ -220,6 +220,7 @@ const scheduleSlice = createSlice({
     },
     toggleHiddenSection(state, action: PayloadAction<number>) {
       const classNumber = action.payload;
+      // Toggle the visibility of a section by adding it to or removing it from the hiddenSections array.
       const index = state.hiddenSections.indexOf(classNumber);
       if (index === -1) {
         state.hiddenSections.push(classNumber);
