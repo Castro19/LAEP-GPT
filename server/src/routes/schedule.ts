@@ -3,13 +3,15 @@ import express from "express";
 import { CustomRequest } from "../types/express";
 import { environment } from "../index";
 import {
-  getScheduleListByUserId,
   createOrUpdateSchedule,
   deleteScheduleItem,
   getScheduleById,
+  getScheduleListByUserId,
   updateScheduleListItem,
+  updateScheduleName,
 } from "../db/models/schedule/scheduleServices";
 import { CourseTerm, ScheduleListItem } from "@polylink/shared/types";
+import * as scheduleCollection from "../db/models/schedule/scheduleCollection";
 
 const router = express.Router();
 
@@ -49,15 +51,21 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { classNumbers, term } = req.body as {
+    const { classNumbers, term, scheduleId } = req.body as {
       classNumbers: number[];
       term: CourseTerm;
+      scheduleId: string | undefined;
     };
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
 
-    const result = await createOrUpdateSchedule(userId, classNumbers, term);
+    const result = await createOrUpdateSchedule(
+      userId,
+      classNumbers,
+      term,
+      scheduleId
+    );
     return res.status(200).json({
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
@@ -116,13 +124,15 @@ router.put("/:scheduleId", async (req, res: any) => {
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
-    const result = await updateScheduleListItem({
+
+    const result = await updateScheduleName({
       userId,
       scheduleId,
       primaryScheduleId,
       name,
       term,
     });
+
     return res.status(200).json({
       message: "Schedule updated successfully",
       schedules: result.schedules,

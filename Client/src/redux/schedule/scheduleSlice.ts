@@ -88,16 +88,23 @@ export const createOrUpdateScheduleAsync = createAsyncThunk(
   async ({
     classNumbers,
     term,
+    scheduleId,
   }: {
     classNumbers: number[];
     term: CourseTerm;
+    scheduleId: string | undefined;
   }) => {
     try {
-      const response = await createOrUpdateSchedule(classNumbers, term);
+      const response = await createOrUpdateSchedule(
+        classNumbers,
+        term,
+        scheduleId
+      );
       return {
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
         term,
+        name,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -133,6 +140,7 @@ export const updateScheduleAsync = createAsyncThunk(
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
         term,
+        name,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -249,6 +257,16 @@ const scheduleSlice = createSlice({
       .addCase(updateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        // Update currentSchedule name if it's the one being updated
+        if (
+          state.currentSchedule &&
+          state.currentSchedule.id === action.meta.arg.schedule.id
+        ) {
+          state.currentSchedule = {
+            ...state.currentSchedule,
+            name: action.payload.name,
+          };
+        }
       })
       .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
         state.currentSchedule = action.payload.schedule;
