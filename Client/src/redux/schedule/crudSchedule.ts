@@ -29,6 +29,7 @@ export async function createOrUpdateSchedule(
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
+  scheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
@@ -40,7 +41,11 @@ export async function createOrUpdateSchedule(
       credentials: "include",
     });
     const data = await response.json();
-    return data;
+    return {
+      schedules: data.schedules,
+      primaryScheduleId: data.primaryScheduleId,
+      scheduleId: data.scheduleId,
+    };
   } catch (error) {
     console.error("Error creating or updating schedule:", error);
     throw error;
@@ -69,8 +74,9 @@ export async function updateSchedule(
     });
     const data = await response.json();
     return {
-      ...data,
-      name: name,
+      schedules: data.schedules,
+      primaryScheduleId: data.primaryScheduleId,
+      name: data.name,
     };
   } catch (error) {
     console.error("Error updating schedule list item:", error);

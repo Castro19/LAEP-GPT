@@ -70,6 +70,7 @@ router.post("/", async (req, res: any) => {
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
       primaryScheduleId: result.primaryScheduleId,
+      scheduleId: scheduleId || result.schedules[0]?.id,
     });
   } catch (error) {
     if (environment === "dev") {
@@ -137,6 +138,7 @@ router.put("/:scheduleId", async (req, res: any) => {
       message: "Schedule updated successfully",
       schedules: result.schedules,
       primaryScheduleId: result.primaryScheduleId,
+      scheduleId: scheduleId,
     });
   } catch (error) {
     if (environment === "dev") {

@@ -97,6 +97,8 @@ const ScheduleItem = ({
 }) => {
   const [name, setName] = useState(schedule.name);
   const [primaryOption, setPrimaryOption] = useState(isPrimary);
+  const { currentScheduleId } = useAppSelector((state) => state.schedule);
+  const isCurrentSchedule = currentScheduleId === schedule.id;
 
   const isNarrowScreen = useIsNarrowScreen();
   const deviceType = useDeviceType();
@@ -116,16 +118,20 @@ const ScheduleItem = ({
   }, [isPrimary]);
 
   return (
-    <div className="group flex items-center justify-between px-2 py-2.5 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700">
+    <div
+      className={`group flex items-center justify-between px-2 py-2.5 mb-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full border-b border-gray-200 dark:border-gray-700 ${isCurrentSchedule ? "bg-gray-100 dark:bg-gray-800" : ""}`}
+    >
       <Button
         onClick={handleSelectSchedule}
-        className={`group w-full p-2 rounded-md`}
+        className={`group w-full p-2 rounded-md ${isCurrentSchedule ? "bg-gray-100 dark:bg-gray-800" : ""}`}
         variant="ghost"
       >
-        {isPrimary && <GoPin className=" dark:text-red-500 mr-1" size={16} />}
+        {isPrimary && <GoPin className="dark:text-red-500 mr-1" size={16} />}
 
         <div className="flex-1 min-w-0 flex flex-col items-start justify-start gap-1 p-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+          <h3
+            className={`text-sm font-medium truncate ${isCurrentSchedule ? "text-primary dark:text-primary" : "text-gray-900 dark:text-white"}`}
+          >
             {schedule.name}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -139,7 +145,7 @@ const ScheduleItem = ({
         </div>
       </Button>
       <div
-        className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
+        className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${isCurrentSchedule ? "opacity-100" : ""}`}
       >
         <ScheduleOptions
           schedule={schedule}

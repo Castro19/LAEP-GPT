@@ -84,6 +84,7 @@ const ScheduleOptions = ({
       })
     );
     setOpen(false);
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
     navigate("/schedule-builder");
   };
 

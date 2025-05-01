@@ -41,7 +41,36 @@ export const findScheduleListByUserId = async (
         _id: "",
       };
     }
-    return result;
+
+    // Sort both term arrays
+    const sortSchedules = (
+      schedules: ScheduleListItem[],
+      primaryId: string
+    ) => {
+      return [...schedules].sort((a, b) => {
+        // Primary schedule always comes first
+        if (a.id === primaryId) return -1;
+        if (b.id === primaryId) return 1;
+        // Then sort by most recent updatedAt
+        return (
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+      });
+    };
+
+    return {
+      ...result,
+      schedules: {
+        spring2025: sortSchedules(
+          result.schedules.spring2025,
+          result.primaryScheduleId
+        ),
+        summer2025: sortSchedules(
+          result.schedules.summer2025,
+          result.primaryScheduleId
+        ),
+      },
+    };
   } catch (error) {
     if (environment === "dev") {
       console.error(error);

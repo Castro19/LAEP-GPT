@@ -9,7 +9,6 @@ const BuildScheduleContainer = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { fetchSchedulesLoading } = useAppSelector((state) => state.schedule);
   const scrollTrigger = useAppSelector((state) => state.layout.scrollTrigger);
   const scrollRef = useRef<HTMLInputElement>(null);
 
@@ -19,10 +18,6 @@ const BuildScheduleContainer = ({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [scrollTrigger]);
-
-  if (fetchSchedulesLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <AnimateWrapper>

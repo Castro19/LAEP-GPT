@@ -35,9 +35,8 @@ const ScheduleBuilderPage = () => {
   const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
     (state) => state.message
   );
-  const { currentScheduleTerm, currentSchedule } = useAppSelector(
-    (state) => state.schedule
-  );
+  const { currentScheduleTerm, currentSchedule, currentScheduleId } =
+    useAppSelector((state) => state.schedule);
 
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
@@ -136,13 +135,22 @@ const ScheduleBuilderPage = () => {
     setTabValue(currentScheduleTerm);
   }, [currentScheduleTerm]);
 
+  // Handle navigation when currentScheduleId changes
+  useEffect(() => {
+    // Only navigate if we're not already on the correct URL and this is a new/updated schedule
+    if (currentScheduleId && currentScheduleId !== scheduleId && !scheduleId) {
+      navigate(`/schedule-builder/${currentScheduleId}`);
+    }
+  }, [currentScheduleId, scheduleId, navigate]);
+
   const handleTermChange = (value: string) => {
     dispatch(
       scheduleActions.setCurrentScheduleTerm(
         value as "spring2025" | "summer2025"
       )
     );
-    navigate(`/schedule-builder`);
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
+    navigate("/schedule-builder");
   };
 
   return (
@@ -236,7 +244,8 @@ const ScheduleBuilderMobile = () => {
         value as "spring2025" | "summer2025"
       )
     );
-    navigate(`/schedule-builder`);
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
+    navigate("/schedule-builder");
   };
 
   return (

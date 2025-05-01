@@ -25,6 +25,7 @@ import {
   SECTION_FILTERS_SCHEMA,
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, scheduleActions } from "@/redux";
 
 const Scheduling = ({
   form,
@@ -32,7 +33,7 @@ const Scheduling = ({
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const statusOptions = [
     { label: "Open", value: "open" },
     { label: "Waitlist", value: "waitlist" },
@@ -152,6 +153,7 @@ const Scheduling = ({
                   <span
                     className="text-blue-500 cursor-pointer ml-1"
                     onClick={() => {
+                      dispatch(scheduleActions.setCurrentScheduleId(undefined));
                       navigate("/schedule-builder");
                     }}
                   >

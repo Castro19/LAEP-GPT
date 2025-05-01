@@ -83,6 +83,7 @@ const ScheduleBuilderForm = ({
       });
       return;
     }
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
 
     // Create all combinations of sections
     const allCombinations = buildSchedule(
@@ -97,6 +98,7 @@ const ScheduleBuilderForm = ({
     if (allCombinations.length > 0) {
       dispatch(scheduleActions.setCurrentSchedule(allCombinations[0]));
     }
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
 
     navigate("/schedule-builder");
     onSwitchTab("schedule-builder");
