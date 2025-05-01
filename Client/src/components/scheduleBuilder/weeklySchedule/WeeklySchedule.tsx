@@ -5,6 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
+import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
 
 // My components
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
@@ -52,13 +53,14 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   isProfilePage = false,
 }) => {
   const dispatch = useAppDispatch();
-  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+  const { currentScheduleTerm, hiddenSections } = useAppSelector(
+    (state) => state.schedule
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [calendarHeight, setCalendarHeight] = useState(height);
   const [containerHeight, setContainerHeight] = useState(0);
   const [asyncCoursesHeight, setAsyncCoursesHeight] = useState(0);
-  const [invisibleEvents, setInvisibleEvents] = useState<number[]>([]);
   // Update window height on resize
   useEffect(() => {
     const handleResize = () => {
@@ -311,7 +313,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   // 3) Combine background events and normal events
   // Instead of using state for finalEvents, compute it directly
   const filteredEvents = [...backgroundEvents, ...events].filter(
-    (e) => !invisibleEvents.includes(e.classNumber)
+    (e) => !hiddenSections.includes(e.classNumber)
   );
 
   const handleEventClick = (eventClickArg: any) => {
@@ -326,7 +328,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   const handleEyeClick = (event: any) => {
     const classNumber = event.event.extendedProps.classNumber;
-    setInvisibleEvents((prev) => [...prev, classNumber]);
+    dispatch(toggleHiddenSection(classNumber));
   };
 
   // Handle AsyncCourses height changes

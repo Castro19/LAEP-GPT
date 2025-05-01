@@ -36,6 +36,7 @@ export interface ScheduleState {
   fetchSchedulesLoading: boolean;
   preferences: Preferences;
   currentScheduleTerm: CourseTerm;
+  hiddenSections: number[];
 }
 
 const initialState: ScheduleState = {
@@ -58,6 +59,7 @@ const initialState: ScheduleState = {
     useCurrentSchedule: false,
     showOverlappingClasses: false,
   },
+  hiddenSections: [],
 };
 
 // Fetch schedules for a specific term
@@ -216,6 +218,15 @@ const scheduleSlice = createSlice({
       state.schedules = [];
       state.currentSchedule = null;
     },
+    toggleHiddenSection(state, action: PayloadAction<number>) {
+      const classNumber = action.payload;
+      const index = state.hiddenSections.indexOf(classNumber);
+      if (index === -1) {
+        state.hiddenSections.push(classNumber);
+      } else {
+        state.hiddenSections.splice(index, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -258,6 +269,7 @@ export const {
   setCurrentSchedule,
   setPreferences,
   setCurrentScheduleTerm,
+  toggleHiddenSection,
 } = scheduleSlice.actions;
 
 export const scheduleReducer = scheduleSlice.reducer;
