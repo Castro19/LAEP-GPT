@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import { scheduleActions, useAppDispatch } from "@/redux";
 
 type ProfileEmptyStateProps = {
   title: string;
@@ -15,11 +16,12 @@ const ProfileEmptyState = ({
   type,
 }: ProfileEmptyStateProps) => {
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const handleClick = () => {
     if (type === "flowchart") {
       navigate("/flowchart");
     } else if (type === "schedule-builder") {
+      dispatch(scheduleActions.setCurrentScheduleId(undefined));
       navigate("/schedule-builder");
     }
   };

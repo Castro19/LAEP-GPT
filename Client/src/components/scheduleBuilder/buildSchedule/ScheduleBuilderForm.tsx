@@ -8,7 +8,7 @@ import { SCHEDULE_PREFERENCES_SCHEMA } from "@/components/classSearch/courseFilt
 import { BuildScheduleContainer, SelectedSectionContainer } from "..";
 import { buildSchedule } from "@/components/scheduleBuilder/helpers";
 import { LeftSectionFooter } from "..";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { generatedScheduleToSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
@@ -24,6 +24,7 @@ const ScheduleBuilderForm = ({
   onSwitchTab: (tab: string) => void;
 }) => {
   const navigate = useNavigate();
+  const { scheduleId } = useParams();
 
   const dispatch = useAppDispatch();
   const { selectedSections, sectionsForSchedule } = useAppSelector(
@@ -82,6 +83,7 @@ const ScheduleBuilderForm = ({
       });
       return;
     }
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
 
     // Create all combinations of sections
     const allCombinations = buildSchedule(
@@ -96,6 +98,7 @@ const ScheduleBuilderForm = ({
     if (allCombinations.length > 0) {
       dispatch(scheduleActions.setCurrentSchedule(allCombinations[0]));
     }
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
 
     navigate("/schedule-builder");
     onSwitchTab("schedule-builder");
@@ -119,9 +122,16 @@ const ScheduleBuilderForm = ({
         scheduleActions.createOrUpdateScheduleAsync({
           classNumbers: visibleSections.map((section) => section.classNumber),
           term: currentScheduleTerm,
+          scheduleId: scheduleId,
         })
       );
     }
+    toast({
+      title: scheduleId ? "Schedule updated" : "Schedule created",
+      description: `Your schedule has been ${
+        scheduleId ? "updated" : "created"
+      }`,
+    });
   };
 
   return (
@@ -132,7 +142,7 @@ const ScheduleBuilderForm = ({
         </BuildScheduleContainer>
         <LeftSectionFooter
           formText="Generate Schedule"
-          buttonText="Save Schedule"
+          buttonText={scheduleId ? "Update Schedule" : "Save Schedule"}
           onFormSubmit={handleBuildSchedule}
           onClick={handleSaveSchedule}
         />

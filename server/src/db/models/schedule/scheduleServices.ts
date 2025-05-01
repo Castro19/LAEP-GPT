@@ -94,17 +94,16 @@ export const updateScheduleListItem = async ({
 export const createOrUpdateSchedule = async (
   userId: string,
   classNumbers: number[],
-  term: CourseTerm
+  term: CourseTerm,
+  scheduleIdFromClient: string | undefined
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
+  scheduleId: string;
 }> => {
   try {
-    const scheduleId = uuidv4();
     const scheduleList =
       await scheduleListModel.findScheduleListByUserId(userId);
-
-    // Initialize schedules array for the term if it doesn't exist
     const currentSchedules = scheduleList?.schedules[term] || [];
 
     // Check if there are any schedules in either term
@@ -115,23 +114,69 @@ export const createOrUpdateSchedule = async (
         (scheduleList.schedules.summer2025 &&
           scheduleList.schedules.summer2025.length > 0));
 
-    const schedule = {
-      id: scheduleId,
-      userId,
-      name: `Schedule ${currentSchedules.length + 1}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      sections: classNumbers,
-      term,
-    };
-    const scheduleResult = await scheduleCollection.createSchedule(schedule);
-    if (!scheduleResult) {
-      throw new Error("Failed to create schedule");
-    }
-    const schedules = await scheduleListModel.findScheduleListByUserId(userId);
-    if (schedules) {
+    let scheduleId = scheduleIdFromClient || uuidv4();
+    if (scheduleIdFromClient) {
+      // Get the existing schedule to preserve its createdAt and name
+      const existingSchedule = await scheduleCollection.getScheduleById(
+        userId,
+        scheduleIdFromClient
+      );
+
+      if (!existingSchedule) {
+        throw new Error("Schedule not found for update");
+      }
+
+      // Update existing schedule with preserved fields
+      const schedule = {
+        id: scheduleIdFromClient,
+        userId,
+        name: existingSchedule.name, // Preserve original name
+        createdAt: existingSchedule.createdAt, // Preserve original creation date
+        updatedAt: new Date(),
+        sections: classNumbers,
+        term,
+      };
+
+      const updateResult = await scheduleCollection.updateSchedule(
+        userId,
+        scheduleIdFromClient,
+        schedule
+      );
+
+      if (!updateResult.matchedCount) {
+        throw new Error("Schedule not found for update");
+      }
+
+      // Update the schedule list item with preserved name
+      await scheduleListModel.updateScheduleListItem(
+        userId,
+        {
+          id: scheduleId,
+          name: existingSchedule.name,
+          updatedAt: schedule.updatedAt,
+        },
+        scheduleList.primaryScheduleId,
+        term
+      );
+    } else {
+      // Create new schedule
+      const schedule = {
+        id: scheduleId,
+        userId,
+        name: `Schedule ${currentSchedules.length + 1}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sections: classNumbers,
+        term,
+      };
+
+      const scheduleResult = await scheduleCollection.createSchedule(schedule);
+      if (!scheduleResult) {
+        throw new Error("Failed to create schedule");
+      }
+
       // Only set as primary if there are no schedules in either term
-      if (!hasAnySchedules || !schedules.primaryScheduleId) {
+      if (!hasAnySchedules || !scheduleList.primaryScheduleId) {
         await scheduleListModel.createOrUpdateScheduleList(
           userId,
           {
@@ -150,11 +195,12 @@ export const createOrUpdateSchedule = async (
             name: schedule.name,
             updatedAt: schedule.updatedAt,
           },
-          schedules.primaryScheduleId, // not primary schedule
+          scheduleList.primaryScheduleId, // not primary schedule
           term
         );
       }
     }
+
     const finalSchedules =
       await scheduleListModel.findScheduleListByUserId(userId);
     if (!finalSchedules) {
@@ -162,11 +208,14 @@ export const createOrUpdateSchedule = async (
       return {
         schedules: [],
         primaryScheduleId: "",
+        scheduleId: "",
       };
     }
+
     return {
       schedules: finalSchedules.schedules[term],
       primaryScheduleId: finalSchedules.primaryScheduleId,
+      scheduleId: scheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -288,4 +337,68 @@ export const fetchPrimarySchedule = async (
     return result;
   }
   return null;
+};
+
+export const updateScheduleName = async ({
+  userId,
+  scheduleId,
+  primaryScheduleId,
+  name,
+  term,
+}: {
+  userId: string;
+  scheduleId: string;
+  primaryScheduleId: string;
+  name: string;
+  term: CourseTerm;
+}): Promise<{
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
+}> => {
+  try {
+    // First update the Schedule collection
+    const existingSchedule = await scheduleCollection.getScheduleById(
+      userId,
+      scheduleId
+    );
+    if (!existingSchedule) {
+      throw new Error("Schedule not found");
+    }
+
+    // Update the Schedule document with new name
+    const updatedSchedule = {
+      ...existingSchedule,
+      name: name, // Use the new name from the request
+      updatedAt: new Date(),
+    };
+
+    const scheduleUpdateResult = await scheduleCollection.updateSchedule(
+      userId,
+      scheduleId,
+      updatedSchedule
+    );
+
+    if (!scheduleUpdateResult.matchedCount) {
+      throw new Error("Failed to update schedule");
+    }
+
+    // Then update the Schedule List collection
+    const result = await updateScheduleListItem({
+      userId,
+      scheduleId,
+      primaryScheduleId,
+      name,
+      term,
+    });
+
+    return {
+      schedules: result.schedules,
+      primaryScheduleId: result.primaryScheduleId,
+    };
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
 };

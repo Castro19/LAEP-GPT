@@ -26,6 +26,7 @@ export interface Preferences {
 }
 
 export interface ScheduleState {
+  currentScheduleId: string | undefined;
   scheduleList: ScheduleListItem[];
   primaryScheduleId: string;
   currentSchedule: GeneratedSchedule | null;
@@ -40,6 +41,7 @@ export interface ScheduleState {
 }
 
 const initialState: ScheduleState = {
+  currentScheduleId: undefined,
   scheduleList: [],
   primaryScheduleId: "",
   currentSchedule: null,
@@ -88,16 +90,23 @@ export const createOrUpdateScheduleAsync = createAsyncThunk(
   async ({
     classNumbers,
     term,
+    scheduleId,
   }: {
     classNumbers: number[];
     term: CourseTerm;
+    scheduleId: string | undefined;
   }) => {
     try {
-      const response = await createOrUpdateSchedule(classNumbers, term);
+      const response = await createOrUpdateSchedule(
+        classNumbers,
+        term,
+        scheduleId
+      );
       return {
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
         term,
+        scheduleId: response.scheduleId,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -133,6 +142,8 @@ export const updateScheduleAsync = createAsyncThunk(
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
         term,
+        name: response.name,
+        scheduleId: response.scheduleId,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -196,6 +207,9 @@ const scheduleSlice = createSlice({
   name: "schedule",
   initialState,
   reducers: {
+    setCurrentScheduleId(state, action: PayloadAction<string | undefined>) {
+      state.currentScheduleId = action.payload;
+    },
     setSchedules(state, action) {
       state.schedules = action.payload;
     },
@@ -245,13 +259,27 @@ const scheduleSlice = createSlice({
       .addCase(createOrUpdateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+
+        if (action.payload.scheduleId) {
+          state.currentScheduleId = action.payload.scheduleId;
+        }
       })
       .addCase(updateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        if (
+          state.currentSchedule &&
+          state.currentSchedule.id === action.payload.scheduleId
+        ) {
+          state.currentSchedule = {
+            ...state.currentSchedule,
+            name: action.payload.name,
+          };
+        }
       })
       .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
         state.currentSchedule = action.payload.schedule;
+        state.currentScheduleId = action.payload.schedule.id;
         if (action.payload.term) {
           state.currentScheduleTerm = action.payload.term as CourseTerm;
         }
@@ -259,11 +287,16 @@ const scheduleSlice = createSlice({
       .addCase(removeScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        if (state.currentScheduleId === action.meta.arg.scheduleId) {
+          state.currentScheduleId = undefined;
+          state.currentSchedule = null;
+        }
       });
   },
 });
 
 export const {
+  setCurrentScheduleId,
   setPage,
   setTotalPages,
   setSchedules,
