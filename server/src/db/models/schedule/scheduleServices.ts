@@ -99,6 +99,7 @@ export const createOrUpdateSchedule = async (
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
+  scheduleId: string;
 }> => {
   try {
     const scheduleList =
@@ -113,7 +114,9 @@ export const createOrUpdateSchedule = async (
         (scheduleList.schedules.summer2025 &&
           scheduleList.schedules.summer2025.length > 0));
 
+    let scheduleId = "";
     if (scheduleIdFromClient) {
+      scheduleId = scheduleIdFromClient;
       // Get the existing schedule to preserve its createdAt and name
       const existingSchedule = await scheduleCollection.getScheduleById(
         userId,
@@ -158,7 +161,7 @@ export const createOrUpdateSchedule = async (
       );
     } else {
       // Create new schedule
-      const scheduleId = uuidv4();
+      scheduleId = uuidv4();
       const schedule = {
         id: scheduleId,
         userId,
@@ -207,12 +210,14 @@ export const createOrUpdateSchedule = async (
       return {
         schedules: [],
         primaryScheduleId: "",
+        scheduleId: "",
       };
     }
 
     return {
       schedules: finalSchedules.schedules[term],
       primaryScheduleId: finalSchedules.primaryScheduleId,
+      scheduleId: scheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
