@@ -3,6 +3,7 @@ import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FaEye } from "react-icons/fa";
 
 import { ChevronRight } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
@@ -20,6 +21,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import LabelSection from "@/components/classSearch/reusable/sectionInfo/LabelSection";
 import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
+import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
 
 const SectionsChosen = () => {
   const navigate = useNavigate();
@@ -301,7 +303,13 @@ const SectionCard: React.FC<{
   isSelected: boolean;
 }> = ({ section, isSelected }) => {
   const dispatch = useAppDispatch();
-  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+  const { currentScheduleTerm, hiddenSections, currentSchedule } =
+    useAppSelector((state) => state.schedule);
+  const isHidden = hiddenSections.includes(section.classNumber);
+  const isInSchedule =
+    currentSchedule?.sections.some(
+      (s) => s.classNumber === section.classNumber
+    ) ?? false;
 
   const handleRemove = () => {
     dispatch(
@@ -314,6 +322,10 @@ const SectionCard: React.FC<{
 
   const handleToggleSelection = () => {
     dispatch(toggleSectionForSchedule(section.classNumber));
+  };
+
+  const handleToggleHidden = () => {
+    dispatch(toggleHiddenSection(section.classNumber));
   };
 
   // Extract and format start & end time
@@ -357,13 +369,27 @@ const SectionCard: React.FC<{
             </span>
           </div>
 
-          {/* Checkbox moved to the right */}
-          <Checkbox
-            id={`section-${section.classNumber}`}
-            checked={isSelected}
-            onCheckedChange={handleToggleSelection}
-            className="h-4 w-4 border-gray-700 dark:border-slate-900"
-          />
+          {/* Checkbox and Eye Icon */}
+          <div className="flex items-center gap-2">
+            {isInSchedule && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-6 w-6 text-gray-700 dark:text-gray-700 dark:hover:text-gray-800 dark:hover:bg-transparent ${
+                  isHidden ? "opacity-50" : ""
+                }`}
+                onClick={handleToggleHidden}
+              >
+                <FaEye className="h-3 w-3" />
+              </Button>
+            )}
+            <Checkbox
+              id={`section-${section.classNumber}`}
+              checked={isSelected}
+              onCheckedChange={handleToggleSelection}
+              className="h-4 w-4 border-gray-700 dark:border-slate-900"
+            />
+          </div>
         </div>
 
         {/* Days - Bubble Style */}

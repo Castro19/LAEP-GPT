@@ -5,6 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
+import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
 
 // My components
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
@@ -52,13 +53,14 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   isProfilePage = false,
 }) => {
   const dispatch = useAppDispatch();
-  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+  const { currentScheduleTerm, hiddenSections } = useAppSelector(
+    (state) => state.schedule
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [calendarHeight, setCalendarHeight] = useState(height);
   const [containerHeight, setContainerHeight] = useState(0);
   const [asyncCoursesHeight, setAsyncCoursesHeight] = useState(0);
-
   // Update window height on resize
   useEffect(() => {
     const handleResize = () => {
@@ -308,8 +310,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     }
   }
 
-  // 3) Combine
-  const finalEvents = [...backgroundEvents, ...events];
+  // 3) Combine background events and normal events
+  // Instead of using state for finalEvents, compute it directly
+  const filteredEvents = [...backgroundEvents, ...events].filter(
+    (e) => !hiddenSections.includes(e.classNumber)
+  );
 
   const handleEventClick = (eventClickArg: any) => {
     const { classNumber } = eventClickArg.event.extendedProps;
@@ -320,6 +325,12 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       })
     );
   };
+
+  const handleEyeClick = (event: any) => {
+    const classNumber = event.event.extendedProps.classNumber;
+    dispatch(toggleHiddenSection(classNumber));
+  };
+
   // Handle AsyncCourses height changes
   const handleAsyncCoursesHeightChange = (height: number) => {
     setAsyncCoursesHeight(height);
@@ -375,7 +386,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             slotMaxTime="21:00:00"
             slotDuration="01:00:00"
             hiddenDays={[0, 6]}
-            events={finalEvents}
+            events={filteredEvents}
             contentHeight={isProfilePage ? "80vh" : calendarHeight}
             expandRows={true}
             titleFormat={{}} // (Empty: no title text on top)
@@ -408,6 +419,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
                 <ScheduleTimeSlots
                   event={arg.event as unknown as ScheduleClassSection}
                   onClick={() => handleEventClick(arg)}
+                  onEyeClick={() => handleEyeClick(arg)}
                 />
               );
             }}
