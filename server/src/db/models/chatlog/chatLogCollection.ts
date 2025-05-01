@@ -35,13 +35,17 @@ export const addLog = async (
 
 // Read
 export const fetchLogsByUserId = async (
-  userId: string
+  userId: string,
+  page: number,
+  limit: number
 ): Promise<LogListType[]> => {
   if (!chatLogCollection) initializeCollection();
   try {
     const logs = await chatLogCollection
       .find({ userId }, { projection: { content: 0 } })
       .sort({ timestamp: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
       .toArray();
     return logs.map((log) => ({
       logId: log.logId,
