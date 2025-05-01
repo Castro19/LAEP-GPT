@@ -143,6 +143,7 @@ export const updateScheduleAsync = createAsyncThunk(
         primaryScheduleId: response.primaryScheduleId,
         term,
         name: response.name,
+        scheduleId: response.scheduleId,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -258,7 +259,7 @@ const scheduleSlice = createSlice({
       .addCase(createOrUpdateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
-        console.log("ACTION PAYLOAD", action.payload);
+
         if (action.payload.scheduleId) {
           state.currentScheduleId = action.payload.scheduleId;
         }
@@ -266,10 +267,9 @@ const scheduleSlice = createSlice({
       .addCase(updateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
-        state.currentScheduleId = action.meta.arg.schedule.id;
         if (
           state.currentSchedule &&
-          state.currentSchedule.id === action.meta.arg.schedule.id
+          state.currentSchedule.id === action.payload.scheduleId
         ) {
           state.currentSchedule = {
             ...state.currentSchedule,

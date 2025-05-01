@@ -139,6 +139,7 @@ router.put("/:scheduleId", async (req, res: any) => {
       schedules: result.schedules,
       primaryScheduleId: result.primaryScheduleId,
       scheduleId: scheduleId,
+      name,
     });
   } catch (error) {
     if (environment === "dev") {

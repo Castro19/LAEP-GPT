@@ -114,9 +114,8 @@ export const createOrUpdateSchedule = async (
         (scheduleList.schedules.summer2025 &&
           scheduleList.schedules.summer2025.length > 0));
 
-    let scheduleId = "";
+    let scheduleId = scheduleIdFromClient || uuidv4();
     if (scheduleIdFromClient) {
-      scheduleId = scheduleIdFromClient;
       // Get the existing schedule to preserve its createdAt and name
       const existingSchedule = await scheduleCollection.getScheduleById(
         userId,
@@ -152,7 +151,7 @@ export const createOrUpdateSchedule = async (
       await scheduleListModel.updateScheduleListItem(
         userId,
         {
-          id: scheduleIdFromClient,
+          id: scheduleId,
           name: existingSchedule.name,
           updatedAt: schedule.updatedAt,
         },
@@ -161,7 +160,6 @@ export const createOrUpdateSchedule = async (
       );
     } else {
       // Create new schedule
-      scheduleId = uuidv4();
       const schedule = {
         id: scheduleId,
         userId,

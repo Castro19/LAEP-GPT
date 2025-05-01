@@ -62,6 +62,7 @@ export async function updateSchedule(
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
   name: string;
+  scheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${schedule.id}`, {
@@ -77,6 +78,7 @@ export async function updateSchedule(
       schedules: data.schedules,
       primaryScheduleId: data.primaryScheduleId,
       name: data.name,
+      scheduleId: data.scheduleId,
     };
   } catch (error) {
     console.error("Error updating schedule list item:", error);
