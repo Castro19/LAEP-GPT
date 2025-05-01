@@ -5,11 +5,15 @@ import rateLimit from "express-rate-limit";
 import { environment, client } from "../index";
 import asyncHandler from "../middlewares/asyncMiddleware";
 
-import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
+import {
+  RunningStreamData,
+  Section,
+  SectionDocument,
+} from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio/createBio";
 import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
-
+import * as summerCollection from "../db/models/section/summerSectionCollection";
 import { Filter } from "mongodb";
 import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
@@ -187,10 +191,11 @@ const validateQueryRequest = (
   next();
 };
 router.post(
-  "/query",
+  "/query/:term",
   validateQueryRequest,
   asyncHandler(async (req: Request, res: Response) => {
     try {
+      const { term } = req.params;
       const { message } = req.body;
 
       const response = await sectionQueryAssistant(message);
@@ -206,11 +211,25 @@ router.post(
         return;
       }
 
-      const { sections, total } = await findSectionsByFilter(
-        response?.query as Filter<SectionDocument>,
-        0,
-        25
-      );
+      let sections: Section[] = [];
+      let total: number = 0;
+      if (term === "spring2025") {
+        const result = await findSectionsByFilter(
+          response?.query as Filter<SectionDocument>,
+          0,
+          25
+        );
+        sections = result.sections;
+        total = result.total;
+      } else if (term === "summer2025") {
+        const result = await summerCollection.findSectionsByFilter(
+          response?.query as Filter<SectionDocument>,
+          0,
+          25
+        );
+        sections = result.sections;
+        total = result.total;
+      }
 
       // Single successful response
       res.json({
