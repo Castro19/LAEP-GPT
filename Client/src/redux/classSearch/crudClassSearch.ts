@@ -72,10 +72,13 @@ type QueryAIResponse = {
   results: Section[];
   totalPages: number;
 };
-export async function queryAI(message: string): Promise<QueryAIResponse> {
+export async function queryAI(
+  message: string,
+  term: CourseTerm
+): Promise<QueryAIResponse> {
   console.log("queryAI", message);
   try {
-    const response = await fetch(`${serverUrl}/llms/query`, {
+    const response = await fetch(`${serverUrl}/llms/query/${term}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),

@@ -68,9 +68,11 @@ export const fetchSectionsAsync = createAsyncThunk(
 
 export const queryAIAsync = createAsyncThunk(
   "sections/queryAI",
-  async (query: string) => {
+  async (query: string, { getState }) => {
     try {
-      const response = await queryAI(query);
+      const state = getState() as { classSearch: ClassSearchState };
+      const { term } = state.classSearch.filters;
+      const response = await queryAI(query, term);
       return response;
     } catch (error) {
       if (environment === "dev") {
