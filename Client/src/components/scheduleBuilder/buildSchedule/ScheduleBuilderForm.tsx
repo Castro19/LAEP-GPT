@@ -124,6 +124,12 @@ const ScheduleBuilderForm = ({
         })
       );
     }
+    toast({
+      title: scheduleId ? "Schedule updated" : "Schedule created",
+      description: `Your schedule has been ${
+        scheduleId ? "updated" : "created"
+      }`,
+    });
   };
 
   return (
@@ -134,7 +140,7 @@ const ScheduleBuilderForm = ({
         </BuildScheduleContainer>
         <LeftSectionFooter
           formText="Generate Schedule"
-          buttonText="Save Schedule"
+          buttonText={scheduleId ? "Update Schedule" : "Save Schedule"}
           onFormSubmit={handleBuildSchedule}
           onClick={handleSaveSchedule}
         />

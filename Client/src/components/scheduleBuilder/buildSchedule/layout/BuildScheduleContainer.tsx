@@ -9,7 +9,7 @@ const BuildScheduleContainer = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { loading } = useAppSelector((state) => state.schedule);
+  const { fetchSchedulesLoading } = useAppSelector((state) => state.schedule);
   const scrollTrigger = useAppSelector((state) => state.layout.scrollTrigger);
   const scrollRef = useRef<HTMLInputElement>(null);
 
@@ -20,7 +20,7 @@ const BuildScheduleContainer = ({
     }
   }, [scrollTrigger]);
 
-  if (loading) {
+  if (fetchSchedulesLoading) {
     return <div>Loading...</div>;
   }
 
