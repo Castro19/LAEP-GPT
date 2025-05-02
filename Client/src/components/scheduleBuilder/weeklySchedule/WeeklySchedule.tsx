@@ -33,7 +33,7 @@ import AsyncCourses from "./AsyncCourses";
 
 type EventType = {
   courseName: string;
-  classNumber: string;
+  classNumber: number;
   enrollmentStatus: "O" | "C" | "W";
   professors: Array<{ name: string; id: string | null }>;
   color: string;
@@ -192,7 +192,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             end,
             extendedProps: {
               courseName: section.courseName,
-              classNumber: section.classNumber.toString(),
+              classNumber: section.classNumber,
               enrollmentStatus: section.enrollmentStatus,
               professors: section.professors,
               color: section.color,
