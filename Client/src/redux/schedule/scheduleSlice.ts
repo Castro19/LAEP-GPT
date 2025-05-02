@@ -3,6 +3,7 @@ import {
   ScheduleListItem,
   CourseTerm,
   GeneratedSchedule,
+  CustomScheduleEvent,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -91,16 +92,19 @@ export const createOrUpdateScheduleAsync = createAsyncThunk(
     classNumbers,
     term,
     scheduleId,
+    customEvents,
   }: {
     classNumbers: number[];
     term: CourseTerm;
     scheduleId: string | undefined;
+    customEvents?: CustomScheduleEvent[];
   }) => {
     try {
       const response = await createOrUpdateSchedule(
         classNumbers,
         term,
-        scheduleId
+        scheduleId,
+        customEvents
       );
       return {
         schedules: response.schedules,
@@ -242,6 +246,32 @@ const scheduleSlice = createSlice({
         state.hiddenSections.splice(index, 1);
       }
     },
+    addCustomEvent(state, action: PayloadAction<CustomScheduleEvent>) {
+      if (state.currentSchedule) {
+        if (!state.currentSchedule.customEvents) {
+          state.currentSchedule.customEvents = [];
+        }
+        state.currentSchedule.customEvents.push(action.payload);
+      }
+    },
+    updateCustomEvent(state, action: PayloadAction<CustomScheduleEvent>) {
+      if (state.currentSchedule?.customEvents) {
+        const index = state.currentSchedule.customEvents.findIndex(
+          (event) => event.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.currentSchedule.customEvents[index] = action.payload;
+        }
+      }
+    },
+    removeCustomEvent(state, action: PayloadAction<string>) {
+      if (state.currentSchedule?.customEvents) {
+        state.currentSchedule.customEvents =
+          state.currentSchedule.customEvents.filter(
+            (event) => event.id !== action.payload
+          );
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -304,6 +334,9 @@ export const {
   setPreferences,
   setCurrentScheduleTerm,
   toggleHiddenSection,
+  addCustomEvent,
+  updateCustomEvent,
+  removeCustomEvent,
 } = scheduleSlice.actions;
 
 export const scheduleReducer = scheduleSlice.reducer;

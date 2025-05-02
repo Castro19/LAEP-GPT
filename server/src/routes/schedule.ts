@@ -10,8 +10,11 @@ import {
   updateScheduleListItem,
   updateScheduleName,
 } from "../db/models/schedule/scheduleServices";
-import { CourseTerm, ScheduleListItem } from "@polylink/shared/types";
-import * as scheduleCollection from "../db/models/schedule/scheduleCollection";
+import {
+  CourseTerm,
+  CustomScheduleEvent,
+  ScheduleListItem,
+} from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -51,10 +54,11 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { classNumbers, term, scheduleId } = req.body as {
+    const { classNumbers, term, scheduleId, customEvents } = req.body as {
       classNumbers: number[];
       term: CourseTerm;
       scheduleId: string | undefined;
+      customEvents: CustomScheduleEvent[];
     };
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
@@ -64,7 +68,8 @@ router.post("/", async (req, res: any) => {
       userId,
       classNumbers,
       term,
-      scheduleId
+      scheduleId,
+      customEvents
     );
     return res.status(200).json({
       message: "Schedule created or updated successfully",
