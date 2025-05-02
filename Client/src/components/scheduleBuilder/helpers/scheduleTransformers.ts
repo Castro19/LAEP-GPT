@@ -101,6 +101,7 @@ export const generatedScheduleToSchedule = (
     name,
     term,
     sections: generatedSchedule.sections,
+    customEvents: generatedSchedule.customEvents,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

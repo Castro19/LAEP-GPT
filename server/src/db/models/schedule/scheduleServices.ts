@@ -6,6 +6,7 @@ import {
   ScheduleListItem,
   CourseTerm,
   ScheduleResponse,
+  CustomScheduleEvent,
 } from "@polylink/shared/types";
 import { v4 as uuidv4 } from "uuid";
 import { transformClassNumbersToSelectedSections } from "./transformSection";
@@ -95,7 +96,8 @@ export const createOrUpdateSchedule = async (
   userId: string,
   classNumbers: number[],
   term: CourseTerm,
-  scheduleIdFromClient: string | undefined
+  scheduleIdFromClient: string | undefined,
+  customEvents?: CustomScheduleEvent[]
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
@@ -135,6 +137,7 @@ export const createOrUpdateSchedule = async (
         updatedAt: new Date(),
         sections: classNumbers,
         term,
+        customEvents,
       };
 
       const updateResult = await scheduleCollection.updateSchedule(
@@ -168,6 +171,7 @@ export const createOrUpdateSchedule = async (
         updatedAt: new Date(),
         sections: classNumbers,
         term,
+        customEvents,
       };
 
       const scheduleResult = await scheduleCollection.createSchedule(schedule);
@@ -307,6 +311,7 @@ export const getScheduleById = async (
       id: result.id,
       name: result.name,
       sections: selectedSections,
+      customEvents: result.customEvents,
       createdAt: result.createdAt,
       updatedAt: result.updatedAt,
       term: result.term,

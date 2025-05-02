@@ -3,6 +3,7 @@ import {
   ScheduleListItem,
   CourseTerm,
   ScheduleResponse,
+  CustomScheduleEvent,
 } from "@polylink/shared/types";
 
 // Schedule List
@@ -25,7 +26,8 @@ export async function fetchSchedules(term: CourseTerm): Promise<{
 export async function createOrUpdateSchedule(
   classNumbers: number[],
   term: CourseTerm,
-  scheduleId: string | undefined
+  scheduleId: string | undefined,
+  customEvents?: CustomScheduleEvent[]
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
@@ -34,7 +36,7 @@ export async function createOrUpdateSchedule(
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
       method: "POST",
-      body: JSON.stringify({ classNumbers, term, scheduleId }),
+      body: JSON.stringify({ classNumbers, term, scheduleId, customEvents }),
       headers: {
         "Content-Type": "application/json",
       },

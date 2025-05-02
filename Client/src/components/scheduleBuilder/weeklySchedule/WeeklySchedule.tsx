@@ -1,11 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
-import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
+import {
+  toggleHiddenSection,
+  addCustomEvent,
+} from "@/redux/schedule/scheduleSlice";
+import { CustomScheduleEvent } from "@polylink/shared/types";
 
 // My components
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
@@ -20,7 +30,6 @@ import {
 // Types
 import { SelectedSection } from "@polylink/shared/types";
 import AsyncCourses from "./AsyncCourses";
-// import { environment } from "@/helpers/getEnvironmentVars";
 
 type EventType = {
   courseName: string;
@@ -33,8 +42,8 @@ type EventType = {
   end_time: string | null;
   isAsynchronous?: boolean;
 };
-
 export type ScheduleClassSection = {
+  id: string;
   title: string;
   start: Date;
   end: Date;
@@ -54,171 +63,95 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm, hiddenSections } = useAppSelector(
-    (state) => state.schedule
+    (s) => s.schedule
   );
+
+  // --- layout state & measurements (unchanged) ---
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [calendarHeight, setCalendarHeight] = useState(height);
   const [containerHeight, setContainerHeight] = useState(0);
   const [asyncCoursesHeight, setAsyncCoursesHeight] = useState(0);
-  // Update window height on resize
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowHeight(window.innerHeight);
-    };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+  useEffect(() => {
+    const onResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Measure container height
   useEffect(() => {
-    if (containerRef.current) {
-      const updateContainerHeight = () => {
-        const height =
-          containerRef.current?.getBoundingClientRect().height || 0;
-        setContainerHeight(height);
-      };
-
-      updateContainerHeight();
-
-      // Create a ResizeObserver to detect container size changes
-      const resizeObserver = new ResizeObserver(updateContainerHeight);
-      if (containerRef.current) {
-        resizeObserver.observe(containerRef.current);
-      }
-
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
+    if (!containerRef.current) return;
+    const measure = () =>
+      setContainerHeight(
+        containerRef.current!.getBoundingClientRect().height || 0
+      );
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
   }, []);
 
-  // Calculate calendar height based on window height and container
   useEffect(() => {
-    if (isProfilePage) return; // Skip all calculations for ProfilePage
-
-    // Define CSS custom properties for consistent spacing
+    if (isProfilePage) return;
     const root = document.documentElement;
     root.style.setProperty("--calendar-padding-top", "1rem");
     root.style.setProperty("--calendar-padding-bottom", "1rem");
     root.style.setProperty("--calendar-min-height", "350px");
-    root.style.setProperty("--footer-height", "3rem"); // Reduced footer height
-    root.style.setProperty("--footer-margin", "0.5rem"); // Reduced margin
+    root.style.setProperty("--footer-height", "3rem");
+    root.style.setProperty("--footer-margin", "0.5rem");
 
-    // Get the actual padding values from CSS
-    const computedStyle = getComputedStyle(root);
-    const paddingTop =
-      parseFloat(computedStyle.getPropertyValue("--calendar-padding-top")) ||
-      16;
-    const paddingBottom =
-      parseFloat(computedStyle.getPropertyValue("--calendar-padding-bottom")) ||
-      16;
-    const minHeight =
-      parseFloat(computedStyle.getPropertyValue("--calendar-min-height")) ||
-      350;
-    const footerHeight =
-      parseFloat(computedStyle.getPropertyValue("--footer-height")) || 48;
-    const footerMargin =
-      parseFloat(computedStyle.getPropertyValue("--footer-margin")) || 8;
+    const cs = getComputedStyle(root);
+    const pt = parseFloat(cs.getPropertyValue("--calendar-padding-top")) || 16;
+    const pb =
+      parseFloat(cs.getPropertyValue("--calendar-padding-bottom")) || 16;
+    const minH =
+      parseFloat(cs.getPropertyValue("--calendar-min-height")) || 350;
+    const fh = parseFloat(cs.getPropertyValue("--footer-height")) || 48;
+    const fm = parseFloat(cs.getPropertyValue("--footer-margin")) || 8;
+    const totalFooter = fh + fm;
 
-    // Calculate total space needed for footer (height + margin)
-    const totalFooterSpace = isProfilePage ? 0 : footerHeight + footerMargin;
+    const available = windowHeight - pt - pb - totalFooter - asyncCoursesHeight;
 
-    // Calculate available space, accounting for footer and AsyncCourses
-    const availableHeight =
-      windowHeight -
-      paddingTop -
-      paddingBottom -
-      totalFooterSpace -
-      asyncCoursesHeight;
-
-    // Device-specific adjustments based on measurements
-    let heightPercentage = 0.75; // Default 75%
-
-    // Adjust based on device width (for landscape vs portrait)
+    let pct = 0.75;
     const isLandscape = window.innerWidth > window.innerHeight;
+    if (window.innerWidth <= 768) pct = isLandscape ? 0.7 : 0.65;
+    else if (window.innerWidth <= 1024) pct = isLandscape ? 0.72 : 0.77;
+    else pct = isLandscape ? 0.73 : 0.75;
+    if (windowHeight < 600) pct = 0.65;
+    if (isProfilePage) pct = 1;
 
-    // Adjust based on device type and orientation
-    if (window.innerWidth <= 768) {
-      // Mobile devices
-      heightPercentage = isLandscape ? 0.7 : 0.65;
-    } else if (window.innerWidth <= 1024) {
-      // Tablets
-      heightPercentage = isLandscape ? 0.72 : 0.77;
-    } else {
-      // Desktop
-      heightPercentage = isLandscape ? 0.73 : 0.75;
-    }
+    const base = windowHeight * pct;
+    let maxH = containerHeight > 0 ? containerHeight : available;
+    maxH = Math.min(maxH, available);
+    const calc = Math.max(minH, Math.min(base, maxH));
 
-    // For very small screens, use a more conservative approach
-    if (windowHeight < 600) {
-      heightPercentage = 0.65;
-    }
-
-    // If in profile page, use full height
-    if (isProfilePage) {
-      heightPercentage = 1;
-    }
-
-    // Calculate responsive height with precise measurements
-    const baseHeight = windowHeight * heightPercentage;
-
-    // Use container height if available, otherwise use calculated height
-    let maxHeight = containerHeight > 0 ? containerHeight : availableHeight;
-
-    // Ensure we don't exceed available height
-    maxHeight = Math.min(maxHeight, availableHeight);
-
-    // Calculate responsive height
-    const calculatedHeight = Math.max(
-      minHeight,
-      Math.min(baseHeight, maxHeight)
+    const vh = Math.round((calc / windowHeight) * 100);
+    const asyncPct = asyncCoursesHeight / windowHeight;
+    const adjusted = Math.max(
+      vh - Math.round(asyncPct * 100),
+      Math.round((minH / windowHeight) * 100)
     );
 
-    // Convert to viewport height units for consistency
-    const vhValue = Math.round((calculatedHeight / windowHeight) * 100);
-
-    // Adjust vhValue based on asyncCoursesHeight to ensure proper scaling
-    // When asyncCoursesHeight increases, we need to decrease the vhValue proportionally
-    const asyncCoursesHeightPercentage = asyncCoursesHeight / windowHeight;
-    const adjustedVhValue = Math.max(
-      Math.round(vhValue - asyncCoursesHeightPercentage * 100),
-      Math.round((minHeight / windowHeight) * 100) // Ensure we don't go below minHeight
-    );
-
-    setCalendarHeight(`${adjustedVhValue}vh`);
-
-    // if (environment === "dev") {
-    //   console.log({
-    //     windowHeight,
-    //     availableHeight,
-    //     calculatedHeight,
-    //     vhValue,
-    //     adjustedVhValue,
-    //     containerHeight,
-    //     asyncCoursesHeight,
-    //     asyncCoursesHeightPercentage,
-    //     deviceType:
-    //       window.innerWidth <= 768
-    //         ? "mobile"
-    //         : window.innerWidth <= 1024
-    //           ? "tablet"
-    //           : "desktop",
-    //     orientation: isLandscape ? "landscape" : "portrait",
-    //     heightPercentage,
-    //     footerHeight,
-    //     totalFooterSpace,
-    //   });
-    // }
+    setCalendarHeight(`${adjusted}vh`);
   }, [windowHeight, containerHeight, asyncCoursesHeight, isProfilePage]);
 
-  // Map meeting day abbreviations to an offset relative to Monday.
-  // Monday: offset 0, Tuesday: 1, …, Sunday: 6.
-  const dayIndexMap: Record<
-    "Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su",
-    number
-  > = {
+  const handleAsyncCoursesHeightChange = useCallback(
+    (h: number) => setAsyncCoursesHeight(h),
+    []
+  );
+
+  // --- week start (stable) ---
+  const monday = useMemo(() => {
+    const now = new Date();
+    const offset = (now.getDay() + 6) % 7;
+    const m = new Date(now);
+    m.setDate(now.getDate() - offset);
+    m.setHours(0, 0, 0, 0);
+    return m;
+  }, []);
+
+  // --- map day abbrev to offset ---
+  const dayIndexMap: Record<string, number> = {
     Mo: 0,
     Tu: 1,
     We: 2,
@@ -228,117 +161,240 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     Su: 6,
   };
 
-  // Compute Monday of the current week (in local time)
-  const getCurrentWeekMonday = (): Date => {
-    const now = new Date();
-    // For Sunday (getDay() === 0), we want the Monday of the same week (6 days ago)
-    const offset = (now.getDay() + 6) % 7;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - offset);
-    monday.setHours(0, 0, 0, 0);
-    return monday;
-  };
+  // --- build your regular events once per sections/monday ---
+  const memoizedEvents = useMemo<ScheduleClassSection[]>(() => {
+    return sections.flatMap((section) => {
+      const isAsync =
+        section.meetings.length === 0 ||
+        section.meetings.every((m) => !m.start_time || !m.end_time);
+      if (isAsync) return [];
 
-  const monday = getCurrentWeekMonday();
+      return section.meetings.flatMap((meeting) => {
+        if (!meeting.start_time || !meeting.end_time) return [];
+        return meeting.days.map((day) => {
+          const offset = dayIndexMap[day];
+          const date = new Date(monday);
+          date.setDate(monday.getDate() + offset);
 
-  // Create an event for each meeting in every section.
-  const events = sections.flatMap((section) => {
-    // Check if this is an asynchronous class (no meetings or meetings with no times)
-    const isAsynchronous =
-      section.meetings.length === 0 ||
-      section.meetings.every(
-        (meeting) => !meeting.start_time || !meeting.end_time
-      );
+          const [sh, sm] = meeting.start_time?.split(":").map(Number) || [0, 0];
+          const [eh, em] = meeting.end_time?.split(":").map(Number) || [0, 0];
 
-    // Skip asynchronous classes - they will only appear in the header
-    if (isAsynchronous) {
-      return [];
-    }
+          const start = new Date(date);
+          start.setHours(sh, sm, 0, 0);
+          const end = new Date(date);
+          end.setHours(eh, em, 0, 0);
 
-    // For regular classes with meetings, create events as before
-    return section.meetings.flatMap((meeting) => {
-      // Only create events if both start_time and end_time are provided.
-      if (!meeting.start_time || !meeting.end_time) return [];
-      return meeting.days.map((day) => {
-        // Get the offset (in days) for this meeting day.
-        const offset = dayIndexMap[day as keyof typeof dayIndexMap];
-        const eventDate = new Date(monday);
-        eventDate.setDate(monday.getDate() + offset);
-
-        // Parse the start and end times (formatted as "HH:MM")
-        const [startHour, startMinute] = meeting.start_time
-          ? meeting.start_time.split(":").map(Number)
-          : [0, 0];
-        const [endHour, endMinute] = meeting.end_time
-          ? meeting.end_time.split(":").map(Number)
-          : [0, 0];
-
-        // Create Date objects for the event start and end.
-        const start = new Date(eventDate);
-        start.setHours(startHour, startMinute, 0, 0);
-
-        const end = new Date(eventDate);
-        end.setHours(endHour, endMinute, 0, 0);
-
-        return {
-          title: section.courseId,
-          courseName: section.courseName,
-          classNumber: section.classNumber,
-          enrollmentStatus: section.enrollmentStatus,
-          professors: section.professors,
-          start,
-          end,
-          color: section.color,
-          days: meeting.days,
-          start_time: meeting.start_time,
-          end_time: meeting.end_time,
-          isAsynchronous: false,
-        };
+          const id = `${section.classNumber}-${day}-${meeting.start_time}-${meeting.end_time}`;
+          return {
+            id,
+            title: section.courseId,
+            start,
+            end,
+            extendedProps: {
+              courseName: section.courseName,
+              classNumber: section.classNumber.toString(),
+              enrollmentStatus: section.enrollmentStatus,
+              professors: section.professors,
+              color: section.color,
+              days: meeting.days,
+              start_time: meeting.start_time,
+              end_time: meeting.end_time,
+              isAsynchronous: false,
+            },
+          };
+        });
       });
     });
-  });
+  }, [sections, monday]);
 
-  // 1) Split all normal events into conflict groups
-  const groups = getConflictGroups(events as unknown as EventType[]);
-  // 2) Build background events for each group (only if group size > 1? up to you)
-  let backgroundEvents: any[] = [];
-  for (const group of groups) {
-    // If you only want to highlight if there's at least 2 events in a group:
-    if (group.length > 1) {
-      const bg = buildBackgroundEventsForGroup(group, monday);
-      backgroundEvents = backgroundEvents.concat(bg);
-    }
-  }
+  // --- background conflict events ---
+  const memoizedBackgroundEvents = useMemo(() => {
+    const groups = getConflictGroups(
+      memoizedEvents.map((e) => ({
+        ...e.extendedProps,
+        start: e.start,
+        end: e.end,
+      }))
+    );
+    return groups
+      .filter((g) => g.length > 1)
+      .flatMap((g) => buildBackgroundEventsForGroup(g, monday));
+  }, [memoizedEvents, monday]);
 
-  // 3) Combine background events and normal events
-  // Instead of using state for finalEvents, compute it directly
-  const filteredEvents = [...backgroundEvents, ...events].filter(
-    (e) => !hiddenSections.includes(e.classNumber)
+  // --- custom events from Redux ---
+  const customEvents = useAppSelector(
+    (s) => s.schedule.currentSchedule?.customEvents || []
+  );
+  const calendarCustomEvents = useMemo(() => {
+    return customEvents.map((evt) => {
+      const meet = evt.meetings[0];
+      const offset = dayIndexMap[meet.days[0]];
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + offset);
+
+      const [sh, sm] = meet.start_time?.split(":").map(Number) || [0, 0];
+      const [eh, em] = meet.end_time?.split(":").map(Number) || [0, 0];
+      const start = new Date(date);
+      start.setHours(sh, sm, 0, 0);
+      const end = new Date(date);
+      end.setHours(eh, em, 0, 0);
+
+      return {
+        id: evt.id,
+        title: evt.title,
+        start,
+        end,
+        color: evt.color,
+        extendedProps: {
+          isCustomEvent: true,
+          ...evt,
+        },
+      };
+    });
+  }, [customEvents, monday]);
+
+  // --- combine & filter hidden ---
+  const filteredEvents = useMemo(
+    () =>
+      [...memoizedBackgroundEvents, ...memoizedEvents].filter(
+        (e) =>
+          !e.extendedProps?.classNumber ||
+          !hiddenSections.includes(e.extendedProps.classNumber)
+      ),
+    [memoizedBackgroundEvents, memoizedEvents, hiddenSections]
+  );
+  const allEvents = useMemo(
+    () => [...filteredEvents, ...calendarCustomEvents],
+    [filteredEvents, calendarCustomEvents]
   );
 
-  const handleEventClick = (eventClickArg: any) => {
-    const { classNumber } = eventClickArg.event.extendedProps;
-    dispatch(
-      classSearchActions.fetchSingleSection({
-        classNumber,
-        term: currentScheduleTerm,
-      })
-    );
-  };
+  // --- interaction callbacks ---
+  const handleEventClick = useCallback(
+    (arg: any) => {
+      const { classNumber } = arg.event.extendedProps;
+      dispatch(
+        classSearchActions.fetchSingleSection({
+          classNumber,
+          term: currentScheduleTerm,
+        })
+      );
+    },
+    [dispatch, currentScheduleTerm]
+  );
 
-  const handleEyeClick = (event: any) => {
-    const classNumber = event.event.extendedProps.classNumber;
-    dispatch(toggleHiddenSection(classNumber));
-  };
+  const handleSelect = useCallback(
+    (selectInfo: any) => {
+      const dow = selectInfo.start.getDay();
+      if (dow === 0 || dow === 6) return;
+      const dayMap: Record<number, string> = {
+        1: "Mo",
+        2: "Tu",
+        3: "We",
+        4: "Th",
+        5: "Fr",
+      };
+      const fmt = (d: Date) =>
+        `${d.getHours().toString().padStart(2, "0")}:${d
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`;
+      const tempId = `TEMP-${Date.now()}`;
+      const newEvt: CustomScheduleEvent = {
+        id: tempId,
+        title: "New Event",
+        color: "#334155",
+        meetings: [
+          {
+            days: [dayMap[dow] as "Mo" | "Tu" | "We" | "Th" | "Fr"],
+            start_time: fmt(selectInfo.start),
+            end_time: fmt(selectInfo.end),
+          },
+        ],
+        isVisible: true,
+        isLocked: false,
+      };
+      dispatch(addCustomEvent(newEvt));
+    },
+    [dispatch]
+  );
 
-  // Handle AsyncCourses height changes
-  const handleAsyncCoursesHeightChange = (height: number) => {
-    setAsyncCoursesHeight(height);
-  };
+  const handleEyeClick = useCallback(
+    (arg: any) => {
+      const cn = arg.event.extendedProps.classNumber;
+      dispatch(toggleHiddenSection(cn));
+    },
+    [dispatch]
+  );
+
+  // --- FullCalendar callbacks & options, all stable refs ---
+  const plugins = useMemo(
+    () => [timeGridPlugin, interactionPlugin, dayGridPlugin],
+    []
+  );
+  const headerToolbar = useMemo(
+    () => ({ left: "", center: "", right: "" }),
+    []
+  );
+  const titleFormat = useMemo(() => ({}), []);
+  const slotLabelFormat = useMemo(
+    () => ({
+      hour: "numeric",
+      minute: "2-digit",
+      omitZeroMinute: false,
+      meridiem: "short",
+    }),
+    []
+  );
+  const dayHeaderContent = useCallback((args: any) => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return days[args.date.getDay()];
+  }, []);
+  const dayHeaderClassNames = useMemo(
+    () =>
+      "bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center",
+    []
+  );
+  const slotLabelClassNames = useMemo(
+    () => "text-gray-400 dark:text-slate-500 text-sm",
+    []
+  );
+  const dayCellClassNames = useMemo(
+    () => "border border-slate-200 dark:border-slate-700",
+    []
+  );
+  const eventClassNamesCb = useCallback((arg: any) => {
+    if (arg.event.extendedProps.isOverlay) return ["conflict-overlay-event"];
+    if (arg.event.extendedProps.isCustomEvent) return ["custom-event"];
+    return [];
+  }, []);
+  const eventContentCb = useCallback(
+    (arg: any) => {
+      if (arg.event.extendedProps.isOverlay) return null;
+      if (arg.event.extendedProps.isCustomEvent) {
+        return <div className="p-1">{arg.event.title}</div>;
+      }
+      return (
+        <ScheduleTimeSlots
+          event={arg.event as any}
+          onClick={() => handleEventClick(arg)}
+          onEyeClick={() => handleEyeClick(arg)}
+        />
+      );
+    },
+    [handleEventClick, handleEyeClick]
+  );
+  const eventDidMountCb = useCallback((info: any) => {
+    if (info.event.display === "background") {
+      info.el.style.zIndex = "9999";
+      info.el.style.pointerEvents = "none";
+      info.el.style.backgroundColor = info.event.extendedProps.color;
+    }
+  }, []);
+
+  const calendarRef = useRef<FullCalendar>(null);
 
   return (
     <div className="relative w-full h-full">
-      {/* Add the AsyncCourses component above the calendar */}
       <AsyncCourses
         sections={sections}
         onHeightChange={handleAsyncCoursesHeightChange}
@@ -346,92 +402,54 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       <div
         ref={containerRef}
         className={`
-        border
-        border-slate-200
-        dark:border-slate-700
-        rounded-md
-        bg-white
-        dark:bg-slate-900
-        text-slate-900
-        dark:text-slate-100
-        custom-tr-height
-        custom-td-color
-        overflow-hidden
-        w-full
-        h-full
-        flex
-        flex-col
-        ${
-          !isProfilePage
-            ? `
-        max-h-[calc(100vh-16rem)]
-        sm:max-h-[calc(100vh-13rem)]
-        md:max-h-[calc(100vh-10rem)]
-        lg:max-h-[calc(100vh-8rem)]
-        `
-            : ""
-        }
-      `}
+          border border-slate-200 dark:border-slate-700
+          rounded-md bg-white dark:bg-slate-900
+          text-slate-900 dark:text-slate-100
+          custom-tr-height custom-td-color
+          overflow-hidden w-full h-full flex flex-col
+          ${
+            !isProfilePage
+              ? `
+            max-h-[calc(100vh-16rem)]
+            sm:max-h-[calc(100vh-13rem)]
+            md:max-h-[calc(100vh-10rem)]
+            lg:max-h-[calc(100vh-8rem)]
+          `
+              : ""
+          }
+        `}
       >
         <ScrollArea className="h-full w-full">
           <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
+            ref={calendarRef}
+            plugins={plugins}
             initialView="timeGridWeek"
             initialDate={monday}
             timeZone="local"
-            headerToolbar={{ left: "", center: "", right: "" }}
-            selectable={false}
+            headerToolbar={headerToolbar}
+            selectable={true}
+            selectMirror={true}
+            select={handleSelect}
             allDaySlot={false}
             slotMinTime="07:00:00"
             slotMaxTime="21:00:00"
             slotDuration="01:00:00"
             hiddenDays={[0, 6]}
-            events={filteredEvents}
+            events={allEvents}
             contentHeight={isProfilePage ? "80vh" : calendarHeight}
             expandRows={true}
-            titleFormat={{}} // (Empty: no title text on top)
-            dayHeaderContent={(args: any) => {
-              const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-              return days[args.date.getDay()];
-            }}
-            dayHeaderClassNames="bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center"
-            slotLabelFormat={{
-              hour: "numeric",
-              minute: "2-digit",
-              omitZeroMinute: false,
-              meridiem: "short",
-            }}
-            slotLabelClassNames="text-gray-400 dark:text-slate-500 text-sm"
-            dayCellClassNames="border border-slate-200 dark:border-slate-700"
+            titleFormat={titleFormat}
+            dayHeaderContent={dayHeaderContent}
+            dayHeaderClassNames={dayHeaderClassNames}
+            slotLabelFormat={slotLabelFormat as any}
+            slotLabelClassNames={slotLabelClassNames}
+            dayCellClassNames={dayCellClassNames}
             stickyHeaderDates={true}
             eventColor="#334155"
-            eventClassNames={(arg: any) => {
-              if (arg.event.extendedProps.isOverlay) {
-                return ["conflict-overlay-event"];
-              }
-              return [];
-            }}
-            eventContent={(arg: any) => {
-              if (arg.event.extendedProps.isOverlay) {
-                return null; // no text
-              }
-              return (
-                <ScheduleTimeSlots
-                  event={arg.event as unknown as ScheduleClassSection}
-                  onClick={() => handleEventClick(arg)}
-                  onEyeClick={() => handleEyeClick(arg)}
-                />
-              );
-            }}
+            eventClassNames={eventClassNamesCb}
+            eventContent={eventContentCb}
             nowIndicator={false}
-            eventDidMount={(info: any) => {
-              // If this is a background event, style it on the fly
-              if (info.event.display === "background") {
-                info.el.style.zIndex = "9999";
-                info.el.style.pointerEvents = "none";
-                info.el.style.backgroundColor = info.event.extendedProps.color;
-              }
-            }}
+            eventDidMount={eventDidMountCb}
           />
         </ScrollArea>
       </div>
