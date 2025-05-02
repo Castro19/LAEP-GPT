@@ -3,7 +3,7 @@ import { parseTime } from "./conflicts";
 
 type EventType = {
   courseName: string;
-  classNumber: string;
+  classNumber: number;
   enrollmentStatus: "O" | "C" | "W";
   professors: Array<{ name: string; id: string | null }>;
   color: string;
