@@ -246,23 +246,16 @@ const scheduleSlice = createSlice({
         state.hiddenSections.splice(index, 1);
       }
     },
-    addCustomEvent(state, action: PayloadAction<CustomScheduleEvent>) {
-      if (state.currentSchedule) {
-        if (!state.currentSchedule.customEvents) {
-          state.currentSchedule.customEvents = [];
-        }
-        state.currentSchedule.customEvents.push(action.payload);
+    upsertCustomEvent(state, action: PayloadAction<CustomScheduleEvent>) {
+      if (!state.currentSchedule) return;
+      const list = state.currentSchedule.customEvents ?? [];
+      const idx = list.findIndex((e) => e.id === action.payload.id);
+      if (idx >= 0) {
+        list[idx] = action.payload;
+      } else {
+        list.push(action.payload);
       }
-    },
-    updateCustomEvent(state, action: PayloadAction<CustomScheduleEvent>) {
-      if (state.currentSchedule?.customEvents) {
-        const index = state.currentSchedule.customEvents.findIndex(
-          (event) => event.id === action.payload.id
-        );
-        if (index !== -1) {
-          state.currentSchedule.customEvents[index] = action.payload;
-        }
-      }
+      state.currentSchedule.customEvents = list;
     },
     removeCustomEvent(state, action: PayloadAction<string>) {
       if (state.currentSchedule?.customEvents) {
@@ -334,8 +327,7 @@ export const {
   setPreferences,
   setCurrentScheduleTerm,
   toggleHiddenSection,
-  addCustomEvent,
-  updateCustomEvent,
+  upsertCustomEvent,
   removeCustomEvent,
 } = scheduleSlice.actions;
 

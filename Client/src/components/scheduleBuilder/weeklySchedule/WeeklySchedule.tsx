@@ -10,11 +10,12 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
 import {
-  toggleHiddenSection,
-  addCustomEvent,
-} from "@/redux/schedule/scheduleSlice";
+  useAppDispatch,
+  useAppSelector,
+  classSearchActions,
+  scheduleActions,
+} from "@/redux";
 import { CustomScheduleEvent } from "@polylink/shared/types";
 
 // My components
@@ -31,6 +32,7 @@ import {
 import { SelectedSection } from "@polylink/shared/types";
 import AsyncCourses from "./AsyncCourses";
 import CustomEventSlot from "./CustomEventSlot";
+import { Modal } from "@/components/ui/animated-modal";
 
 type EventType = {
   courseName: string;
@@ -229,30 +231,38 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     (s) => s.schedule.currentSchedule?.customEvents || []
   );
   const calendarCustomEvents = useMemo(() => {
-    return customEvents.map((evt) => {
-      const meet = evt.meetings[0];
-      const offset = dayIndexMap[meet.days[0]];
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + offset);
+    return customEvents.flatMap((evt) => {
+      // For each day in the meeting, create a separate event
+      return evt.meetings[0].days.map((day) => {
+        const offset = dayIndexMap[day];
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + offset);
 
-      const [sh, sm] = meet.start_time?.split(":").map(Number) || [0, 0];
-      const [eh, em] = meet.end_time?.split(":").map(Number) || [0, 0];
-      const start = new Date(date);
-      start.setHours(sh, sm, 0, 0);
-      const end = new Date(date);
-      end.setHours(eh, em, 0, 0);
+        const [sh, sm] = evt.meetings[0].start_time?.split(":").map(Number) || [
+          0, 0,
+        ];
+        const [eh, em] = evt.meetings[0].end_time?.split(":").map(Number) || [
+          0, 0,
+        ];
+        const start = new Date(date);
+        start.setHours(sh, sm, 0, 0);
+        const end = new Date(date);
+        end.setHours(eh, em, 0, 0);
 
-      return {
-        id: evt.id,
-        title: evt.title,
-        start,
-        end,
-        color: evt.color,
-        extendedProps: {
-          isCustomEvent: true,
-          ...evt,
-        },
-      };
+        return {
+          id: `${evt.id}-${day}`,
+          title: evt.title,
+          start,
+          end,
+          color: evt.color,
+          extendedProps: {
+            isCustomEvent: true,
+            ...evt,
+            // Include the specific day in the extendedProps
+            currentDay: day,
+          },
+        };
+      });
     });
   }, [customEvents, monday]);
 
@@ -316,7 +326,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
         isVisible: true,
         isLocked: false,
       };
-      dispatch(addCustomEvent(newEvt));
+      dispatch(scheduleActions.upsertCustomEvent(newEvt));
     },
     [dispatch]
   );
@@ -324,7 +334,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   const handleEyeClick = useCallback(
     (arg: any) => {
       const cn = arg.event.extendedProps.classNumber;
-      dispatch(toggleHiddenSection(cn));
+      dispatch(scheduleActions.toggleHiddenSection(cn));
     },
     [dispatch]
   );
@@ -375,9 +385,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       if (arg.event.extendedProps.isOverlay) return null;
       if (arg.event.extendedProps.isCustomEvent) {
         return (
-          <CustomEventSlot
-            event={arg.event.extendedProps as CustomScheduleEvent}
-          />
+          <Modal>
+            <CustomEventSlot
+              event={arg.event.extendedProps as CustomScheduleEvent}
+            />
+          </Modal>
         );
       } else {
         return (
