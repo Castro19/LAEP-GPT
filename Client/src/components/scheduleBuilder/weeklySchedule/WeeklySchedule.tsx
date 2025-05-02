@@ -374,14 +374,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     (arg: any) => {
       if (arg.event.extendedProps.isOverlay) return null;
       if (arg.event.extendedProps.isCustomEvent) {
-        return <div className="p-1">{arg.event.title}</div>;
-      }
-
-      if (arg.event.extendedProps.isCustomEvent) {
         return (
           <CustomEventSlot
-            event={arg.event as any}
-            onSave={() => handleEventClick(arg)}
+            event={arg.event.extendedProps as CustomScheduleEvent}
           />
         );
       } else {
