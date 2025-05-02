@@ -12,6 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { generatedScheduleToSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
+import { Preferences } from "@/redux/schedule/scheduleSlice";
 
 export type SchedulePreferencesForm = z.infer<
   typeof SCHEDULE_PREFERENCES_SCHEMA
@@ -43,7 +44,7 @@ const ScheduleBuilderForm = ({
 
   useEffect(() => {
     if (JSON.stringify(watchedValues) !== JSON.stringify(schedulePreferences)) {
-      dispatch(scheduleActions.setPreferences(watchedValues));
+      dispatch(scheduleActions.setPreferences(watchedValues as Preferences));
     }
   }, [watchedValues, dispatch, schedulePreferences]);
 
