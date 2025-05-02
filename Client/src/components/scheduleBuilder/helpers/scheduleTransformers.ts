@@ -36,7 +36,7 @@ export const scheduleToGeneratedSchedule = (
     // Convert SelectedSection to EventType for getConflictGroups
     const events = sections.map((section) => ({
       courseName: section.courseName,
-      classNumber: section.classNumber.toString(),
+      classNumber: section.classNumber,
       enrollmentStatus: section.enrollmentStatus,
       professors: section.professors,
       color: "",
@@ -50,8 +50,7 @@ export const scheduleToGeneratedSchedule = (
     // Convert back to SelectedSection groups and flatten
     conflictGroups = groups.flatMap((group) =>
       group.map(
-        (event) =>
-          sections.find((s) => s.classNumber.toString() === event.classNumber)!
+        (event) => sections.find((s) => s.classNumber === event.classNumber)!
       )
     );
   }
@@ -79,6 +78,7 @@ export const scheduleToGeneratedSchedule = (
     id: schedule.id,
     name: schedule.name,
     sections: schedule.sections,
+    customEvents: schedule.customEvents,
     averageRating,
     withConflicts,
     conflictGroups,

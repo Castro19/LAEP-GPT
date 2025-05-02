@@ -30,6 +30,7 @@ import {
 // Types
 import { SelectedSection } from "@polylink/shared/types";
 import AsyncCourses from "./AsyncCourses";
+import CustomEventSlot from "./CustomEventSlot";
 
 type EventType = {
   courseName: string;
@@ -41,6 +42,7 @@ type EventType = {
   start_time: string | null;
   end_time: string | null;
   isAsynchronous?: boolean;
+  isCustomEvent: boolean;
 };
 export type ScheduleClassSection = {
   id: string;
@@ -200,6 +202,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               start_time: meeting.start_time,
               end_time: meeting.end_time,
               isAsynchronous: false,
+              isCustomEvent: false,
             },
           };
         });
@@ -373,13 +376,23 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       if (arg.event.extendedProps.isCustomEvent) {
         return <div className="p-1">{arg.event.title}</div>;
       }
-      return (
-        <ScheduleTimeSlots
-          event={arg.event as any}
-          onClick={() => handleEventClick(arg)}
-          onEyeClick={() => handleEyeClick(arg)}
-        />
-      );
+
+      if (arg.event.extendedProps.isCustomEvent) {
+        return (
+          <CustomEventSlot
+            event={arg.event as any}
+            onSave={() => handleEventClick(arg)}
+          />
+        );
+      } else {
+        return (
+          <ScheduleTimeSlots
+            event={arg.event as any}
+            onClick={() => handleEventClick(arg)}
+            onEyeClick={() => handleEyeClick(arg)}
+          />
+        );
+      }
     },
     [handleEventClick, handleEyeClick]
   );
