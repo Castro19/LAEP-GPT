@@ -155,7 +155,7 @@ const logSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchLogs.pending, (state, action) => {
+      .addCase(fetchLogs.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchLogs.fulfilled, (state, action) => {

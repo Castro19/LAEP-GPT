@@ -23,7 +23,9 @@ const DaysSelector = ({
   field,
   form,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: ControllerRenderProps<z.infer<any>, "days">;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<z.infer<any>>;
 }) => {
   // Ensure field.value is always an array, even when reset

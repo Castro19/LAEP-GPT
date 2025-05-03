@@ -155,15 +155,18 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   }, []);
 
   // --- map day abbrev to offset ---
-  const dayIndexMap: Record<string, number> = {
-    Mo: 0,
-    Tu: 1,
-    We: 2,
-    Th: 3,
-    Fr: 4,
-    Sa: 5,
-    Su: 6,
-  };
+  const dayIndexMap = useMemo(
+    () => ({
+      Mo: 0,
+      Tu: 1,
+      We: 2,
+      Th: 3,
+      Fr: 4,
+      Sa: 5,
+      Su: 6,
+    }),
+    []
+  );
 
   // --- build your regular events once per sections/monday ---
   const memoizedEvents = useMemo<ScheduleClassSection[]>(() => {
@@ -210,7 +213,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
         });
       });
     });
-  }, [sections, monday]);
+  }, [sections, monday, dayIndexMap]);
 
   // --- background conflict events ---
   const memoizedBackgroundEvents = useMemo(() => {
@@ -264,7 +267,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
         };
       });
     });
-  }, [customEvents, monday]);
+  }, [customEvents, monday, dayIndexMap]);
 
   // --- combine & filter hidden ---
   const filteredEvents = useMemo(
