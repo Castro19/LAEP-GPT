@@ -4,10 +4,8 @@ import {
   WeeklySchedule,
 } from "@/components/scheduleBuilder";
 import { useAppSelector } from "@/redux";
-import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 const ScheduleContainer = () => {
-  const isNarrowScreen = useIsNarrowScreen();
   const { schedules, currentSchedule } = useAppSelector(
     (state) => state.schedule
   );
@@ -31,10 +29,7 @@ const ScheduleContainer = () => {
           <ScheduleAverageRating />
         </div>
         <div className="flex-1">
-          <WeeklySchedule
-            sections={currentSchedule.sections}
-            height={isNarrowScreen ? "70vh" : "80vh"}
-          />
+          <WeeklySchedule sections={currentSchedule.sections} />
         </div>
       </div>
     </div>

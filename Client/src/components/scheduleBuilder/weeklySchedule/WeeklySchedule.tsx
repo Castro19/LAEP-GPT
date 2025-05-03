@@ -30,13 +30,11 @@ import { SelectedSection } from "@polylink/shared/types";
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  height?: string;
   isProfilePage?: boolean;
 };
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-
   isProfilePage = false,
 }) => {
   const dispatch = useAppDispatch();

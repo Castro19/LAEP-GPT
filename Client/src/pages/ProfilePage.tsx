@@ -310,7 +310,6 @@ function ProfilePage() {
               {currentSchedule ? (
                 <WeeklySchedule
                   sections={currentSchedule.sections}
-                  height="100vh"
                   isProfilePage={true}
                 />
               ) : (
