@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -26,14 +26,17 @@ import { SelectedSection } from "@polylink/shared/types";
 type AsyncCoursesProps = {
   sections: SelectedSection[];
   onHeightChange?: (height: number) => void;
+  isExpanded: boolean;
+  setIsExpanded: (expanded: boolean) => void;
 };
 
 // Add a new component for displaying asynchronous courses
 const AsyncCourses: React.FC<AsyncCoursesProps> = ({
   sections,
   onHeightChange,
+  isExpanded,
+  setIsExpanded,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const isNarrowScreen = useIsNarrowScreen();
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -46,6 +46,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   const customEvents = useAppSelector(
     (s) => s.schedule.currentSchedule?.customEvents || []
   );
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Get the start of the current week (Monday)
   const monday = useMemo(() => {
@@ -274,7 +275,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   return (
     <div className="relative w-full h-full flex flex-col">
       <div className="flex-none">
-        <AsyncCourses sections={sections} />
+        <AsyncCourses
+          sections={sections}
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
+        />
       </div>
       <div
         className={`
@@ -284,7 +289,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           text-slate-900 dark:text-slate-100
           custom-tr-height custom-td-color
           overflow-hidden w-full
-          ${!isProfilePage ? "max-h-[calc(100vh-18rem)]" : ""}
+          ${!isProfilePage ? (isExpanded ? "max-h-[calc(100vh-20rem)]" : "max-h-[calc(100vh-16rem)]") : ""}
         `}
       >
         <ScrollArea className="h-full w-full">
