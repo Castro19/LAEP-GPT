@@ -303,6 +303,8 @@ const scheduleSlice = createSlice({
       .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
         state.currentSchedule = action.payload.schedule;
         state.currentScheduleId = action.payload.schedule.id;
+        state.page = 1;
+        state.totalPages = 1;
         if (action.payload.term) {
           state.currentScheduleTerm = action.payload.term as CourseTerm;
         }
