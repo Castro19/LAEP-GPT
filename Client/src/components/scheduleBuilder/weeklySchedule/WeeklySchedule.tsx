@@ -156,7 +156,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           title: evt.title,
           start,
           end,
-          color: evt.color,
+          color: "#E5E7EB",
           extendedProps: {
             isCustomEvent: true,
             ...evt,
@@ -219,7 +219,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       const newEvt: CustomScheduleEvent = {
         id: tempId,
         title: "New Event",
-        color: "#334155",
+        color: "#E5E7EB",
         meetings: [
           {
             days: [dayMap[dow] as "Mo" | "Tu" | "We" | "Th" | "Fr"],
@@ -336,11 +336,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               height="auto"
               expandRows={true}
               stickyHeaderDates={true}
-              eventColor="#334155"
               eventContent={eventContentCb}
               nowIndicator={false}
               dayHeaderFormat={{ weekday: "short" }}
               dayHeaderClassNames="bg-slate-800 text-white font-semibold border-slate-700"
+              eventColor="#E5E7EB"
             />
           </div>
         </ScrollArea>
