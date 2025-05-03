@@ -272,14 +272,37 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     [handleEventClick, handleEyeClick]
   );
 
+  // Filter for asynchronous courses
+  const asyncSections = sections.filter(
+    (section) =>
+      section.meetings.length === 0 ||
+      section.meetings.every(
+        (meeting) => !meeting.start_time || !meeting.end_time
+      )
+  );
+
+  const hasAsyncCourses = asyncSections.length > 0;
+
+  const calculateMaxHeight = useCallback(() => {
+    if (isProfilePage) return "";
+
+    const baseHeight = hasAsyncCourses ? 20 : 16;
+    const narrowScreenAdjustment = isNarrowScreen ? 4 : 0;
+    const expandedAdjustment = isExpanded || !hasAsyncCourses ? 0 : -4;
+
+    return `max-h-[calc(100vh-${baseHeight + narrowScreenAdjustment + expandedAdjustment}rem)]`;
+  }, [hasAsyncCourses, isNarrowScreen, isExpanded, isProfilePage]);
+
   return (
     <div className="relative w-full h-full flex flex-col">
       <div className="flex-none">
-        <AsyncCourses
-          sections={sections}
-          isExpanded={isExpanded}
-          setIsExpanded={setIsExpanded}
-        />
+        {hasAsyncCourses && (
+          <AsyncCourses
+            sections={sections}
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+          />
+        )}
       </div>
       <div
         className={`
@@ -289,8 +312,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           text-slate-900 dark:text-slate-100
           custom-tr-height custom-td-color w-full
           overflow-auto
-          ${!isProfilePage ? (isExpanded ? "max-h-[calc(100vh-20rem)]" : "max-h-[calc(100vh-16rem)]") : ""}
-          ${isNarrowScreen ? (isExpanded ? "max-h-[calc(100vh-24rem)]" : "max-h-[calc(100vh-19rem)]") : ""}
+          ${calculateMaxHeight()}
+          fc-scroller no-scrollbar
         `}
       >
         <ScrollArea className="h-full w-full">
@@ -300,7 +323,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               initialView="timeGridWeek"
               initialDate={monday}
               timeZone="local"
-              headerToolbar={{}}
+              headerToolbar={false}
               selectable={true}
               selectMirror={true}
               select={handleSelect}
@@ -316,6 +339,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               eventColor="#334155"
               eventContent={eventContentCb}
               nowIndicator={false}
+              dayHeaderFormat={{ weekday: "short" }}
+              dayHeaderClassNames="bg-slate-800 text-white font-semibold border-slate-700"
             />
           </div>
         </ScrollArea>
