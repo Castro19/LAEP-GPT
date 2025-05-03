@@ -36,7 +36,7 @@ type WeeklyScheduleProps = {
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-  height = "80vh",
+
   isProfilePage = false,
 }) => {
   const dispatch = useAppDispatch();
@@ -272,41 +272,46 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   );
 
   return (
-    <div className="relative w-full h-full">
-      <AsyncCourses sections={sections} />
+    <div className="relative w-full h-full flex flex-col">
+      <div className="flex-none">
+        <AsyncCourses sections={sections} />
+      </div>
       <div
         className={`
+          flex-1
           border border-slate-200 dark:border-slate-700
           rounded-md bg-white dark:bg-slate-900
           text-slate-900 dark:text-slate-100
           custom-tr-height custom-td-color
-          overflow-hidden w-full h-full flex flex-col
-          ${!isProfilePage ? "max-h-[calc(100vh-16rem)]" : ""}
+          overflow-hidden w-full
+          ${!isProfilePage ? "max-h-[calc(100vh-18rem)]" : ""}
         `}
       >
         <ScrollArea className="h-full w-full">
-          <FullCalendar
-            plugins={plugins}
-            initialView="timeGridWeek"
-            initialDate={monday}
-            timeZone="local"
-            headerToolbar={{}}
-            selectable={true}
-            selectMirror={true}
-            select={handleSelect}
-            allDaySlot={false}
-            slotMinTime="07:00:00"
-            slotMaxTime="21:00:00"
-            slotDuration="01:00:00"
-            hiddenDays={[0, 6]}
-            events={allEvents}
-            contentHeight={height}
-            expandRows={true}
-            stickyHeaderDates={true}
-            eventColor="#334155"
-            eventContent={eventContentCb}
-            nowIndicator={false}
-          />
+          <div className="h-full">
+            <FullCalendar
+              plugins={plugins}
+              initialView="timeGridWeek"
+              initialDate={monday}
+              timeZone="local"
+              headerToolbar={{}}
+              selectable={true}
+              selectMirror={true}
+              select={handleSelect}
+              allDaySlot={false}
+              slotMinTime="07:00:00"
+              slotMaxTime="21:00:00"
+              slotDuration="01:00:00"
+              hiddenDays={[0, 6]}
+              events={allEvents}
+              height="auto"
+              expandRows={true}
+              stickyHeaderDates={true}
+              eventColor="#334155"
+              eventContent={eventContentCb}
+              nowIndicator={false}
+            />
+          </div>
         </ScrollArea>
       </div>
       <div id="calendar-modal-root" />
