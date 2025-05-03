@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -23,18 +23,20 @@ import { formatProfessorNames } from "@/components/scheduleBuilder";
 // Types
 import { SelectedSection } from "@polylink/shared/types";
 
-interface AsyncCoursesProps {
+type AsyncCoursesProps = {
   sections: SelectedSection[];
-  // eslint-disable-next-line no-unused-vars
-  onHeightChange: (height: number) => void;
-}
+  onHeightChange?: (height: number) => void;
+  isExpanded: boolean;
+  setIsExpanded: (expanded: boolean) => void;
+};
 
 // Add a new component for displaying asynchronous courses
 const AsyncCourses: React.FC<AsyncCoursesProps> = ({
   sections,
   onHeightChange,
+  isExpanded,
+  setIsExpanded,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const isNarrowScreen = useIsNarrowScreen();
   const dispatch = useAppDispatch();
   const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
@@ -79,7 +81,9 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
       const updateHeight = () => {
         const height =
           containerRef.current?.getBoundingClientRect().height || 0;
-        onHeightChange(height);
+        if (onHeightChange) {
+          onHeightChange(height);
+        }
       };
 
       updateHeight();

@@ -104,7 +104,7 @@ body {
   font-size: 20px !important;
 }
 
-.custom-td-color td {
+.custom-td-color tr {
   border: 1px solid #64748b !important;
   color: #ffffff !important;
   overflow: hidden;

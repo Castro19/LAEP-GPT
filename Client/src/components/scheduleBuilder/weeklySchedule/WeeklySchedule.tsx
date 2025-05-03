@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -18,133 +12,43 @@ import {
 } from "@/redux";
 import { CustomScheduleEvent } from "@polylink/shared/types";
 
-// My components
+// Components
 import { ScheduleTimeSlots } from "@/components/scheduleBuilder";
-// UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AsyncCourses from "./AsyncCourses";
+import CustomEventSlot from "./CustomEventSlot";
+import { Modal } from "@/components/ui/animated-modal";
 
 // Helpers
 import {
   getConflictGroups,
   buildBackgroundEventsForGroup,
 } from "@/components/scheduleBuilder";
+
 // Types
 import { SelectedSection } from "@polylink/shared/types";
-import AsyncCourses from "./AsyncCourses";
-import CustomEventSlot from "./CustomEventSlot";
-import { Modal } from "@/components/ui/animated-modal";
-
-type EventType = {
-  courseName: string;
-  classNumber: number;
-  enrollmentStatus: "O" | "C" | "W";
-  professors: Array<{ name: string; id: string | null }>;
-  color: string;
-  days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
-  start_time: string | null;
-  end_time: string | null;
-  isAsynchronous?: boolean;
-  isCustomEvent: boolean;
-};
-export type ScheduleClassSection = {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  extendedProps: EventType;
-};
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  height: string;
   isProfilePage?: boolean;
 };
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
   sections,
-  height,
   isProfilePage = false,
 }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm, hiddenSections } = useAppSelector(
     (s) => s.schedule
   );
-
-  // --- layout state & measurements (unchanged) ---
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-  const [calendarHeight, setCalendarHeight] = useState(height);
-  const [containerHeight, setContainerHeight] = useState(0);
-  const [asyncCoursesHeight, setAsyncCoursesHeight] = useState(0);
-
-  useEffect(() => {
-    const onResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const measure = () =>
-      setContainerHeight(
-        containerRef.current!.getBoundingClientRect().height || 0
-      );
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(containerRef.current);
-    return () => ro.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (isProfilePage) return;
-    const root = document.documentElement;
-    root.style.setProperty("--calendar-padding-top", "1rem");
-    root.style.setProperty("--calendar-padding-bottom", "1rem");
-    root.style.setProperty("--calendar-min-height", "350px");
-    root.style.setProperty("--footer-height", "3rem");
-    root.style.setProperty("--footer-margin", "0.5rem");
-
-    const cs = getComputedStyle(root);
-    const pt = parseFloat(cs.getPropertyValue("--calendar-padding-top")) || 16;
-    const pb =
-      parseFloat(cs.getPropertyValue("--calendar-padding-bottom")) || 16;
-    const minH =
-      parseFloat(cs.getPropertyValue("--calendar-min-height")) || 350;
-    const fh = parseFloat(cs.getPropertyValue("--footer-height")) || 48;
-    const fm = parseFloat(cs.getPropertyValue("--footer-margin")) || 8;
-    const totalFooter = fh + fm;
-
-    const available = windowHeight - pt - pb - totalFooter - asyncCoursesHeight;
-
-    let pct = 0.75;
-    const isLandscape = window.innerWidth > window.innerHeight;
-    if (window.innerWidth <= 768) pct = isLandscape ? 0.7 : 0.65;
-    else if (window.innerWidth <= 1024) pct = isLandscape ? 0.72 : 0.77;
-    else pct = isLandscape ? 0.73 : 0.75;
-    if (windowHeight < 600) pct = 0.65;
-    if (isProfilePage) pct = 1;
-
-    const base = windowHeight * pct;
-    let maxH = containerHeight > 0 ? containerHeight : available;
-    maxH = Math.min(maxH, available);
-    const calc = Math.max(minH, Math.min(base, maxH));
-
-    const vh = Math.round((calc / windowHeight) * 100);
-    const asyncPct = asyncCoursesHeight / windowHeight;
-    const adjusted = Math.max(
-      vh - Math.round(asyncPct * 100),
-      Math.round((minH / windowHeight) * 100)
-    );
-
-    setCalendarHeight(`${adjusted}vh`);
-  }, [windowHeight, containerHeight, asyncCoursesHeight, isProfilePage]);
-
-  const handleAsyncCoursesHeightChange = useCallback(
-    (h: number) => setAsyncCoursesHeight(h),
-    []
+  const customEvents = useAppSelector(
+    (s) => s.schedule.currentSchedule?.customEvents || []
   );
+  const [isExpanded, setIsExpanded] = useState(true);
+  const isNarrowScreen = useIsNarrowScreen();
 
-  // --- week start (stable) ---
+  // Get the start of the current week (Monday)
   const monday = useMemo(() => {
     const now = new Date();
     const offset = (now.getDay() + 6) % 7;
@@ -154,7 +58,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     return m;
   }, []);
 
-  // --- map day abbrev to offset ---
+  // Map day abbreviations to offsets
   const dayIndexMap = useMemo(
     () => ({
       Mo: 0,
@@ -168,8 +72,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     []
   );
 
-  // --- build your regular events once per sections/monday ---
-  const memoizedEvents = useMemo<ScheduleClassSection[]>(() => {
+  // Build regular class events
+  const memoizedEvents = useMemo(() => {
     return sections.flatMap((section) => {
       const isAsync =
         section.meetings.length === 0 ||
@@ -191,9 +95,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           const end = new Date(date);
           end.setHours(eh, em, 0, 0);
 
-          const id = `${section.classNumber}-${day}-${meeting.start_time}-${meeting.end_time}`;
           return {
-            id,
+            id: `${section.classNumber}-${day}-${meeting.start_time}-${meeting.end_time}`,
             title: section.courseId,
             start,
             end,
@@ -215,7 +118,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     });
   }, [sections, monday, dayIndexMap]);
 
-  // --- background conflict events ---
+  // Build background conflict events
   const memoizedBackgroundEvents = useMemo(() => {
     const groups = getConflictGroups(
       memoizedEvents.map((e) => ({
@@ -229,13 +132,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       .flatMap((g) => buildBackgroundEventsForGroup(g, monday));
   }, [memoizedEvents, monday]);
 
-  // --- custom events from Redux ---
-  const customEvents = useAppSelector(
-    (s) => s.schedule.currentSchedule?.customEvents || []
-  );
+  // Build custom events
   const calendarCustomEvents = useMemo(() => {
     return customEvents.flatMap((evt) => {
-      // For each day in the meeting, create a separate event
       return evt.meetings[0].days.map((day) => {
         const offset = dayIndexMap[day];
         const date = new Date(monday);
@@ -257,11 +156,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           title: evt.title,
           start,
           end,
-          color: evt.color,
+          color: "#E5E7EB",
           extendedProps: {
             isCustomEvent: true,
             ...evt,
-            // Include the specific day in the extendedProps
             currentDay: day,
           },
         };
@@ -269,22 +167,25 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     });
   }, [customEvents, monday, dayIndexMap]);
 
-  // --- combine & filter hidden ---
-  const filteredEvents = useMemo(
-    () =>
-      [...memoizedBackgroundEvents, ...memoizedEvents].filter(
-        (e) =>
-          !e.extendedProps?.classNumber ||
-          !hiddenSections.includes(e.extendedProps.classNumber)
-      ),
-    [memoizedBackgroundEvents, memoizedEvents, hiddenSections]
-  );
-  const allEvents = useMemo(
-    () => [...filteredEvents, ...calendarCustomEvents],
-    [filteredEvents, calendarCustomEvents]
-  );
+  // Filter and combine all events
+  const allEvents = useMemo(() => {
+    const filteredEvents = [
+      ...memoizedBackgroundEvents,
+      ...memoizedEvents,
+    ].filter(
+      (e) =>
+        !e.extendedProps?.classNumber ||
+        !hiddenSections.includes(e.extendedProps.classNumber)
+    );
+    return [...filteredEvents, ...calendarCustomEvents];
+  }, [
+    memoizedBackgroundEvents,
+    memoizedEvents,
+    calendarCustomEvents,
+    hiddenSections,
+  ]);
 
-  // --- interaction callbacks ---
+  // Event handlers
   const handleEventClick = useCallback(
     (arg: any) => {
       const { classNumber } = arg.event.extendedProps;
@@ -318,7 +219,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       const newEvt: CustomScheduleEvent = {
         id: tempId,
         title: "New Event",
-        color: "#334155",
+        color: "#E5E7EB",
         meetings: [
           {
             days: [dayMap[dow] as "Mo" | "Tu" | "We" | "Th" | "Fr"],
@@ -342,47 +243,12 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     [dispatch]
   );
 
-  // --- FullCalendar callbacks & options, all stable refs ---
+  // Calendar configuration
   const plugins = useMemo(
     () => [timeGridPlugin, interactionPlugin, dayGridPlugin],
     []
   );
-  const headerToolbar = useMemo(
-    () => ({ left: "", center: "", right: "" }),
-    []
-  );
-  const titleFormat = useMemo(() => ({}), []);
-  const slotLabelFormat = useMemo(
-    () => ({
-      hour: "numeric",
-      minute: "2-digit",
-      omitZeroMinute: false,
-      meridiem: "short",
-    }),
-    []
-  );
-  const dayHeaderContent = useCallback((args: any) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    return days[args.date.getDay()];
-  }, []);
-  const dayHeaderClassNames = useMemo(
-    () =>
-      "bg-gray-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 font-semibold text-center",
-    []
-  );
-  const slotLabelClassNames = useMemo(
-    () => "text-gray-400 dark:text-slate-500 text-sm",
-    []
-  );
-  const dayCellClassNames = useMemo(
-    () => "border border-slate-200 dark:border-slate-700",
-    []
-  );
-  const eventClassNamesCb = useCallback((arg: any) => {
-    if (arg.event.extendedProps.isOverlay) return ["conflict-overlay-event"];
-    if (arg.event.extendedProps.isCustomEvent) return ["custom-event"];
-    return [];
-  }, []);
+
   const eventContentCb = useCallback(
     (arg: any) => {
       if (arg.event.extendedProps.isOverlay) return null;
@@ -394,86 +260,89 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
             />
           </Modal>
         );
-      } else {
-        return (
-          <ScheduleTimeSlots
-            event={arg.event as any}
-            onClick={() => handleEventClick(arg)}
-            onEyeClick={() => handleEyeClick(arg)}
-          />
-        );
       }
+      return (
+        <ScheduleTimeSlots
+          event={arg.event}
+          onClick={() => handleEventClick(arg)}
+          onEyeClick={() => handleEyeClick(arg)}
+        />
+      );
     },
     [handleEventClick, handleEyeClick]
   );
-  const eventDidMountCb = useCallback((info: any) => {
-    if (info.event.display === "background") {
-      info.el.style.zIndex = "9999";
-      info.el.style.pointerEvents = "none";
-      info.el.style.backgroundColor = info.event.extendedProps.color;
-    }
-  }, []);
 
-  const calendarRef = useRef<FullCalendar>(null);
+  // Filter for asynchronous courses
+  const asyncSections = sections.filter(
+    (section) =>
+      section.meetings.length === 0 ||
+      section.meetings.every(
+        (meeting) => !meeting.start_time || !meeting.end_time
+      )
+  );
+
+  const hasAsyncCourses = asyncSections.length > 0;
+
+  const calculateMaxHeight = useCallback(() => {
+    if (isProfilePage) return "";
+
+    const baseHeight = hasAsyncCourses ? 20 : 16;
+    const narrowScreenAdjustment = isNarrowScreen ? 4 : 0;
+    const expandedAdjustment = !isExpanded && hasAsyncCourses ? -4 : 0;
+
+    return `max-h-[calc(100vh-${baseHeight + narrowScreenAdjustment + expandedAdjustment}rem)]`;
+  }, [hasAsyncCourses, isNarrowScreen, isExpanded, isProfilePage]);
 
   return (
-    <div className="relative w-full h-full">
-      <AsyncCourses
-        sections={sections}
-        onHeightChange={handleAsyncCoursesHeightChange}
-      />
+    <div className="relative w-full h-full flex flex-col">
+      <div className="flex-none">
+        {hasAsyncCourses && (
+          <AsyncCourses
+            sections={sections}
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+          />
+        )}
+      </div>
       <div
-        ref={containerRef}
         className={`
+          flex-1
           border border-slate-200 dark:border-slate-700
           rounded-md bg-white dark:bg-slate-900
           text-slate-900 dark:text-slate-100
-          custom-tr-height custom-td-color
-          overflow-hidden w-full h-full flex flex-col
-          ${
-            !isProfilePage
-              ? `
-            max-h-[calc(100vh-16rem)]
-            sm:max-h-[calc(100vh-13rem)]
-            md:max-h-[calc(100vh-10rem)]
-            lg:max-h-[calc(100vh-8rem)]
-          `
-              : ""
-          }
+          custom-tr-height custom-td-color w-full
+          overflow-auto
+          ${calculateMaxHeight()}
+          fc-scroller no-scrollbar
         `}
       >
         <ScrollArea className="h-full w-full">
-          <FullCalendar
-            ref={calendarRef}
-            plugins={plugins}
-            initialView="timeGridWeek"
-            initialDate={monday}
-            timeZone="local"
-            headerToolbar={headerToolbar}
-            selectable={true}
-            selectMirror={true}
-            select={handleSelect}
-            allDaySlot={false}
-            slotMinTime="07:00:00"
-            slotMaxTime="21:00:00"
-            slotDuration="01:00:00"
-            hiddenDays={[0, 6]}
-            events={allEvents}
-            contentHeight={isProfilePage ? "80vh" : calendarHeight}
-            expandRows={true}
-            titleFormat={titleFormat}
-            dayHeaderContent={dayHeaderContent}
-            dayHeaderClassNames={dayHeaderClassNames}
-            slotLabelFormat={slotLabelFormat as any}
-            slotLabelClassNames={slotLabelClassNames}
-            dayCellClassNames={dayCellClassNames}
-            stickyHeaderDates={true}
-            eventColor="#334155"
-            eventClassNames={eventClassNamesCb}
-            eventContent={eventContentCb}
-            nowIndicator={false}
-            eventDidMount={eventDidMountCb}
-          />
+          <div className="h-full">
+            <FullCalendar
+              plugins={plugins}
+              initialView="timeGridWeek"
+              initialDate={monday}
+              timeZone="local"
+              headerToolbar={false}
+              selectable={true}
+              selectMirror={true}
+              select={handleSelect}
+              allDaySlot={false}
+              slotMinTime="07:00:00"
+              slotMaxTime="21:00:00"
+              slotDuration="01:00:00"
+              hiddenDays={[0, 6]}
+              events={allEvents}
+              height="auto"
+              expandRows={true}
+              stickyHeaderDates={true}
+              eventColor="#E5E7EB"
+              eventContent={eventContentCb}
+              nowIndicator={false}
+              dayHeaderFormat={{ weekday: "short" }}
+              dayHeaderClassNames="bg-slate-800 text-white font-semibold border-slate-700"
+            />
+          </div>
         </ScrollArea>
       </div>
       <div id="calendar-modal-root" />
