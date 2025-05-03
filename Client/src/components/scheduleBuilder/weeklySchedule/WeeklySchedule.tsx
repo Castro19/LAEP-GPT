@@ -156,7 +156,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           title: evt.title,
           start,
           end,
-          color: "#E5E7EB",
+          color: evt.color,
           extendedProps: {
             isCustomEvent: true,
             ...evt,
@@ -219,7 +219,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       const newEvt: CustomScheduleEvent = {
         id: tempId,
         title: "New Event",
-        color: "#E5E7EB",
+        color: "#334155",
         meetings: [
           {
             days: [dayMap[dow] as "Mo" | "Tu" | "We" | "Th" | "Fr"],
@@ -283,16 +283,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   const hasAsyncCourses = asyncSections.length > 0;
 
-  const calculateMaxHeight = useCallback(() => {
-    if (isProfilePage) return "";
-
-    const baseHeight = hasAsyncCourses ? 20 : 16;
-    const narrowScreenAdjustment = isNarrowScreen ? 4 : 0;
-    const expandedAdjustment = isExpanded || !hasAsyncCourses ? 0 : -4;
-
-    return `max-h-[calc(100vh-${baseHeight + narrowScreenAdjustment + expandedAdjustment}rem)]`;
-  }, [hasAsyncCourses, isNarrowScreen, isExpanded, isProfilePage]);
-
   return (
     <div className="relative w-full h-full flex flex-col">
       <div className="flex-none">
@@ -312,7 +302,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           text-slate-900 dark:text-slate-100
           custom-tr-height custom-td-color w-full
           overflow-auto
-          ${calculateMaxHeight()}
+          ${!isProfilePage ? (isExpanded ? "max-h-[calc(100vh-20rem)]" : "max-h-[calc(100vh-16rem)]") : ""}
+          ${isNarrowScreen ? (isExpanded ? "max-h-[calc(100vh-24rem)]" : "max-h-[calc(100vh-19rem)]") : ""}
           fc-scroller no-scrollbar
         `}
       >
@@ -336,11 +327,11 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
               height="auto"
               expandRows={true}
               stickyHeaderDates={true}
+              eventColor="#334155"
               eventContent={eventContentCb}
               nowIndicator={false}
               dayHeaderFormat={{ weekday: "short" }}
               dayHeaderClassNames="bg-slate-800 text-white font-semibold border-slate-700"
-              eventColor="#E5E7EB"
             />
           </div>
         </ScrollArea>
