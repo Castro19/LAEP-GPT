@@ -27,6 +27,7 @@ import {
 
 // Types
 import { SelectedSection } from "@polylink/shared/types";
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
@@ -45,6 +46,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
     (s) => s.schedule.currentSchedule?.customEvents || []
   );
   const [isExpanded, setIsExpanded] = useState(true);
+  const isNarrowScreen = useIsNarrowScreen();
 
   // Get the start of the current week (Monday)
   const monday = useMemo(() => {
@@ -285,9 +287,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           border border-slate-200 dark:border-slate-700
           rounded-md bg-white dark:bg-slate-900
           text-slate-900 dark:text-slate-100
-          custom-tr-height custom-td-color
-          overflow-hidden w-full
+          custom-tr-height custom-td-color w-full
+          overflow-auto
           ${!isProfilePage ? (isExpanded ? "max-h-[calc(100vh-20rem)]" : "max-h-[calc(100vh-16rem)]") : ""}
+          ${isNarrowScreen ? (isExpanded ? "max-h-[calc(100vh-24rem)]" : "max-h-[calc(100vh-19rem)]") : ""}
         `}
       >
         <ScrollArea className="h-full w-full">
