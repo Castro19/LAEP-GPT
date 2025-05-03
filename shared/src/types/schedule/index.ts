@@ -63,7 +63,9 @@ export type Schedule = {
   updatedAt: Date;
   term: CourseTerm;
   customEvents?: CustomScheduleEvent[];
+  isPrimary: boolean;
 };
+
 export type ScheduleDocument = Schedule & {
   _id: string;
 };

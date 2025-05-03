@@ -7,14 +7,9 @@ import {
   deleteScheduleItem,
   getScheduleById,
   getScheduleListByUserId,
-  updateScheduleListItem,
-  updateScheduleName,
+  updateScheduleInfo,
 } from "../db/models/schedule/scheduleServices";
-import {
-  CourseTerm,
-  CustomScheduleEvent,
-  ScheduleListItem,
-} from "@polylink/shared/types";
+import { CourseTerm, CustomScheduleEvent } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -115,28 +110,21 @@ router.put("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { schedule, primaryScheduleId, name, term } = req.body as {
-      schedule: ScheduleListItem;
-      primaryScheduleId: string;
+    const { name, term, primaryScheduleId } = req.body as {
       name: string;
       term: CourseTerm;
+      primaryScheduleId: string;
     };
-    if (environment === "dev") {
-      console.log("Schedule:", schedule);
-      console.log("Primary schedule ID:", primaryScheduleId);
-      console.log("Name:", name);
-      console.log("Term:", term);
-    }
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
 
-    const result = await updateScheduleName({
+    const result = await updateScheduleInfo({
       userId,
       scheduleId,
-      primaryScheduleId,
       name,
       term,
+      isPrimary: primaryScheduleId === scheduleId,
     });
 
     return res.status(200).json({

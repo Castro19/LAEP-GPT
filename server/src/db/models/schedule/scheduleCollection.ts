@@ -1,6 +1,6 @@
 import { InsertOneResult, DeleteResult, UpdateResult } from "mongodb";
 import { environment } from "../../..";
-import { Schedule, ScheduleDocument } from "@polylink/shared/types";
+import { Schedule, ScheduleDocument, CourseTerm } from "@polylink/shared/types";
 import { Collection } from "mongodb";
 import { getDb } from "../../connection";
 
@@ -47,6 +47,29 @@ export const getScheduleById = async (
     if (!result) {
       return null;
     }
+    return result;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
+};
+
+// Find all schedules for a user in a given term
+export const findSchedulesByUserId = async (
+  userId: string,
+  term: CourseTerm
+): Promise<ScheduleDocument[]> => {
+  if (!scheduleCollection) {
+    scheduleCollection = initializeCollection();
+  }
+
+  try {
+    const result = await scheduleCollection
+      .find({ userId, term }, { projection: { _id: 0 } })
+      .sort({ updatedAt: -1 })
+      .toArray();
     return result;
   } catch (error) {
     if (environment === "dev") {
