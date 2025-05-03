@@ -283,16 +283,6 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
 
   const hasAsyncCourses = asyncSections.length > 0;
 
-  const calculateMaxHeight = useCallback(() => {
-    if (isProfilePage) return "";
-
-    const baseHeight = hasAsyncCourses ? 20 : 16;
-    const narrowScreenAdjustment = isNarrowScreen ? 4 : 0;
-    const expandedAdjustment = !isExpanded && hasAsyncCourses ? -4 : 0;
-
-    return `max-h-[calc(100vh-${baseHeight + narrowScreenAdjustment + expandedAdjustment}rem)]`;
-  }, [hasAsyncCourses, isNarrowScreen, isExpanded, isProfilePage]);
-
   return (
     <div className="relative w-full h-full flex flex-col">
       <div className="flex-none">
@@ -312,7 +302,19 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           text-slate-900 dark:text-slate-100
           custom-tr-height custom-td-color w-full
           overflow-auto
-          ${calculateMaxHeight()}
+          ${
+            hasAsyncCourses
+              ? isExpanded
+                ? isNarrowScreen
+                  ? "max-h-[calc(100vh-20rem)]"
+                  : "max-h-[calc(100vh-20rem)]"
+                : isNarrowScreen
+                  ? "max-h-[calc(100vh-16rem)]"
+                  : "max-h-[calc(100vh-16rem)]"
+              : isNarrowScreen
+                ? "max-h-[calc(100vh-16rem)]"
+                : "max-h-[calc(100vh-16rem)]"
+          }
           fc-scroller no-scrollbar
         `}
       >
