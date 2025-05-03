@@ -23,11 +23,10 @@ import { formatProfessorNames } from "@/components/scheduleBuilder";
 // Types
 import { SelectedSection } from "@polylink/shared/types";
 
-interface AsyncCoursesProps {
+type AsyncCoursesProps = {
   sections: SelectedSection[];
-  // eslint-disable-next-line no-unused-vars
-  onHeightChange: (height: number) => void;
-}
+  onHeightChange?: (height: number) => void;
+};
 
 // Add a new component for displaying asynchronous courses
 const AsyncCourses: React.FC<AsyncCoursesProps> = ({
@@ -79,7 +78,9 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
       const updateHeight = () => {
         const height =
           containerRef.current?.getBoundingClientRect().height || 0;
-        onHeightChange(height);
+        if (onHeightChange) {
+          onHeightChange(height);
+        }
       };
 
       updateHeight();
