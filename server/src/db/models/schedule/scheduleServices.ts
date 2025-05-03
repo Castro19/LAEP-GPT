@@ -10,15 +10,23 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { transformClassNumbersToSelectedSections } from "./transformSection";
 
-// Helper function to transform Schedule[] to ScheduleListItem[]
+// Helper function to transform Schedule[] to ScheduleListItem[] with primary first
 const transformToScheduleListItems = (
   schedules: Schedule[]
 ): ScheduleListItem[] => {
-  return schedules.map((schedule) => ({
-    id: schedule.id,
-    name: schedule.name,
-    updatedAt: schedule.updatedAt,
-  }));
+  return schedules
+    .sort((a, b) => {
+      // Primary schedule always comes first
+      if (a.isPrimary) return -1;
+      if (b.isPrimary) return 1;
+      // Then sort by most recent updatedAt
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    })
+    .map((schedule) => ({
+      id: schedule.id,
+      name: schedule.name,
+      updatedAt: schedule.updatedAt,
+    }));
 };
 
 export const getScheduleListByUserId = async (

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DaysSelector, TitleLabel } from "@/components/classSearch";
+import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 
 // Zod schema for validating the custom event form
 const CustomEventSchema = z.object({
@@ -45,9 +46,12 @@ const CustomEventSlot = forwardRef<HTMLDivElement, CustomEventSlotProps>(
   ({ event }, ref) => {
     const { setOpen } = useModal();
     const dispatch = useAppDispatch();
-    const startTime = event.meetings[0]?.start_time;
-    const endTime = event.meetings[0]?.end_time;
-
+    const startTime = event.meetings[0]?.start_time
+      ? convertTo12HourFormat(event.meetings[0].start_time)
+      : "";
+    const endTime = event.meetings[0]?.end_time
+      ? convertTo12HourFormat(event.meetings[0].end_time)
+      : "";
     // React Hook Form setup with Zod
     const form = useForm<CustomEventForm>({
       resolver: zodResolver(CustomEventSchema),
