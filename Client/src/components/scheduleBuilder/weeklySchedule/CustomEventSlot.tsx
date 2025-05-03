@@ -59,8 +59,8 @@ const CustomEventSlot = forwardRef<HTMLDivElement, CustomEventSlotProps>(
         title: event.title,
         color: event.color,
         days: event.meetings[0]?.days || [],
-        start_time: startTime || "",
-        end_time: endTime || "",
+        start_time: event.meetings[0]?.start_time || "",
+        end_time: event.meetings[0]?.end_time || "",
       },
     });
 
