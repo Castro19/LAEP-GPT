@@ -308,10 +308,7 @@ function ProfilePage() {
             </TabsContent>
             <TabsContent value="weekly-schedule">
               {currentSchedule ? (
-                <WeeklySchedule
-                  sections={currentSchedule.sections}
-                  isProfilePage={true}
-                />
+                <WeeklySchedule sections={currentSchedule.sections} />
               ) : (
                 <div className="flex flex-col justify-center items-center">
                   <ProfileEmptyState

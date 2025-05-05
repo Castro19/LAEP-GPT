@@ -29,6 +29,9 @@ const SectionsChosen = () => {
   const { selectedSections, sectionsForSchedule } = useAppSelector(
     (state) => state.sectionSelection
   );
+  const { hiddenSections, currentSchedule } = useAppSelector(
+    (state) => state.schedule
+  );
 
   // Group sections by courseId and professor
   if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
@@ -82,6 +85,47 @@ const SectionsChosen = () => {
     dispatch(deselectAllSectionsForSchedule());
   };
 
+  // Check if any section of a course is in the current schedule
+  const isCourseInSchedule = (courseId: string) => {
+    return Object.values(groupedSections[courseId])
+      .flat()
+      .some((section) =>
+        currentSchedule?.sections.some(
+          (s) => s.classNumber === section.classNumber
+        )
+      );
+  };
+
+  // Check if any section of a course is hidden
+  const isCourseHidden = (courseId: string) => {
+    const sections = Object.values(groupedSections[courseId]).flat();
+    return sections.some((section) =>
+      hiddenSections.includes(section.classNumber)
+    );
+  };
+
+  // Toggle visibility for all sections of a course
+  const handleToggleCourseVisibility = (courseId: string) => {
+    const sections = Object.values(groupedSections[courseId]).flat();
+    const anyHidden = sections.some((section) =>
+      hiddenSections.includes(section.classNumber)
+    );
+
+    sections.forEach((section) => {
+      if (anyHidden) {
+        // If any section is hidden, show all sections
+        if (hiddenSections.includes(section.classNumber)) {
+          dispatch(toggleHiddenSection(section.classNumber));
+        }
+      } else {
+        // If no sections are hidden, hide all sections
+        if (!hiddenSections.includes(section.classNumber)) {
+          dispatch(toggleHiddenSection(section.classNumber));
+        }
+      }
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -94,16 +138,16 @@ const SectionsChosen = () => {
       className="grid grid-cols-1 gap-2 w-full overflow-hidden"
     >
       {/* Header with select/deselect all buttons */}
-      <div className="flex justify-between items-center mb-2 px-2">
-        <div className="text-sm font-medium text-slate-700 dark:text-gray-200">
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-2 px-2">
+        <div className="text-xs font-medium text-slate-700 dark:text-gray-200 min-w-[120px]">
           Select sections to include in schedule:
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={handleSelectAll}
-            className="text-xs"
+            className="text-xs h-7 px-3"
           >
             Select All
           </Button>
@@ -111,7 +155,7 @@ const SectionsChosen = () => {
             variant="outline"
             size="sm"
             onClick={handleDeselectAll}
-            className="text-xs"
+            className="text-xs h-7 px-3"
           >
             Deselect All
           </Button>
@@ -120,178 +164,209 @@ const SectionsChosen = () => {
 
       <AnimatePresence mode="wait">
         {Object.entries(groupedSections).map(
-          ([courseId, professorGroups], courseIndex) => (
-            <motion.div
-              key={courseId}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              transition={{
-                duration: 0.4,
-                delay: 0.1 + courseIndex * 0.03,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="w-full"
-            >
-              <Collapsible className="group/collapsible w-full">
-                <div
-                  className="rounded-md border border-gray-200 dark:border-slate-700 w-full"
-                  style={{
-                    backgroundColor:
-                      professorGroups[Object.keys(professorGroups)[0]][0]
-                        .color || "#ffffff",
-                    borderColor:
-                      professorGroups[Object.keys(professorGroups)[0]][0]
-                        .color || "#e5e7eb",
-                  }}
-                >
-                  <CollapsibleTrigger asChild>
-                    <div
-                      className="flex justify-between items-center p-3 transition-colors cursor-pointer border-b border-gray-100 dark:border-slate-700 w-full"
-                      style={{
-                        backgroundColor:
-                          professorGroups[Object.keys(professorGroups)[0]][0]
-                            .color || "#ffffff",
-                      }}
-                      onMouseOver={(e) => {
-                        const target = e.currentTarget;
-                        const currentColor =
-                          professorGroups[Object.keys(professorGroups)[0]][0]
-                            .color || "#ffffff";
-                        // Create a more subtle darker version of the color
-                        const darkerColor = adjustColorBrightness(
-                          currentColor,
-                          -5
-                        );
-                        target.style.backgroundColor = darkerColor;
-                      }}
-                      onMouseOut={(e) => {
-                        const target = e.currentTarget;
-                        const currentColor =
-                          professorGroups[Object.keys(professorGroups)[0]][0]
-                            .color || "#ffffff";
-                        target.style.backgroundColor = currentColor;
-                      }}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <ChevronRight className="flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90 text-gray-700 dark:text-gray-800" />
-                        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-900 truncate">
-                          {courseId}
-                        </h2>
-                        <span className="text-xs px-2 py-0.5 rounded-md bg-gray-200/80 text-gray-800 dark:bg-gray-300/80 dark:text-gray-900 flex-shrink-0">
-                          {Object.values(professorGroups).flat().length}{" "}
-                          sections
-                        </span>
-                      </div>
-                    </div>
-                  </CollapsibleTrigger>
+          ([courseId, professorGroups], courseIndex) => {
+            const isInSchedule = isCourseInSchedule(courseId);
+            const isHidden = isCourseHidden(courseId);
 
-                  <CollapsibleContent>
-                    <div className="px-3 pb-3 ">
-                      {Object.entries(professorGroups).map(
-                        ([professor, sections], professorIndex) => (
-                          <motion.div
-                            key={professor}
-                            initial={{ opacity: 0, y: 3 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.3,
-                              delay:
-                                0.15 +
-                                courseIndex * 0.03 +
-                                professorIndex * 0.02,
-                              ease: [0.22, 1, 0.36, 1],
+            return (
+              <motion.div
+                key={courseId}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                transition={{
+                  duration: 0.4,
+                  delay: 0.1 + courseIndex * 0.03,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="w-full"
+              >
+                <Collapsible className="group/collapsible w-full">
+                  <div
+                    className="rounded-md border border-gray-200 dark:border-slate-700 w-full"
+                    style={{
+                      backgroundColor:
+                        professorGroups[Object.keys(professorGroups)[0]][0]
+                          .color || "#ffffff",
+                      borderColor:
+                        professorGroups[Object.keys(professorGroups)[0]][0]
+                          .color || "#e5e7eb",
+                    }}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <div
+                        className="flex justify-between items-center p-3 transition-colors cursor-pointer border-b border-gray-100 dark:border-slate-700 w-full"
+                        style={{
+                          backgroundColor:
+                            professorGroups[Object.keys(professorGroups)[0]][0]
+                              .color || "#ffffff",
+                        }}
+                        onMouseOver={(e) => {
+                          const target = e.currentTarget;
+                          const currentColor =
+                            professorGroups[Object.keys(professorGroups)[0]][0]
+                              .color || "#ffffff";
+                          // Create a more subtle darker version of the color
+                          const darkerColor = adjustColorBrightness(
+                            currentColor,
+                            -5
+                          );
+                          target.style.backgroundColor = darkerColor;
+                        }}
+                        onMouseOut={(e) => {
+                          const target = e.currentTarget;
+                          const currentColor =
+                            professorGroups[Object.keys(professorGroups)[0]][0]
+                              .color || "#ffffff";
+                          target.style.backgroundColor = currentColor;
+                        }}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <ChevronRight className="flex-shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90 text-gray-700 dark:text-gray-800" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline gap-2">
+                              <h2 className="text-base font-semibold text-slate-800 dark:text-slate-900 flex-shrink-0">
+                                {courseId}
+                              </h2>
+                              {(() => {
+                                const sectionCount =
+                                  Object.values(professorGroups).flat().length;
+                                return (
+                                  <span className="text-xs text-slate-500 dark:text-slate-600 truncate min-w-0">
+                                    {sectionCount} section
+                                    {sectionCount > 1 ? "s" : ""}
+                                  </span>
+                                );
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+                        {isInSchedule && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-6 w-6 text-gray-700 dark:text-gray-700 dark:hover:text-gray-800 dark:hover:bg-transparent ${
+                              isHidden ? "opacity-50" : ""
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleCourseVisibility(courseId);
                             }}
                           >
-                            <Collapsible
-                              defaultOpen
-                              className="group/collapsible"
-                            >
-                              <div className=" border-gray-100 dark:border-slate-700 pt-2">
-                                <CollapsibleTrigger asChild>
-                                  <div
-                                    className="flex justify-between items-center mb-2 cursor-pointer px-2 py-1 rounded transition-colors"
-                                    style={{
-                                      backgroundColor: "transparent",
-                                    }}
-                                    onMouseOver={(e) => {
-                                      const target = e.currentTarget;
-                                      const currentColor =
-                                        professorGroups[
-                                          Object.keys(professorGroups)[0]
-                                        ][0].color || "#ffffff";
-                                      // Create a more subtle darker version of the color
-                                      const darkerColor = adjustColorBrightness(
-                                        currentColor,
-                                        -5
-                                      );
-                                      target.style.backgroundColor =
-                                        darkerColor;
-                                    }}
-                                    onMouseOut={(e) => {
-                                      const target = e.currentTarget;
-                                      target.style.backgroundColor =
-                                        "transparent";
-                                    }}
-                                  >
-                                    <h3 className="text-sm font-medium text-slate-700 dark:text-gray-800">
-                                      {professor
-                                        .split(" ")
-                                        .map(
-                                          (name) =>
-                                            name.charAt(0).toUpperCase() +
-                                            name.slice(1).toLowerCase()
-                                        )
-                                        .join(" ")}
-                                    </h3>
-                                  </div>
-                                </CollapsibleTrigger>
+                            <FaEye className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </CollapsibleTrigger>
 
-                                <CollapsibleContent>
-                                  <div className="grid grid-cols-1 gap-1.5">
-                                    {sections.map((section, sectionIndex) => (
-                                      <motion.div
-                                        key={section.classNumber}
-                                        initial={{ opacity: 0, y: 3 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{
-                                          duration: 0.3,
-                                          delay:
-                                            0.2 +
-                                            courseIndex * 0.03 +
-                                            professorIndex * 0.02 +
-                                            sectionIndex * 0.01,
-                                          ease: [0.22, 1, 0.36, 1],
-                                        }}
-                                      >
-                                        <SectionCard
-                                          section={section}
-                                          isSelected={
-                                            Array.isArray(
-                                              sectionsForSchedule
-                                            ) &&
-                                            sectionsForSchedule.some(
-                                              (s) =>
-                                                s.classNumber ===
-                                                section.classNumber
-                                            )
-                                          }
-                                        />
-                                      </motion.div>
-                                    ))}
-                                  </div>
-                                </CollapsibleContent>
-                              </div>
-                            </Collapsible>
-                          </motion.div>
-                        )
-                      )}
-                    </div>
-                  </CollapsibleContent>
-                </div>
-              </Collapsible>
-            </motion.div>
-          )
+                    <CollapsibleContent>
+                      <div className="px-3 pb-3 ">
+                        {Object.entries(professorGroups).map(
+                          ([professor, sections], professorIndex) => (
+                            <motion.div
+                              key={professor}
+                              initial={{ opacity: 0, y: 3 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.3,
+                                delay:
+                                  0.15 +
+                                  courseIndex * 0.03 +
+                                  professorIndex * 0.02,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                            >
+                              <Collapsible
+                                defaultOpen
+                                className="group/collapsible"
+                              >
+                                <div className=" border-gray-100 dark:border-slate-700 pt-2">
+                                  <CollapsibleTrigger asChild>
+                                    <div
+                                      className="flex justify-between items-center mb-2 cursor-pointer px-2 py-1 rounded transition-colors"
+                                      style={{
+                                        backgroundColor: "transparent",
+                                      }}
+                                      onMouseOver={(e) => {
+                                        const target = e.currentTarget;
+                                        const currentColor =
+                                          professorGroups[
+                                            Object.keys(professorGroups)[0]
+                                          ][0].color || "#ffffff";
+                                        // Create a more subtle darker version of the color
+                                        const darkerColor =
+                                          adjustColorBrightness(
+                                            currentColor,
+                                            -5
+                                          );
+                                        target.style.backgroundColor =
+                                          darkerColor;
+                                      }}
+                                      onMouseOut={(e) => {
+                                        const target = e.currentTarget;
+                                        target.style.backgroundColor =
+                                          "transparent";
+                                      }}
+                                    >
+                                      <h3 className="text-sm font-medium text-slate-700 dark:text-gray-800">
+                                        {professor
+                                          .split(" ")
+                                          .map(
+                                            (name) =>
+                                              name.charAt(0).toUpperCase() +
+                                              name.slice(1).toLowerCase()
+                                          )
+                                          .join(" ")}
+                                      </h3>
+                                    </div>
+                                  </CollapsibleTrigger>
+
+                                  <CollapsibleContent>
+                                    <div className="grid grid-cols-1 gap-1.5">
+                                      {sections.map((section, sectionIndex) => (
+                                        <motion.div
+                                          key={section.classNumber}
+                                          initial={{ opacity: 0, y: 3 }}
+                                          animate={{ opacity: 1, y: 0 }}
+                                          transition={{
+                                            duration: 0.3,
+                                            delay:
+                                              0.2 +
+                                              courseIndex * 0.03 +
+                                              professorIndex * 0.02 +
+                                              sectionIndex * 0.01,
+                                            ease: [0.22, 1, 0.36, 1],
+                                          }}
+                                        >
+                                          <SectionCard
+                                            section={section}
+                                            isSelected={
+                                              Array.isArray(
+                                                sectionsForSchedule
+                                              ) &&
+                                              sectionsForSchedule.some(
+                                                (s) =>
+                                                  s.classNumber ===
+                                                  section.classNumber
+                                              )
+                                            }
+                                          />
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                  </CollapsibleContent>
+                                </div>
+                              </Collapsible>
+                            </motion.div>
+                          )
+                        )}
+                      </div>
+                    </CollapsibleContent>
+                  </div>
+                </Collapsible>
+              </motion.div>
+            );
+          }
         )}
       </AnimatePresence>
     </motion.div>

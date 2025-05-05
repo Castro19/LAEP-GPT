@@ -31,13 +31,9 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  isProfilePage?: boolean;
 };
 
-const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
-  sections,
-  isProfilePage = false,
-}) => {
+const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
   const dispatch = useAppDispatch();
   const { currentScheduleTerm, hiddenSections } = useAppSelector(
     (s) => s.schedule
