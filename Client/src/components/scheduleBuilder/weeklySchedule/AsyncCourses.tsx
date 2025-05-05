@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector, classSearchActions } from "@/redux";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaEye } from "react-icons/fa";
+import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
 
 // Components
 import NarrowScreenScheduleSectionInfo from "./NarrowScreenScheduleSectionInfo";
@@ -15,6 +17,7 @@ import {
   CustomModalBody,
   CustomModalTriggerButton,
 } from "@/components/ui/animated-modal";
+import { Button } from "@/components/ui/button";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
@@ -39,16 +42,18 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
 }) => {
   const isNarrowScreen = useIsNarrowScreen();
   const dispatch = useAppDispatch();
-  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+  const { currentScheduleTerm, hiddenSections, currentSchedule } =
+    useAppSelector((state) => state.schedule);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Filter for asynchronous courses
   const asyncSections = sections.filter(
     (section) =>
-      section.meetings.length === 0 ||
-      section.meetings.every(
-        (meeting) => !meeting.start_time || !meeting.end_time
-      )
+      (section.meetings.length === 0 ||
+        section.meetings.every(
+          (meeting) => !meeting.start_time || !meeting.end_time
+        )) &&
+      !hiddenSections.includes(section.classNumber)
   );
 
   // Determine the optimal number of columns based on the number of async sections
@@ -66,13 +71,17 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
     return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6";
   };
 
-  const handleCourseClick = (classNumber: string) => {
+  const handleCourseClick = (classNumber: number) => {
     dispatch(
       classSearchActions.fetchSingleSection({
-        classNumber,
+        classNumber: classNumber.toString(),
         term: currentScheduleTerm,
       })
     );
+  };
+
+  const handleToggleHidden = (classNumber: number) => {
+    dispatch(toggleHiddenSection(classNumber));
   };
 
   // Update parent component when height changes
@@ -139,6 +148,11 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
             <div className={`grid gap-1 w-full ${getGridCols()}`}>
               {asyncSections.map((section, index) => {
                 const professorNames = formatProfessorNames(section.professors);
+                const isHidden = hiddenSections.includes(section.classNumber);
+                const isInSchedule =
+                  currentSchedule?.sections.some(
+                    (s) => s.classNumber === section.classNumber
+                  ) ?? false;
 
                 return (
                   <motion.div
@@ -156,14 +170,29 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
                       <CustomModalTriggerButton
                         color={section.color}
                         className="rounded-md hover:opacity-90 transition-opacity cursor-pointer w-full my-2"
-                        onClick={() =>
-                          handleCourseClick(section.classNumber.toString())
-                        }
+                        onClick={() => handleCourseClick(section.classNumber)}
                       >
                         <div className="flex flex-col items-start justify-between p-1 w-full h-full">
                           <div className="flex flex-col items-start justify-center w-full">
-                            <div className="text-[9px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
-                              Asynchronous
+                            <div className="flex items-center justify-between w-full">
+                              <div className="text-[9px] sm:text-xs text-gray-700 dark:text-gray-700 whitespace-nowrap">
+                                Asynchronous
+                              </div>
+                              {isInSchedule && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`h-6 w-6 text-gray-700 dark:text-gray-700 dark:hover:text-gray-800 dark:hover:bg-transparent ${
+                                    isHidden ? "opacity-50" : ""
+                                  }`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleHidden(section.classNumber);
+                                  }}
+                                >
+                                  <FaEye className="h-3 w-3" />
+                                </Button>
+                              )}
                             </div>
                             <div className="text-xxs sm:text-sm font-bold text-gray-700 dark:text-gray-700 truncate w-full">
                               {section.courseId}
