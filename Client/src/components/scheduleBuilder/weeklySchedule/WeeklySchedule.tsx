@@ -31,7 +31,6 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
-  isProfilePage?: boolean;
 };
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
