@@ -126,7 +126,6 @@ const SectionsChosen = () => {
     });
   };
 
-  console.log("Grouped Sections", groupedSections);
   return (
     <motion.div
       initial={{ opacity: 0 }}
