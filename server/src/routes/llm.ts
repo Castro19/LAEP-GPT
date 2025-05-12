@@ -14,6 +14,7 @@ import { createBio } from "../helpers/assistants/createBio/createBio";
 import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import * as summerCollection from "../db/models/section/summerSectionCollection";
+import * as fallSectionCollection from "../db/models/section/fallSectionCollection";
 import { Filter } from "mongodb";
 import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
@@ -229,8 +230,17 @@ router.post(
         );
         sections = result.sections;
         total = result.total;
+      } else if (term === "fall2025") {
+        const result = await fallSectionCollection.findSectionsByFilter(
+          response?.query as Filter<SectionDocument>,
+          0,
+          25
+        );
+        sections = result.sections;
+        total = result.total;
+      } else {
+        throw new Error("Invalid term");
       }
-
       // Single successful response
       res.json({
         ...response,

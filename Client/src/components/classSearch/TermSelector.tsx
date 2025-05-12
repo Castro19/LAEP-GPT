@@ -19,10 +19,11 @@ const TermSelector = ({ form }: TermSelectorProps) => {
         <FormItem>
           <TitleLabel title="Term" />
           <FormControl>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {[
                 ["Spring 2025", "spring2025"],
                 ["Summer 2025", "summer2025"],
+                ["Fall 2025", "fall2025"],
               ].map(([label, value]) => (
                 <Button
                   key={value}

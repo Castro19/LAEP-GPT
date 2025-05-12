@@ -1,6 +1,6 @@
 // src/types/express.d.ts
 import { DecodedIdToken } from "firebase-admin/auth";
-import { UserType } from "@polylink/shared/types";
+import { UserType, CourseTerm } from "@polylink/shared/types";
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -31,7 +31,7 @@ interface CustomRequest extends Request {
     isTechElective?: string;
     withNoConflicts?: string;
     isCreditNoCredit?: string;
-    term: "spring2025" | "summer2025";
+    term: CourseTerm;
     page?: string;
   };
 }

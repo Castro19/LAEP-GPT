@@ -21,7 +21,7 @@ import {
 } from "@/components/scheduleBuilder";
 import { onNewChat } from "@/components/chat";
 // Types
-import { Schedule } from "@polylink/shared/types";
+import { CourseTerm, Schedule } from "@polylink/shared/types";
 // UI Components
 import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Hooks
@@ -46,9 +46,9 @@ const ScheduleBuilderPage = () => {
   );
   const userId = useAppSelector((state) => state.auth.userId);
 
-  const [tabValue, setTabValue] = useState<
-    "spring2025" | "summer2025" | "AI Chat"
-  >(currentScheduleTerm);
+  const [tabValue, setTabValue] = useState<CourseTerm | "schedule" | "AI Chat">(
+    currentScheduleTerm
+  );
   // Ref variables to prevent fetching data multiple times
   const hasFetchedassistantList = useRef(false);
 
@@ -144,11 +144,7 @@ const ScheduleBuilderPage = () => {
   }, [currentScheduleId, scheduleId, navigate]);
 
   const handleTermChange = (value: string) => {
-    dispatch(
-      scheduleActions.setCurrentScheduleTerm(
-        value as "spring2025" | "summer2025"
-      )
-    );
+    dispatch(scheduleActions.setCurrentScheduleTerm(value as CourseTerm));
     dispatch(scheduleActions.setCurrentScheduleId(undefined));
     navigate("/schedule-builder");
   };
@@ -163,11 +159,11 @@ const ScheduleBuilderPage = () => {
             <Tabs
               value={tabValue}
               onValueChange={(value) =>
-                setTabValue(value as "spring2025" | "summer2025" | "AI Chat")
+                setTabValue(value as CourseTerm | "schedule" | "AI Chat")
               }
               defaultValue={tabValue}
             >
-              <TabsList className="grid w-full grid-cols-3 dark:bg-gray-900">
+              <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900">
                 <TabsTrigger
                   value="spring2025"
                   onClick={() => handleTermChange("spring2025")}
@@ -175,7 +171,7 @@ const ScheduleBuilderPage = () => {
                     currentScheduleTerm === "spring2025" ? "bg-primary" : ""
                   }
                 >
-                  Spring 2025
+                  SP25
                 </TabsTrigger>
                 <TabsTrigger
                   value="summer2025"
@@ -184,7 +180,16 @@ const ScheduleBuilderPage = () => {
                     currentScheduleTerm === "summer2025" ? "bg-primary" : ""
                   }
                 >
-                  Summer 2025
+                  SU25
+                </TabsTrigger>
+                <TabsTrigger
+                  value="fall2025"
+                  onClick={() => handleTermChange("fall2025")}
+                  className={
+                    currentScheduleTerm === "fall2025" ? "bg-primary" : ""
+                  }
+                >
+                  FA25
                 </TabsTrigger>
                 <TabsTrigger
                   value="AI Chat"
@@ -197,6 +202,9 @@ const ScheduleBuilderPage = () => {
                 <ScheduleBuilderForm onSwitchTab={() => {}} />
               </TabsContent>
               <TabsContent value="summer2025">
+                <ScheduleBuilderForm onSwitchTab={() => {}} />
+              </TabsContent>
+              <TabsContent value="fall2025">
                 <ScheduleBuilderForm onSwitchTab={() => {}} />
               </TabsContent>
               <TabsContent value="AI Chat">
@@ -233,17 +241,13 @@ const ScheduleBuilderMobile = () => {
   const { selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const [tabValue, setTabValue] = useState<
-    "spring2025" | "summer2025" | "schedule" | "AI Chat"
-  >(currentScheduleTerm);
+  const [tabValue, setTabValue] = useState<CourseTerm | "schedule" | "AI Chat">(
+    currentScheduleTerm
+  );
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const handleTermChange = (value: string) => {
-    dispatch(
-      scheduleActions.setCurrentScheduleTerm(
-        value as "spring2025" | "summer2025"
-      )
-    );
+    dispatch(scheduleActions.setCurrentScheduleTerm(value as CourseTerm));
     dispatch(scheduleActions.setCurrentScheduleId(undefined));
     navigate("/schedule-builder");
   };
@@ -252,26 +256,31 @@ const ScheduleBuilderMobile = () => {
     <Tabs
       value={tabValue}
       onValueChange={(value) =>
-        setTabValue(
-          value as "spring2025" | "summer2025" | "schedule" | "AI Chat"
-        )
+        setTabValue(value as CourseTerm | "schedule" | "AI Chat")
       }
       defaultValue={currentScheduleTerm}
     >
-      <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900">
+      <TabsList className="grid w-full grid-cols-5 dark:bg-gray-900">
         <TabsTrigger
           value="spring2025"
           onClick={() => handleTermChange("spring2025")}
           className={currentScheduleTerm === "spring2025" ? "bg-primary" : ""}
         >
-          Spring 2025
+          SP25
         </TabsTrigger>
         <TabsTrigger
           value="summer2025"
           onClick={() => handleTermChange("summer2025")}
           className={currentScheduleTerm === "summer2025" ? "bg-primary" : ""}
         >
-          Summer 2025
+          SU25
+        </TabsTrigger>
+        <TabsTrigger
+          value="fall2025"
+          onClick={() => handleTermChange("fall2025")}
+          className={currentScheduleTerm === "fall2025" ? "bg-primary" : ""}
+        >
+          FA25
         </TabsTrigger>
         <TabsTrigger value="schedule">Schedule</TabsTrigger>
         <TabsTrigger
@@ -285,6 +294,9 @@ const ScheduleBuilderMobile = () => {
         <ScheduleBuilderForm onSwitchTab={() => setTabValue("schedule")} />
       </TabsContent>
       <TabsContent value="summer2025">
+        <ScheduleBuilderForm onSwitchTab={() => setTabValue("schedule")} />
+      </TabsContent>
+      <TabsContent value="fall2025">
         <ScheduleBuilderForm onSwitchTab={() => setTabValue("schedule")} />
       </TabsContent>
       <TabsContent value="schedule">
