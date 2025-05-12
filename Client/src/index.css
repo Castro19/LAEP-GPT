@@ -98,10 +98,54 @@ body {
 }
 
 .custom-tr-height tr {
-  height: 60px; /* Increased from 40px to better fit content */
+  height: 60px; /* Fixed height */
   border: 1px solid #64748b !important;
   color: #ffffff !important;
-  font-size: 20px !important;
+  font-size: clamp(12px, 2vh, 20px) !important; /* Responsive font size */
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.custom-tr-height tr td {
+  height: 100% !important;
+  overflow: hidden !important;
+  padding: 4px !important;
+  vertical-align: middle !important;
+}
+
+/* Target FullCalendar event content specifically */
+.fc-event {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  --event-height: 100%;
+}
+
+.fc-event-main {
+  height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.fc-event-main-frame {
+  height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.fc-event-title {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  width: 100% !important;
+  text-align: center !important;
+  font-size: clamp(8px, calc(var(--event-height) * 0.3), 16px) !important;
+  line-height: 1.2 !important;
+  padding: 2px !important;
 }
 
 .custom-td-color tr {
