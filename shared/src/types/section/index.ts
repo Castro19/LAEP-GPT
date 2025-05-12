@@ -173,3 +173,15 @@ export type InstructorWithRatings = {
   courseRating: number | null;
   studentDifficulties: number | null;
 };
+
+// Section Essential
+export type SectionEssential = {
+  classNumber: number;
+  courseId: string;
+  courseName: string;
+  units: string;
+  instructors: Instructor[];
+  instructorsWithRatings: InstructorWithRatings[];
+  classPair: number | null;
+  meetings: Meeting[];
+};
