@@ -296,7 +296,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
           border border-slate-200 dark:border-slate-700
           rounded-md bg-white dark:bg-slate-900
           text-slate-900 dark:text-slate-100
-          custom-tr-height custom-td-color w-full
+          custom-tr-height w-full
           overflow-auto
           ${
             hasAsyncCourses
