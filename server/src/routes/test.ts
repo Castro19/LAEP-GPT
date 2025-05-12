@@ -3,6 +3,7 @@ import {
   getSelectedSectionsTool,
   getUserNextEligibleSections,
 } from "../helpers/assistants/scheduleBuilder/helpers";
+import { run_chatbot } from "../helpers/assistants/scheduleBuilder/scheduleBuilderAgent";
 
 const router = express.Router();
 
@@ -30,4 +31,12 @@ router.get("/next", (async (req, res) => {
 
   res.status(200).json(result);
 }) as RequestHandler);
+
+router.post("/schedule-agent", (async (req, res) => {
+  const userId = "qiuJz2JJ22WwMPrtBpASYTXglem2";
+  const result = await run_chatbot("Fetch CSC357 sections", userId);
+
+  res.status(200).json(result);
+}) as RequestHandler);
+
 export default router;

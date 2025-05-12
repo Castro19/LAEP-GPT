@@ -116,3 +116,55 @@ export const createOrUpdateSelectedSection = async (
     throw error;
   }
 };
+
+export const bulkCreateOrUpdateSelectedSections = async (
+  userId: string,
+  updateOperations: Record<string, any>,
+  operation: "add" | "remove" = "add"
+): Promise<UpdateResult<SelectedSectionDocument>> => {
+  if (!selectedSectionCollection) {
+    selectedSectionCollection = initializeCollection();
+  }
+  try {
+    // First, check if the document exists and has the correct structure
+    const existingDoc = await selectedSectionCollection.findOne({ userId });
+
+    if (existingDoc) {
+      // Check if the document has the correct structure
+      if (
+        !existingDoc.selectedSections ||
+        typeof existingDoc.selectedSections !== "object"
+      ) {
+        // If the structure is incorrect, initialize it with the correct structure
+        await selectedSectionCollection.updateOne(
+          { userId },
+          {
+            $set: {
+              selectedSections: {
+                spring2025: {},
+                summer2025: {},
+                fall2025: {},
+              },
+            },
+          }
+        );
+      }
+    }
+
+    // Now update with all the new sections
+    const updateResult = await selectedSectionCollection.updateOne(
+      { userId },
+      operation === "add"
+        ? { $set: updateOperations }
+        : { $unset: updateOperations },
+      { upsert: true }
+    );
+
+    return updateResult;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
+  }
+};
