@@ -1,14 +1,25 @@
-import { getSelectedSectionsEssentialsByUserId } from "../../../db/models/selectedSection/selectedSectionServices";
+import {
+  bulkPostSelectedSections,
+  getSelectedSectionsEssentialsByUserId,
+} from "../../../db/models/selectedSection/selectedSectionServices";
 
 import {
-  SelectedSection,
   CourseTerm,
   SectionEssential,
   Course,
   Term,
+  Meeting,
+  Section,
 } from "@polylink/shared/types";
 import { fetchPrimaryFlowchart } from "../../../db/models/flowchart/flowchartServices";
-import { getSectionsByCourseIds } from "../../../db/models/section/sectionServices";
+import {
+  getSectionsByCourseIds,
+  getSectionsByIds,
+} from "../../../db/models/section/sectionServices";
+import {
+  createOrUpdateSchedule,
+  getScheduleById,
+} from "../../../db/models/schedule/scheduleServices";
 
 export const getSelectedSectionsTool = async ({
   userId,
@@ -101,4 +112,223 @@ export const getUserNextEligibleSections = async ({
   );
 
   return selectedSections.flat();
+};
+
+// Manage Schedule
+export const readAllSchedule = async (userId: string, scheduleId: string) => {
+  const schedule = await getScheduleById(userId, scheduleId);
+  if (!schedule) {
+    return [];
+  }
+  const sections = await getSectionsByIds(
+    schedule.sections.map((section) => section.classNumber),
+    schedule.term
+  );
+  if (!sections) {
+    return [];
+  }
+  return sections;
+};
+
+const checkForTimeConflicts = (
+  scheduleMeetings: Meeting[],
+  sectionMeetings: Meeting[]
+): boolean => {
+  // Helper function to convert time string to minutes since midnight
+  const timeToMinutes = (time: string | null): number => {
+    if (!time) return 0;
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  // Helper function to check if two time ranges overlap
+  const doTimesOverlap = (
+    start1: string | null,
+    end1: string | null,
+    start2: string | null,
+    end2: string | null
+  ): boolean => {
+    if (!start1 || !end1 || !start2 || !end2) return false;
+
+    const start1Minutes = timeToMinutes(start1);
+    const end1Minutes = timeToMinutes(end1);
+    const start2Minutes = timeToMinutes(start2);
+    const end2Minutes = timeToMinutes(end2);
+
+    return start1Minutes <= end2Minutes && start2Minutes <= end1Minutes;
+  };
+
+  // Check each meeting in the schedule against each meeting in the section
+  for (const scheduleMeeting of scheduleMeetings) {
+    for (const sectionMeeting of sectionMeetings) {
+      // Check if there are any common days
+      const commonDays = scheduleMeeting.days.filter((day) =>
+        sectionMeeting.days.includes(day)
+      );
+
+      // If there are common days, check for time overlap
+      if (commonDays.length > 0) {
+        if (
+          doTimesOverlap(
+            scheduleMeeting.start_time,
+            scheduleMeeting.end_time,
+            sectionMeeting.start_time,
+            sectionMeeting.end_time
+          )
+        ) {
+          return true; // Found a conflict
+        }
+      }
+    }
+  }
+
+  return false; // No conflicts found
+};
+
+export const addToSchedule = async ({
+  userId,
+  classNumbersToAdd,
+  scheduleId,
+  preferences,
+}: {
+  userId: string;
+  classNumbersToAdd: number[];
+  scheduleId: string;
+  preferences: any;
+}): Promise<{
+  sections: number[];
+  messageToAdd: string;
+}> => {
+  const schedule = await getScheduleById(userId, scheduleId);
+  if (!schedule) {
+    return {
+      sections: [],
+      messageToAdd: "",
+    };
+  }
+  const meetings = schedule.sections.flatMap((s) => s.meetings);
+  let sectionsToAdd: number[] = [];
+  let messageToAdd = "";
+
+  let sections: Section[] =
+    (await getSectionsByIds(classNumbersToAdd, schedule.term)) || [];
+
+  // Get class pair sections
+  const classPairSectionsClassNumbers = sections
+    .filter((s) => s.classPair)
+    .map((s) => s.classPair)
+    .filter((classPair): classPair is number => classPair !== null);
+  const classPairSections = await getSectionsByIds(
+    classPairSectionsClassNumbers,
+    schedule.term
+  );
+  // Add class pair sections to the list of sections
+  if (classPairSections) {
+    sections.push(...classPairSections);
+  }
+
+  //  TODO: When checking for time conflicts, we should also check for conflicts between the classNumbersToAdd
+  for (const section of sections) {
+    // Check for time conflicts
+    const existingSection = schedule.sections.find(
+      (s) => s.classNumber === section.classNumber
+    );
+    if (existingSection) {
+      if (
+        (!preferences?.checkForTimeConflicts ||
+          preferences?.checkForTimeConflicts === false) &&
+        checkForTimeConflicts(meetings as Meeting[], section.meetings)
+      ) {
+        console.log("Time conflict found");
+        messageToAdd += `Cannot add section ${section.courseId} (${section.classNumber}) because it conflicts with another section in your schedule.\n`;
+      }
+    } else {
+      sectionsToAdd.push(section.classNumber);
+      messageToAdd += `Added section ${section.courseId} (class number: ${section.classNumber}) to your schedule.\n`;
+    }
+  }
+  // Remove duplicates
+  sectionsToAdd = [...new Set(sectionsToAdd)];
+
+  if (sectionsToAdd.length === 0) {
+    return {
+      sections: [],
+      messageToAdd,
+    };
+  }
+
+  const sectionsToAddWithTerm = sectionsToAdd.map((section) => ({
+    sectionId: section,
+    term: schedule.term,
+  }));
+
+  const updatedSections = sectionsToAdd.concat(
+    schedule.sections.map((s) => s.classNumber)
+  );
+  // else add all sections to selectedSections
+  await bulkPostSelectedSections(userId, sectionsToAddWithTerm, "add");
+  // and to schedule all at once
+
+  const updatedSchedule = await createOrUpdateSchedule(
+    userId,
+    updatedSections,
+    schedule.term,
+    schedule.id
+  );
+
+  return {
+    sections: updatedSections,
+    messageToAdd,
+  };
+};
+
+export const removeFromSchedule = async ({
+  userId,
+  classNumbersToRemove,
+  scheduleId,
+}: {
+  userId: string;
+  classNumbersToRemove: number[];
+  scheduleId: string;
+}): Promise<{
+  sections: number[];
+  messageToAdd: string;
+}> => {
+  const schedule = await getScheduleById(userId, scheduleId);
+  if (!schedule) {
+    return {
+      sections: [],
+      messageToAdd: "",
+    };
+  }
+
+  const sectionsToRemove = schedule.sections.filter((s) =>
+    classNumbersToRemove.includes(s.classNumber)
+  );
+
+  const sectionsToRemoveWithTerm = sectionsToRemove.map((section) => ({
+    sectionId: section.classNumber,
+    term: schedule.term,
+  }));
+
+  // Remove from selectedSections
+  await bulkPostSelectedSections(userId, sectionsToRemoveWithTerm, "remove");
+  // Remove from schedule
+  const updatedSections = schedule.sections
+    .map((s) => s.classNumber)
+    .filter((classNumber) => !classNumbersToRemove.includes(classNumber));
+
+  await createOrUpdateSchedule(
+    userId,
+    updatedSections,
+    schedule.term,
+    schedule.id
+  );
+
+  return {
+    sections: updatedSections,
+    messageToAdd: `Removed sections ${sectionsToRemove
+      .map((s) => `${s.courseId} (classNumber: ${s.classNumber})`)
+      .join(", ")} from your schedule.\n`,
+  };
 };
