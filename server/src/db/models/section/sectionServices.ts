@@ -15,6 +15,7 @@ import { fetchPrimarySchedule } from "../schedule/scheduleServices";
 import * as summerSectionCollection from "./summerSectionCollection";
 import { transformScheduleToScheduleResponse } from "../schedule/transformSection";
 import * as fallSectionCollection from "./fallSectionCollection";
+import { findSectionsByFilter } from "./sectionCollection";
 /**
  * Build a filter object that can be passed to the collection query.
  */
@@ -438,11 +439,37 @@ export async function getSectionsByIds(
   }
 }
 
-/*
-minUnits: "1"
-maxUnits: "4"
+export async function getSectionsByCourseIds(
+  courseIds: string[],
+  term: CourseTerm,
+  userId: string,
+  preferences?: {
+    minUnits: number;
+    maxUnits: number;
+    minInstructorRating: number;
+    maxInstructorRating: number;
+  }
+): Promise<Section[] | null> {
+  const query: any = { courseId: { $in: courseIds } };
+  if (preferences) {
+    query.units = { $gte: preferences.minUnits, $lte: preferences.maxUnits };
+    query.instructorsWithRatings = {
+      $elemMatch: {
+        overallRating: {
+          $gte: preferences.minInstructorRating,
+          $lte: preferences.maxInstructorRating,
+        },
+      },
+    };
+  }
 
-$units: "2 - 3"
+  // TODO: Add preferences to the filter
+  const filter: SectionsFilterParams = {
+    courseIds,
+    term: term,
+  };
 
-good: 2 >= 1 && 3 <= 4
-*/
+  const result = await getSectionsByFilter(filter, userId, 0, 25);
+
+  return result.sections;
+}
