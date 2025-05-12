@@ -13,7 +13,7 @@ import { CourseTerm, CustomScheduleEvent } from "@polylink/shared/types";
 
 const router = express.Router();
 
-const VALID_TERMS = ["spring2025", "summer2025"] as const;
+const VALID_TERMS = ["spring2025", "summer2025", "fall2025"] as const;
 
 router.get("/", async (req: CustomRequest, res: any) => {
   try {

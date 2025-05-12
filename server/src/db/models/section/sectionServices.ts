@@ -14,6 +14,7 @@ import { buildNonConflictingQuery } from "../../../helpers/queryBuilders/schedul
 import { fetchPrimarySchedule } from "../schedule/scheduleServices";
 import * as summerSectionCollection from "./summerSectionCollection";
 import { transformScheduleToScheduleResponse } from "../schedule/transformSection";
+import * as fallSectionCollection from "./fallSectionCollection";
 /**
  * Build a filter object that can be passed to the collection query.
  */
@@ -343,10 +344,17 @@ export async function getSectionsByFilter(
         skip,
         limit
       );
-    } else {
+    } else if (filter.term === "spring2025") {
       // Perform the find operation with skip & limit
       // and also get a total count so you can return that in the response
       return await sectionCollection.findSectionsByFilter(query, skip, limit);
+    } else {
+      // fall2025
+      return await fallSectionCollection.findSectionsByFilter(
+        query,
+        skip,
+        limit
+      );
     }
   } catch (error) {
     if (environment === "dev") {
@@ -405,13 +413,22 @@ export async function getSectionsByIds(
         classNumbers.length // Set limit to match the number of class numbers
       );
       return result.sections;
-    } else {
+    } else if (term === "spring2025") {
       const result = await sectionCollection.findSectionsByFilter(
         query,
         0,
         classNumbers.length
       );
       return result.sections;
+    } else if (term === "fall2025") {
+      const result = await fallSectionCollection.findSectionsByFilter(
+        query,
+        0,
+        classNumbers.length
+      );
+      return result.sections;
+    } else {
+      return null;
     }
   } catch (error) {
     if (environment === "dev") {

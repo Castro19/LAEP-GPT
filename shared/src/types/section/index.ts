@@ -1,5 +1,7 @@
+import { CourseTerm } from "../selectedSection";
+
 export type Section = {
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
   classNumber: number; // unique section number (e.g. 1001)
   courseId: string; // unique course identifier (e.g. "CSC357")
   subject: string; // subject abbreviation (e.g. "CSC")
@@ -89,7 +91,7 @@ export type SectionsFilterParams = {
   };
   withNoConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
   isCreditNoCredit?: boolean;
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
 };
 
 // ------------------------------------------------------------
@@ -125,7 +127,7 @@ export type SectionGroup = {
 
 // Updated SectionDetail to support standalone display
 export type SectionDetail = {
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
   courseId: string;
   courseName: string;
   classNumber: number;

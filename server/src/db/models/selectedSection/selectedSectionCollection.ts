@@ -87,6 +87,7 @@ export const createOrUpdateSelectedSection = async (
               selectedSections: {
                 spring2025: {},
                 summer2025: {},
+                fall2025: {},
               },
             },
           }

@@ -22,7 +22,7 @@ export type SelectedSection = {
   isLocked?: boolean;
 };
 
-export type CourseTerm = "spring2025" | "summer2025";
+export type CourseTerm = "spring2025" | "summer2025" | "fall2025";
 
 export type SelectedSectionItem = {
   sectionId: number;

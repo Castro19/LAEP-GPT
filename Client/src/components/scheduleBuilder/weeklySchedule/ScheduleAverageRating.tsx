@@ -35,6 +35,8 @@ const ScheduleAverageRating: React.FC = () => {
   const formatTermDisplay = (term: string) => {
     if (term === "spring2025") {
       return "Spring 2025";
+    } else if (term === "fall2025") {
+      return "Fall 2025";
     } else if (term === "summer2025") {
       return "Summer 2025";
     }
