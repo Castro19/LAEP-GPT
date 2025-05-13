@@ -39,7 +39,7 @@ export const fetchSections = tool(
       search_query,
     } = input;
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
-    console.log("state", state);
+    console.log("state", JSON.stringify(state, null, 2));
 
     // ---------- validation ----------
     if (search_query && fetch_type !== "search") {

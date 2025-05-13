@@ -239,7 +239,6 @@ export const addToSchedule = async ({
           preferences?.checkForTimeConflicts === false) &&
         checkForTimeConflicts(meetings as Meeting[], section.meetings)
       ) {
-        console.log("Time conflict found");
         messageToAdd += `Cannot add section ${section.courseId} (${section.classNumber}) because it conflicts with another section in your schedule.\n`;
       }
     } else {
