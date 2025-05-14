@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useAppSelector } from "@/redux";
+import TurnConversationItem from "./TurnConversationItem";
 
 /* -------------------------------------------------------------------------
   ⚠️  Stub‑only layout
@@ -20,20 +22,6 @@ const ContextBarStub = () => (
       context‑chip
     </Badge>
     <div className="flex-1 h-8 rounded-md bg-slate-700/60" />
-  </div>
-);
-
-const MessageBubbleStub: React.FC<{ role?: "user" | "assistant" }> = ({
-  role = "assistant",
-}) => (
-  <div
-    className={`max-w-[80%] rounded-2xl p-3 ${
-      role === "user"
-        ? "ml-auto bg-primary text-primary-foreground"
-        : "mr-auto bg-muted"
-    }`}
-  >
-    <div className="h-4 w-28 bg-slate-700/50 rounded" />
   </div>
 );
 
@@ -66,6 +54,7 @@ const ComposerStub = () => (
 
 const ChatContainerScheduleBuilder: React.FC = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const { currentLog } = useAppSelector((state) => state.scheduleBuilderLog);
 
   // simple auto‑scroll when component mounts (no live updates yet)
   useEffect(() => {
@@ -83,8 +72,15 @@ const ChatContainerScheduleBuilder: React.FC = () => {
       <ScrollArea ref={messagesContainerRef} className="flex-1">
         <div className="p-4 space-y-2">
           {/* Placeholder bubbles */}
-          <MessageBubbleStub role="assistant" />
-          <MessageBubbleStub role="user" />
+          {currentLog?.conversation_turns.map((turn, index) => (
+            <TurnConversationItem
+              key={index}
+              turn={{
+                turn_id: turn.turn_id,
+                messages: turn.messages,
+              }}
+            />
+          ))}
           <PendingBubbleStub />
         </div>
       </ScrollArea>
