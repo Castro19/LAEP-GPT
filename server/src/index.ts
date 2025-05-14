@@ -25,6 +25,7 @@ import selectedSectionRouter from "./routes/selectedSection";
 import professorRouter from "./routes/professor";
 import scheduleRouter from "./routes/schedule";
 import testRouter from "./routes/test";
+import scheduleBuilderRouter from "./routes/scheduleBuilder";
 // LLM API
 import OpenAI from "openai";
 import { wrapOpenAI } from "langsmith/wrappers";
@@ -85,7 +86,7 @@ app.use("/selectedSections", authenticate, selectedSectionRouter);
 app.use("/schedules", authenticate, scheduleRouter);
 app.use("/professors", authenticate, professorRouter);
 app.use("/test", testRouter);
-
+app.use("/scheduleBuilder", authenticate, scheduleBuilderRouter);
 export const client = wrapOpenAI(new OpenAI());
 
 export const ASST_MAP = {
