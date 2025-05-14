@@ -19,9 +19,7 @@ export const StateAnnotation = Annotation.Root({
 
 export const stateModifier = (state: typeof StateAnnotation.State) => {
   const { sections, preferences, term, user_id, schedule_id } = state;
-  console.log("======================STATE======================\n", state);
-  console.log("sections type: ", typeof sections);
-  console.log("sections: ", sections);
+
   const systemMessage = `
   You are PolyLink Schedule Builder, a helpful AI agent to provide assistance with schedule building for courses at Cal Poly.
   Tools ─────────────────────────────────────
