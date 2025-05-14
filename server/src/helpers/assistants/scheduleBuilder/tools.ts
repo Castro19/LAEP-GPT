@@ -197,7 +197,8 @@ export const fetchSections = tool(
     if (!full_data) {
       const compact: Record<string, string> = {};
       (sectionsToReturn as SectionEssential[]).forEach((s) => {
-        compact[s.classNumber] = `${s.courseId}: ${s.courseName} ${s.meetings}`;
+        compact[s.classNumber] =
+          `${s.courseId}: ${s.courseName} ${JSON.stringify(s.meetings)}`;
       });
       sectionsToReturn = compact;
     }
