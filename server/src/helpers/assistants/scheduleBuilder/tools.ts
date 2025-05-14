@@ -13,12 +13,11 @@ import {
   addToSchedule,
   removeFromSchedule,
 } from "./helpers";
-import { findSectionsByFilter, QueryResponse } from "./sectionQueryAssistant";
+import { findSectionsByFilter } from "./sectionQueryAssistant";
 import {
   sectionQueryAssistant,
   SectionQueryResponse,
 } from "../SectionQuery/sectionQueryAssistant";
-import { config } from "dotenv";
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 
 export const fetchSections = tool(
@@ -41,10 +40,6 @@ export const fetchSections = tool(
       search_query,
     } = input;
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
-    console.log(
-      "======================STATE======================\n",
-      JSON.stringify(state, null, 2)
-    );
 
     // ---------- validation ----------
     if (search_query && fetch_type !== "search") {
@@ -271,13 +266,11 @@ export const manageSchedule = tool(
       class_nums?: number[];
       state: typeof StateAnnotation.State;
     },
-    runCtx
+    config
   ) => {
     const { operation, class_nums = [] } = input;
-    const callId = runCtx.toolCall?.id ?? "tool_call_id";
 
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
-    console.log("state", state);
     /* ---------- validation ---------- */
     if (operation !== "readall" && class_nums.length === 0) {
       return new Command({
@@ -286,7 +279,7 @@ export const manageSchedule = tool(
             new ToolMessage({
               content:
                 "You must provide class_nums when operation is 'add' or 'remove'.",
-              tool_call_id: callId,
+              tool_call_id: config.toolCall.id,
             }),
           ],
         },
@@ -305,7 +298,7 @@ export const manageSchedule = tool(
               content: sections.length
                 ? JSON.stringify(sections)
                 : "Your schedule is empty.",
-              tool_call_id: callId,
+              tool_call_id: config.toolCall.id,
             }),
           ],
           sections,
@@ -327,7 +320,7 @@ export const manageSchedule = tool(
           messages: [
             new ToolMessage({
               content: messageToAdd || "No sections added.",
-              tool_call_id: callId,
+              tool_call_id: config.toolCall.id,
             }),
           ],
           sections,
@@ -348,7 +341,7 @@ export const manageSchedule = tool(
           messages: [
             new ToolMessage({
               content: messageToAdd || "No sections removed.",
-              tool_call_id: callId,
+              tool_call_id: config.toolCall.id,
             }),
           ],
           sections,
@@ -362,7 +355,7 @@ export const manageSchedule = tool(
         messages: [
           new ToolMessage({
             content: "Invalid operation.",
-            tool_call_id: callId,
+            tool_call_id: config.toolCall.id,
           }),
         ],
       },
