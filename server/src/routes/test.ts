@@ -34,7 +34,7 @@ router.get("/next", (async (req, res) => {
 
 router.post("/schedule-agent", (async (req, res) => {
   const userId = "qiuJz2JJ22WwMPrtBpASYTXglem2";
-  const result = await run_chatbot("Fetch CSC357 sections", userId);
+  const result = await run_chatbot("Remove STAT312", userId);
 
   res.status(200).json(result);
 }) as RequestHandler);
