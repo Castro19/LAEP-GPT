@@ -15,6 +15,8 @@ import { createOrUpdateSchedule } from "../db/models/schedule/scheduleServices";
 import {
   createLog,
   addConversationTurn,
+  getAllLogs,
+  getLogByThreadId,
 } from "../db/models/scheduleBuilderLog/scheduleBuilderLogServices";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { environment } from "..";
@@ -212,6 +214,64 @@ router.post(
       scheduleId,
       threadId,
     });
+  })
+);
+
+// Get all schedule builder logs
+router.get(
+  "/logs",
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.uid;
+
+    // Check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
+      return;
+    }
+
+    try {
+      const logs = await getAllLogs();
+
+      res.status(200).json({
+        success: true,
+        data: logs,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch schedule builder logs",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// Get a specific schedule builder log
+router.get(
+  "/logs/:threadId",
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.uid;
+
+    // Check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
+      return;
+    }
+
+    const { threadId } = req.params;
+
+    try {
+      const log = await getLogByThreadId(threadId);
+
+      res.status(200).json({
+        success: true,
+        data: log,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch schedule builder log",
+        message: (error as Error).message,
+      });
+    }
   })
 );
 

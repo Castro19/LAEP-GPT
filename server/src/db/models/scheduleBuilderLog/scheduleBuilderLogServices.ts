@@ -4,6 +4,8 @@ import {
   ScheduleBuilderState,
   TokenUsage,
   ConversationTurn,
+  FetchedScheduleBuilderLogListItem,
+  FetchedScheduleBuilderLog,
 } from "@polylink/shared/types";
 import * as ScheduleBuilderLogModel from "./scheduleBuilderLogCollection";
 import { environment } from "../../../index";
@@ -36,7 +38,7 @@ export const createLog = async (logData: ScheduleBuilderLog): Promise<void> => {
 // Read
 export const getLogByThreadId = async (
   threadId: string
-): Promise<ScheduleBuilderLog | null> => {
+): Promise<FetchedScheduleBuilderLog | null> => {
   try {
     if (environment === "dev") {
       console.log(
@@ -48,7 +50,15 @@ export const getLogByThreadId = async (
     if (environment === "dev") {
       console.log("Service: Found schedule builder log:", log ? "Yes" : "No");
     }
-    return log;
+    if (!log) {
+      return null;
+    }
+    const fetchedLog: FetchedScheduleBuilderLog = {
+      thread_id: log.thread_id,
+      conversation_turns: log.conversation_turns,
+      title: log.title,
+    };
+    return fetchedLog;
   } catch (error) {
     if (environment === "dev") {
       console.error("Service error in getLogByThreadId:", error);
@@ -86,6 +96,29 @@ export const addConversationTurn = async (
   } catch (error) {
     if (environment === "dev") {
       console.error("Service error in addConversationTurn:", error);
+    }
+    throw new Error("Service error: " + (error as Error).message);
+  }
+};
+
+export const getAllLogs = async (): Promise<
+  FetchedScheduleBuilderLogListItem[]
+> => {
+  try {
+    if (environment === "dev") {
+      console.log("Service: Fetching all schedule builder logs");
+    }
+
+    const logs = await ScheduleBuilderLogModel.fetchAllLogs();
+
+    if (environment === "dev") {
+      console.log(`Service: Found ${logs.length} schedule builder logs`);
+    }
+
+    return logs;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Service error in getAllLogs:", error);
     }
     throw new Error("Service error: " + (error as Error).message);
   }
