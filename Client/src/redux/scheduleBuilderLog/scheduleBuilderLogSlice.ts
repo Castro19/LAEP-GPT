@@ -106,6 +106,7 @@ export const sendMessage = createAsyncThunk<
     threadId: string;
     isNewThread: boolean;
     isNewSchedule: boolean;
+    oldThreadId: string;
   },
   { text: string; state: ScheduleBuilderState; placeholderTurnId: string },
   {
@@ -149,37 +150,45 @@ export const sendMessage = createAsyncThunk<
     const lcArr = response.conversation as any[];
 
     const toSchedMsg = (obj: any): ScheduleBuilderMessage => {
+      /* ---------------- role ---------------- */
       const kind = Array.isArray(obj.id) ? obj.id[2] : "";
       const role =
         kind === "HumanMessage"
           ? "user"
           : kind === "ToolMessage"
             ? "tool"
-            : "assistant";
+            : "assistant"; // default
 
-      /* -------- grab tool calls regardless of where they sit -------- */
-      const rawCalls =
+      /* ---------------- tool_calls (AI only) ----------------
+         They can be found in THREE spots depending on LangChain version:
+         1. obj.tool_calls                           (top-level)
+         2. obj.kwargs.tool_calls
+         3. obj.kwargs.additional_kwargs.tool_calls
+      */
+      let rawCalls: any =
         obj.tool_calls ??
-        obj.kwargs?.additional_kwargs?.tool_calls ??
-        undefined;
-      const toolCalls =
-        role === "assistant" && Array.isArray(rawCalls) && rawCalls.length
-          ? rawCalls
-          : undefined;
+        obj.kwargs?.tool_calls ??
+        obj.kwargs?.additional_kwargs?.tool_calls;
+
+      // normalise undefined / empty
+      if (!Array.isArray(rawCalls) || rawCalls.length === 0)
+        rawCalls = undefined;
+
+      const safeContent =
+        typeof obj.kwargs?.content === "string"
+          ? obj.kwargs.content
+          : typeof obj.content === "string"
+            ? obj.content
+            : JSON.stringify(obj.kwargs?.content ?? obj.content ?? "");
 
       return {
         msg_id: obj.kwargs?.id || obj.id || nanoid(),
         role,
-        msg:
-          typeof obj.kwargs?.content === "string"
-            ? obj.kwargs.content
-            : typeof obj.content === "string"
-              ? obj.content
-              : JSON.stringify(obj.kwargs?.content ?? obj.content ?? ""),
-        state,
+        msg: safeContent,
+        state, // coming from outer scope
         reaction: null,
         response_time: 0,
-        tool_calls: toolCalls,
+        tool_calls: role === "assistant" ? rawCalls : undefined,
       };
     };
 
@@ -199,6 +208,7 @@ export const sendMessage = createAsyncThunk<
     return {
       fullTurn,
       placeholderTurnId,
+      oldThreadId: currentLog.thread_id,
       threadId: currentThreadId,
       isNewThread: response.isNewThread,
       isNewSchedule: response.isNewSchedule,
@@ -289,8 +299,14 @@ const scheduleBuilderLog = createSlice({
     });
 
     b.addCase(sendMessage.fulfilled, (st, a) => {
-      const { fullTurn, placeholderTurnId, threadId, isNewThread } = a.payload;
-      st.loadingByThread[threadId] = false;
+      const {
+        fullTurn,
+        placeholderTurnId,
+        threadId,
+        isNewThread,
+        oldThreadId,
+      } = a.payload;
+      st.loadingByThread[oldThreadId] = false;
 
       if (!st.currentLog) return;
 
