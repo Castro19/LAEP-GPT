@@ -6,6 +6,7 @@ import {
   ConversationTurn,
   ScheduleBuilderMessage,
   ScheduleBuilderState,
+  ScheduleBuilderResponse,
 } from "@polylink/shared/types";
 import {
   fetchAllLogsFromDB,
@@ -14,7 +15,10 @@ import {
   sendScheduleBuilderRequest,
 } from "./crudScheduleBuilderLog";
 import { nanoid } from "@reduxjs/toolkit";
-import { updateScheduleIdFromBuilder } from "../schedule/scheduleSlice";
+import {
+  updateScheduleIdFromBuilder,
+  updateScheduleSections,
+} from "../schedule/scheduleSlice";
 
 /* ------------------------------------------------------------------ */
 /*  Local helper types                                                */
@@ -125,7 +129,7 @@ export const sendMessage = createAsyncThunk<
     let currentThreadId = currentLog.thread_id;
 
     /* ---------- call backend ---------- */
-    let response;
+    let response: ScheduleBuilderResponse | undefined;
     try {
       response = await sendScheduleBuilderRequest({
         threadId: currentThreadId,
@@ -143,7 +147,7 @@ export const sendMessage = createAsyncThunk<
     }
 
     /* ---------- forward schedule-id to schedule slice ---------- */
-    if (response.scheduleId) {
+    if (response.isNewSchedule) {
       dispatch(updateScheduleIdFromBuilder(response.scheduleId));
     }
     /* ---------- parse LangChain JSON ---------- */
@@ -196,7 +200,7 @@ export const sendMessage = createAsyncThunk<
 
     const fullTurn: ConversationTurn = {
       turn_id: placeholderTurnId,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       messages: parsedMsgs,
       token_usage: {
         prompt_tokens: 0,
@@ -204,8 +208,14 @@ export const sendMessage = createAsyncThunk<
         total_tokens: 0,
       },
     };
-
-    console.log("state schedule sections", parsedMsgs[parsedMsgs.length - 1]);
+    console.log("response.state.diff", response.state.diff);
+    if (
+      (response.state.diff?.added && response.state.diff.added.length > 0) ||
+      (response.state.diff?.removed && response.state.diff.removed.length > 0)
+    ) {
+      console.log("update schedule sections: ", response.schedule.sections);
+      dispatch(updateScheduleSections(response.schedule.sections));
+    }
     return {
       fullTurn,
       placeholderTurnId,
@@ -213,6 +223,7 @@ export const sendMessage = createAsyncThunk<
       threadId: currentThreadId,
       isNewThread: response.isNewThread,
       isNewSchedule: response.isNewSchedule,
+      state: response.state,
     };
   }
 );
@@ -315,7 +326,7 @@ const scheduleBuilderLog = createSlice({
         st.logs.push({
           thread_id: threadId,
           title: "New Schedule Chat",
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
       }
 

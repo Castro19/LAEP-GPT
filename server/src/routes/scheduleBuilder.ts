@@ -11,7 +11,10 @@ import {
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { v4 as uuidv4 } from "uuid";
 import { run_chatbot } from "../helpers/assistants/scheduleBuilder/scheduleBuilderAgent";
-import { createOrUpdateSchedule } from "../db/models/schedule/scheduleServices";
+import {
+  createOrUpdateSchedule,
+  getScheduleById,
+} from "../db/models/schedule/scheduleServices";
 import {
   createLog,
   addConversationTurn,
@@ -207,6 +210,8 @@ router.post(
     // Add the conversation turn to the log
     await addConversationTurn(threadId, turn);
 
+    // return the schedule state
+    const schedule = await getScheduleById(userId, schedule_id);
     res.status(200).json({
       assistant: result.assistant,
       conversation: result.conversation,
@@ -215,6 +220,7 @@ router.post(
       schedule_id,
       threadId,
       state: result.state,
+      schedule,
     });
   })
 );
