@@ -114,8 +114,8 @@ export const sendMessage = createAsyncThunk<
     { getState, dispatch, rejectWithValue }
   ) => {
     const currentLog = getState().scheduleBuilderLog.currentLog;
-    if (!currentLog) return rejectWithValue({ message: "No active log" });
-    let threadId = currentLog.thread_id;
+
+    let threadId = currentLog?.thread_id ?? `temp-${nanoid()}`;
 
     // 1) now open the SSE stream
     try {
@@ -191,9 +191,12 @@ const scheduleBuilderLog = createSlice({
     },
     setScheduleChatId: (st, a: PayloadAction<string>) => {
       st.currentScheduleChatId = a.payload;
+      if (st.currentLog) {
+        st.currentLog.thread_id = a.payload;
+      }
     },
     newScheduleChat: (st) => {
-      st.currentScheduleChatId = nanoid();
+      st.currentScheduleChatId = `temp-${nanoid()}`;
       st.currentLog = {
         thread_id: `temp-${nanoid()}`,
         conversation_turns: [],
