@@ -23,17 +23,20 @@ export interface BackendTurn {
 ----------------------------------------------------------------------*/
 /*  TurnConversationItem.tsx  – only the helper changed  */
 const buildProps = (messages: BackendMsg[]) => {
-  // first message ↔︎ user • last message ↔︎ final assistant reply
+  // the user is always the first
   const userRaw = messages[0];
-  const assistantRaw = messages[messages.length - 1];
 
-  // ── NEW  — gather all assistant messages that contain tool_calls
-  const assistantCalls = messages
-    .filter((m) => m.role === "assistant" && Array.isArray(m.tool_calls))
-    .flatMap((m) => m.tool_calls ?? []);
+  // collect every assistant‐role object
+  const assistantMsgs = messages.filter((m) => m.role === "assistant");
+  // the real “final” assistant bubble is the last one
+  const assistantRaw = assistantMsgs[assistantMsgs.length - 1];
 
-  // all tool messages between first & last assistant
-  const toolMsgs: ToolMsg[] = messages
+  // --- gather all the agent’s tool_call payloads (if any) ---
+  // those come back in assistant.tool_calls
+  const assistantCalls = assistantMsgs.flatMap((m) => m.tool_calls ?? []);
+
+  // --- gather all tool‐role messages in this turn ---
+  const toolMessages: ToolMsg[] = messages
     .filter((m) => m.role === "tool")
     .map((m) => ({ msg_id: m.msg_id, msg: m.msg }));
 
@@ -47,8 +50,8 @@ const buildProps = (messages: BackendMsg[]) => {
     msg_id: assistantRaw.msg_id,
     role: "assistant",
     msg: assistantRaw.msg,
-    tool_calls: assistantCalls, // ← now populated
-    toolMessages: toolMsgs,
+    tool_calls: assistantCalls, // for any function‐call metadata
+    toolMessages, // for any “tool”‐role result bubbles
   };
 
   return { user, assistant };
@@ -63,7 +66,7 @@ interface Props {
 
 const TurnConversationItem: React.FC<Props> = ({ turn }) => {
   const { user, assistant } = buildProps(turn.messages);
-
+  console.log("turn", turn);
   return (
     <div className="w-full flex flex-col gap-2 py-2">
       {turn.messages.length === 1 ? (
