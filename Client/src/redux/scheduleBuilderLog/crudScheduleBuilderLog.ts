@@ -118,11 +118,15 @@ export async function sendScheduleBuilderRequest({
     }
 
     const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.error || "Failed to send schedule builder request");
-    }
 
-    return data.data;
+    return {
+      assistant: data.assistant,
+      conversation: data.conversation,
+      isNewSchedule: data.isNewSchedule,
+      isNewThread: data.isNewThread,
+      scheduleId: data.scheduleId,
+      threadId: data.threadId,
+    };
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to send schedule builder request:", error);
