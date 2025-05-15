@@ -28,7 +28,7 @@ export * as flowSelectionActions from "./flowSelection/flowSelectionSlice.ts";
 export * as classSearchActions from "./classSearch/classSearchSlice.ts";
 export * as sectionSelectionActions from "./sectionSelection/sectionSelectionSlice.ts";
 export * as scheduleActions from "./schedule/scheduleSlice.ts";
-export * as scheduleBuilderLogActions from "./scheduleBuilderLog/scheduleBuilderLog.ts";
+export * as scheduleBuilderLogActions from "./scheduleBuilderLog/scheduleBuilderLogSlice.ts";
 export * as scheduleBuilderChatActions from "./scheduleBuilderChat/scheduleBuilderChatSlice";
 
 // Custom hooks for using dispatch and selector with TypeScript
