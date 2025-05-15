@@ -32,7 +32,7 @@ export type ScheduleBuilderState = {
   schedule_id: string;
   diff: { added: number[]; removed: number[] };
   preferences: { with_time_conflicts: boolean };
-  messages: string[];
+  messages?: string[];
 };
 
 export type ScheduleBuilderMessage = {
@@ -77,4 +77,13 @@ export type FetchedScheduleBuilderLog = {
   thread_id: string;
   conversation_turns: ConversationTurn[];
   title: string;
+};
+
+export type ScheduleBuilderResponse = {
+  assistant: string;
+  conversation: string[];
+  isNewSchedule: boolean;
+  isNewThread: boolean;
+  scheduleId: string;
+  threadId: string;
 };
