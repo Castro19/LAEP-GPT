@@ -31,6 +31,7 @@ export const scheduleBuilderAgent = async (
   threadId: string
 ) => {
   let config = { configurable: { thread_id: threadId }, recursionLimit: 10 };
+  let lastChunk: typeof StateAnnotation.State | undefined;
 
   // Create a new state with only the current message
   const currentState = {
@@ -49,11 +50,18 @@ export const scheduleBuilderAgent = async (
   let finalMsgs: BaseMessage[] = [];
   for await (const step of stream) {
     finalMsgs = step.messages;
+    lastChunk = step as typeof StateAnnotation.State;
+
     if (environment === "dev") {
-      console.log("Final messages:", step.messages);
+      // console.log("Final messages:", step.messages);
     }
   }
-  return finalMsgs;
+
+  if (!lastChunk) {
+    throw new Error("No state was generated during the stream");
+  }
+
+  return { conversation: finalMsgs, state: lastChunk };
 };
 
 export type ScheduleBuilderParams = {
@@ -84,8 +92,11 @@ export const run_chatbot = async ({
     user_query: "",
   };
 
-  const convo = await scheduleBuilderAgent(initState, threadId);
-  const last = convo[convo.length - 1] as AIMessage | ToolMessage;
+  const { conversation, state } = await scheduleBuilderAgent(
+    initState,
+    threadId
+  );
+  const last = conversation[conversation.length - 1] as AIMessage | ToolMessage;
 
-  return { assistant: last.content, conversation: convo };
+  return { assistant: last.content, conversation, state };
 };
