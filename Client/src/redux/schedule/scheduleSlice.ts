@@ -207,6 +207,14 @@ export const removeScheduleAsync = createAsyncThunk(
   }
 );
 
+// Update scheduleId from scheduleBuilderLog
+export const updateScheduleIdFromBuilder = createAsyncThunk(
+  "schedule/updateScheduleIdFromBuilder",
+  async (scheduleId: string) => {
+    return scheduleId;
+  }
+);
+
 const scheduleSlice = createSlice({
   name: "schedule",
   initialState,
@@ -316,6 +324,9 @@ const scheduleSlice = createSlice({
           state.currentScheduleId = undefined;
           state.currentSchedule = null;
         }
+      })
+      .addCase(updateScheduleIdFromBuilder.fulfilled, (state, action) => {
+        state.currentScheduleId = action.payload;
       });
   },
 });
