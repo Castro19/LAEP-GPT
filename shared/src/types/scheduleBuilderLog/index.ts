@@ -1,3 +1,4 @@
+import { ScheduleResponse } from "../schedule";
 import { SectionEssential } from "../section";
 import { CourseTerm } from "../selectedSection";
 
@@ -53,7 +54,8 @@ export type ScheduleBuilderMessage = {
 // A conversation turn represents a single request-response cycle
 export type ConversationTurn = {
   turn_id: string;
-  timestamp: Date;
+  timestamp: Date | string;
+  clientTimestamp?: string; // client timestamp
   messages: ScheduleBuilderMessage[];
   token_usage: TokenUsage;
 };
@@ -69,7 +71,7 @@ export type ScheduleBuilderLog = {
 // FetchedScheduleBuilderLog
 export type FetchedScheduleBuilderLogListItem = {
   thread_id: string;
-  updatedAt: Date;
+  updatedAt: Date | string;
   title: string;
 };
 
@@ -86,4 +88,6 @@ export type ScheduleBuilderResponse = {
   isNewThread: boolean;
   scheduleId: string;
   threadId: string;
+  state: ScheduleBuilderState;
+  schedule: ScheduleResponse;
 };
