@@ -6,7 +6,7 @@ import {
   ConversationTurn,
   ScheduleBuilderMessage,
   ScheduleBuilderState,
-  Section,
+  ToolCall,
 } from "@polylink/shared/types";
 import {
   fetchAllLogsFromDB,
@@ -37,7 +37,6 @@ interface ScheduleBuilderLogState {
   error: string | null;
   deletingThreadIds: string[];
   state: ScheduleBuilderState;
-  scheduleSections: Section[];
 }
 
 const initialState: ScheduleBuilderLogState = {
@@ -58,7 +57,6 @@ const initialState: ScheduleBuilderLogState = {
     diff: { added: [], removed: [] },
     preferences: { with_time_conflicts: true },
   },
-  scheduleSections: [],
 };
 
 /* ------------------------------------------------------------------ */
@@ -102,51 +100,6 @@ export const deleteLog = createAsyncThunk<
   }
 });
 
-/* ------------------------------------------------------------------ */
-/*  ✨ NEW ✨  — unified chat / log thunk                               */
-/* ------------------------------------------------------------------ */
-const toSchedMsg = (obj: any): ScheduleBuilderMessage => {
-  /* ---------------- role ---------------- */
-  const kind = Array.isArray(obj.id) ? obj.id[2] : "";
-  const role =
-    kind === "HumanMessage"
-      ? "user"
-      : kind === "ToolMessage"
-        ? "tool"
-        : "assistant"; // default
-
-  /* ---------------- tool_calls (AI only) ----------------
-     They can be found in THREE spots depending on LangChain version:
-     1. obj.tool_calls                           (top-level)
-     2. obj.kwargs.tool_calls
-     3. obj.kwargs.additional_kwargs.tool_calls
-  */
-  let rawCalls: any =
-    obj.tool_calls ??
-    obj.kwargs?.tool_calls ??
-    obj.kwargs?.additional_kwargs?.tool_calls;
-
-  // normalise undefined / empty
-  if (!Array.isArray(rawCalls) || rawCalls.length === 0) rawCalls = undefined;
-
-  const safeContent =
-    typeof obj.kwargs?.content === "string"
-      ? obj.kwargs.content
-      : typeof obj.content === "string"
-        ? obj.content
-        : JSON.stringify(obj.kwargs?.content ?? obj.content ?? "");
-
-  return {
-    msg_id: obj.kwargs?.id || obj.id || nanoid(),
-    role,
-    msg: safeContent,
-    state: obj.state,
-    reaction: null,
-    response_time: 0,
-    tool_calls: role === "assistant" ? rawCalls : undefined,
-  };
-};
-
 export const sendMessage = createAsyncThunk<
   void,
   { text: string; state: ScheduleBuilderState; placeholderTurnId: string },
@@ -170,11 +123,20 @@ export const sendMessage = createAsyncThunk<
         { threadId, userMsg: text, state },
         // on assistant chunk
         (chunk) => {
+          console.log("chunk", chunk);
           dispatch(assistantChunkArrived({ placeholderTurnId, chunk }));
+        },
+        // on message
+        (msg) => {
+          console.log("msg", msg);
+          dispatch(receivedMessage({ placeholderTurnId, message: msg }));
+        },
+        // on tool call
+        (calls) => {
+          dispatch(receivedToolCalls({ placeholderTurnId, calls }));
         },
         // on done
         (payload) => {
-          // if new thread/schedule
           if (payload.isNewThread) {
             threadId = payload.threadId;
             dispatch(setScheduleChatId(threadId));
@@ -190,22 +152,9 @@ export const sendMessage = createAsyncThunk<
           ) {
             dispatch(updateScheduleSections(payload.schedule.sections));
           }
-          // full turn: massage LangChain JSON into your shape
-          const parsedMsgs = payload.conversation.map(toSchedMsg);
-          const fullTurn: ConversationTurn = {
-            turn_id: placeholderTurnId,
-            timestamp: new Date().toISOString(),
-            messages: parsedMsgs,
-            token_usage: {
-              prompt_tokens: 0,
-              completion_tokens: 0,
-              total_tokens: 0,
-            },
-          };
           dispatch(
             turnComplete({
               placeholderTurnId,
-              fullTurn,
               newState: payload.state,
             })
           );
@@ -251,6 +200,27 @@ const scheduleBuilderLog = createSlice({
         title: "New Schedule Chat",
       };
     },
+    receivedToolCalls: (
+      st,
+      action: PayloadAction<{ placeholderTurnId: string; calls: ToolCall[] }>
+    ) => {
+      console.log("receivedToolCalls: ", action.payload);
+      const { placeholderTurnId, calls } = action.payload;
+      const turn = st.currentLog?.conversation_turns.find(
+        (t) => t.turn_id === placeholderTurnId
+      );
+
+      if (!turn) return;
+
+      const aiMsg = turn.messages.find((m) => m.role === "assistant");
+      console.log("aiMsg", aiMsg);
+      if (!aiMsg) return;
+      if (aiMsg.tool_calls) {
+        aiMsg.tool_calls = [...aiMsg.tool_calls, ...calls];
+      } else {
+        aiMsg.tool_calls = calls;
+      }
+    },
     // 1) incremental assistant stream
     assistantChunkArrived: (
       st,
@@ -261,43 +231,90 @@ const scheduleBuilderLog = createSlice({
         (t) => t.turn_id === placeholderTurnId
       );
       if (!turn) return;
-      // assume the last message in the turn is the assistant
-      let aiMsg = turn.messages.find((m) => m.role === "assistant");
-      if (!aiMsg) {
-        // first assistant chunk: push an empty assistant message
-        aiMsg = {
-          msg_id: nanoid(),
-          role: "assistant",
-          msg: "",
-          state: st.state,
-          reaction: null,
-          response_time: 0,
-        };
-        turn.messages.push(aiMsg);
-      }
+
+      // Find the assistant message (should exist from pending)
+      const aiMsg = turn.messages.find((m) => m.role === "assistant");
+      if (!aiMsg) return; // should never happen due to pending
+
+      // Append the chunk
       aiMsg.msg += chunk;
     },
+    // 2) received a complete message
+    receivedMessage: (
+      st,
+      {
+        payload: { placeholderTurnId, message },
+      }: PayloadAction<{
+        placeholderTurnId: string;
+        message: ScheduleBuilderMessage;
+      }>
+    ) => {
+      const turn = st.currentLog?.conversation_turns.find(
+        (t) => t.turn_id === placeholderTurnId
+      );
+      if (!turn) return;
 
-    // 2) finalization
+      console.log("receivedMessage", message);
+
+      // 1) If this is an assistant message, merge into the placeholder
+      if (message.role === "assistant") {
+        // find the existing assistant bubble
+        let aiMsg = turn.messages.find((m) => m.role === "assistant");
+        if (aiMsg) {
+          // overwrite its text (it's been collecting via assistantChunkArrived)
+          aiMsg.msg = message.msg;
+
+          // copy over token_usage etc. if you need it
+          aiMsg.token_usage = message.token_usage;
+          aiMsg.finish_reason = message.finish_reason;
+          aiMsg.model_name = message.model_name;
+          aiMsg.system_fingerprint = message.system_fingerprint;
+          return;
+        }
+        // if no placeholder (shouldn't happen) just push it
+        turn.messages.push(message);
+        return;
+      }
+
+      // 2) If it's a tool message, push it *into* the assistant bubble
+      if (message.role === "tool") {
+        let aiMsg = turn.messages.find((m) => m.role === "assistant");
+        if (!aiMsg) {
+          // no assistant yet? push a blank one first
+          const blank: ScheduleBuilderMessage = {
+            msg_id: nanoid(),
+            role: "assistant",
+            msg: "",
+            state: st.state,
+            reaction: null,
+            response_time: 0,
+          };
+          turn.messages.push(blank);
+          aiMsg = blank;
+        }
+        // now stash this tool's plain text in a helper array on the assistant
+        if (!aiMsg.toolMessages) {
+          aiMsg.toolMessages = [];
+        }
+        aiMsg.toolMessages.push({
+          msg_id: message.msg_id,
+          msg: message.msg,
+        });
+        return;
+      }
+
+      // 3) ignore user messages here (you already optimistically appended them)
+    },
+
+    // 4) finalization
     turnComplete: (
       st,
       action: PayloadAction<{
         placeholderTurnId: string;
-        fullTurn: ConversationTurn;
         newState: ScheduleBuilderState;
       }>
     ) => {
-      console.log("turnComplete: ", action.payload);
-      const { placeholderTurnId, fullTurn, newState } = action.payload;
-
-      // replace the placeholder turn
-      const idx = st.currentLog!.conversation_turns.findIndex(
-        (t) => t.turn_id === placeholderTurnId
-      );
-      if (idx !== -1) {
-        st.currentLog!.conversation_turns[idx] = fullTurn;
-      }
-
+      const { newState } = action.payload;
       // update the builder state
       st.state = newState;
       st.loadingByThread[st.currentLog!.thread_id] = false;
@@ -341,11 +358,30 @@ const scheduleBuilderLog = createSlice({
         );
         st.error = a.payload?.message || "Failed";
       })
-      .addCase(sendMessage.pending, (st) => {
+      .addCase(sendMessage.pending, (st, action) => {
+        const { placeholderTurnId } = action.meta.arg;
+        // mark loading
         st.loadingByThread[st.currentLog!.thread_id] = true;
+
+        // find the turn we already optimistically added (with only the user msg)
+        const turn = st.currentLog?.conversation_turns.find(
+          (t) => t.turn_id === placeholderTurnId
+        );
+        if (!turn) return;
+
+        // immediately append a blank assistant msg
+        turn.messages.push({
+          msg_id: nanoid(),
+          role: "assistant",
+          msg: "", // will fill in onChunk / receivedMessage
+          state: st.state,
+          reaction: null,
+          response_time: 0,
+        });
       })
       .addCase(sendMessage.rejected, (st, action) => {
-        st.loadingByThread[st.currentLog!.thread_id] = false;
+        const threadId = st.currentLog!.thread_id;
+        st.loadingByThread[threadId] = false;
         st.error =
           action.payload?.message ??
           action.error.message ??
@@ -363,6 +399,8 @@ export const {
   setScheduleChatId,
   newScheduleChat,
   assistantChunkArrived,
+  receivedMessage,
+  receivedToolCalls,
   turnComplete,
 } = scheduleBuilderLog.actions;
 

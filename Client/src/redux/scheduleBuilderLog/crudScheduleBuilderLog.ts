@@ -2,9 +2,9 @@ import {
   FetchedScheduleBuilderLog,
   FetchedScheduleBuilderLogListItem,
   ScheduleBuilderMessage,
-  ScheduleBuilderResponse,
   ScheduleBuilderState,
   ScheduleResponse,
+  ToolCall,
 } from "@polylink/shared/types";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 
@@ -92,56 +92,10 @@ export async function deleteLogFromDB(threadId: string): Promise<void> {
   }
 }
 
-export async function sendScheduleBuilderRequest({
-  threadId,
-  userMsg,
-  state,
-}: {
-  threadId: string;
-  userMsg: string;
-  state: ScheduleBuilderState;
-}): Promise<ScheduleBuilderResponse> {
-  try {
-    const response = await fetch(`${serverUrl}/scheduleBuilder/respond`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        threadId,
-        userMsg,
-        state,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return {
-      assistant: data.assistant,
-      conversation: data.conversation,
-      isNewSchedule: data.isNewSchedule,
-      isNewThread: data.isNewThread,
-      scheduleId: data.scheduleId,
-      threadId: data.threadId,
-      state: data.state,
-      schedule: data.schedule,
-    };
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Failed to send schedule builder request:", error);
-    }
-    throw error;
-  }
-}
-
 type OnChunk = (text: string) => void;
+type OnMessage = (msg: ScheduleBuilderMessage) => void;
+type OnToolCall = (calls: ToolCall[]) => void;
 type OnDonePayload = {
-  conversation: ScheduleBuilderMessage[];
   isNewSchedule: boolean;
   isNewThread: boolean;
   schedule_id: string;
@@ -162,6 +116,8 @@ export async function streamScheduleBuilderRequest(
     state: ScheduleBuilderState;
   },
   onChunk: OnChunk,
+  onMessage: OnMessage,
+  onToolCall: OnToolCall,
   onDone: OnDone
 ): Promise<void> {
   const response = await fetch(`${serverUrl}/scheduleBuilder/respond`, {
@@ -181,28 +137,48 @@ export async function streamScheduleBuilderRequest(
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
 
-    // split into SSE frames (delimited by \n\n)
     const parts = buffer.split("\n\n");
-    buffer = parts.pop()!; // remainder
+    buffer = parts.pop()!;
 
     for (const part of parts) {
-      console.log("part", part);
-      // e.g. "event: assistant\ndata: {\"text\":\"foo\"}"
       const lines = part.split("\n").map((l) => l.trim());
-      const eventLine = lines.find((l) => l.startsWith("event:"));
-      const dataLine = lines.find((l) => l.startsWith("data:"));
-      if (!dataLine) continue;
+      const ev = lines
+        .find((l) => l.startsWith("event:"))
+        ?.slice(6)
+        .trim();
+      const raw = lines
+        .find((l) => l.startsWith("data:"))
+        ?.slice(5)
+        .trim();
+      if (!ev || !raw) continue;
 
-      const raw = dataLine.slice("data:".length).trim();
-      if (eventLine === "event: assistant") {
-        const { text } = JSON.parse(raw);
-        console.log("text", text);
-        onChunk(text);
-      } else if (eventLine === "event: done") {
-        const payload: OnDonePayload = JSON.parse(raw);
-        onDone(payload);
+      switch (ev) {
+        case "tool_call":
+          const toolCalls: ToolCall[] = JSON.parse(raw);
+          onToolCall(toolCalls);
+          break;
+
+        case "assistant":
+          // partial text streaming
+          const { text } = JSON.parse(raw);
+          onChunk(text);
+          break;
+
+        case "message":
+          // full message object: could be assistant OR tool
+          const msg: ScheduleBuilderMessage = JSON.parse(raw);
+          onMessage(msg);
+          break;
+
+        case "done":
+          const payload: OnDonePayload = JSON.parse(raw);
+          onDone(payload);
+          return; // done reading
+
+        case "error":
+          const { message } = JSON.parse(raw);
+          throw new Error(message);
       }
-      // you could also handle “error” events here
     }
   }
 }
