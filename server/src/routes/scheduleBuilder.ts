@@ -170,6 +170,8 @@ router.post(
     );
     const lastMsg = result.conversation[result.conversation.length - 1];
     if (lastMsg instanceof AIMessage) {
+      console.log("lastMsg", lastMsg);
+      // TODO: Is there a way to add the state to the response_metadata state? Currently it's not being added.
       state = lastMsg.response_metadata?.state;
     }
 
