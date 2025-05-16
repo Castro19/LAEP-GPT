@@ -140,7 +140,9 @@ export const sendMessage = createAsyncThunk<
             (payload.state.diff?.removed &&
               payload.state.diff.removed.length > 0)
           ) {
-            dispatch(updateScheduleSections(payload.schedule.sections));
+            dispatch(
+              updateScheduleSections(payload.state.currentSchedule.sections)
+            );
           }
           dispatch(turnComplete());
         }
