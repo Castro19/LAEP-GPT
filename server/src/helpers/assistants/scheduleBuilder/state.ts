@@ -5,13 +5,34 @@ export const StateAnnotation = Annotation.Root({
   ...MessagesAnnotation.spec,
   user_id: Annotation<string>,
   term: Annotation<CourseTerm>,
-  sections: Annotation<SectionEssential[]>,
+  sections: Annotation<SectionEssential[]>({
+    default: () => [],
+    reducer: (a: SectionEssential[], b: SectionEssential[]) => {
+      // If either value is undefined/null, return the other
+      if (!a) return b;
+      if (!b) return a;
+      // Concatenate the arrays
+      return [...a, ...b];
+    },
+  }),
   user_query: Annotation<string>,
   schedule_id: Annotation<string>,
   diff: Annotation<{
     added: number[];
     removed: number[];
-  }>,
+  }>({
+    default: () => ({ added: [], removed: [] }),
+    reducer: (a, b) => {
+      // If either value is undefined/null, return the other
+      if (!a) return b;
+      if (!b) return a;
+      // Combine the added and removed arrays
+      return {
+        added: [...(a.added || []), ...(b.added || [])],
+        removed: [...(a.removed || []), ...(b.removed || [])],
+      };
+    },
+  }),
   preferences: Annotation<{
     with_time_conflicts: boolean;
   }>,
