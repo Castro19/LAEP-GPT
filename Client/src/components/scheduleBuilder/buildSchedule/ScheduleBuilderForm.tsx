@@ -1,4 +1,9 @@
-import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
+import {
+  classSearchActions,
+  scheduleActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -65,6 +70,11 @@ const ScheduleBuilderForm = ({
             className="bg-black border-white border-2"
             altText="Add Sections"
             onClick={() => {
+              dispatch(
+                classSearchActions.setFilters({
+                  term: currentScheduleTerm,
+                })
+              );
               navigate("/class-search");
             }}
           >
