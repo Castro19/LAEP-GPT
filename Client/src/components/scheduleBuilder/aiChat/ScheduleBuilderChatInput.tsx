@@ -14,6 +14,7 @@ import {
   resetInputAndScrollToBottom,
 } from "@/components/chat/helpers/formatHelper";
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
+import { CourseTerm } from "@polylink/shared/types";
 
 interface Props {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -30,8 +31,12 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   /* global state */
-  const { draftMsg, currentLog, error, loadingByThread, state } =
-    useAppSelector((state) => state.scheduleBuilderLog);
+  const { currentScheduleTerm, currentSchedule } = useAppSelector(
+    (state) => state.schedule
+  );
+  const { draftMsg, currentLog, error, loadingByThread } = useAppSelector(
+    (state) => state.scheduleBuilderLog
+  );
 
   const threadId = currentLog?.thread_id;
   const lockedChat = !!loadingByThread[threadId || ""];
@@ -56,7 +61,6 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
       turn_id: placeholderTurnId,
       timestamp: new Date().toISOString(),
       messages: [{ msg_id: nanoid(), role: "user", msg: draftMsg }],
-      state,
     };
 
     dispatch(
@@ -73,8 +77,16 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
     dispatch(
       scheduleBuilderLogActions.sendMessage({
         text: draftMsg,
-        state,
         placeholderTurnId,
+        state: {
+          user_id: "",
+          term: currentScheduleTerm as CourseTerm,
+          sections: [],
+          user_query: "",
+          schedule_id: currentSchedule?.id || "",
+          diff: { added: [], removed: [] },
+          preferences: { with_time_conflicts: true },
+        },
       })
     );
   };

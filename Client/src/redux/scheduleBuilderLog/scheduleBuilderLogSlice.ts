@@ -36,7 +36,6 @@ interface ScheduleBuilderLogState {
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
-  state: ScheduleBuilderState;
 }
 
 const initialState: ScheduleBuilderLogState = {
@@ -48,15 +47,6 @@ const initialState: ScheduleBuilderLogState = {
   isLoading: false,
   error: null,
   deletingThreadIds: [],
-  state: {
-    user_id: "",
-    term: "fall2025",
-    sections: [],
-    user_query: "",
-    schedule_id: "",
-    diff: { added: [], removed: [] },
-    preferences: { with_time_conflicts: true },
-  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -152,12 +142,7 @@ export const sendMessage = createAsyncThunk<
           ) {
             dispatch(updateScheduleSections(payload.schedule.sections));
           }
-          dispatch(
-            turnComplete({
-              placeholderTurnId,
-              newState: payload.state,
-            })
-          );
+          dispatch(turnComplete());
         }
       );
     } catch (err: any) {
@@ -185,9 +170,6 @@ const scheduleBuilderLog = createSlice({
     },
     clearCurrentLog: (st) => {
       st.currentLog = null;
-    },
-    setState: (st, a: PayloadAction<ScheduleBuilderState>) => {
-      st.state = a.payload;
     },
     setScheduleChatId: (st, a: PayloadAction<string>) => {
       st.currentScheduleChatId = a.payload;
@@ -288,7 +270,6 @@ const scheduleBuilderLog = createSlice({
             msg_id: nanoid(),
             role: "assistant",
             msg: "",
-            state: st.state,
             reaction: null,
             response_time: 0,
           };
@@ -310,16 +291,8 @@ const scheduleBuilderLog = createSlice({
     },
 
     // 4) finalization
-    turnComplete: (
-      st,
-      action: PayloadAction<{
-        placeholderTurnId: string;
-        newState: ScheduleBuilderState;
-      }>
-    ) => {
-      const { newState } = action.payload;
+    turnComplete: (st) => {
       // update the builder state
-      st.state = newState;
       st.loadingByThread[st.currentLog!.thread_id] = false;
     },
   },
@@ -377,7 +350,6 @@ const scheduleBuilderLog = createSlice({
           msg_id: nanoid(),
           role: "assistant",
           msg: "", // will fill in onChunk / receivedMessage
-          state: st.state,
           reaction: null,
           response_time: 0,
         });
@@ -398,7 +370,6 @@ export const {
   appendUserTurnLocally,
   clearError,
   clearCurrentLog,
-  setState,
   setScheduleChatId,
   newScheduleChat,
   assistantChunkArrived,
