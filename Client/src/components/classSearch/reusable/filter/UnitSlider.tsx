@@ -4,15 +4,31 @@ import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import TitleLabel from "@/components/classSearch/reusable/filter/TitleLabel";
 import DoubleSliderFilter from "@/components/classSearch/reusable/filter/DoubleSliderFilter";
 import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
+import { useEffect } from "react";
 
 type UnitSliderProps = {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
   min: number;
+  defaultValue?: number;
   max: number;
   showRange?: boolean;
 };
 
-const UnitSlider = ({ form, min, max, showRange = true }: UnitSliderProps) => {
+const UnitSlider = ({
+  form,
+  min,
+  max,
+  showRange = true,
+  defaultValue,
+}: UnitSliderProps) => {
+  // Set initial form values if defaultValue is provided
+  useEffect(() => {
+    if (defaultValue !== undefined) {
+      form.setValue("minUnits", min.toString());
+      form.setValue("maxUnits", defaultValue.toString());
+    }
+  }, []); // Empty dependency array means this only runs once on mount
+
   return (
     <FormField
       control={form.control}
