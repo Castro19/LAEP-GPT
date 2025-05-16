@@ -2,6 +2,7 @@ import {
   useAppDispatch,
   useAppSelector,
   sectionSelectionActions,
+  classSearchActions,
   scheduleActions,
 } from "@/redux";
 import { GeneratedSchedule, SelectedSection } from "@polylink/shared/types";
@@ -46,9 +47,8 @@ const SectionsChosen = ({
   const { sectionsForSchedule } = useAppSelector(
     (state) => state.sectionSelection
   );
-  const { hiddenSections, currentSchedule } = useAppSelector(
-    (state) => state.schedule
-  );
+  const { hiddenSections, currentSchedule, currentScheduleTerm } =
+    useAppSelector((state) => state.schedule);
 
   // Group sections by courseId and professor
   if (
@@ -64,12 +64,19 @@ const SectionsChosen = ({
           ease: [0.22, 1, 0.36, 1],
           delay: 0.1,
         }}
-        className="p-2 text-gray-700 dark:text-gray-800 text-sm"
+        className="p-2 text-gray-700 dark:text-slate-200 text-sm"
       >
         The sections you select from the{" "}
         <strong
-          className="text-blue-600/80 dark:text-blue-800 cursor-pointer"
-          onClick={() => navigate("/class-search")}
+          className="text-blue-600/80 dark:text-blue-300 cursor-pointer"
+          onClick={() => {
+            dispatch(
+              classSearchActions.setFilters({
+                term: currentScheduleTerm,
+              })
+            );
+            navigate("/class-search");
+          }}
         >
           Class Search
         </strong>{" "}

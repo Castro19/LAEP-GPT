@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { classSearchActions, useAppSelector, useAppDispatch } from "@/redux";
 import { motion } from "framer-motion";
 import { FiInfo, FiPlusCircle } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -22,12 +23,21 @@ const COPY = {
         endText: " come back here to build your schedule!",
       },
     ],
-    cta: "Browse Available Spring 2025 Sections",
+    ctaStartText: "Browse Available ",
+    ctaEndText: " Sections",
   },
 };
 
 const NoSelectedSections = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+
+  const termMap = {
+    spring2025: "Spring 2025",
+    fall2025: "Fall 2025",
+    summer2025: "Summer 2025",
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -60,6 +70,11 @@ const NoSelectedSections = () => {
                     <strong
                       onClick={() => {
                         if (item.isButton) {
+                          dispatch(
+                            classSearchActions.setFilters({
+                              term: currentScheduleTerm,
+                            })
+                          );
                           navigate("/class-search");
                         }
                       }}
@@ -81,7 +96,9 @@ const NoSelectedSections = () => {
           onClick={() => navigate("/class-search")}
           className="gap-2 text-lg font-semibold bg-blue-500 hover:bg-blue-400 transition-colors w-full"
         >
-          {COPY.emptyState.cta}
+          {COPY.emptyState.ctaStartText}
+          {termMap[currentScheduleTerm]}
+          {COPY.emptyState.ctaEndText}
         </Button>
       </Card>
     </motion.div>
