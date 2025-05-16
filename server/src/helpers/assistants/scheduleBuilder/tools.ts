@@ -21,6 +21,7 @@ import {
 } from "../SectionQuery/sectionQueryAssistant";
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
+import { getSelectedSectionsByUserId } from "../../../db/models/selectedSection/selectedSectionServices";
 
 export const fetchSections = tool(
   async (
@@ -164,8 +165,13 @@ export const fetchSections = tool(
         }
       }
       const flatSecs = Object.values(courseBuckets).flat();
+      const selectedSections = await getSelectedSectionsByUserId(
+        config.configurable.user_id,
+        state.term as CourseTerm
+      );
       sectionsToReturn = flatSecs.map(
-        (s): SelectedSection => transformSectionToSelectedSection(s)
+        (s): SelectedSection =>
+          transformSectionToSelectedSection(s, selectedSections)
       );
     } else {
       return new Command({
@@ -289,6 +295,7 @@ export const manageSchedule = tool(
           classNumbersToAdd: class_nums,
           scheduleId: schedule_id,
           preferences,
+          selectedSections: state.sections,
         });
 
       return new Command({

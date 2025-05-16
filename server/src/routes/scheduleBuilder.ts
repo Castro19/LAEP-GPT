@@ -23,7 +23,6 @@ import {
   getLogByThreadId,
 } from "../db/models/scheduleBuilderLog/scheduleBuilderLogServices";
 import { HumanMessage, AIMessageChunk } from "@langchain/core/messages";
-import { environment } from "..";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
 const router = express.Router();
 
