@@ -1,10 +1,8 @@
-import { AIMessage, BaseMessage } from "@langchain/core/messages";
-import { nanoid } from "nanoid";
+import { BaseMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { StateAnnotation, stateModifier } from "./state";
 import { fetchSections, manageSchedule } from "./tools";
-import e from "express";
 
 const agent = createReactAgent({
   llm: new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 }),
@@ -25,6 +23,11 @@ export async function* scheduleBuilderStream(
     type: string;
   }[];
   lastState?: typeof StateAnnotation.State;
+  tokenUsage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 }> {
   const eventStream = agent.streamEvents(initState, {
     configurable: { thread_id: threadId },
@@ -39,6 +42,10 @@ export async function* scheduleBuilderStream(
     type: string;
   } | null = null;
   let lastState: typeof StateAnnotation.State | undefined;
+
+  // Track LangChain's reported usage
+  let promptTokens = 0;
+  let completionTokens = 0;
 
   for await (const { event, data } of eventStream) {
     if (event === "on_chat_model_stream" && data.chunk) {
@@ -88,6 +95,20 @@ export async function* scheduleBuilderStream(
       }
     }
 
+    // Capture token usage from LLM responses
+    if (event === "on_llm_end") {
+      const output = data.output as {
+        response_metadata?: {
+          tokenUsage?: { promptTokens?: number; completionTokens?: number };
+        };
+      };
+      if (output?.response_metadata?.tokenUsage) {
+        promptTokens += output.response_metadata.tokenUsage.promptTokens || 0;
+        completionTokens +=
+          output.response_metadata.tokenUsage.completionTokens || 0;
+      }
+    }
+
     // Update last state
     if (event === "on_chain_end" && data.output) {
       lastState = data.output;
@@ -108,9 +129,16 @@ export async function* scheduleBuilderStream(
     };
   }
 
-  // Yield final state
+  // Yield final state with token usage
   if (!lastState) {
     throw new Error("No state was generated during the stream");
   }
-  yield { lastState };
+  yield {
+    lastState,
+    tokenUsage: {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: promptTokens + completionTokens,
+    },
+  };
 }
