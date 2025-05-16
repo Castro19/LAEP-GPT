@@ -4,6 +4,7 @@ import {
   ScheduleBuilderMessage,
   ScheduleBuilderState,
   ScheduleResponse,
+  SelectedSection,
   ToolCall,
 } from "@polylink/shared/types";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
@@ -102,6 +103,7 @@ type OnDonePayload = {
   threadId: string;
   state: ScheduleBuilderState;
   schedule: ScheduleResponse;
+  selectedSections: SelectedSection[];
 };
 type OnDone = (payload: OnDonePayload) => void;
 
