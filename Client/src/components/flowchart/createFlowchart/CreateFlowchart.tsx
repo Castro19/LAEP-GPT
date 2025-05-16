@@ -96,7 +96,6 @@ const CreateFlowchart = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
       return;
     }
     try {
-      console.log("Flowchart Data", flowchartData);
       // Create a new object with the updated startYear instead of modifying the original
       const updatedFlowchartData = {
         ...flowchartData,

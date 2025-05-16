@@ -23,6 +23,7 @@ import {
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
 import { getSelectedSectionsByUserId } from "../../../db/models/selectedSection/selectedSectionServices";
+import { environment } from "../../..";
 
 export const fetchSections = tool(
   async (
@@ -111,17 +112,21 @@ export const fetchSections = tool(
       }
       sectionsToReturn = sections;
     } else if (fetch_type === "search") {
-      console.log(
-        "======================SEARCH QUERY======================\n",
-        search_query
-      );
+      if (environment === "dev") {
+        console.log(
+          "======================SEARCH QUERY======================\n",
+          search_query
+        );
+      }
       const resp: SectionQueryResponse = await sectionQueryAssistant(
         search_query!
       );
-      console.log(
-        "======================QUERY RESPONSE======================\n",
-        JSON.stringify(resp, null, 2)
-      );
+      if (environment === "dev") {
+        console.log(
+          "======================QUERY RESPONSE======================\n",
+          JSON.stringify(resp, null, 2)
+        );
+      }
       if (!resp || !resp.query) {
         return new Command({
           update: {
@@ -151,6 +156,7 @@ export const fetchSections = tool(
       }
 
       /* bucket → limit courses & sections per course */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const courseBuckets: Record<string, any[]> = {};
       for (const sec of mongoSections.sections) {
         const cid = sec.courseId;
@@ -190,8 +196,9 @@ export const fetchSections = tool(
         },
       });
     }
-
-    console.log("sectionsToReturn", sectionsToReturn);
+    if (environment === "dev") {
+      console.log("SECTIONS TO RETURN: ", sectionsToReturn);
+    }
     const sectionsWithPairs = await getSectionsWithPairs(
       sectionsToReturn as SelectedSection[],
       state.term as CourseTerm
@@ -384,11 +391,13 @@ export const manageSchedule = tool(
   {
     name: "manage_schedule",
     description:
-      "Read, add, or remove course sections in a student's schedule.",
+      "Read (summarize, list, provide details), add, or remove course sections in a student's schedule.",
     schema: z.object({
       operation: z
         .enum(["readall", "add", "remove"])
-        .describe("Operation to perform on the schedule."),
+        .describe(
+          "Operation to perform on the schedule. Use readall to summarize, list, or provide details about the schedule."
+        ),
       class_nums: z
         .array(z.number())
         .optional()

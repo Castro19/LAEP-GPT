@@ -137,11 +137,11 @@ router.post(
           const message = (error as { error: Error | null })?.error?.message;
           if (message?.includes("Cannot cancel run with status")) {
             if (environment === "dev") {
-              console.log("Run canceled");
+              console.log("RUN CANCELED");
             }
           } else if (message?.includes("already has an active run")) {
             if (environment === "dev") {
-              console.log("Run already canceled: ", message);
+              console.log("RUN ALREADY CANCELED: ", message);
             }
           } else {
             if (environment === "dev") {
@@ -201,7 +201,7 @@ router.post(
 
       const response = await sectionQueryAssistant(message);
       if (environment === "dev") {
-        console.log("Query response:", response);
+        console.log("QUERY RESPONSE: ", response);
       }
       if (!response?.query) {
         // Add return here to prevent further execution

@@ -16,8 +16,6 @@ export const FormatPrerequisites: React.FC<FormatPrerequisitesProps> = ({
   if (!Array.isArray(prerequisites)) {
     if (environment === "dev") {
       console.warn("Prerequisites must be an array");
-      console.log("prerequisites", prerequisites);
-      console.log("prerequisites", typeof prerequisites);
     }
     return null;
   }

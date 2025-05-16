@@ -27,7 +27,7 @@ const UnitSlider = ({
       form.setValue("minUnits", min.toString());
       form.setValue("maxUnits", defaultValue.toString());
     }
-  }, []); // Empty dependency array means this only runs once on mount
+  }, [defaultValue, form, min]); // Added missing dependencies
 
   return (
     <FormField

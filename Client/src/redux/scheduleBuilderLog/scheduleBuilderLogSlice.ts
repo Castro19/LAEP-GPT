@@ -114,12 +114,10 @@ export const sendMessage = createAsyncThunk<
         { threadId, userMsg: text, state },
         // on assistant chunk
         (chunk) => {
-          console.log("chunk", chunk);
           dispatch(assistantChunkArrived({ placeholderTurnId, chunk }));
         },
         // on message
         (msg) => {
-          console.log("msg", msg);
           dispatch(receivedMessage({ placeholderTurnId, message: msg }));
         },
         // on tool call
@@ -151,8 +149,11 @@ export const sendMessage = createAsyncThunk<
           dispatch(turnComplete());
         }
       );
-    } catch (err: any) {
-      return rejectWithValue({ message: err.message });
+    } catch (err: Error | unknown) {
+      return rejectWithValue({
+        message:
+          err instanceof Error ? err.message : "An unknown error occurred",
+      });
     }
   }
 );
@@ -195,7 +196,6 @@ const scheduleBuilderLog = createSlice({
       st,
       action: PayloadAction<{ placeholderTurnId: string; calls: ToolCall[] }>
     ) => {
-      console.log("receivedToolCalls: ", action.payload);
       const { placeholderTurnId, calls } = action.payload;
       const turn = st.currentLog?.conversation_turns.find(
         (t) => t.turn_id === placeholderTurnId
@@ -204,7 +204,7 @@ const scheduleBuilderLog = createSlice({
       if (!turn) return;
 
       const aiMsg = turn.messages.find((m) => m.role === "assistant");
-      console.log("aiMsg", aiMsg);
+
       if (!aiMsg) return;
       if (aiMsg.tool_calls) {
         aiMsg.tool_calls = [...aiMsg.tool_calls, ...calls];
@@ -245,12 +245,10 @@ const scheduleBuilderLog = createSlice({
       );
       if (!turn) return;
 
-      console.log("receivedMessage", message);
-
       // 1) If this is an assistant message, merge into the placeholder
       if (message.role === "assistant") {
         // find the existing assistant bubble
-        let aiMsg = turn.messages.find((m) => m.role === "assistant");
+        const aiMsg = turn.messages.find((m) => m.role === "assistant");
         if (aiMsg) {
           // overwrite its text (it's been collecting via assistantChunkArrived)
           aiMsg.msg = message.msg;
