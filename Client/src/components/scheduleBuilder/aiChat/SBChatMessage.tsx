@@ -17,6 +17,7 @@ export interface SBMessage {
   role: "user" | "assistant";
   msg: string;
   thinkingState?: boolean;
+  tools?: Tool[];
   tool_calls?: ToolCall[];
   toolMessages?: ToolMsg[];
 }
@@ -25,11 +26,17 @@ export interface ToolCall {
   id: string;
   name: string;
   args: Record<string, unknown>;
+  type: string;
 }
 
 export interface ToolMsg {
   msg_id: string;
   msg: string;
+}
+
+export interface Tool {
+  call: ToolCall;
+  message: ToolMsg;
 }
 
 /* -------------------------------------------------------------------------
@@ -61,8 +68,17 @@ interface Props {
 
 const SBChatMessage: React.FC<Props> = ({ msg }) => {
   const isUser = msg.role === "user";
-  const hasTools = !!(msg.tool_calls?.length || msg.toolMessages?.length);
+  const hasTools = !!(msg.tools?.length || msg.tool_calls?.length);
   const [open, setOpen] = useState(true);
+
+  // Convert old format to new format if needed
+  const tools =
+    msg.tools ||
+    msg.tool_calls?.map((call, index) => ({
+      call,
+      message: msg.toolMessages?.[index] || { msg_id: call.id, msg: "" },
+    })) ||
+    [];
 
   const variant = isUser
     ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-right"
@@ -97,35 +113,30 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
               <Accordion
                 type="multiple"
                 className="mt-2 border border-slate-700/60 rounded-md overflow-hidden"
-                defaultValue={msg.tool_calls?.map((call) => call.id)}
+                defaultValue={tools.map((tool) => tool.call.id)}
               >
-                {msg.tool_calls?.map((call) => (
+                {tools.map((tool) => (
                   <AccordionItem
-                    key={call.id}
-                    value={call.id}
+                    key={tool.call.id}
+                    value={tool.call.id}
                     className="border-b border-slate-700/60"
                   >
                     <AccordionTrigger className="px-3 py-2 text-left text-sm font-medium bg-slate-800 hover:bg-slate-700">
-                      {call.name}
+                      {tool.call.name}
                     </AccordionTrigger>
                     <AccordionContent className="bg-slate-900 px-3 py-2 text-xs space-y-3">
                       {/* args with horizontal scroll */}
                       <div className="max-w-full overflow-x-auto">
                         <pre className="min-w-max whitespace-pre text-slate-300">
-                          {JSON.stringify(call.args, null, 2)}
+                          {JSON.stringify(tool.call.args, null, 2)}
                         </pre>
                       </div>
-                      {/* tool message(s) with horizontal scroll */}
-                      {msg.toolMessages?.map((t) => (
-                        <div
-                          key={t.msg_id}
-                          className="max-w-full overflow-x-auto"
-                        >
-                          <pre className="min-w-max bg-slate-800 p-2 rounded text-slate-200 whitespace-pre">
-                            {t.msg}
-                          </pre>
-                        </div>
-                      ))}
+                      {/* tool message with horizontal scroll */}
+                      <div className="max-w-full overflow-x-auto">
+                        <pre className="min-w-max bg-slate-800 p-2 rounded text-slate-200 whitespace-pre">
+                          {tool.message.msg}
+                        </pre>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
