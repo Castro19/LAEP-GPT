@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const PaginationFooter = () => {
   const dispatch = useAppDispatch();
-  const { page, totalPages, loading, schedules } = useAppSelector(
+  const { page, totalPages, schedules } = useAppSelector(
     (state) => state.schedule
   );
 
@@ -33,9 +33,9 @@ const PaginationFooter = () => {
         <div className="grid grid-cols-3 gap-4 items-center">
           <Button
             onClick={handlePrev}
-            disabled={page === 1 || loading}
+            disabled={page === 1}
             className={`w-full flex items-center justify-center px-4 py-2 rounded transition-colors duration-300 ${
-              page === 1 || loading
+              page === 1
                 ? "bg-gray-700 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
@@ -50,9 +50,9 @@ const PaginationFooter = () => {
 
           <Button
             onClick={handleNext}
-            disabled={page === totalPages || loading}
+            disabled={page === totalPages}
             className={`w-full flex items-center justify-center px-4 py-2 rounded transition-colors duration-300 ${
-              page === totalPages || loading
+              page === totalPages
                 ? "bg-gray-700 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
