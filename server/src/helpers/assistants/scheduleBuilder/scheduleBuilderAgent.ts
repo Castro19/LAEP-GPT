@@ -3,11 +3,13 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { StateAnnotation, stateModifier } from "./state";
 import { fetchSections, manageSchedule } from "./tools";
+import { environment } from "../../..";
 
 const agent = createReactAgent({
   llm: new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 }),
   tools: [fetchSections, manageSchedule],
   stateSchema: StateAnnotation,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stateModifier: (s: any) => stateModifier(s) as unknown as BaseMessage[],
 });
 
@@ -20,6 +22,7 @@ export async function* scheduleBuilderStream(
   toolCalls?: {
     id: string;
     name: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     args: any;
     type: string;
   }[];
@@ -30,6 +33,9 @@ export async function* scheduleBuilderStream(
     total_tokens: number;
   };
 }> {
+  if (environment === "dev") {
+    console.log("INIT STATE: ", initState);
+  }
   const eventStream = agent.streamEvents(initState, {
     configurable: { thread_id: threadId, user_id: userId },
     recursionLimit: 10,

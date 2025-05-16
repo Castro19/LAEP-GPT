@@ -37,7 +37,7 @@ async function fetchProfessors(
   );
 
   if (environment === "dev") {
-    console.log("Professors: ", professors);
+    console.log("PROFESSORS: ", professors);
   }
 
   return professors;

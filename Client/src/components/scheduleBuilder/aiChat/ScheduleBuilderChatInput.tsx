@@ -30,7 +30,6 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  /* global state */
   const { currentScheduleTerm, currentSchedule } = useAppSelector(
     (state) => state.schedule
   );

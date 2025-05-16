@@ -18,7 +18,6 @@ const ScheduleBuilderAIChat = () => {
   const [showLogs, setShowLogs] = useState(false);
 
   const onShowScheduleBuilderLogs = () => {
-    console.log("show schedule builder logs");
     if (showLogs) {
       setShowLogs(false);
     } else {

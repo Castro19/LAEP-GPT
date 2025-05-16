@@ -39,9 +39,6 @@ export const getScheduleListByUserId = async (
   try {
     const result = await scheduleCollection.findSchedulesByUserId(userId, term);
     if (!result || result.length === 0) {
-      if (environment === "dev") {
-        console.log("No schedules found for the user");
-      }
       return {
         schedules: [],
         primaryScheduleId: "",

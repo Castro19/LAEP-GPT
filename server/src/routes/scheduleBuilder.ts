@@ -4,7 +4,6 @@ import express, { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import asyncHandler from "../middlewares/asyncMiddleware";
 import {
-  RunningStreamData,
   ScheduleBuilderMessage,
   ConversationTurn,
   ScheduleBuilderState,
@@ -37,9 +36,6 @@ const messageRateLimiter = rateLimit({
   headers: true,
   keyGenerator: (req) => req.body.userId || "unknown-user",
 });
-
-// Store running streams: Useful for cancelling a running stream
-const runningStreams: RunningStreamData = {};
 
 router.post(
   "/respond",
@@ -191,6 +187,7 @@ router.post(
       if (msg instanceof AIMessageChunk) {
         // pull usage from the correct place
         const usageFromResponse = msg.response_metadata?.usage;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const usageFromLegacy = (msg as any).usage_metadata;
 
         const token_usage = usageFromResponse

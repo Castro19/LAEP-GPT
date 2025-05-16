@@ -106,9 +106,6 @@ export default async function sendMessage(
         async function processText() {
           const { done, value } = await reader.read();
           if (done) {
-            if (environment === "dev") {
-              console.log("Stream complete");
-            }
             return;
           }
           const chunk = decoder.decode(value, { stream: true });

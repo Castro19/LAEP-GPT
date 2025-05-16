@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ChatLoadingMessage = ({ toolUsage }: { toolUsage: string | null }) => {
-  console.log("toolUsage", toolUsage);
-
   return (
     <motion.div
       className="flex items-center space-x-4 mb-8 sm:mb-12 w-full max-w-3xl mx-auto"

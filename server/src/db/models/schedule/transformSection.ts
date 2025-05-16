@@ -142,7 +142,7 @@ export async function transformClassNumbersToSelectedSections(
           // Look through all classNumbers in the selected sections document for this term
           const termSections =
             selectedSectionsDoc?.selectedSections[term] || {};
-          for (const [classNum, sectionData] of Object.entries(termSections)) {
+          for (const [, sectionData] of Object.entries(termSections)) {
             // Find a section with the same courseId
             const matchingSection = sections.find(
               (s) => s.courseId === section.courseId
