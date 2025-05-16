@@ -1,22 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ChatContainerScheduleBuilder from "./ChatContainerScheduleBuilder";
 import ScheduleBuilderLogs from "./ScheduleBuilderLogs";
 import { Button } from "@/components/ui/button";
 import { IoMdChatboxes } from "react-icons/io";
-import {
-  useAppDispatch,
-  scheduleBuilderLogActions,
-  useAppSelector,
-} from "@/redux";
+import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
 import ScheduleBuilderChatInput from "./ScheduleBuilderChatInput";
-import { CourseTerm, SectionEssential } from "@polylink/shared/types";
-import { useParams } from "react-router-dom";
+
 import SBNewChat from "./SBNewChat";
 const ScheduleBuilderAIChat = () => {
   const dispatch = useAppDispatch();
-  const { scheduleId } = useParams();
-  const { currentSchedule } = useAppSelector((state) => state.schedule);
-  console.log("currentSchedule", currentSchedule);
   /* refs for ChatInput – still stubs */
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -35,39 +27,6 @@ const ScheduleBuilderAIChat = () => {
       setShowLogs(true);
     }
   };
-
-  useEffect(() => {
-    const sectionEssential: SectionEssential[] | undefined =
-      currentSchedule?.sections.map((section) => ({
-        classNumber: section.classNumber,
-        courseId: section.courseId,
-        courseName: section.courseName,
-        units: section.units,
-        instructors: section.professors.map((professor) => ({
-          name: professor.name,
-          id: professor.id,
-          email: "",
-        })),
-        instructorsWithRatings: [],
-        classPair: section.classPair,
-        meetings: section.meetings.map((meeting) => ({
-          days: meeting.days,
-          start_time: meeting.start_time,
-          end_time: meeting.end_time,
-          location: "",
-        })),
-      }));
-    const state = {
-      user_id: "",
-      term: "fall2025" as CourseTerm,
-      sections: sectionEssential || [],
-      user_query: "",
-      schedule_id: scheduleId || "",
-      diff: { added: [], removed: [] },
-      preferences: { with_time_conflicts: true },
-    };
-    dispatch(scheduleBuilderLogActions.setState(state));
-  }, [currentSchedule, scheduleId, dispatch]);
 
   return (
     <>
