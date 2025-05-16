@@ -5,6 +5,8 @@ import { transformClassNumbersToSelectedSections } from "../schedule/transformSe
 import * as sectionCollection from "../section/sectionCollection";
 import * as summerSectionCollection from "../section/summerSectionCollection";
 import { courseColors } from "../../../constants/colors";
+import { getSectionsByIds } from "../section/sectionServices";
+import { Section } from "@polylink/shared/types";
 // Map to store courseId to color mapping
 const courseIdToColorMap = new Map<string, string>();
 
@@ -103,6 +105,82 @@ export const getSelectedSectionsByUserId = async (
   }
 };
 
+/**
+ * Get the color for a section, prioritizing the current term's color if it exists
+ */
+export const getSectionColor = async (
+  userId: string,
+  sectionId: number,
+  term: CourseTerm,
+  courseId: string
+): Promise<string> => {
+  try {
+    const existingSection =
+      await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+    console.log("[getSectionColor] Looking for color for:", {
+      sectionId,
+      term,
+      courseId,
+      existingSection: existingSection?.selectedSections[term],
+    });
+
+    // First try to get the color directly from the section in the current term
+    const directColor =
+      existingSection?.selectedSections[term]?.[sectionId]?.color;
+    if (directColor) {
+      console.log("[getSectionColor] Found direct color:", directColor);
+      return directColor;
+    }
+
+    // If no direct color, look for any section with the same courseId in the current term
+    const termSections = existingSection?.selectedSections[term] || {};
+    console.log(
+      "[getSectionColor] Looking for matching courseId in term sections:",
+      termSections
+    );
+
+    // Get all sections for this term to find matching courseIds
+    const sections = await getSectionsByIds(
+      Object.keys(termSections).map(Number),
+      term
+    );
+
+    if (sections) {
+      // Find a section with the same courseId
+      const matchingSection = sections.find(
+        (s: Section) => s.courseId === courseId
+      );
+      if (matchingSection) {
+        const matchingColor = termSections[matchingSection.classNumber]?.color;
+        if (matchingColor) {
+          console.log(
+            "[getSectionColor] Found color from matching courseId section:",
+            {
+              classNumber: matchingSection.classNumber,
+              color: matchingColor,
+            }
+          );
+          return matchingColor;
+        }
+      }
+    }
+
+    // If still no color found, use the courseId color mapping
+    const courseColor = getColorForCourseId(courseId);
+    console.log("[getSectionColor] Using courseId color mapping:", courseColor);
+    return courseColor;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("[getSectionColor] Error:", error);
+    }
+    // Fallback to a random color if there's an error
+    const randomColor =
+      courseColors[Math.floor(Math.random() * courseColors.length)];
+    console.log("[getSectionColor] Using fallback random color:", randomColor);
+    return randomColor;
+  }
+};
+
 // Creates a new section or updates an existing section
 export const postSelectedSection = async (
   userId: string,
@@ -117,20 +195,36 @@ export const postSelectedSection = async (
   try {
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+    console.log("[postSelectedSection] Existing sections:", {
+      userId,
+      sectionId: section.sectionId,
+      term: section.term,
+      existingSections: existingSection?.selectedSections[section.term],
+    });
 
     // Get the courseId for this section
     const courseId = await getCourseIdByClassNumber(
       section.sectionId,
       section.term
     );
+    console.log("[postSelectedSection] Found courseId:", courseId);
 
-    // Get a color for this courseId
-    const color = courseId
-      ? getColorForCourseId(courseId)
-      : courseColors[Math.floor(Math.random() * courseColors.length)];
+    if (!courseId) {
+      throw new Error("Could not find courseId for section");
+    }
+
+    // Get a consistent color for this section/course
+    const color = await getSectionColor(
+      userId,
+      section.sectionId,
+      section.term,
+      courseId
+    );
+    console.log("[postSelectedSection] Selected color:", color);
 
     if (existingSection) {
       if (existingSection.selectedSections[section.term]?.[section.sectionId]) {
+        console.log("[postSelectedSection] Section already exists");
         return {
           selectedSections: await getSelectedSectionsByUserId(
             userId,
@@ -139,6 +233,10 @@ export const postSelectedSection = async (
           message: `Section ${section.sectionId} is already in your schedule`,
         };
       } else {
+        console.log(
+          "[postSelectedSection] Adding new section with color:",
+          color
+        );
         await selectedSelectionModel.createOrUpdateSelectedSection(
           userId,
           section.sectionId,
@@ -154,6 +252,10 @@ export const postSelectedSection = async (
         };
       }
     } else {
+      console.log(
+        "[postSelectedSection] Creating first section with color:",
+        color
+      );
       await selectedSelectionModel.createOrUpdateSelectedSection(
         userId,
         section.sectionId,
@@ -170,7 +272,7 @@ export const postSelectedSection = async (
     }
   } catch (error) {
     if (environment === "dev") {
-      console.error(error);
+      console.error("[postSelectedSection] Error:", error);
     }
     throw error;
   }
@@ -260,7 +362,7 @@ export const bulkPostSelectedSections = async (
             term as CourseTerm
           );
           const selectedSection = selectedSections?.find(
-            (s) => s.classNumber === sectionId
+            (s) => s.courseId === courseId
           );
           const color = selectedSection?.color
             ? selectedSection.color
