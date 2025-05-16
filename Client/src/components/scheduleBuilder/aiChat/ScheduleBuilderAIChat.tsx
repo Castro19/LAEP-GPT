@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { NewChat } from "@/components/chat";
 import ChatContainerScheduleBuilder from "./ChatContainerScheduleBuilder";
 import ScheduleBuilderLogs from "./ScheduleBuilderLogs";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
 import ScheduleBuilderChatInput from "./ScheduleBuilderChatInput";
 import { CourseTerm, SectionEssential } from "@polylink/shared/types";
 import { useParams } from "react-router-dom";
+import SBNewChat from "./SBNewChat";
 const ScheduleBuilderAIChat = () => {
   const dispatch = useAppDispatch();
   const { scheduleId } = useParams();
@@ -90,7 +90,7 @@ const ScheduleBuilderAIChat = () => {
             )}
           </div>
 
-          <NewChat />
+          <SBNewChat />
         </div>
       </header>
 
