@@ -1,5 +1,4 @@
 // My components
-import SectionPageHeader from "./SectionPageHeader";
 import MobileHeader from "@/components/layout/dynamicLayouts/MobileHeader";
 
 // Hooks
@@ -22,7 +21,7 @@ const SectionPageLayout = ({ children }: SectionPageLayoutProps) => {
             isNarrowScreen ? "ml-0" : "ml-2"
           }`}
         >
-          {isNarrowScreen ? <MobileHeader /> : <SectionPageHeader />}
+          {isNarrowScreen ? <MobileHeader /> : null}
           <div className="flex-1">{children}</div>
         </div>
       </div>

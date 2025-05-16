@@ -30,7 +30,7 @@ const SectionContainer = () => {
       ) : (
         <div className="overflow-auto flex-1 no-scroll">
           <ScrollArea
-            className={`${isNarrowScreen ? "h-[75%]" : "h-[85%]"} min-w-full pb-12`}
+            className={`${isNarrowScreen ? "h-[calc(100vh-12rem)]" : "h-[calc(100vh-4rem)]"}`}
           >
             {courses.length > 0 ? (
               <>

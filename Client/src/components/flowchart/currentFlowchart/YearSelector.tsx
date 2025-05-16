@@ -1,5 +1,4 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEffect } from "react";
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 
 const YearSelector = ({
@@ -10,7 +9,6 @@ const YearSelector = ({
 }: {
   totalYears: number;
   selectedYear: number;
-  // eslint-disable-next-line no-unused-vars
   scrollToYear: (year: number) => void;
   isNarrowScreen: boolean;
 }) => {
@@ -18,14 +16,6 @@ const YearSelector = ({
   const isFullTimeline = useAppSelector(
     (state) => state.flowchart.isFullTimelineView
   );
-
-  // Update the tab selection when selectedYear changes from parent
-  useEffect(() => {
-    if (!isFullTimeline) {
-      // This ensures we stay in sync with the parent's selectedYear
-      scrollToYear(selectedYear);
-    }
-  }, [selectedYear, isFullTimeline, scrollToYear]);
 
   const handleChange = (value: string) => {
     if (value === "full") {

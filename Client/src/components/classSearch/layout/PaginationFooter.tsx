@@ -37,7 +37,7 @@ export const PaginationFooter: React.FC = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white py-3 shadow-lg w-full sticky bottom-24 border-t border-gray-700">
+    <footer className="bg-gray-900 text-white py-3 shadow-lg w-full sticky bottom-0 border-t border-gray-700">
       <div className="max-w-5xl mx-auto px-4">
         <div className="grid grid-cols-3 items-center gap-4">
           <Button
