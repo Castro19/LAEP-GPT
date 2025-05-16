@@ -1,5 +1,4 @@
 import React from "react";
-import ScheduleBuilderPageHeader from "./ScheduleBuilderPageHeader";
 import OuterIconSidebar from "../dynamicLayouts/OuterIconSidebar";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileHeader from "../dynamicLayouts/MobileHeader";
@@ -19,7 +18,7 @@ const ScheduleBuilderPageLayout = ({ children }: SectionPageLayoutProps) => {
             isNarrowScreen ? "ml-0" : "ml-2"
           }`}
         >
-          {isNarrowScreen ? <MobileHeader /> : <ScheduleBuilderPageHeader />}
+          {isNarrowScreen ? <MobileHeader /> : null}
           <div className="flex-1">{children}</div>
         </div>
       </div>

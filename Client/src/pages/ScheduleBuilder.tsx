@@ -24,6 +24,7 @@ import { onNewChat } from "@/components/chat";
 import { CourseTerm, Schedule } from "@polylink/shared/types";
 // UI Components
 import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
@@ -154,7 +155,7 @@ const ScheduleBuilderPage = () => {
       {isNarrowScreen ? (
         <ScheduleBuilderMobile />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4 mt-2">
           <div className="col-span-1">
             <Tabs
               value={tabValue}
@@ -162,42 +163,57 @@ const ScheduleBuilderPage = () => {
                 setTabValue(value as CourseTerm | "schedule" | "AI Chat")
               }
               defaultValue={tabValue}
+              className="space-y-2"
             >
-              <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900">
-                <TabsTrigger
-                  value="spring2025"
-                  onClick={() => handleTermChange("spring2025")}
-                  className={
-                    currentScheduleTerm === "spring2025" ? "bg-primary" : ""
-                  }
-                >
-                  SP25
-                </TabsTrigger>
-                <TabsTrigger
-                  value="summer2025"
-                  onClick={() => handleTermChange("summer2025")}
-                  className={
-                    currentScheduleTerm === "summer2025" ? "bg-primary" : ""
-                  }
-                >
-                  SU25
-                </TabsTrigger>
-                <TabsTrigger
-                  value="fall2025"
-                  onClick={() => handleTermChange("fall2025")}
-                  className={
-                    currentScheduleTerm === "fall2025" ? "bg-primary" : ""
-                  }
-                >
-                  FA25
-                </TabsTrigger>
-                <TabsTrigger
-                  value="AI Chat"
-                  disabled={!currentSchedule || !selectedSections}
-                >
-                  AI Chat
-                </TabsTrigger>
-              </TabsList>
+              <Card className="bg-card/50 border-border/50">
+                <CardHeader className="flex flex-col items-center justify-center p-2">
+                  <CardTitle className="text-center">
+                    Schedule Builder
+                  </CardTitle>
+                  <div className="flex items-center justify-center text-sm text-gray-500">
+                    Click to select a term
+                  </div>
+                </CardHeader>
+                {/* border */}
+                <div className="border-t border-border/50"></div>
+                <CardContent>
+                  <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900/50 bg-gray-100/50 p-1 rounded-lg">
+                    <TabsTrigger
+                      value="spring2025"
+                      onClick={() => handleTermChange("spring2025")}
+                      className={
+                        currentScheduleTerm === "spring2025" ? "bg-primary" : ""
+                      }
+                    >
+                      SP25
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="summer2025"
+                      onClick={() => handleTermChange("summer2025")}
+                      className={
+                        currentScheduleTerm === "summer2025" ? "bg-primary" : ""
+                      }
+                    >
+                      SU25
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="fall2025"
+                      onClick={() => handleTermChange("fall2025")}
+                      className={
+                        currentScheduleTerm === "fall2025" ? "bg-primary" : ""
+                      }
+                    >
+                      FA25
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="AI Chat"
+                      disabled={!currentSchedule || !selectedSections}
+                    >
+                      AI Chat
+                    </TabsTrigger>
+                  </TabsList>
+                </CardContent>
+              </Card>
               <TabsContent value="spring2025">
                 <ScheduleBuilderForm onSwitchTab={() => {}} />
               </TabsContent>
