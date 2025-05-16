@@ -1,13 +1,17 @@
-import { CourseTerm, SectionEssential } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  ScheduleResponse,
+  SelectedSection,
+} from "@polylink/shared/types";
 import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
 
 export const StateAnnotation = Annotation.Root({
   ...MessagesAnnotation.spec,
   user_id: Annotation<string>,
   term: Annotation<CourseTerm>,
-  sections: Annotation<SectionEssential[]>({
+  sections: Annotation<SelectedSection[]>({
     default: () => [],
-    reducer: (a: SectionEssential[], b: SectionEssential[]) => {
+    reducer: (a: SelectedSection[], b: SelectedSection[]) => {
       // If either value is undefined/null, return the other
       if (!a) return b;
       if (!b) return a;
@@ -36,10 +40,48 @@ export const StateAnnotation = Annotation.Root({
   preferences: Annotation<{
     with_time_conflicts: boolean;
   }>,
+  currentSchedule: Annotation<ScheduleResponse>({
+    value: (a: ScheduleResponse, b: ScheduleResponse) => {
+      // If either value is undefined/null, return the other
+      if (!a) return b;
+      if (!b) return a;
+      // Merge the schedules, assuming sections and customEvents are arrays
+      return {
+        ...a,
+        ...b,
+        sections: [...(a.sections || []), ...(b.sections || [])],
+        customEvents: [...(a.customEvents || []), ...(b.customEvents || [])],
+      };
+    },
+    default: () => ({
+      id: "",
+      name: "",
+      sections: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      term: "fall2025" as CourseTerm,
+      customEvents: [],
+    }),
+    reducer: (a: ScheduleResponse, b: ScheduleResponse) => {
+      // If either value is undefined/null, return the other
+      if (!a) return b;
+      if (!b) return a;
+      // Merge the schedules, assuming sections and customEvents are arrays
+      return { ...a, ...b };
+    },
+  }),
 });
 
 export const stateModifier = (state: typeof StateAnnotation.State) => {
-  const { sections, preferences, term, user_id, schedule_id, diff } = state;
+  const {
+    sections,
+    preferences,
+    term,
+    user_id,
+    schedule_id,
+    diff,
+    currentSchedule,
+  } = state;
 
   const systemMessage = `
   You are PolyLink Schedule Builder, a helpful AI agent to provide assistance with schedule building for courses at Cal Poly.
@@ -79,6 +121,7 @@ export const stateModifier = (state: typeof StateAnnotation.State) => {
     - sections: ${JSON.stringify(sections)}
     - preferences: ${JSON.stringify(preferences)}
     - diff: ${JSON.stringify(diff)}
+    - currentSchedule: ${JSON.stringify(currentSchedule)}
   `;
 
   return [

@@ -1,22 +1,17 @@
 import { environment } from "../../..";
 import * as selectedSelectionModel from "./selectedSectionCollection";
-import {
-  SelectedSection,
-  CourseTerm,
-  SectionEssential,
-} from "@polylink/shared/types";
+import { SelectedSection, CourseTerm } from "@polylink/shared/types";
 import { transformClassNumbersToSelectedSections } from "../schedule/transformSection";
 import * as sectionCollection from "../section/sectionCollection";
 import * as summerSectionCollection from "../section/summerSectionCollection";
 import { courseColors } from "../../../constants/colors";
-import { getSectionsByIds } from "../section/sectionServices";
 // Map to store courseId to color mapping
 const courseIdToColorMap = new Map<string, string>();
 
 /**
  * Get a color for a courseId, ensuring the same courseId always gets the same color
  */
-function getColorForCourseId(courseId: string): string {
+export function getColorForCourseId(courseId: string): string {
   if (courseIdToColorMap.has(courseId)) {
     return courseIdToColorMap.get(courseId)!;
   }
@@ -211,39 +206,6 @@ export const deleteSelectedSection = async (
     }
     throw error;
   }
-};
-
-export const getSelectedSectionsEssentialsByUserId = async (
-  userId: string,
-  term: CourseTerm
-): Promise<SectionEssential[]> => {
-  const selectedSections =
-    await selectedSelectionModel.findSelectedSectionsByUserId(userId);
-  if (!selectedSections) {
-    return [];
-  }
-  const selectedEssentials = Object.keys(
-    selectedSections.selectedSections[term] || {}
-  ).map(Number);
-
-  // getSectionsByIds
-  const sections = await getSectionsByIds(selectedEssentials, term);
-  if (!sections) {
-    return [];
-  }
-
-  return sections.map((section) => {
-    return {
-      classNumber: section.classNumber,
-      courseId: section.courseId,
-      courseName: section.courseName,
-      units: section.units,
-      instructors: section.instructors,
-      instructorsWithRatings: [],
-      classPair: section.classPair,
-      meetings: section.meetings,
-    };
-  });
 };
 
 export const bulkPostSelectedSections = async (
