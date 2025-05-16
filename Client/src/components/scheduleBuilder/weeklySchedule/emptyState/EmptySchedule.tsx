@@ -4,25 +4,30 @@ import { FiInfo, FiCalendar } from "react-icons/fi";
 
 const COPY = {
   emptyState: {
-    title: "Great Job Adding Your Classes!",
+    title: "Ready to Build Your Schedule!",
     heading: "Here's how to get started:",
     descriptionList: [
       {
         startText: "Press the ",
-        strongText: "New Schedule",
+        strongText: "Generate Schedule",
         endText:
-          " button to generate all schedule combinations with your preferences.",
+          " button to create all possible combinations of your selected sections based on your preferences.",
       },
       {
-        startText: "See a schedule you love? Hit ",
+        startText: "Or click ",
+        strongText: "New Schedule",
+        endText: " to start with a blank schedule and add sections manually.",
+      },
+      {
+        startText: "Found your perfect schedule? Hit ",
         strongText: "Save Schedule",
-        endText: " to set it as your primary.",
+        endText: " to keep it for later.",
       },
     ],
-    cta: "New Schedule",
+    cta: "Generate Schedule",
   },
   primarySchedule: {
-    heading: "Why to add a primary schedule?",
+    heading: "Why save your schedule?",
     descriptionList: [
       {
         startText:
@@ -34,6 +39,11 @@ const COPY = {
         startText: "Chat with our ",
         strongText: "Schedule Analysis AI Assistant",
         endText: " to get help finding the best schedule for you.",
+      },
+      {
+        startText: "Easily ",
+        strongText: "update your schedule",
+        endText: " as you make changes to your course selections.",
       },
     ],
   },

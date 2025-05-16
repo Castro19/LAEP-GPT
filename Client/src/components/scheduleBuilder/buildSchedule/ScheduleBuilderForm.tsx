@@ -13,6 +13,7 @@ import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { generatedScheduleToSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
 import { Preferences } from "@/redux/schedule/scheduleSlice";
+import { GeneratedSchedule } from "@polylink/shared/types";
 
 export type SchedulePreferencesForm = z.infer<
   typeof SCHEDULE_PREFERENCES_SCHEMA
@@ -127,13 +128,23 @@ const ScheduleBuilderForm = ({
           scheduleId: scheduleId,
         })
       );
+      toast({
+        title: scheduleId ? "Schedule updated" : "Schedule created",
+        description: `Your schedule has been ${
+          scheduleId ? "updated" : "created"
+        }`,
+      });
+    } else {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
     }
-    toast({
-      title: scheduleId ? "Schedule updated" : "Schedule created",
-      description: `Your schedule has been ${
-        scheduleId ? "updated" : "created"
-      }`,
-    });
   };
 
   return (
@@ -144,7 +155,13 @@ const ScheduleBuilderForm = ({
         </BuildScheduleContainer>
         <LeftSectionFooter
           formText="Generate Schedule"
-          buttonText={scheduleId ? "Update Schedule" : "Save Schedule"}
+          buttonText={
+            scheduleId
+              ? "Update Schedule"
+              : currentSchedule
+                ? "Save Schedule"
+                : "New Schedule"
+          }
           onFormSubmit={handleBuildSchedule}
           onClick={handleSaveSchedule}
         />

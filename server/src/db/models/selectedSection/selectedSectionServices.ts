@@ -4,6 +4,7 @@ import { SelectedSection, CourseTerm } from "@polylink/shared/types";
 import { transformClassNumbersToSelectedSections } from "../schedule/transformSection";
 import * as sectionCollection from "../section/sectionCollection";
 import * as summerSectionCollection from "../section/summerSectionCollection";
+import * as fallSectionCollection from "../section/fallSectionCollection";
 import { courseColors } from "../../../constants/colors";
 import { getSectionsByIds } from "../section/sectionServices";
 import { Section } from "@polylink/shared/types";
@@ -35,21 +36,28 @@ async function getCourseIdByClassNumber(
 ): Promise<string | null> {
   try {
     // Determine which collection to use based on the term
+    let section;
     if (term === "summer2025") {
-      const section = await summerSectionCollection.findSectionsByFilter(
+      section = await summerSectionCollection.findSectionsByFilter(
         { classNumber },
         0,
         1
       );
-      return section.sections.length > 0 ? section.sections[0].courseId : null;
+    } else if (term === "fall2025") {
+      section = await fallSectionCollection.findSectionsByFilter(
+        { classNumber },
+        0,
+        1
+      );
     } else {
-      const section = await sectionCollection.findSectionsByFilter(
+      // spring2025
+      section = await sectionCollection.findSectionsByFilter(
         { classNumber },
         0,
         1
       );
-      return section.sections.length > 0 ? section.sections[0].courseId : null;
     }
+    return section.sections.length > 0 ? section.sections[0].courseId : null;
   } catch (error) {
     if (environment === "dev") {
       console.error(
