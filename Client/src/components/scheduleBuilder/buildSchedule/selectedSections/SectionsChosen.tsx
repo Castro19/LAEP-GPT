@@ -4,7 +4,7 @@ import {
   sectionSelectionActions,
   scheduleActions,
 } from "@/redux";
-import { SelectedSection } from "@polylink/shared/types";
+import { GeneratedSchedule, SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -122,6 +122,16 @@ const SectionsChosen = ({
 
   // Handle adding all sections of a course to schedule
   const handleAddCourseToCalendar = (courseId: string) => {
+    if (!currentSchedule) {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+    }
     const sections = getCourseSections(courseId);
     const sectionsToAdd = new Set<number>();
 
@@ -622,6 +632,16 @@ const SectionCard: React.FC<{
   };
 
   const handleAddToCalendar = () => {
+    if (!currentSchedule) {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+    }
     dispatch(
       scheduleActions.updateScheduleSection({
         sectionIds: [section.classNumber],
