@@ -13,7 +13,8 @@ const agent = createReactAgent({
 
 export async function* scheduleBuilderStream(
   initState: typeof StateAnnotation.State,
-  threadId: string
+  threadId: string,
+  userId: string
 ): AsyncGenerator<{
   chunk?: string;
   toolCalls?: {
@@ -30,7 +31,7 @@ export async function* scheduleBuilderStream(
   };
 }> {
   const eventStream = agent.streamEvents(initState, {
-    configurable: { thread_id: threadId },
+    configurable: { thread_id: threadId, user_id: userId },
     recursionLimit: 10,
     version: "v2",
   });
