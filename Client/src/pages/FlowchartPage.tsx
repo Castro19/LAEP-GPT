@@ -21,6 +21,7 @@ import MobileFlowchartLayout from "@/components/layout/FlowchartPage/MobileFlowc
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScheduleBuilderAIChat } from "@/components/scheduleBuilder";
 import FlowchartBuilderForm from "@/components/flowchart/flowchartSidePanel/FlowchartBuilderForm";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 const FlowChartPage = () => {
   const dispatch = useAppDispatch();
@@ -112,12 +113,17 @@ const FlowChartPage = () => {
             <FlowchartLayout>
               <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-1 gap-4">
                 <div className="col-span-1">
+                  <Card className="bg-card/50 border-border/50">
+                    <CardHeader className="flex flex-col items-center justify-center">
+                      <CardTitle className="text-center">Flowchart</CardTitle>
+                    </CardHeader>
+                  </Card>
                   <Tabs defaultValue="Build Schedule">
-                    <TabsList className="grid w-full grid-cols-2 dark:bg-gray-900">
+                    {/* <TabsList className="grid w-full grid-cols-1 dark:bg-gray-900">
                       <TabsTrigger value="Build Schedule">
                         Flowchart
                       </TabsTrigger>
-                    </TabsList>
+                    </TabsList> */}
                     <TabsContent value="Build Schedule">
                       <FlowchartBuilderForm />
                     </TabsContent>
@@ -126,7 +132,7 @@ const FlowChartPage = () => {
                     </TabsContent>
                   </Tabs>
                 </div>
-                <div className="col-span-3 items-start justify-start">
+                <div className="col-span-3 items-start justify-start mt-4">
                   {createFlowchart || !flowchartData ? (
                     <CreateFlowchart />
                   ) : (
