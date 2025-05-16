@@ -1,4 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/redux";
+import {
+  useAppDispatch,
+  useAppSelector,
+  sectionSelectionActions,
+  scheduleActions,
+} from "@/redux";
 import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +14,7 @@ import {
   ChevronRight,
   CheckCircle,
   Circle,
+  CalendarPlus,
 } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 import {
@@ -16,16 +22,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import {
-  removeSelectedSectionAsync,
-  toggleSectionForSchedule,
-  selectAllSectionsForSchedule,
-  deselectAllSectionsForSchedule,
-} from "@/redux/sectionSelection/sectionSelectionSlice";
 import { useNavigate } from "react-router-dom";
 import LabelSection from "@/components/classSearch/reusable/sectionInfo/LabelSection";
 import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
-import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
 import {
   TooltipProvider,
   Tooltip,
@@ -98,12 +97,12 @@ const SectionsChosen = ({
 
   // Handle select all sections
   const handleSelectAll = () => {
-    dispatch(selectAllSectionsForSchedule());
+    dispatch(sectionSelectionActions.selectAllSectionsForSchedule());
   };
 
   // Handle deselect all sections
   const handleDeselectAll = () => {
-    dispatch(deselectAllSectionsForSchedule());
+    dispatch(sectionSelectionActions.deselectAllSectionsForSchedule());
   };
 
   // Check if any section of a course is in the current schedule
@@ -136,12 +135,12 @@ const SectionsChosen = ({
       if (anyHidden) {
         // If any section is hidden, show all sections
         if (hiddenSections.includes(section.classNumber)) {
-          dispatch(toggleHiddenSection(section.classNumber));
+          dispatch(scheduleActions.toggleHiddenSection(section.classNumber));
         }
       } else {
         // If no sections are hidden, hide all sections
         if (!hiddenSections.includes(section.classNumber)) {
-          dispatch(toggleHiddenSection(section.classNumber));
+          dispatch(scheduleActions.toggleHiddenSection(section.classNumber));
         }
       }
     });
@@ -413,7 +412,7 @@ const SectionCard: React.FC<{
 
   const handleRemove = () => {
     dispatch(
-      removeSelectedSectionAsync({
+      sectionSelectionActions.removeSelectedSectionAsync({
         sectionId: section.classNumber,
         term: currentScheduleTerm,
       })
@@ -421,16 +420,31 @@ const SectionCard: React.FC<{
   };
 
   const handleToggleSelection = () => {
-    dispatch(toggleSectionForSchedule(section.classNumber));
+    dispatch(
+      sectionSelectionActions.toggleSectionForSchedule(section.classNumber)
+    );
   };
 
   const handleToggleHidden = () => {
-    dispatch(toggleHiddenSection(section.classNumber));
+    dispatch(scheduleActions.toggleHiddenSection(section.classNumber));
   };
 
   const handleRemoveFromCalendar = () => {
-    // TODO: Implement remove from calendar action
-    console.log("Remove from calendar:", section.classNumber);
+    dispatch(
+      scheduleActions.updateScheduleSection({
+        sectionId: section.classNumber,
+        action: "remove",
+      })
+    );
+  };
+
+  const handleAddToCalendar = () => {
+    dispatch(
+      scheduleActions.updateScheduleSection({
+        sectionId: section.classNumber,
+        action: "add",
+      })
+    );
   };
 
   // Extract and format start & end time
@@ -614,7 +628,7 @@ const SectionCard: React.FC<{
           </div>
 
           {/* Schedule Actions Group */}
-          {isInSchedule && (
+          {isInSchedule ? (
             <div className="flex items-center gap-1">
               {/* Hide/Show */}
               <TooltipProvider>
@@ -668,6 +682,36 @@ const SectionCard: React.FC<{
                       avoidCollisions={true}
                     >
                       Remove from calendar
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              {/* Add to calendar */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleAddToCalendar}
+                      className="h-7 w-7 text-green-700 dark:text-green-400 
+                        hover:bg-green-100/50 dark:hover:bg-green-900/50
+                        hover:text-green-800 dark:hover:text-green-300"
+                    >
+                      <CalendarPlus className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent
+                      side="top"
+                      sideOffset={5}
+                      className="z-[100]"
+                      avoidCollisions={true}
+                    >
+                      Add to calendar
                     </TooltipContent>
                   </TooltipPortal>
                 </Tooltip>
