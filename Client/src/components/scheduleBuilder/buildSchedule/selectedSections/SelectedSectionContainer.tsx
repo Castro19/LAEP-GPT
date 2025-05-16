@@ -24,7 +24,7 @@ const SelectedSectionContainer = ({
   onSwitchTab?: (tab: string) => void;
 }) => {
   const { fetchSchedulesLoading } = useAppSelector((state) => state.schedule);
-  const { fetchSelectedSectionsLoading } = useAppSelector(
+  const { fetchSelectedSectionsLoading, selectedSections } = useAppSelector(
     (state) => state.sectionSelection
   );
   return (
@@ -34,7 +34,7 @@ const SelectedSectionContainer = ({
           {fetchSelectedSectionsLoading ? (
             <LoadingContainer />
           ) : (
-            <SectionsChosen />
+            <SectionsChosen selectedSections={selectedSections} />
           )}
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
