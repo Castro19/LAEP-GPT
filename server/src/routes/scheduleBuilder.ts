@@ -25,6 +25,7 @@ import {
 } from "../db/models/scheduleBuilderLog/scheduleBuilderLogServices";
 import { HumanMessage, AIMessageChunk } from "@langchain/core/messages";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
+import { getSelectedSectionsByUserId } from "../db/models/selectedSection/selectedSectionServices";
 const router = express.Router();
 
 // Rate limiter for GPT messages
@@ -93,6 +94,7 @@ router.post(
           completion_tokens: 0,
           total_tokens: 0,
         },
+        user_id: userId,
       });
     }
 
@@ -281,7 +283,6 @@ router.post(
       };
       messages[messages.length - 1] = assistantMessage;
     }
-
     // 8) Create the conversation turn
     const turn: ConversationTurn = {
       turn_id: uuidv4(),
@@ -295,7 +296,10 @@ router.post(
       state: lastState as unknown as ScheduleBuilderState,
     };
 
-    // 9) Add the conversation turn to the log
+    // 9) Get the selected sections for the term
+    const selectedSections = await getSelectedSectionsByUserId(userId, term);
+
+    // 10) Add the conversation turn to the log
     await addConversationTurn(threadId, turn);
 
     res.write(
@@ -306,6 +310,7 @@ router.post(
           schedule_id,
           threadId,
           state: lastState,
+          selectedSections: selectedSections,
         })}\n\n`
     );
     res.end();

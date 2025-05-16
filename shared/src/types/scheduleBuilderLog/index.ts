@@ -68,6 +68,7 @@ export type ScheduleBuilderLog = {
   updatedAt: Date;
   title: string;
   total_token_usage: TokenUsage;
+  user_id: string;
 };
 
 // FetchedScheduleBuilderLog

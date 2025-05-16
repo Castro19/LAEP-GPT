@@ -221,6 +221,7 @@ export const bulkPostSelectedSections = async (
   message: string;
 }> => {
   try {
+    console.log("sections for selected sections", sections);
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
 
