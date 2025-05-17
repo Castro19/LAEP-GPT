@@ -1,0 +1,66 @@
+# Builds the monorepo, produces a **self-contained** `server/` folder
+# (nested install = no workspace symlinks), then deploys it to Azure.
+
+name: Build & deploy Node.js server to Azure Web App – PolyLink
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ─────────── 1. checkout & toolchain ───────────
+      - uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          cache: npm
+
+      # ─────────── 2. install & build ───────────
+      - name: Install all workspaces
+        run: npm ci
+
+      - name: Build shared + server
+        run: |
+          npm run build:shared
+          npm run build:server
+
+      # ─────────── 3. create production-only, nested install for server ───────────
+      - name: Production install (nested) for server workspace
+        run: |
+          npm ci --omit=dev \
+                 --workspace=server \
+                 --include-workspace-root \
+                 --install-strategy=nested
+
+          # sanity-check: langgraph must be present
+          test -f server/node_modules/@langchain/langgraph/prebuilt.js \
+            && echo "✅ prebuilt.js present" \
+            || (echo "❌ prebuilt.js missing"; exit 1)
+
+      # ─────────── 4. package artifact ───────────
+      - name: Zip server artifact
+        run: |
+          cd server
+          zip -r ../server.zip dist node_modules package.json package-lock.json
+
+      # ─────────── 5. deploy to Azure ───────────
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "PolyLink"
+          slot-name: "Production"
+          package: server.zip
