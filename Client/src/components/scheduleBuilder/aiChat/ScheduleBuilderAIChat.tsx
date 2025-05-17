@@ -4,10 +4,8 @@ import ChatContainerScheduleBuilder from "./ChatContainerScheduleBuilder";
 import ScheduleBuilderLogs from "./ScheduleBuilderLogs";
 import { Button } from "@/components/ui/button";
 import { IoMdChatboxes } from "react-icons/io";
-import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
 
 const ScheduleBuilderAIChat = () => {
-  const dispatch = useAppDispatch();
   /* refs for ChatInput – still stubs */
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -22,7 +20,6 @@ const ScheduleBuilderAIChat = () => {
       setShowLogs(false);
     } else {
       // fetch logs from database
-      dispatch(scheduleBuilderLogActions.fetchAllLogs());
       setShowLogs(true);
     }
   };

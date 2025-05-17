@@ -10,7 +10,6 @@ import { flowSelectionReducer } from "./flowSelection/flowSelectionSlice";
 import { classSearchReducer } from "./classSearch/classSearchSlice";
 import { sectionSelectionReducer } from "./sectionSelection/sectionSelectionSlice";
 import { scheduleReducer } from "./schedule/scheduleSlice";
-import { scheduleBuilderLogReducer } from "./scheduleBuilderLog/scheduleBuilderLog";
 
 const store = configureStore({
   reducer: {
@@ -25,7 +24,6 @@ const store = configureStore({
     classSearch: classSearchReducer,
     sectionSelection: sectionSelectionReducer,
     schedule: scheduleReducer,
-    scheduleBuilderLog: scheduleBuilderLogReducer,
   },
 });
 
