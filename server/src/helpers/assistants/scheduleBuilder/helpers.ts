@@ -22,7 +22,6 @@ import {
   createOrUpdateSchedule,
   getScheduleById,
 } from "../../../db/models/schedule/scheduleServices";
-import { transformSectionToSelectedSection } from "../../../db/models/schedule/transformSection";
 import * as summerSectionCollection from "../../../db/models/section/summerSectionCollection";
 import * as sectionCollection from "../../../db/models/section/sectionCollection";
 import * as fallSectionCollection from "../../../db/models/section/fallSectionCollection";
@@ -97,11 +96,7 @@ export const getUserNextEligibleSections = async ({
   }
   // Convert sections to SelectedSection format
   const fetchedSections: SelectedSection[] = sections.map((section) =>
-    transformSectionToSelectedSection(
-      section,
-      fetchedSelectedSections.find((s) => s.courseId === section.courseId)
-        ?.color
-    )
+    transformSectionToSelectedSection(section, fetchedSelectedSections)
   );
 
   //   Group by course id and only take sectionsPerCourse sections per course
@@ -142,11 +137,7 @@ export const readAllSchedule = async (
     schedule.term as CourseTerm
   );
   const selectedSections = sections.map((section) =>
-    transformSectionToSelectedSection(
-      section,
-      fetchedSelectedSections.find((s) => s.courseId === section.courseId)
-        ?.color
-    )
+    transformSectionToSelectedSection(section, fetchedSelectedSections)
   );
   return selectedSections;
 };
@@ -239,12 +230,7 @@ export const getSectionsWithPairs = async (
   } else {
     // If input is SelectedSection[], transform paired sections to SelectedSection[]
     const transformedPairedSections = pairedSections.map((section) =>
-      transformSectionToSelectedSection(
-        section,
-        (sections as SelectedSection[]).find(
-          (s) => s.courseId === section.courseId
-        )?.color
-      )
+      transformSectionToSelectedSection(section, [])
     );
     return [...(sections as SelectedSection[]), ...transformedPairedSections];
   }
@@ -387,6 +373,36 @@ export const removeFromSchedule = async ({
     messageToAdd: `Removed sections ${sectionsToRemove
       .map((s) => `${s.courseId} (classNumber: ${s.classNumber})`)
       .join(", ")} from your schedule.\n`,
+  };
+};
+
+export const transformSectionToSelectedSection = (
+  section: Section,
+  selectedSections: SelectedSection[]
+): SelectedSection => {
+  return {
+    courseId: section.courseId,
+    courseName: section.courseName,
+    classNumber: section.classNumber,
+    component: section.component,
+    units: section.units,
+    professors: section.instructors.map((professor) => ({
+      name: professor.name,
+      id:
+        section.instructorsWithRatings?.find(
+          (instructor) => instructor.name === professor.name
+        )?.id ?? null,
+    })),
+    enrollmentStatus: section.enrollmentStatus,
+    meetings: section.meetings,
+    classPair: section.classPair,
+    rating:
+      section.instructorsWithRatings?.find(
+        (instructor) => instructor.name === section.instructors[0].name
+      )?.overallRating ?? 0,
+    color:
+      selectedSections.find((s) => s.classNumber === section.classNumber)
+        ?.color ?? getColorForCourseId(section.courseId),
   };
 };
 

@@ -19,7 +19,6 @@ import {
   updateScheduleIdFromBuilder,
   updateScheduleSections,
 } from "../schedule/scheduleSlice";
-import { updateSelectedSections } from "../sectionSelection/sectionSelectionSlice";
 
 /* ------------------------------------------------------------------ */
 /*  Local helper types                                                */
@@ -134,9 +133,6 @@ export const sendMessage = createAsyncThunk<
           }
           if (payload.isNewSchedule) {
             dispatch(updateScheduleIdFromBuilder(payload.schedule_id));
-          }
-          if (payload.selectedSections) {
-            dispatch(updateSelectedSections(payload.selectedSections));
           }
           if (
             (payload.state.diff?.added &&

@@ -29,15 +29,10 @@ export function transformSectionToSelectedSection(
 
   // Transform instructors to professors format
   const professors =
-    section.instructorsWithRatings && section.instructorsWithRatings.length > 0
-      ? section.instructorsWithRatings.map((instructor) => ({
-          name: instructor.name,
-          id: instructor.id,
-        }))
-      : section.instructors.map((instructor) => ({
-          name: instructor.name,
-          id: instructor.name,
-        }));
+    section.instructorsWithRatings?.map((instructor) => ({
+      name: instructor.name,
+      id: instructor.id,
+    })) || [];
 
   // Determine classPair based on the type of section
   let classPair: number | null = null;

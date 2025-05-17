@@ -12,10 +12,10 @@ import {
   readAllSchedule,
   addToSchedule,
   removeFromSchedule,
+  transformSectionToSelectedSection,
   findSectionsByFilter,
   getSectionsWithPairs,
 } from "./helpers";
-import { transformSectionToSelectedSection } from "../../../db/models/schedule/transformSection";
 import {
   sectionQueryAssistant,
   SectionQueryResponse,
@@ -173,10 +173,7 @@ export const fetchSections = tool(
       );
       sectionsToReturn = flatSecs.map(
         (s): SelectedSection =>
-          transformSectionToSelectedSection(
-            s,
-            selectedSections.find((s) => s.courseId === s.courseId)?.color
-          )
+          transformSectionToSelectedSection(s, selectedSections)
       );
     } else {
       return new Command({
@@ -302,10 +299,10 @@ export const manageSchedule = tool(
       const { classNumbersAdded, messageToAdd, updatedSchedule } =
         await addToSchedule({
           userId: config.configurable.user_id,
-          classNumbersToAdd: class_nums, // this is the class numbers to add the sections to the schedule
+          classNumbersToAdd: class_nums,
           scheduleId: schedule_id,
           preferences,
-          selectedSections: state.sections, // only passing in to get colors for selected sections (not used for anything else)
+          selectedSections: state.sections,
         });
 
       return new Command({

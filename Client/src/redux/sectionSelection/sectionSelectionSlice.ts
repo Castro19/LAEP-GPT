@@ -73,13 +73,6 @@ export const removeSelectedSectionAsync = createAsyncThunk(
   }
 );
 
-export const updateSelectedSections = createAsyncThunk(
-  "sections/updateSelectedSections",
-  async (sections: SelectedSection[]) => {
-    return sections;
-  }
-);
-
 const sectionSelectionSlice = createSlice({
   name: "sectionSelection",
   initialState,
@@ -154,9 +147,6 @@ const sectionSelectionSlice = createSlice({
         state.message = action.payload.message;
         state.fetchSelectedSectionsLoading = false;
       });
-    builder.addCase(updateSelectedSections.fulfilled, (state, action) => {
-      state.selectedSections = action.payload;
-    });
   },
 });
 
