@@ -8,7 +8,6 @@ import {
   ScheduleBuilderMessage,
   ConversationTurn,
   FetchedScheduleBuilderLog,
-  ScheduleBuilderState,
 } from "@polylink/shared/types";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { v4 as uuidv4 } from "uuid";
@@ -175,6 +174,16 @@ router.post(
           typeof msg.content === "string"
             ? msg.content
             : JSON.stringify(msg.content),
+        state: {
+          user_id: userId,
+          term,
+          sections: [],
+          user_query: userMsg,
+          schedule_id: schedule_id,
+          diff: { added: [], removed: [] },
+          preferences: { with_time_conflicts: preferences.withTimeConflicts },
+          messages: [],
+        },
         reaction: null,
         response_time: 0,
       };
@@ -305,7 +314,6 @@ router.post(
         completion_tokens: turnTokenUsage.completion_tokens || 0,
         total_tokens: turnTokenUsage.total_tokens || 0,
       },
-      state: lastState as unknown as ScheduleBuilderState,
     };
 
     console.log("Final turn with token usage:", {

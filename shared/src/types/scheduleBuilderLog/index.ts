@@ -40,6 +40,7 @@ export type ScheduleBuilderMessage = {
   msg_id: string;
   role: "user" | "assistant" | "tool";
   msg: string;
+  state: ScheduleBuilderState;
   reaction: "like" | "dislike" | null;
   // assistant-only fields
   tool_calls?: ToolCall[];
@@ -58,7 +59,6 @@ export type ConversationTurn = {
   clientTimestamp?: string; // client timestamp
   messages: ScheduleBuilderMessage[];
   token_usage: TokenUsage;
-  state: ScheduleBuilderState;
 };
 
 export type ScheduleBuilderLog = {
