@@ -58,7 +58,7 @@ const FlowchartBuilderForm = ({
               <FlowchartInfo />
             </CollapsibleContentWrapper>
             <CollapsibleContentWrapper
-              title="Saved Flowcharts"
+              title="Flowchart"
               icon={HiOutlineAcademicCap}
             >
               <SavedFlowchartList onSwitchTab={onSwitchTab} />

@@ -2,10 +2,11 @@
 
 // My components
 import DragDropContextWrapper from "@/components/layout/dnd/DragDropContextWrapper";
-import MobileHeader from "../dynamicLayouts/MobileHeader";
+import FlowchartHeader from "@/components/layout/FlowchartPage/FlowchartHeader";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+import MobileHeader from "../dynamicLayouts/MobileHeader";
 
 const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
   const isNarrowScreen = useIsNarrowScreen();
@@ -17,7 +18,7 @@ const FlowchartLayout = ({ children }: { children: React.ReactNode }) => {
           isNarrowScreen ? "mr-8" : "mr-16"
         }`}
       >
-        {isNarrowScreen ? <MobileHeader /> : null}
+        {isNarrowScreen ? <MobileHeader /> : <FlowchartHeader />}
         <div className="flex-1">{children}</div>
       </div>
     </DragDropContextWrapper>
