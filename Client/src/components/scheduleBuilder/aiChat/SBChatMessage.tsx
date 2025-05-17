@@ -65,11 +65,13 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
   const [open, setOpen] = useState(false);
 
   const variant = isUser
-    ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-right"
-    : "bg-gradient-to-r from-gray-800 to-gray-700 text-white text-left";
+    ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white"
+    : "bg-gradient-to-r from-gray-800 to-gray-700 text-white";
 
   return (
-    <div className={`w-fit my-4 ${isUser ? "ml-auto" : "mr-auto"}`}>
+    <div
+      className={`w-full my-4 flex ${isUser ? "justify-end" : "justify-start"}`}
+    >
       <div className="flex flex-col w-full">
         {/* Main bubble */}
         <div className={`rounded-lg shadow-lg px-3 py-4 ${variant}`}>
