@@ -7,6 +7,7 @@ import {
   RunningStreamData,
   ScheduleBuilderMessage,
   ConversationTurn,
+  FetchedScheduleBuilderLog,
   ScheduleBuilderState,
 } from "@polylink/shared/types";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
@@ -92,7 +93,15 @@ router.post(
           total_tokens: 0,
         },
       });
+      if (environment === "dev") {
+        console.log("New thread created:", threadId);
+      }
     }
+    // const chatLog = await getLogByThreadId(threadId);
+
+    // if (environment === "dev") {
+    //   console.log("chatLog: ", chatLog);
+    // }
 
     // 5) Check if preferences are set and set defaults if not
     if (!preferences) {
@@ -104,6 +113,7 @@ router.post(
     const currentSchedule = await getScheduleById(userId, schedule_id);
     const initState: typeof StateAnnotation.State = {
       ...state,
+      user_id: userId,
       term: term,
       schedule_id: schedule_id,
       preferences: { with_time_conflicts: preferences.withTimeConflicts },
@@ -116,7 +126,7 @@ router.post(
         chunk,
         toolCalls,
         lastState: s,
-      } of scheduleBuilderStream(initState, threadId, userId)) {
+      } of scheduleBuilderStream(initState, threadId)) {
         if (toolCalls) {
           res.write(`event: tool_call\ndata: ${JSON.stringify(toolCalls)}\n\n`);
         }
@@ -140,34 +150,25 @@ router.post(
       return;
     }
 
-    // 6.5) Apply accumulated diff to the database
-    if (lastState) {
-      const { diff, currentSchedule: prevSchedule } = lastState;
-      const added = diff?.added ?? [];
-      const removed = diff?.removed ?? [];
-
-      // Start from whatever was in state.currentSchedule
-      const prevClassNums = prevSchedule.sections.map((s) => s.classNumber);
-      // Remove then add, then dedupe
-      let finalClassNums = prevClassNums
-        .filter((cn) => !removed.includes(cn))
-        .concat(added);
-      finalClassNums = Array.from(new Set(finalClassNums));
-
-      // Persist the one merged update
-      await createOrUpdateSchedule(userId, finalClassNums, term, schedule_id);
-
-      // Update lastState with the final schedule
-      const updatedSchedule = await getScheduleById(userId, schedule_id);
-      if (updatedSchedule) {
-        lastState.currentSchedule = updatedSchedule;
-      }
-    }
-
     const conversation = lastState!.messages;
+
+    if (environment === "dev") {
+      console.log("lastState: ", lastState);
+    }
 
     // 7) Create a new conversation turn
     const messages: ScheduleBuilderMessage[] = conversation.map((msg) => {
+      console.log("Processing message:", {
+        type:
+          msg instanceof AIMessageChunk
+            ? "AIMessageChunk"
+            : msg instanceof HumanMessage
+              ? "HumanMessage"
+              : "ToolMessage",
+        response_metadata: msg.response_metadata,
+        usage: (msg as any).usage_metadata,
+      });
+
       const baseMessage: Partial<ScheduleBuilderMessage> = {
         msg_id: msg.id || uuidv4(),
         role:
@@ -189,6 +190,11 @@ router.post(
         const usageFromResponse = msg.response_metadata?.usage;
         const usageFromLegacy = (msg as any).usage_metadata;
 
+        console.log("Token usage sources:", {
+          usageFromResponse,
+          usageFromLegacy,
+        });
+
         const token_usage = usageFromResponse
           ? {
               prompt_tokens: usageFromResponse.prompt_tokens,
@@ -207,6 +213,8 @@ router.post(
                 completion_tokens_details: usageFromLegacy.output_token_details,
               }
             : undefined;
+
+        console.log("Calculated token_usage:", token_usage);
 
         return {
           ...baseMessage,
@@ -247,9 +255,18 @@ router.post(
     }
 
     // 7b) Calculate token usage for this turn
+    console.log(
+      "Messages before token usage calculation:",
+      messages.map((m) => ({
+        role: m.role,
+        token_usage: m.token_usage,
+      }))
+    );
+
     const turnTokenUsage = messages.reduce(
       (acc, msg) => {
         if (msg.token_usage) {
+          console.log("Adding token usage from message:", msg.token_usage);
           return {
             prompt_tokens:
               (acc.prompt_tokens || 0) + msg.token_usage.prompt_tokens,
@@ -268,15 +285,19 @@ router.post(
       }
     );
 
+    console.log("Calculated turnTokenUsage:", turnTokenUsage);
+
     // Ensure there's always one assistant bubble while preserving token usage
     if (!messages.some((m) => m.role === "assistant")) {
       const last = messages[messages.length - 1];
+      console.log("Last message before conversion:", last);
       // Create a new assistant message that preserves the token usage
       const assistantMessage: ScheduleBuilderMessage = {
         ...last,
         role: "assistant",
         token_usage: last.token_usage, // Preserve the token usage
       };
+      console.log("New assistant message:", assistantMessage);
       messages[messages.length - 1] = assistantMessage;
     }
 
@@ -292,6 +313,11 @@ router.post(
       },
       state: lastState as unknown as ScheduleBuilderState,
     };
+
+    console.log("Final turn with token usage:", {
+      turn_id: turn.turn_id,
+      token_usage: turn.token_usage,
+    });
 
     // 9) Add the conversation turn to the log
     await addConversationTurn(threadId, turn);

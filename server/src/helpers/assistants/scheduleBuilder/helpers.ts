@@ -22,9 +22,6 @@ import {
   createOrUpdateSchedule,
   getScheduleById,
 } from "../../../db/models/schedule/scheduleServices";
-import * as summerSectionCollection from "../../../db/models/section/summerSectionCollection";
-import * as sectionCollection from "../../../db/models/section/sectionCollection";
-import * as fallSectionCollection from "../../../db/models/section/fallSectionCollection";
 
 export const getSelectedSectionsTool = async ({
   userId,
@@ -200,14 +197,14 @@ export const addToSchedule = async ({
   scheduleId: string;
   preferences: any;
 }): Promise<{
-  classNumbersAdded: number[];
+  sections: number[];
   messageToAdd: string;
   updatedSchedule: ScheduleResponse | null;
 }> => {
   const schedule = await getScheduleById(userId, scheduleId);
   if (!schedule) {
     return {
-      classNumbersAdded: [],
+      sections: [],
       messageToAdd: "",
       updatedSchedule: null,
     };
@@ -257,7 +254,7 @@ export const addToSchedule = async ({
 
   if (sectionsToAdd.length === 0) {
     return {
-      classNumbersAdded: [],
+      sections: [],
       messageToAdd,
       updatedSchedule: null,
     };
@@ -284,7 +281,7 @@ export const addToSchedule = async ({
 
   const updatedSchedule = await getScheduleById(userId, scheduleId);
   return {
-    classNumbersAdded: sectionsToAdd,
+    sections: updatedSections,
     messageToAdd,
     updatedSchedule,
   };
@@ -299,36 +296,49 @@ export const removeFromSchedule = async ({
   classNumbersToRemove: number[];
   scheduleId: string;
 }): Promise<{
-  classNumbersRemoved: number[];
+  sections: number[];
   messageToAdd: string;
+  updatedSchedule: ScheduleResponse | null;
 }> => {
-  // Get the latest schedule state
   const schedule = await getScheduleById(userId, scheduleId);
   if (!schedule) {
     return {
-      classNumbersRemoved: [],
+      sections: [],
       messageToAdd: "",
+      updatedSchedule: null,
     };
   }
 
-  // Find all sections to remove, including their class pairs
   const sectionsToRemove = schedule.sections.filter((s) =>
     classNumbersToRemove.includes(s.classNumber)
   );
 
-  // Get all class numbers to remove (including class pairs)
-  const allClassNumbersToRemove = [
-    ...new Set([
-      ...sectionsToRemove.map((s) => s.classPair),
-      ...sectionsToRemove.map((s) => s.classNumber),
-    ]),
-  ].filter((classNumber): classNumber is number => classNumber !== null);
+  // const sectionsToRemoveWithTerm = sectionsToRemove.map((section) => ({
+  //   sectionId: section.classNumber,
+  //   term: schedule.term,
+  // }));
+
+  // Remove from selectedSections
+  // await bulkPostSelectedSections(userId, sectionsToRemoveWithTerm, "remove");
+  // Remove from schedule
+  const updatedSections = schedule.sections
+    .map((s) => s.classNumber)
+    .filter((classNumber) => !classNumbersToRemove.includes(classNumber));
+
+  await createOrUpdateSchedule(
+    userId,
+    updatedSections,
+    schedule.term,
+    schedule.id
+  );
+  const updatedSchedule = await getScheduleById(userId, scheduleId);
 
   return {
-    classNumbersRemoved: allClassNumbersToRemove,
+    sections: updatedSections,
     messageToAdd: `Removed sections ${sectionsToRemove
       .map((s) => `${s.courseId} (classNumber: ${s.classNumber})`)
       .join(", ")} from your schedule.\n`,
+    updatedSchedule,
   };
 };
 
@@ -358,30 +368,3 @@ export const transformSectionToSelectedSection = (
     color: getColorForCourseId(section.courseId),
   };
 };
-
-export async function findSectionsByFilter(
-  query: Record<string, any>,
-  term: CourseTerm = "fall2025"
-): Promise<{ sections: Section[]; total: number }> {
-  try {
-    let result;
-
-    // Use the appropriate collection based on term
-    if (term === "summer2025") {
-      result = await summerSectionCollection.findSectionsByFilter(query, 0, 25);
-    } else if (term === "spring2025") {
-      result = await sectionCollection.findSectionsByFilter(query, 0, 25);
-    } else {
-      // fall2025 by default
-      result = await fallSectionCollection.findSectionsByFilter(query, 0, 25);
-    }
-
-    return {
-      sections: result.sections,
-      total: result.total,
-    };
-  } catch (e) {
-    console.error("MongoDB error:", e);
-    return { sections: [], total: 0 };
-  }
-}

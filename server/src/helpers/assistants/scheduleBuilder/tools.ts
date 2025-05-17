@@ -13,8 +13,8 @@ import {
   addToSchedule,
   removeFromSchedule,
   transformSectionToSelectedSection,
-  findSectionsByFilter,
 } from "./helpers";
+import { findSectionsByFilter } from "./sectionQueryAssistant";
 import {
   sectionQueryAssistant,
   SectionQueryResponse,
@@ -71,7 +71,7 @@ export const fetchSections = tool(
 
     if (fetch_type === "user_selected") {
       const sections = await getSelectedSectionsTool({
-        userId: config.configurable.user_id,
+        userId: state.user_id,
         term: state.term,
       });
       if (!sections.length) {
@@ -89,7 +89,7 @@ export const fetchSections = tool(
       sectionsToReturn = sections;
     } else if (fetch_type === "curriculum") {
       const sections = await getUserNextEligibleSections({
-        userId: config.configurable.user_id,
+        userId: state.user_id,
         term: state.term,
         numCourses: num_courses!,
         sectionsPerCourse: sections_per_course!,
@@ -253,18 +253,12 @@ export const manageSchedule = tool(
       });
     }
 
-    const { schedule_id, preferences } = state;
+    const { user_id, schedule_id, preferences } = state;
 
     /* ---------- readall ---------- */
     if (operation === "readall") {
-      const sections = await readAllSchedule(
-        config.configurable.user_id,
-        schedule_id
-      );
-      const updatedSchedule = await getScheduleById(
-        config.configurable.user_id,
-        schedule_id
-      );
+      const sections = await readAllSchedule(user_id, schedule_id);
+      const updatedSchedule = await getScheduleById(user_id, schedule_id);
       return new Command({
         update: {
           messages: [
@@ -283,13 +277,12 @@ export const manageSchedule = tool(
 
     /* ---------- add ---------- */
     if (operation === "add") {
-      const { classNumbersAdded, messageToAdd, updatedSchedule } =
-        await addToSchedule({
-          userId: config.configurable.user_id,
-          classNumbersToAdd: class_nums,
-          scheduleId: schedule_id,
-          preferences,
-        });
+      const { sections, messageToAdd, updatedSchedule } = await addToSchedule({
+        userId: user_id,
+        classNumbersToAdd: class_nums,
+        scheduleId: schedule_id,
+        preferences,
+      });
 
       return new Command({
         update: {
@@ -300,8 +293,7 @@ export const manageSchedule = tool(
             }),
           ],
           diff: {
-            added: classNumbersAdded,
-            removed: [],
+            added: sections,
           },
           currentSchedule: updatedSchedule,
         },
@@ -310,31 +302,13 @@ export const manageSchedule = tool(
 
     /* ---------- remove ---------- */
     if (operation === "remove") {
-      // Get the current schedule state
-      const currentSchedule = await getScheduleById(
-        config.configurable.user_id,
-        schedule_id
-      );
-
-      if (!currentSchedule) {
-        return new Command({
-          update: {
-            messages: [
-              new ToolMessage({
-                content: "Schedule not found.",
-                tool_call_id: config.toolCall.id,
-              }),
-            ],
-          },
+      const { sections, messageToAdd, updatedSchedule } =
+        await removeFromSchedule({
+          userId: user_id,
+          classNumbersToRemove: class_nums,
+          scheduleId: schedule_id,
         });
-      }
-
-      // Process all removals in a single operation
-      const { classNumbersRemoved, messageToAdd } = await removeFromSchedule({
-        userId: config.configurable.user_id,
-        classNumbersToRemove: class_nums,
-        scheduleId: schedule_id,
-      });
+      console.log("removed sections: ", sections);
 
       return new Command({
         update: {
@@ -345,9 +319,9 @@ export const manageSchedule = tool(
             }),
           ],
           diff: {
-            added: [],
-            removed: classNumbersRemoved,
+            removed: sections,
           },
+          currentSchedule: updatedSchedule,
         },
       });
     }

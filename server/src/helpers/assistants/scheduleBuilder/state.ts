@@ -7,6 +7,7 @@ import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
 
 export const StateAnnotation = Annotation.Root({
   ...MessagesAnnotation.spec,
+  user_id: Annotation<string>,
   term: Annotation<CourseTerm>,
   sections: Annotation<SelectedSection[]>({
     default: () => [],
@@ -44,7 +45,7 @@ export const StateAnnotation = Annotation.Root({
       // If either value is undefined/null, return the other
       if (!a) return b;
       if (!b) return a;
-      // For value function, we want to merge arrays
+      // Merge the schedules, assuming sections and customEvents are arrays
       return {
         ...a,
         ...b,
@@ -61,34 +62,26 @@ export const StateAnnotation = Annotation.Root({
       term: "fall2025" as CourseTerm,
       customEvents: [],
     }),
-    reducer: (
-      currentState: ScheduleResponse,
-      updateValue: ScheduleResponse
-    ) => {
+    reducer: (a: ScheduleResponse, b: ScheduleResponse) => {
       // If either value is undefined/null, return the other
-      if (!currentState) return updateValue;
-      if (!updateValue) return currentState;
-
-      // For schedule updates, we want to:
-      // 1. Keep the most recent sections array (from updateValue)
-      // 2. Preserve other metadata from currentState
-      // 3. Update timestamps
-      return {
-        ...currentState,
-        ...updateValue,
-        updatedAt: new Date(),
-        // Ensure we use the most recent sections array
-        sections: updateValue.sections || currentState.sections,
-        // Ensure we use the most recent customEvents array
-        customEvents: updateValue.customEvents || currentState.customEvents,
-      };
+      if (!a) return b;
+      if (!b) return a;
+      // Merge the schedules, assuming sections and customEvents are arrays
+      return { ...a, ...b };
     },
   }),
 });
 
 export const stateModifier = (state: typeof StateAnnotation.State) => {
-  const { sections, preferences, term, schedule_id, diff, currentSchedule } =
-    state;
+  const {
+    sections,
+    preferences,
+    term,
+    user_id,
+    schedule_id,
+    diff,
+    currentSchedule,
+  } = state;
 
   const systemMessage = `
   You are PolyLink Schedule Builder, a helpful AI agent to provide assistance with schedule building for courses at Cal Poly.
@@ -123,6 +116,7 @@ export const stateModifier = (state: typeof StateAnnotation.State) => {
     
   Current State: 
     - schedule_id: ${schedule_id}
+    - user_id: ${user_id}
     - term: ${term}
     - sections: ${JSON.stringify(sections)}
     - preferences: ${JSON.stringify(preferences)}
