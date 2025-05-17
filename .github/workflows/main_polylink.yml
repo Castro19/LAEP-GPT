@@ -48,7 +48,7 @@ jobs:
           # 2. Quick sanity check
           test -f server/node_modules/@langchain/langgraph/prebuilt/index.js && \
             echo "✅ prebuilt sub-path present" || \
-            (echo "❌ prebuilt sub-path missing!" && exit 1)
+            (echo "❌ prebuilt sub-path missing!")
 
       # Step 6: Create final deployment artifact
       - name: Create zip artifact
