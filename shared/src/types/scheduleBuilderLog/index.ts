@@ -65,16 +65,3 @@ export type ScheduleBuilderLog = {
   title: string;
   total_token_usage: TokenUsage;
 };
-
-// FetchedScheduleBuilderLog
-export type FetchedScheduleBuilderLogListItem = {
-  thread_id: string;
-  updatedAt: Date;
-  title: string;
-};
-
-export type FetchedScheduleBuilderLog = {
-  thread_id: string;
-  conversation_turns: ConversationTurn[];
-  title: string;
-};

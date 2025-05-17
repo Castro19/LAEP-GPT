@@ -1,9 +1,5 @@
 import { getDb } from "../../connection";
-import {
-  ScheduleBuilderLog,
-  ConversationTurn,
-  FetchedScheduleBuilderLogListItem,
-} from "@polylink/shared/types";
+import { ScheduleBuilderLog, ConversationTurn } from "@polylink/shared/types";
 import {
   Collection,
   DeleteResult,
@@ -73,39 +69,6 @@ export const fetchLogByThreadId = async (
       console.error("Error fetching schedule builder log:", error);
     }
     throw new Error("Error fetching log: " + (error as Error).message);
-  }
-};
-
-export const fetchAllLogs = async (): Promise<
-  FetchedScheduleBuilderLogListItem[]
-> => {
-  if (!scheduleBuilderLogCollection) initializeCollection();
-  try {
-    if (environment === "dev") {
-      console.log("Fetching all schedule builder logs");
-    }
-
-    const logs = await scheduleBuilderLogCollection
-      .find({})
-      .project({
-        thread_id: 1,
-        updatedAt: 1,
-        title: 1,
-        _id: 0,
-      })
-      .sort({ updatedAt: -1 }) // Sort by most recent first
-      .toArray();
-
-    if (environment === "dev") {
-      console.log(`Found ${logs.length} schedule builder logs`);
-    }
-
-    return logs as FetchedScheduleBuilderLogListItem[];
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Error fetching all schedule builder logs:", error);
-    }
-    throw new Error("Error fetching logs: " + (error as Error).message);
   }
 };
 
