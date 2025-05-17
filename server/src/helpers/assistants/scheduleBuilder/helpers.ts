@@ -305,13 +305,13 @@ export const removeFromSchedule = async ({
     classNumbersToRemove.includes(s.classNumber)
   );
 
-  // const sectionsToRemoveWithTerm = sectionsToRemove.map((section) => ({
-  //   sectionId: section.classNumber,
-  //   term: schedule.term,
-  // }));
+  const sectionsToRemoveWithTerm = sectionsToRemove.map((section) => ({
+    sectionId: section.classNumber,
+    term: schedule.term,
+  }));
 
   // Remove from selectedSections
-  // await bulkPostSelectedSections(userId, sectionsToRemoveWithTerm, "remove");
+  await bulkPostSelectedSections(userId, sectionsToRemoveWithTerm, "remove");
   // Remove from schedule
   const updatedSections = schedule.sections
     .map((s) => s.classNumber)

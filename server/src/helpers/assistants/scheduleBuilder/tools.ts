@@ -317,9 +317,6 @@ export const manageSchedule = tool(
             }),
           ],
           sections,
-          diff: {
-            added: class_nums,
-          },
         },
       });
     }
@@ -341,9 +338,6 @@ export const manageSchedule = tool(
             }),
           ],
           sections,
-          diff: {
-            removed: class_nums,
-          },
         },
       });
     }
