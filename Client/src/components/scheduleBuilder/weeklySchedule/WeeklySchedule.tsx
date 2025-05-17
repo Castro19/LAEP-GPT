@@ -302,14 +302,14 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
             hasAsyncCourses
               ? isExpanded
                 ? isNarrowScreen
-                  ? "max-h-[calc(100vh-16rem)]"
-                  : "max-h-[calc(100vh-18rem)]"
+                  ? "max-h-[calc(100vh-20rem)]"
+                  : "max-h-[calc(100vh-20rem)]"
                 : isNarrowScreen
-                  ? "max-h-[calc(100vh-12rem)]"
-                  : "max-h-[calc(100vh-12rem)]"
+                  ? "max-h-[calc(100vh-16rem)]"
+                  : "max-h-[calc(100vh-16rem)]"
               : isNarrowScreen
-                ? "max-h-[calc(100vh-12rem)]"
-                : "max-h-[calc(100vh-12rem)]"
+                ? "max-h-[calc(100vh-16rem)]"
+                : "max-h-[calc(100vh-16rem)]"
           }
           fc-scroller no-scrollbar
         `}

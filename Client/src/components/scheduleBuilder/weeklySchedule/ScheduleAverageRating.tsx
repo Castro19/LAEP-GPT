@@ -40,7 +40,7 @@ const ScheduleAverageRating: React.FC = () => {
   });
 
   return (
-    <Card className="flex items-center justify-between p-2 bg-card/50 border-border/50 rounded-lg shadow-sm mt-4 mb-2">
+    <Card className="flex items-center justify-between p-2 bg-card/50 border-border/50 rounded-lg shadow-sm">
       {/* Left: title + rating badge */}
       <div className="flex items-center space-x-2 overflow-hidden">
         <h2 className="text-sm font-bold truncate">
