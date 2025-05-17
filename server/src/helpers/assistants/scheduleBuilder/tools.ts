@@ -257,6 +257,7 @@ export const manageSchedule = tool(
     input: {
       operation: "readall" | "add" | "remove";
       class_nums?: number[];
+      state: typeof StateAnnotation.State;
     },
     config
   ) => {
