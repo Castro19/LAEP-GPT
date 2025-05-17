@@ -96,11 +96,11 @@ router.post(
         console.log("New thread created:", threadId);
       }
     }
-    // const chatLog = await getLogByThreadId(threadId);
+    const chatLog = await getLogByThreadId(threadId);
 
-    // if (environment === "dev") {
-    //   console.log("chatLog: ", chatLog);
-    // }
+    if (environment === "dev") {
+      console.log("chatLog: ", chatLog);
+    }
 
     // 5) Check if preferences are set and set defaults if not
     if (!preferences) {

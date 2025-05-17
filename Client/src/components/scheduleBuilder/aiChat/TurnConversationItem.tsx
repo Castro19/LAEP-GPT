@@ -9,7 +9,6 @@ export interface BackendMsg {
   role: "user" | "assistant" | "tool";
   msg: string;
   tool_calls?: any[] | null;
-  toolMessages?: ToolMsg[] | null;
   // ...other fields omitted for layout only
 }
 
@@ -37,7 +36,7 @@ const buildProps = (messages: BackendMsg[]) => {
   const assistantCalls = assistantMsgs.flatMap((m) => m.tool_calls ?? []);
 
   // --- gather all tool‐role messages in this turn ---
-  const gatheredToolMsgs: ToolMsg[] = messages
+  const toolMessages: ToolMsg[] = messages
     .filter((m) => m.role === "tool")
     .map((m) => ({ msg_id: m.msg_id, msg: m.msg }));
 
@@ -52,7 +51,7 @@ const buildProps = (messages: BackendMsg[]) => {
     role: "assistant",
     msg: assistantRaw.msg,
     tool_calls: assistantCalls, // for any function‐call metadata
-    toolMessages: assistantRaw.toolMessages || gatheredToolMsgs, // for any “tool”‐role result bubbles
+    toolMessages, // for any “tool”‐role result bubbles
   };
 
   return { user, assistant };
