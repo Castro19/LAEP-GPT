@@ -15,17 +15,13 @@ export const sectionQueryAssistant = async (
   try {
     // 1. Call the Chat Completion API with system + user messages
     const response = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemInstructions },
         { role: "user", content: text },
       ],
       temperature: 0.7, // or your desired parameter
     });
-    console.log(
-      "======================RESPONSE======================\n",
-      response
-    );
 
     // 2. Extract the assistant's raw text output
     const message = response.choices[0].message.content;
