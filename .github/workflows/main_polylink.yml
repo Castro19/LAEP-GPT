@@ -1,5 +1,6 @@
 # .github/workflows/azure-deploy.yml
-# Builds on every push & PR; deploys only when the commit is pushed to main.
+# • Builds on every push/PR       → full build only
+# • Deploys only on push to main  → build + deploy
 
 name: Build & deploy Node.js app to Azure Web App – PolyLink
 
@@ -7,13 +8,14 @@ on:
   push:
     branches: [main] # build + deploy
   pull_request:
-    branches: [main] # build-only (no deploy)
+    branches: [main] # build-only
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # ──────────────────────────── 1 ▸ checkout + toolchain ────────────────────────────
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
@@ -21,23 +23,60 @@ jobs:
           node-version: "20.x"
           cache: npm
 
+      # ──────────────────────────── 2 ▸ workspace install + build ───────────────────────
       - name: Install all workspaces
-        run: npm ci
+        run: npm ci # lock-verified install for linting/build
 
       - name: Build shared + server
         run: |
           npm run build:shared
           npm run build:server
 
-      - name: Production install (nested) for server workspace
+      # ──────────────────────────── 3 ▸ nested production install for server ────────────
+      - name: Production install (nested) for **server** workspace
+        id: prod-install
         run: |
+          # Fresh start
+          rm -rf server/node_modules
+
+          echo "🏗  npm ci --omit=dev --workspace=server --include-workspace-root --install-strategy=nested"
           npm ci --omit=dev \
                  --workspace=server \
                  --include-workspace-root \
                  --install-strategy=nested
-          test -f server/node_modules/@langchain/langgraph/prebuilt.js \
-            || { echo "❌ prebuilt.js missing"; exit 1; }
 
+          echo ""
+          echo "📦 Top-level packages in server/node_modules:"
+          ls -1 server/node_modules | head -n 40
+          echo "… (total $(ls -1 server/node_modules | wc -l))"
+
+          echo ""
+          echo "📜 server/package.json 'dependencies' snippet:"
+          jq '.dependencies' server/package.json
+
+          echo ""
+          echo "🔍 npm list of @langchain packages (server workspace):"
+          npm list --workspace=server @langchain/* --depth=0 || true
+
+          echo ""
+          echo "🔍 Contents of server/node_modules/@langchain if present:"
+          if [ -d server/node_modules/@langchain ]; then
+            tree -L 2 server/node_modules/@langchain | head -n 100 || true
+          else
+            echo "❌  @langchain directory NOT present"
+          fi
+
+          echo ""
+          echo "🔎 Smoke-test for required file:"
+          if [ -f server/node_modules/@langchain/langgraph/prebuilt.js ]; then
+            echo "✅  prebuilt.js present — good to go."
+          else
+            echo "❌  prebuilt.js missing!  Dumping langgraph folder (if any)…"
+            ls -la server/node_modules/@langchain/langgraph || true
+            exit 1
+          fi
+
+      # ──────────────────────────── 4 ▸ package artifact ────────────────────────────────
       - name: Zip server artifact
         run: |
           cd server
@@ -50,11 +89,10 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # deploy only on main
     runs-on: ubuntu-latest
-    # ─── deploy only on push to main ───
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
-      id-token: write
+      id-token: write # federated Azure login
 
     steps:
       - uses: actions/download-artifact@v4
