@@ -15,7 +15,7 @@ export const sectionQueryAssistant = async (
   try {
     // 1. Call the Chat Completion API with system + user messages
     const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemInstructions },
         { role: "user", content: text },

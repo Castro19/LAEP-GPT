@@ -2,7 +2,7 @@
 import { tool } from "@langchain/core/tools";
 import { ToolMessage } from "@langchain/core/messages";
 import { z } from "zod";
-import { CourseTerm, Section, SectionEssential } from "@polylink/shared/types";
+import { CourseTerm, SectionEssential } from "@polylink/shared/types";
 import { StateAnnotation } from "./state";
 
 // “Injected” helpers -------------------------------------------------
@@ -13,12 +13,10 @@ import {
   addToSchedule,
   removeFromSchedule,
 } from "./helpers";
-import { findSectionsByFilter, QueryResponse } from "./sectionQueryAssistant";
 import {
   sectionQueryAssistant,
-  SectionQueryResponse,
-} from "../SectionQuery/sectionQueryAssistant";
-import { config } from "dotenv";
+  findSectionsByFilter,
+} from "./sectionQueryAssistant";
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 
 export const fetchSections = tool(
@@ -41,10 +39,7 @@ export const fetchSections = tool(
       search_query,
     } = input;
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
-    console.log(
-      "======================STATE======================\n",
-      JSON.stringify(state, null, 2)
-    );
+    console.log("state", JSON.stringify(state, null, 2));
 
     // ---------- validation ----------
     if (search_query && fetch_type !== "search") {
@@ -118,23 +113,13 @@ export const fetchSections = tool(
       }
       sectionsToReturn = sections;
     } else if (fetch_type === "search") {
-      console.log(
-        "======================SEARCH QUERY======================\n",
-        search_query
-      );
-      const resp: SectionQueryResponse = await sectionQueryAssistant(
-        search_query!
-      );
-      console.log(
-        "======================QUERY RESPONSE======================\n",
-        JSON.stringify(resp, null, 2)
-      );
-      if (!resp || !resp.query) {
+      const resp: any = await sectionQueryAssistant(search_query!);
+      if (!resp.success || !resp.query) {
         return new Command({
           update: {
             messages: [
               new ToolMessage({
-                content: `Search failed: ${resp?.explanation}`,
+                content: `Search failed: ${resp.explanation}`,
                 tool_call_id: config.toolCall.id,
               }),
             ],
@@ -142,8 +127,10 @@ export const fetchSections = tool(
         });
       }
 
-      const mongoSections: { sections: Section[]; total: number } =
-        await findSectionsByFilter(resp.query, state.term as CourseTerm);
+      const mongoSections: any = await findSectionsByFilter(
+        resp.query,
+        state.term as CourseTerm
+      );
       if (!mongoSections?.sections?.length) {
         return new Command({
           update: {

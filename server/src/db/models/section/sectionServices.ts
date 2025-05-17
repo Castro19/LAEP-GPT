@@ -15,7 +15,7 @@ import { fetchPrimarySchedule } from "../schedule/scheduleServices";
 import * as summerSectionCollection from "./summerSectionCollection";
 import { transformScheduleToScheduleResponse } from "../schedule/transformSection";
 import * as fallSectionCollection from "./fallSectionCollection";
-
+import { findSectionsByFilter } from "./sectionCollection";
 /**
  * Build a filter object that can be passed to the collection query.
  */

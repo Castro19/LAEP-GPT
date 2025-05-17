@@ -15,7 +15,7 @@ const agent = createReactAgent({
   llm: new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 }),
   tools: [fetchSections, manageSchedule],
   stateSchema: StateAnnotation,
-  stateModifier: (state: any) =>
+  stateModifier: (state: any, config: any) =>
     stateModifier(state) as unknown as BaseMessage[],
 });
 /*───────────────────────────────────────────────────────────────────────*/

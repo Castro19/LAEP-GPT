@@ -19,9 +19,6 @@ export const StateAnnotation = Annotation.Root({
 
 export const stateModifier = (state: typeof StateAnnotation.State) => {
   const { sections, preferences, term, user_id, schedule_id } = state;
-  console.log("======================STATE======================\n", state);
-  console.log("sections type: ", typeof sections);
-  console.log("sections: ", sections);
   const systemMessage = `
   You are PolyLink Schedule Builder, a helpful AI agent to provide assistance with schedule building for courses at Cal Poly.
   Tools ─────────────────────────────────────
@@ -57,7 +54,7 @@ export const stateModifier = (state: typeof StateAnnotation.State) => {
     - schedule_id: ${schedule_id}
     - user_id: ${user_id}
     - term: ${term}
-    - sections: ${JSON.stringify(sections)}
+    - sections: ${sections.map((s) => s.classNumber).join(", ")}
     - preferences: ${JSON.stringify(preferences)}
   `;
 
