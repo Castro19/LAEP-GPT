@@ -234,7 +234,7 @@ export const updateScheduleIdFromBuilder = createAsyncThunk(
 export const updateScheduleSection = createAsyncThunk(
   "schedule/updateScheduleSection",
   async (
-    { sectionIds, action }: { sectionIds: number[]; action: "add" | "remove" },
+    { sectionId, action }: { sectionId: number; action: "add" | "remove" },
     { getState }
   ) => {
     const state = getState() as RootState;
@@ -253,13 +253,11 @@ export const updateScheduleSection = createAsyncThunk(
         const updatedSections =
           action === "remove"
             ? currentSchedule.sections.filter(
-                (section) => !sectionIds.includes(section.classNumber)
+                (section) => section.classNumber !== sectionId
               )
             : [
                 ...currentSchedule.sections,
-                ...sectionIds.map(
-                  (id) => selectedSections.find((s) => s.classNumber === id)!
-                ),
+                selectedSections.find((s) => s.classNumber === sectionId)!,
               ];
 
         // Make the API call to update the schedule
@@ -287,13 +285,11 @@ export const updateScheduleSection = createAsyncThunk(
         sections:
           action === "remove"
             ? currentSchedule.sections.filter(
-                (section) => !sectionIds.includes(section.classNumber)
+                (section) => section.classNumber !== sectionId
               )
             : [
                 ...currentSchedule.sections,
-                ...sectionIds.map(
-                  (id) => selectedSections.find((s) => s.classNumber === id)!
-                ),
+                selectedSections.find((s) => s.classNumber === sectionId)!,
               ],
       };
     }

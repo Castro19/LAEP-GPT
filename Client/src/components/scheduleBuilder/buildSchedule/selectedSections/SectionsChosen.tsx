@@ -107,90 +107,13 @@ const SectionsChosen = ({
 
   // Check if any section of a course is in the current schedule
   const isCourseInSchedule = (courseId: string) => {
-    const sections = getCourseSections(courseId);
-    return sections.some((section) => {
-      return currentSchedule?.sections.some(
-        (s) => s.classNumber === section.classNumber
-      );
-    });
-  };
-
-  // Get all sections for a course
-  const getCourseSections = (courseId: string) => {
-    return Object.values(groupedSections[courseId]).flat();
-  };
-
-  // Handle adding all sections of a course to schedule
-  const handleAddCourseToCalendar = (courseId: string) => {
-    const sections = getCourseSections(courseId);
-    const sectionsToAdd = new Set<number>();
-
-    // Get the first section that's not in the schedule
-    const firstAvailableSection = sections.find(
-      (section) =>
-        !currentSchedule?.sections.some(
+    return Object.values(groupedSections[courseId])
+      .flat()
+      .some((section) =>
+        currentSchedule?.sections.some(
           (s) => s.classNumber === section.classNumber
         )
-    );
-
-    if (firstAvailableSection) {
-      // If this section has a class pair, add both sections
-      if (firstAvailableSection.classPair) {
-        const pairedSection = sections.find(
-          (s) => s.classNumber === firstAvailableSection.classPair
-        );
-        if (pairedSection) {
-          sectionsToAdd.add(pairedSection.classNumber);
-        }
-      }
-      sectionsToAdd.add(firstAvailableSection.classNumber);
-    }
-
-    // Dispatch once with all sections to add
-    if (sectionsToAdd.size > 0) {
-      dispatch(
-        scheduleActions.updateScheduleSection({
-          sectionIds: Array.from(sectionsToAdd),
-          action: "add",
-        })
       );
-    }
-  };
-
-  // Handle removing all sections of a course from schedule
-  const handleRemoveCourseFromCalendar = (courseId: string) => {
-    const sections = getCourseSections(courseId);
-    const sectionsToRemove = new Set<number>();
-
-    // Get the first section that's in the schedule
-    const firstScheduledSection = sections.find((section) =>
-      currentSchedule?.sections.some(
-        (s) => s.classNumber === section.classNumber
-      )
-    );
-
-    if (firstScheduledSection) {
-      // If this section has a class pair, remove both sections
-      if (firstScheduledSection.classPair) {
-        const pairedSection = sections.find(
-          (s) => s.classNumber === firstScheduledSection.classPair
-        );
-        if (pairedSection) {
-          sectionsToRemove.add(pairedSection.classNumber);
-        }
-      }
-      sectionsToRemove.add(firstScheduledSection.classNumber);
-    }
-
-    // Dispatch once with all sections to remove
-    if (sectionsToRemove.size > 0) {
-      dispatch(
-        scheduleActions.updateScheduleSection({
-          sectionIds: Array.from(sectionsToRemove),
-          action: "remove",
-        })
-      );
-    }
   };
 
   // Check if any section of a course is hidden
@@ -342,109 +265,21 @@ const SectionsChosen = ({
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <div className="flex items-center gap-1 rounded-md p-1 backdrop-blur-sm shadow-sm">
-                            {isInSchedule ? (
-                              <>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className={`h-7 w-7 text-gray-900 dark:text-black 
-                                          hover:bg-transparent dark:hover:bg-transparent
-                                          hover:text-gray-950 dark:hover:text-gray-900`}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleToggleCourseVisibility(
-                                            courseId
-                                          );
-                                        }}
-                                      >
-                                        <EyeIcon className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipPortal>
-                                      <TooltipContent
-                                        side="top"
-                                        sideOffset={5}
-                                        className="z-[100]"
-                                        avoidCollisions={true}
-                                      >
-                                        {isHidden
-                                          ? "Show all sections"
-                                          : "Hide all sections"}
-                                      </TooltipContent>
-                                    </TooltipPortal>
-                                  </Tooltip>
-                                </TooltipProvider>
-
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7 text-black dark:text-red-700 
-                                          hover:bg-transparent dark:hover:bg-transparent
-                                          hover:text-red-600 dark:hover:text-red-600"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleRemoveCourseFromCalendar(
-                                            courseId
-                                          );
-                                        }}
-                                      >
-                                        <CalendarMinus className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipPortal>
-                                      <TooltipContent
-                                        side="top"
-                                        sideOffset={5}
-                                        className="z-[100]"
-                                        avoidCollisions={true}
-                                      >
-                                        Remove all sections from calendar
-                                      </TooltipContent>
-                                    </TooltipPortal>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </>
-                            ) : (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-7 w-7 text-black dark:text-green-700 
-                                        hover:bg-transparent dark:hover:bg-transparent
-                                        hover:text-green-600 dark:hover:text-green-600"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleAddCourseToCalendar(courseId);
-                                      }}
-                                    >
-                                      <CalendarPlus className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      side="top"
-                                      sideOffset={5}
-                                      className="z-[100]"
-                                      avoidCollisions={true}
-                                    >
-                                      Add all sections to calendar
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
-                          </div>
-                        </div>
+                        {isInSchedule && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-6 w-6 text-gray-700 dark:text-gray-700 dark:hover:text-gray-800 dark:hover:bg-transparent ${
+                              isHidden ? "opacity-50" : ""
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleCourseVisibility(courseId);
+                            }}
+                          >
+                            <EyeIcon className="h-3 w-3" />
+                          </Button>
+                        )}
                       </div>
                     </CollapsibleTrigger>
 
@@ -575,24 +410,6 @@ const SectionCard: React.FC<{
       (s) => s.classNumber === section.classNumber
     ) ?? false;
 
-  // Check if any other section with same courseId is in schedule
-  const hasOtherSectionsInSchedule =
-    currentSchedule?.sections.some(
-      (s) =>
-        s.courseId === section.courseId && s.classNumber !== section.classNumber
-    ) ?? false;
-
-  // Check if this section's classPair is in schedule
-  const hasClassPairInSchedule = section.classPair
-    ? (currentSchedule?.sections.some(
-        (s) => s.classNumber === section.classPair
-      ) ?? false)
-    : false;
-
-  // Only show add button if no other sections are in schedule or if classPair is in schedule
-  const canAddToSchedule =
-    !hasOtherSectionsInSchedule || hasClassPairInSchedule;
-
   const handleRemove = () => {
     dispatch(
       sectionSelectionActions.removeSelectedSectionAsync({
@@ -615,7 +432,7 @@ const SectionCard: React.FC<{
   const handleRemoveFromCalendar = () => {
     dispatch(
       scheduleActions.updateScheduleSection({
-        sectionIds: [section.classNumber],
+        sectionId: section.classNumber,
         action: "remove",
       })
     );
@@ -624,7 +441,7 @@ const SectionCard: React.FC<{
   const handleAddToCalendar = () => {
     dispatch(
       scheduleActions.updateScheduleSection({
-        sectionIds: [section.classNumber],
+        sectionId: section.classNumber,
         action: "add",
       })
     );
@@ -870,7 +687,7 @@ const SectionCard: React.FC<{
                 </Tooltip>
               </TooltipProvider>
             </div>
-          ) : canAddToSchedule ? (
+          ) : (
             <div className="flex items-center gap-1">
               {/* Add to calendar */}
               <TooltipProvider>
@@ -900,7 +717,7 @@ const SectionCard: React.FC<{
                 </Tooltip>
               </TooltipProvider>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </div>
