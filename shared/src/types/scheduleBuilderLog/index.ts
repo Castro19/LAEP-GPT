@@ -1,6 +1,6 @@
 import { ScheduleResponse } from "../schedule";
-
-import { CourseTerm, SelectedSection } from "../selectedSection";
+import { SectionEssential } from "../section";
+import { CourseTerm } from "../selectedSection";
 
 export type ToolCall = {
   id: string;
@@ -28,10 +28,9 @@ export type TokenUsage = {
 export type ScheduleBuilderState = {
   user_id: string;
   term: CourseTerm;
-  sections: SelectedSection[];
+  sections: SectionEssential[];
   user_query: string;
   schedule_id: string;
-  currentSchedule: ScheduleResponse;
   diff: { added: number[]; removed: number[] };
   preferences: { with_time_conflicts: boolean };
   messages?: string[];

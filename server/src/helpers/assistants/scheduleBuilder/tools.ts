@@ -2,7 +2,7 @@
 import { tool } from "@langchain/core/tools";
 import { ToolMessage } from "@langchain/core/messages";
 import { z } from "zod";
-import { CourseTerm, Section, SelectedSection } from "@polylink/shared/types";
+import { CourseTerm, Section, SectionEssential } from "@polylink/shared/types";
 import { StateAnnotation } from "./state";
 
 // “Injected” helpers -------------------------------------------------
@@ -12,7 +12,6 @@ import {
   readAllSchedule,
   addToSchedule,
   removeFromSchedule,
-  transformSectionToSelectedSection,
 } from "./helpers";
 import { findSectionsByFilter } from "./sectionQueryAssistant";
 import {
@@ -20,7 +19,6 @@ import {
   SectionQueryResponse,
 } from "../SectionQuery/sectionQueryAssistant";
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
-import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
 
 export const fetchSections = tool(
   async (
@@ -67,7 +65,7 @@ export const fetchSections = tool(
     }
 
     /* ------------------ main branches ------------------ */
-    let sectionsToReturn: SelectedSection[] | Record<string, string> = [];
+    let sectionsToReturn: SectionEssential[] | Record<string, string> = [];
 
     if (fetch_type === "user_selected") {
       const sections = await getSelectedSectionsTool({
@@ -165,7 +163,16 @@ export const fetchSections = tool(
       }
       const flatSecs = Object.values(courseBuckets).flat();
       sectionsToReturn = flatSecs.map(
-        (s): SelectedSection => transformSectionToSelectedSection(s)
+        (s): SectionEssential => ({
+          classNumber: s.classNumber,
+          courseId: s.courseId,
+          courseName: s.courseName,
+          units: s.units,
+          instructors: s.instructors,
+          instructorsWithRatings: s.instructorsWithRatings,
+          classPair: s.classPair,
+          meetings: s.meetings,
+        })
       );
     } else {
       return new Command({
@@ -258,7 +265,6 @@ export const manageSchedule = tool(
     /* ---------- readall ---------- */
     if (operation === "readall") {
       const sections = await readAllSchedule(user_id, schedule_id);
-      const updatedSchedule = await getScheduleById(user_id, schedule_id);
       return new Command({
         update: {
           messages: [
@@ -270,14 +276,13 @@ export const manageSchedule = tool(
             }),
           ],
           sections,
-          currentSchedule: updatedSchedule,
         },
       });
     }
 
     /* ---------- add ---------- */
     if (operation === "add") {
-      const { sections, messageToAdd, updatedSchedule } = await addToSchedule({
+      const { sections, messageToAdd } = await addToSchedule({
         userId: user_id,
         classNumbersToAdd: class_nums,
         scheduleId: schedule_id,
@@ -292,23 +297,21 @@ export const manageSchedule = tool(
               tool_call_id: config.toolCall.id,
             }),
           ],
+          sections,
           diff: {
-            added: sections,
+            added: class_nums,
           },
-          currentSchedule: updatedSchedule,
         },
       });
     }
 
     /* ---------- remove ---------- */
     if (operation === "remove") {
-      const { sections, messageToAdd, updatedSchedule } =
-        await removeFromSchedule({
-          userId: user_id,
-          classNumbersToRemove: class_nums,
-          scheduleId: schedule_id,
-        });
-      console.log("removed sections: ", sections);
+      const { sections, messageToAdd } = await removeFromSchedule({
+        userId: user_id,
+        classNumbersToRemove: class_nums,
+        scheduleId: schedule_id,
+      });
 
       return new Command({
         update: {
@@ -318,10 +321,10 @@ export const manageSchedule = tool(
               tool_call_id: config.toolCall.id,
             }),
           ],
+          sections,
           diff: {
-            removed: sections,
+            removed: class_nums,
           },
-          currentSchedule: updatedSchedule,
         },
       });
     }

@@ -1,17 +1,15 @@
 import {
   bulkPostSelectedSections,
-  getColorForCourseId,
-  getSelectedSectionsByUserId,
+  getSelectedSectionsEssentialsByUserId,
 } from "../../../db/models/selectedSection/selectedSectionServices";
 
 import {
   CourseTerm,
+  SectionEssential,
   Course,
   Term,
   Meeting,
   Section,
-  SelectedSection,
-  ScheduleResponse,
 } from "@polylink/shared/types";
 import { fetchPrimaryFlowchart } from "../../../db/models/flowchart/flowchartServices";
 import {
@@ -29,8 +27,8 @@ export const getSelectedSectionsTool = async ({
 }: {
   userId: string;
   term: CourseTerm;
-}): Promise<SelectedSection[]> => {
-  const selectedSections = await getSelectedSectionsByUserId(
+}): Promise<SectionEssential[]> => {
+  const selectedSections = await getSelectedSectionsEssentialsByUserId(
     userId,
     term as CourseTerm
   );
@@ -48,7 +46,7 @@ export const getUserNextEligibleSections = async ({
   term: CourseTerm;
   numCourses: number;
   sectionsPerCourse: number;
-}): Promise<SelectedSection[]> => {
+}): Promise<SectionEssential[]> => {
   const flowchart = await fetchPrimaryFlowchart(userId);
 
   // Sort terms by tIndex
@@ -87,10 +85,17 @@ export const getUserNextEligibleSections = async ({
   if (!sections) {
     return [];
   }
-  // Convert sections to SelectedSection format
-  const fetchedSections: SelectedSection[] = sections.map((section) =>
-    transformSectionToSelectedSection(section)
-  );
+  // Convert sections to SectionEssential format
+  const fetchedSections = sections.map((section) => ({
+    classNumber: section.classNumber,
+    courseId: section.courseId,
+    courseName: section.courseName,
+    units: section.units,
+    instructors: section.instructors,
+    instructorsWithRatings: section.instructorsWithRatings || [],
+    classPair: section.classPair,
+    meetings: section.meetings,
+  }));
 
   //   Group by course id and only take sectionsPerCourse sections per course
   const groupedSections = fetchedSections.reduce(
@@ -98,7 +103,7 @@ export const getUserNextEligibleSections = async ({
       acc[section.courseId] = [...(acc[section.courseId] || []), section];
       return acc;
     },
-    {} as Record<string, SelectedSection[]>
+    {} as Record<string, SectionEssential[]>
   );
 
   //   Take only the number of sections we need
@@ -110,10 +115,7 @@ export const getUserNextEligibleSections = async ({
 };
 
 // Manage Schedule
-export const readAllSchedule = async (
-  userId: string,
-  scheduleId: string
-): Promise<SelectedSection[]> => {
+export const readAllSchedule = async (userId: string, scheduleId: string) => {
   const schedule = await getScheduleById(userId, scheduleId);
   if (!schedule) {
     return [];
@@ -125,10 +127,7 @@ export const readAllSchedule = async (
   if (!sections) {
     return [];
   }
-  const selectedSections = sections.map((section) =>
-    transformSectionToSelectedSection(section)
-  );
-  return selectedSections;
+  return sections;
 };
 
 const checkForTimeConflicts = (
@@ -199,14 +198,12 @@ export const addToSchedule = async ({
 }): Promise<{
   sections: number[];
   messageToAdd: string;
-  updatedSchedule: ScheduleResponse | null;
 }> => {
   const schedule = await getScheduleById(userId, scheduleId);
   if (!schedule) {
     return {
       sections: [],
       messageToAdd: "",
-      updatedSchedule: null,
     };
   }
   const meetings = schedule.sections.flatMap((s) => s.meetings);
@@ -256,7 +253,6 @@ export const addToSchedule = async ({
     return {
       sections: [],
       messageToAdd,
-      updatedSchedule: null,
     };
   }
 
@@ -272,18 +268,16 @@ export const addToSchedule = async ({
   await bulkPostSelectedSections(userId, sectionsToAddWithTerm, "add");
   // and to schedule all at once
 
-  await createOrUpdateSchedule(
+  const updatedSchedule = await createOrUpdateSchedule(
     userId,
     updatedSections,
     schedule.term,
     schedule.id
   );
 
-  const updatedSchedule = await getScheduleById(userId, scheduleId);
   return {
     sections: updatedSections,
     messageToAdd,
-    updatedSchedule,
   };
 };
 
@@ -298,14 +292,12 @@ export const removeFromSchedule = async ({
 }): Promise<{
   sections: number[];
   messageToAdd: string;
-  updatedSchedule: ScheduleResponse | null;
 }> => {
   const schedule = await getScheduleById(userId, scheduleId);
   if (!schedule) {
     return {
       sections: [],
       messageToAdd: "",
-      updatedSchedule: null,
     };
   }
 
@@ -331,40 +323,11 @@ export const removeFromSchedule = async ({
     schedule.term,
     schedule.id
   );
-  const updatedSchedule = await getScheduleById(userId, scheduleId);
 
   return {
     sections: updatedSections,
     messageToAdd: `Removed sections ${sectionsToRemove
       .map((s) => `${s.courseId} (classNumber: ${s.classNumber})`)
       .join(", ")} from your schedule.\n`,
-    updatedSchedule,
-  };
-};
-
-export const transformSectionToSelectedSection = (
-  section: Section
-): SelectedSection => {
-  return {
-    courseId: section.courseId,
-    courseName: section.courseName,
-    classNumber: section.classNumber,
-    component: section.component,
-    units: section.units,
-    professors: section.instructors.map((professor) => ({
-      name: professor.name,
-      id:
-        section.instructorsWithRatings?.find(
-          (instructor) => instructor.name === professor.name
-        )?.id ?? null,
-    })),
-    enrollmentStatus: section.enrollmentStatus,
-    meetings: section.meetings,
-    classPair: section.classPair,
-    rating:
-      section.instructorsWithRatings?.find(
-        (instructor) => instructor.name === section.instructors[0].name
-      )?.overallRating ?? 0,
-    color: getColorForCourseId(section.courseId),
   };
 };

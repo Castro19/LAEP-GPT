@@ -1,4 +1,4 @@
-import { SelectedSection } from "@polylink/shared/types";
+import { SectionEssential, SelectedSection } from "@polylink/shared/types";
 import React, { useEffect, useState } from "react";
 import SectionsChosen from "../buildSchedule/selectedSections/SectionsChosen";
 import { useAppSelector } from "@/redux";
@@ -16,7 +16,7 @@ interface FetchSectionsProps {
 const SBFetchSections: React.FC<FetchSectionsProps> = ({ args, message }) => {
   // Extract the sections array from the message
   const sectionsMatch = message.match(/Fetched sections: (\[.*\])/);
-  const sections: SelectedSection[] = sectionsMatch
+  const sections: SectionEssential[] = sectionsMatch
     ? JSON.parse(sectionsMatch[1])
     : [];
   const { selectedSections } = useAppSelector(

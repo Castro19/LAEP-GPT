@@ -110,7 +110,6 @@ router.post(
 
     // 6) Run chatbot
     let lastState;
-    const currentSchedule = await getScheduleById(userId, schedule_id);
     const initState: typeof StateAnnotation.State = {
       ...state,
       user_id: userId,
@@ -118,7 +117,6 @@ router.post(
       schedule_id: schedule_id,
       preferences: { with_time_conflicts: preferences.withTimeConflicts },
       messages: [new HumanMessage({ content: userMsg })],
-      currentSchedule: currentSchedule,
     };
 
     try {
@@ -151,10 +149,6 @@ router.post(
     }
 
     const conversation = lastState!.messages;
-
-    if (environment === "dev") {
-      console.log("lastState: ", lastState);
-    }
 
     // 7) Create a new conversation turn
     const messages: ScheduleBuilderMessage[] = conversation.map((msg) => {
@@ -322,6 +316,8 @@ router.post(
     // 9) Add the conversation turn to the log
     await addConversationTurn(threadId, turn);
 
+    // 10) Send final metadata and close
+    const schedule = await getScheduleById(userId, schedule_id);
     res.write(
       `event: done\n` +
         `data: ${JSON.stringify({
@@ -330,6 +326,7 @@ router.post(
           schedule_id,
           threadId,
           state: lastState,
+          schedule,
         })}\n\n`
     );
     res.end();
