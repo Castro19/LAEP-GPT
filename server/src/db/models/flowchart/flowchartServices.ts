@@ -267,26 +267,3 @@ export const isPrimaryFlowchart = async (
   );
   return primaryFlowchart?.primaryOption || false;
 };
-
-export const fetchPrimaryFlowchart = async (
-  userId: string
-): Promise<FlowchartData> => {
-  try {
-    const primaryFlowchart = await flowchartModel.fetchPrimaryFlowchart(userId);
-    if (!primaryFlowchart) {
-      // Fetch any flowchart
-      const flowchartList = await fetchAllFlowcharts(userId);
-      const anyFlowchart = flowchartList[0];
-      if (!anyFlowchart) {
-        throw new Error("No flowcharts found");
-      }
-      const flowchart = await fetchFlowchart(anyFlowchart.flowchartId, userId);
-      return flowchart.flowchartData;
-    }
-    return primaryFlowchart.flowchartData;
-  } catch (error) {
-    throw new Error(
-      "Error fetching primary flowchart: " + (error as Error).message
-    );
-  }
-};
