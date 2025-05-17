@@ -10,12 +10,18 @@ import { environment } from "../../../index";
 // Create
 export const createLog = async (logData: ScheduleBuilderLog): Promise<void> => {
   try {
+    if (environment === "dev") {
+      console.log("Service: Creating new schedule builder log");
+    }
     const result = await ScheduleBuilderLogModel.addLog(logData);
     if (!result.acknowledged) {
       if (environment === "dev") {
         console.error("Service: Failed to create schedule builder log");
       }
       throw new Error("Failed to create schedule builder log");
+    }
+    if (environment === "dev") {
+      console.log("Service: Successfully created schedule builder log");
     }
     return;
   } catch (error) {
@@ -31,7 +37,16 @@ export const getLogByThreadId = async (
   threadId: string
 ): Promise<FetchedScheduleBuilderLog | null> => {
   try {
+    if (environment === "dev") {
+      console.log(
+        "Service: Fetching schedule builder log for thread:",
+        threadId
+      );
+    }
     const log = await ScheduleBuilderLogModel.fetchLogByThreadId(threadId);
+    if (environment === "dev") {
+      console.log("Service: Found schedule builder log:", log ? "Yes" : "No");
+    }
     if (!log) {
       return null;
     }
@@ -54,6 +69,13 @@ export const addConversationTurn = async (
   turn: ConversationTurn
 ): Promise<void> => {
   try {
+    if (environment === "dev") {
+      console.log("Service: Adding conversation turn:", {
+        threadId,
+        turnId: turn.turn_id,
+        messageCount: turn.messages.length,
+      });
+    }
     const result = await ScheduleBuilderLogModel.addConversationTurn(
       threadId,
       turn
@@ -63,6 +85,9 @@ export const addConversationTurn = async (
         console.error("Service: Failed to add conversation turn");
       }
       throw new Error("Failed to add conversation turn");
+    }
+    if (environment === "dev") {
+      console.log("Service: Successfully added conversation turn");
     }
     return;
   } catch (error) {
@@ -77,7 +102,15 @@ export const getAllLogs = async (): Promise<
   FetchedScheduleBuilderLogListItem[]
 > => {
   try {
+    if (environment === "dev") {
+      console.log("Service: Fetching all schedule builder logs");
+    }
+
     const logs = await ScheduleBuilderLogModel.fetchAllLogs();
+
+    if (environment === "dev") {
+      console.log(`Service: Found ${logs.length} schedule builder logs`);
+    }
 
     return logs;
   } catch (error) {
@@ -91,12 +124,21 @@ export const getAllLogs = async (): Promise<
 // Delete
 export const deleteLog = async (threadId: string): Promise<void> => {
   try {
+    if (environment === "dev") {
+      console.log(
+        "Service: Deleting schedule builder log for thread:",
+        threadId
+      );
+    }
     const result = await ScheduleBuilderLogModel.deleteLog(threadId);
     if (!result.acknowledged) {
       if (environment === "dev") {
         console.error("Service: Failed to delete schedule builder log");
       }
       throw new Error("Failed to delete schedule builder log");
+    }
+    if (environment === "dev") {
+      console.log("Service: Successfully deleted schedule builder log");
     }
     return;
   } catch (error) {

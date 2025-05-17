@@ -17,6 +17,9 @@ let scheduleBuilderLogCollection: Collection<ScheduleBuilderLog>;
 // Function to initialize the collection
 const initializeCollection: () => void = () => {
   scheduleBuilderLogCollection = getDb().collection("scheduleBuilderLogs");
+  if (environment === "dev") {
+    console.log("Schedule Builder Log collection initialized");
+  }
 };
 
 // Create
@@ -25,8 +28,19 @@ export const addLog = async (
 ): Promise<InsertOneResult<ScheduleBuilderLog>> => {
   if (!scheduleBuilderLogCollection) initializeCollection();
   try {
+    if (environment === "dev") {
+      console.log("Creating new schedule builder log:", {
+        thread_id: logData.thread_id,
+        title: logData.title,
+      });
+    }
     const result = await scheduleBuilderLogCollection.insertOne(logData);
-
+    if (environment === "dev") {
+      console.log(
+        "Successfully created schedule builder log:",
+        result.insertedId
+      );
+    }
     return result;
   } catch (error) {
     if (environment === "dev") {
@@ -44,9 +58,15 @@ export const fetchLogByThreadId = async (
 ): Promise<ScheduleBuilderLog | null> => {
   if (!scheduleBuilderLogCollection) initializeCollection();
   try {
+    if (environment === "dev") {
+      console.log("Fetching schedule builder log for thread:", threadId);
+    }
     const log = await scheduleBuilderLogCollection.findOne({
       thread_id: threadId,
     });
+    if (environment === "dev") {
+      console.log("Found schedule builder log:", log ? "Yes" : "No");
+    }
     return log;
   } catch (error) {
     if (environment === "dev") {
@@ -61,6 +81,10 @@ export const fetchAllLogs = async (): Promise<
 > => {
   if (!scheduleBuilderLogCollection) initializeCollection();
   try {
+    if (environment === "dev") {
+      console.log("Fetching all schedule builder logs");
+    }
+
     const logs = await scheduleBuilderLogCollection
       .find({})
       .project({
@@ -71,6 +95,10 @@ export const fetchAllLogs = async (): Promise<
       })
       .sort({ updatedAt: -1 }) // Sort by most recent first
       .toArray();
+
+    if (environment === "dev") {
+      console.log(`Found ${logs.length} schedule builder logs`);
+    }
 
     return logs as FetchedScheduleBuilderLogListItem[];
   } catch (error) {
@@ -88,6 +116,14 @@ export const addConversationTurn = async (
 ): Promise<UpdateResult> => {
   if (!scheduleBuilderLogCollection) initializeCollection();
   try {
+    if (environment === "dev") {
+      console.log("Adding conversation turn:", {
+        thread_id: threadId,
+        turn_id: turn.turn_id,
+        message_count: turn.messages.length,
+      });
+    }
+
     // Get the current log to update total token usage
     const currentLog = await scheduleBuilderLogCollection.findOne({
       thread_id: threadId,
@@ -120,6 +156,12 @@ export const addConversationTurn = async (
       }
     );
 
+    if (environment === "dev") {
+      console.log("Update result:", {
+        matched: result.matchedCount,
+        modified: result.modifiedCount,
+      });
+    }
     return result;
   } catch (error) {
     if (environment === "dev") {
@@ -135,9 +177,17 @@ export const addConversationTurn = async (
 export const deleteLog = async (threadId: string): Promise<DeleteResult> => {
   if (!scheduleBuilderLogCollection) initializeCollection();
   try {
+    if (environment === "dev") {
+      console.log("Deleting schedule builder log for thread:", threadId);
+    }
     const result = await scheduleBuilderLogCollection.deleteOne({
       thread_id: threadId,
     });
+    if (environment === "dev") {
+      console.log("Delete result:", {
+        deleted: result.deletedCount,
+      });
+    }
     return result;
   } catch (error) {
     if (environment === "dev") {

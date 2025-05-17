@@ -9,7 +9,6 @@ const YearSelector = ({
 }: {
   totalYears: number;
   selectedYear: number;
-  // eslint-disable-next-line no-unused-vars
   scrollToYear: (year: number) => void;
   isNarrowScreen: boolean;
 }) => {

@@ -41,24 +41,6 @@ export interface Tool {
   message: ToolMsg;
 }
 
-export interface FetchSectionsArgs {
-  fetch_type: "search" | "user_selected" | "curriculum";
-  num_courses?: number;
-  sections_per_course?: number;
-  search_query?: string;
-}
-
-export interface ManageScheduleArgs {
-  operation: "readall" | "add" | "remove";
-  class_nums?: number[];
-  state: {
-    user_id: string;
-    schedule_id: string;
-    term: string;
-    preferences?: Record<string, unknown>;
-  };
-}
-
 /* -------------------------------------------------------------------------
    🧩  Helpers
 ---------------------------------------------------------------------------*/
@@ -109,14 +91,14 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
       case "fetch_sections":
         return (
           <SBFetchSections
-            args={tool.call.args as unknown as FetchSectionsArgs}
+            args={tool.call.args as any}
             message={tool.message.msg}
           />
         );
       case "manage_schedule":
         return (
           <SBManageSchedule
-            args={tool.call.args as unknown as ManageScheduleArgs}
+            args={tool.call.args as any}
             message={tool.message.msg}
           />
         );

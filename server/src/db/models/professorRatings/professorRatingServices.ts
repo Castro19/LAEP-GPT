@@ -16,7 +16,7 @@ export const getProfessorRatings = async (
     id: {},
   };
   if (environment === "dev") {
-    console.log("PROJECTION: ", projection);
+    console.log("Projection: ", projection);
   }
 
   if (professorIds) {
@@ -28,7 +28,7 @@ export const getProfessorRatings = async (
       projection
     );
     if (environment === "dev") {
-      console.log("RESULT: ", result);
+      console.log("Result: ", result);
     }
     // Check if result is undefined or null
     if (!result) {
@@ -45,7 +45,7 @@ export const getProfessorRatings = async (
     if (projection && projection.reviews) {
       const filteredResult = sortAndLimitReviews(result, courseIds);
       if (environment === "dev") {
-        console.log("FILTERED RESULT: ", filteredResult);
+        console.log("Filtered Result: ", filteredResult);
       }
       return filteredResult;
     }

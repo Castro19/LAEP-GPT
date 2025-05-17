@@ -23,7 +23,7 @@ export interface BackendTurn {
 interface ToolCall {
   id: string;
   name: string;
-  args: Record<string, unknown>;
+  args: any;
   type: string;
 }
 

@@ -35,14 +35,13 @@ const ScheduleBuilderLogs: FC<Props> = ({ onClose }) => {
 
       {/* log list */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
-        {logs.map((log) => (
+        {logs.map((log, i) => (
           <Button
-            key={log.thread_id}
             variant="ghost"
             className="w-full h-16 px-2 py-1 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-900 dark:bg-opacity-70 active:bg-gray-200 dark:active:bg-gray-700"
             onClick={() => handleLogClick(log.thread_id)}
           >
-            <div className="min-w-0 flex-1">
+            <div key={i} className="min-w-0 flex-1">
               <h3 className="font-medium text-left text-gray-900 dark:text-white truncate">
                 {log.title}
               </h3>

@@ -51,6 +51,7 @@ router.post("/login", async (req, res) => {
     const user = await getUserByFirebaseId(userId);
 
     if (!user) {
+      console.log("Decoded token:", JSON.stringify(decodedToken));
       // Determine userType
       const email = decodedToken.email || "";
       // Check for display name in different possible locations in the token

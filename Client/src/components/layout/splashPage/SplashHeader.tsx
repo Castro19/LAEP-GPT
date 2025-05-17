@@ -2,7 +2,7 @@ import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
-
+import { environment } from "@/helpers/getEnvironmentVars";
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
 
@@ -15,6 +15,9 @@ const SplashHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLinkClick = (path: string) => {
+    if (environment === "dev") {
+      console.log("clicked", path);
+    }
     navigate(path);
     setIsMenuOpen(false);
   };

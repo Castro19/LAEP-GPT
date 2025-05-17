@@ -125,16 +125,27 @@ export const getSectionColor = async (
   try {
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+    console.log("[getSectionColor] Looking for color for:", {
+      sectionId,
+      term,
+      courseId,
+      existingSection: existingSection?.selectedSections[term],
+    });
 
     // First try to get the color directly from the section in the current term
     const directColor =
       existingSection?.selectedSections[term]?.[sectionId]?.color;
     if (directColor) {
+      console.log("[getSectionColor] Found direct color:", directColor);
       return directColor;
     }
 
     // If no direct color, look for any section with the same courseId in the current term
     const termSections = existingSection?.selectedSections[term] || {};
+    console.log(
+      "[getSectionColor] Looking for matching courseId in term sections:",
+      termSections
+    );
 
     // Get all sections for this term to find matching courseIds
     const sections = await getSectionsByIds(
@@ -150,6 +161,13 @@ export const getSectionColor = async (
       if (matchingSection) {
         const matchingColor = termSections[matchingSection.classNumber]?.color;
         if (matchingColor) {
+          console.log(
+            "[getSectionColor] Found color from matching courseId section:",
+            {
+              classNumber: matchingSection.classNumber,
+              color: matchingColor,
+            }
+          );
           return matchingColor;
         }
       }
@@ -157,6 +175,7 @@ export const getSectionColor = async (
 
     // If still no color found, use the courseId color mapping
     const courseColor = getColorForCourseId(courseId);
+    console.log("[getSectionColor] Using courseId color mapping:", courseColor);
     return courseColor;
   } catch (error) {
     if (environment === "dev") {
@@ -165,6 +184,7 @@ export const getSectionColor = async (
     // Fallback to a random color if there's an error
     const randomColor =
       courseColors[Math.floor(Math.random() * courseColors.length)];
+    console.log("[getSectionColor] Using fallback random color:", randomColor);
     return randomColor;
   }
 };
@@ -183,12 +203,19 @@ export const postSelectedSection = async (
   try {
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+    console.log("[postSelectedSection] Existing sections:", {
+      userId,
+      sectionId: section.sectionId,
+      term: section.term,
+      existingSections: existingSection?.selectedSections[section.term],
+    });
 
     // Get the courseId for this section
     const courseId = await getCourseIdByClassNumber(
       section.sectionId,
       section.term
     );
+    console.log("[postSelectedSection] Found courseId:", courseId);
 
     if (!courseId) {
       throw new Error("Could not find courseId for section");
@@ -201,9 +228,11 @@ export const postSelectedSection = async (
       section.term,
       courseId
     );
+    console.log("[postSelectedSection] Selected color:", color);
 
     if (existingSection) {
       if (existingSection.selectedSections[section.term]?.[section.sectionId]) {
+        console.log("[postSelectedSection] Section already exists");
         return {
           selectedSections: await getSelectedSectionsByUserId(
             userId,
@@ -212,6 +241,10 @@ export const postSelectedSection = async (
           message: `Section ${section.sectionId} is already in your schedule`,
         };
       } else {
+        console.log(
+          "[postSelectedSection] Adding new section with color:",
+          color
+        );
         await selectedSelectionModel.createOrUpdateSelectedSection(
           userId,
           section.sectionId,
@@ -227,6 +260,10 @@ export const postSelectedSection = async (
         };
       }
     } else {
+      console.log(
+        "[postSelectedSection] Creating first section with color:",
+        color
+      );
       await selectedSelectionModel.createOrUpdateSelectedSection(
         userId,
         section.sectionId,
@@ -294,6 +331,7 @@ export const bulkPostSelectedSections = async (
   message: string;
 }> => {
   try {
+    console.log("sections for selected sections", sections);
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
 
@@ -310,7 +348,6 @@ export const bulkPostSelectedSections = async (
     );
 
     // Prepare the update operation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateOperations: Record<string, any> = {};
     let processedCount = 0;
     let skippedCount = 0;

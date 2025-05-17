@@ -173,6 +173,9 @@ const logSlice = createSlice({
 
         state.currentPage = page;
         state.hasMoreLogs = logs.length === LOGS_PER_PAGE;
+        console.log(
+          `After page ${page} fetch: hasMoreLogs=${state.hasMoreLogs}, currentPage=${state.currentPage}`
+        ); // Add log
         state.isLoading = false;
       })
       .addCase(fetchLogs.rejected, (state, action) => {

@@ -86,9 +86,7 @@ export const StateAnnotation = Annotation.Root({
   }),
 });
 
-export const stateModifier = (
-  state: typeof StateAnnotation.State
-): typeof StateAnnotation.State => {
+export const stateModifier = (state: typeof StateAnnotation.State) => {
   const { sections, preferences, term, schedule_id, diff, currentSchedule } =
     state;
 
@@ -138,5 +136,5 @@ export const stateModifier = (
       content: systemMessage,
     },
     ...state.messages,
-  ] as unknown as typeof StateAnnotation.State;
+  ];
 };

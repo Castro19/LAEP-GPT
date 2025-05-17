@@ -164,7 +164,7 @@ const SectionForm = ({
     // For example, build query string:
     const queryString = buildQueryString(updatedFilters);
     if (environment === "dev") {
-      console.log("FILTERING QUERY: ", queryString);
+      console.log("Filtering Query", queryString);
     }
     // You can then use queryString in your API call.
     dispatch(classSearchActions.setFilters(updatedFilters));

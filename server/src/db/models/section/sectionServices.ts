@@ -251,6 +251,9 @@ function buildSectionsQuery(
   // 11) techElectives
 
   if (filter.isTechElective === true && filter.techElectives) {
+    if (environment === "dev") {
+      console.log("filter.techElectives", filter.techElectives);
+    }
     if (!filter.techElectives.concentration) {
       query.techElectives = { $in: [filter.techElectives.major] };
     } else {
@@ -262,6 +265,7 @@ function buildSectionsQuery(
   if (filter.classNumber) {
     query.classNumber = parseInt(filter.classNumber, 10);
   }
+  console.log("filter.minCatalogNumber", filter.minCatalogNumber);
   // 13) minCatalogNumber (e.g. "100")
   // 12) classNumber
   if (filter.classNumber) {
@@ -330,6 +334,10 @@ export async function getSectionsByFilter(
           };
         }
       }
+    }
+
+    if (environment === "dev") {
+      console.log("query", query);
     }
     if (filter.term === "summer2025") {
       return await summerSectionCollection.findSectionsByFilter(

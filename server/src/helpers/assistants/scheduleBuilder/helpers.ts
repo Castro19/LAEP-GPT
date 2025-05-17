@@ -1,5 +1,6 @@
 import {
   bulkPostSelectedSections,
+  getColorForCourseId,
   getSelectedSectionsByUserId,
 } from "../../../db/models/selectedSection/selectedSectionServices";
 
@@ -259,7 +260,6 @@ export const addToSchedule = async ({
   userId: string;
   classNumbersToAdd: number[];
   scheduleId: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   preferences: any;
   selectedSections: SelectedSection[];
 }): Promise<{
@@ -391,7 +391,6 @@ export const removeFromSchedule = async ({
 };
 
 export async function findSectionsByFilter(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query: Record<string, any>,
   term: CourseTerm = "fall2025"
 ): Promise<{ sections: Section[]; total: number }> {

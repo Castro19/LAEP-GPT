@@ -9,7 +9,7 @@ interface ManageScheduleProps {
       user_id: string;
       schedule_id: string;
       term: string;
-      preferences?: Record<string, unknown>;
+      preferences?: Record<string, any>;
     };
   };
   message: string;

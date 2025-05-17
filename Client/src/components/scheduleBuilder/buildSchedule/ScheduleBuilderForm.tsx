@@ -19,7 +19,6 @@ import { ToastAction } from "@/components/ui/toast";
 import { generatedScheduleToSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
 import { Preferences } from "@/redux/schedule/scheduleSlice";
 import { GeneratedSchedule } from "@polylink/shared/types";
-import { environment } from "@/helpers/getEnvironmentVars";
 
 export type SchedulePreferencesForm = z.infer<
   typeof SCHEDULE_PREFERENCES_SCHEMA
@@ -56,9 +55,7 @@ const ScheduleBuilderForm = ({
   }, [watchedValues, dispatch, schedulePreferences]);
 
   const onSubmit = (data: SchedulePreferencesForm) => {
-    if (environment === "dev") {
-      console.log("SUBMITTED DATA: ", data);
-    }
+    console.log(data);
   };
 
   // Handle the build schedule button click

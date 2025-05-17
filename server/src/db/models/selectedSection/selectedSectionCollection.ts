@@ -119,7 +119,6 @@ export const createOrUpdateSelectedSection = async (
 
 export const bulkCreateOrUpdateSelectedSections = async (
   userId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateOperations: Record<string, any>,
   operation: "add" | "remove" = "add"
 ): Promise<UpdateResult<SelectedSectionDocument>> => {

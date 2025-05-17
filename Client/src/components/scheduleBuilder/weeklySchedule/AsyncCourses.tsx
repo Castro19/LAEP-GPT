@@ -28,10 +28,8 @@ import { SelectedSection } from "@polylink/shared/types";
 
 type AsyncCoursesProps = {
   sections: SelectedSection[];
-  // eslint-disable-next-line no-unused-vars
   onHeightChange?: (height: number) => void;
   isExpanded: boolean;
-  // eslint-disable-next-line no-unused-vars
   setIsExpanded: (expanded: boolean) => void;
 };
 
@@ -90,10 +88,10 @@ const AsyncCourses: React.FC<AsyncCoursesProps> = ({
   useEffect(() => {
     if (containerRef.current) {
       const updateHeight = () => {
-        const _height =
+        const height =
           containerRef.current?.getBoundingClientRect().height || 0;
         if (onHeightChange) {
-          onHeightChange(_height);
+          onHeightChange(height);
         }
       };
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   FetchedScheduleBuilderLog,
   FetchedScheduleBuilderLogListItem,
@@ -158,7 +157,6 @@ export async function streamScheduleBuilderRequest(
       switch (ev) {
         case "tool_call":
           console.log("tool_call", raw);
-          // eslint-disable-next-line no-case-declarations, @typescript-eslint/no-explicit-any
           const toolCalls: ToolCall[] = JSON.parse(raw).map((call: any) => ({
             ...call,
             args:
@@ -168,25 +166,23 @@ export async function streamScheduleBuilderRequest(
           break;
 
         case "assistant":
-          // eslint-disable-next-line no-case-declarations
+          // partial text streaming
           const { text } = JSON.parse(raw);
           onChunk(text);
           break;
 
         case "message":
-          // eslint-disable-next-line no-case-declarations
+          // full message object: could be assistant OR tool
           const msg: ScheduleBuilderMessage = JSON.parse(raw);
           onMessage(msg);
           break;
 
         case "done":
-          // eslint-disable-next-line no-case-declarations
           const payload: OnDonePayload = JSON.parse(raw);
           onDone(payload);
           return; // done reading
 
         case "error":
-          // eslint-disable-next-line no-case-declarations
           const { message } = JSON.parse(raw);
           throw new Error(message);
       }
