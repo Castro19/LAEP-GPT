@@ -15,13 +15,7 @@ const Preferences = ({
 }) => {
   return (
     <div className="my-4 px-1 space-y-8 pb-4">
-      <UnitSlider
-        form={form}
-        min={0}
-        max={24}
-        defaultValue={16}
-        showRange={false}
-      />
+      <UnitSlider form={form} min={0} max={24} showRange={false} />
       <InstructorRatingSlider
         form={form}
         showDescription={false}
