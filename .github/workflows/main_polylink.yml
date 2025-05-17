@@ -40,20 +40,15 @@ jobs:
       - name: Prepare Server for Deployment
         run: |
           cd server
-          # Remove any old node_modules
-          rm -rf node_modules
-          # Copy the root lockfile to ensure correct dependency versions
-          cp ../package-lock.json .
-          # Install production dependencies using the lock file
-          npm ci --only=production
+          # Keep the workspace-aware install but strip dev dependencies
+          npm prune --omit=dev
           # Verify critical dependencies
           npm list @langchain/langgraph --depth=0 || true
           npm list @langchain/core --depth=0 || true
-          # Fail if @langchain/langgraph is not found
-          if ! npm list @langchain/langgraph --depth=0; then
-            echo "@langchain/langgraph not found in server/node_modules!"
-            exit 1
-          fi
+          # Quick smoke test for prebuilt directory
+          test -f node_modules/@langchain/langgraph/prebuilt/index.js && \
+            echo "✅ prebuilt sub-path present" || \
+            (echo "❌ prebuilt sub-path missing!" && exit 1)
 
       # Step 6: Create final deployment artifact
       - name: Create zip artifact
