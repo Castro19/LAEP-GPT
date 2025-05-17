@@ -34,7 +34,7 @@ const SBFetchSections: React.FC<FetchSectionsProps> = ({ args, message }) => {
         )
       )
     );
-  }, [selectedSections, sections, message]);
+  }, [selectedSections, sections]);
 
   const renderFetchType = () => {
     switch (args.fetch_type) {

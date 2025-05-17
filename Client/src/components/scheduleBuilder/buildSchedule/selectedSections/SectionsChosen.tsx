@@ -40,10 +40,7 @@ const SectionsChosen = ({
   );
 
   // Group sections by courseId and professor
-  if (
-    (selectedSections.length === 0 || !Array.isArray(selectedSections)) &&
-    !inChat
-  ) {
+  if (selectedSections.length === 0 || !Array.isArray(selectedSections)) {
     return (
       <motion.div
         initial={{ opacity: 0 }}

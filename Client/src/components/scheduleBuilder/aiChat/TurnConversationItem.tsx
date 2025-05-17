@@ -94,7 +94,7 @@ interface Props {
 
 const TurnConversationItem: React.FC<Props> = ({ turn }) => {
   const { user, assistant } = buildProps(turn.messages);
-
+  console.log("turn", turn);
   return (
     <div className="w-full flex flex-col gap-2 py-2">
       {turn.messages.length === 1 ? (
