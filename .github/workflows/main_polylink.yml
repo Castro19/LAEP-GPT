@@ -39,14 +39,14 @@ jobs:
       # Step 5: Prepare server for deployment
       - name: Prepare Server for Deployment
         run: |
-          cd server
-          # Keep the workspace-aware install but strip dev dependencies
-          npm prune --omit=dev
-          # Verify critical dependencies
-          npm list @langchain/langgraph --depth=0 || true
-          npm list @langchain/core --depth=0 || true
-          # Quick smoke test for prebuilt directory
-          test -f node_modules/@langchain/langgraph/prebuilt/index.js && \
+          # 1. Production-only, workspace-aware install that copies real files
+          npm ci --omit=dev \
+                --workspace=server \
+                --include-workspace-root \
+                --install-links=false      # materialise packages instead of symlinks
+
+          # 2. Quick sanity check
+          test -f server/node_modules/@langchain/langgraph/prebuilt/index.js && \
             echo "✅ prebuilt sub-path present" || \
             (echo "❌ prebuilt sub-path missing!" && exit 1)
 
