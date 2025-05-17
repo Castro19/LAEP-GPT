@@ -20,6 +20,7 @@ jobs:
         with:
           # Use at least Node 18 (or Node 20)
           node-version: "20.x"
+          cache: "npm"
 
       # Step 3: Install dependencies at the root (for all workspaces: shared + server)
       - name: Install All Dependencies (Workspace)
