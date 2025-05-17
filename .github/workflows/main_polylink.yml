@@ -18,16 +18,15 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
+          # Use at least Node 18 (or Node 20)
           node-version: "20.x"
-          cache: "npm"
 
       # Step 3: Install dependencies at the root (for all workspaces: shared + server)
       - name: Install All Dependencies (Workspace)
         run: |
           npm ci
-          # Debug info for dependencies
-          npm list @langchain/langgraph --depth=0 || true
-          npm list @langchain/core --depth=0 || true
+          # Optional debug info
+          npm list openai --depth=0 || true
 
       # Step 4: Build Shared + Server
       - name: Build Shared
@@ -36,31 +35,23 @@ jobs:
       - name: Build Server
         run: npm run build:server
 
-      # Step 5: Prepare server for deployment
-      - name: Prepare Server for Deployment
+      # Step 5: Prune down to production dependencies *inside the server folder*
+      #         so we only ship what's needed for runtime.
+      - name: Prune for Production (Server)
         run: |
           cd server
           # Remove any old node_modules
           rm -rf node_modules
-          # Copy the root lockfile to ensure correct dependency versions
-          cp ../package-lock.json .
-          # Install production dependencies using the lock file
+          # Install ONLY production dependencies, pinned by the root lock file
           npm ci --only=production
-          # Verify critical dependencies
-          npm list @langchain/langgraph --depth=0 || true
-          npm list @langchain/core --depth=0 || true
-          # Fail if @langchain/langgraph is not found
-          if ! npm list @langchain/langgraph --depth=0; then
-            echo "@langchain/langgraph not found in server/node_modules!"
-            exit 1
-          fi
+          # Double-check what version of openai we actually have
+          npm list openai --depth=0 || true
 
-      # Step 6: Create final deployment artifact
+      # Step 6: Create final deployment artifact with dist + node_modules + package.json
       - name: Create zip artifact
         run: |
           cd server
-          # Include package-lock.json in the deployment
-          zip -r release.zip dist node_modules package.json package-lock.json .npmrc
+          zip -r release.zip dist node_modules package.json
 
       # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
@@ -82,7 +73,7 @@ jobs:
       name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write
+      id-token: write # required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -109,4 +100,6 @@ jobs:
         with:
           app-name: "PolyLink"
           slot-name: "Production"
+          # We now have node_modules already included,
+          # so Azure won't attempt to re-install anything.
           package: ./server-build
