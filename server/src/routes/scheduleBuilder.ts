@@ -8,7 +8,6 @@ import {
   ScheduleBuilderMessage,
   ConversationTurn,
   ScheduleBuilderState,
-  SelectedSection,
 } from "@polylink/shared/types";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { v4 as uuidv4 } from "uuid";
@@ -67,9 +66,7 @@ router.post(
       //   create new schedule
       const result = await createOrUpdateSchedule(
         userId,
-        state.currentSchedule.sections.map(
-          (s: SelectedSection) => s.classNumber
-        ),
+        [],
         term,
         undefined,
         []

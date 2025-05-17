@@ -14,7 +14,7 @@ import {
   resetInputAndScrollToBottom,
 } from "@/components/chat/helpers/formatHelper";
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
-import { CourseTerm, ScheduleResponse } from "@polylink/shared/types";
+import { CourseTerm } from "@polylink/shared/types";
 
 interface Props {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -86,7 +86,6 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
           schedule_id: currentSchedule?.id || "",
           diff: { added: [], removed: [] },
           preferences: { with_time_conflicts: true },
-          currentSchedule: currentSchedule as unknown as ScheduleResponse,
         },
       })
     );
