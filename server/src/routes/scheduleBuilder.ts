@@ -7,7 +7,6 @@ import {
   RunningStreamData,
   ScheduleBuilderMessage,
   ConversationTurn,
-  FetchedScheduleBuilderLog,
 } from "@polylink/shared/types";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { v4 as uuidv4 } from "uuid";
@@ -61,6 +60,7 @@ router.post(
     let isNewThread = false;
     let { state, threadId, userMsg } = req.body;
     let { term, schedule_id, preferences } = state;
+
     // 3) Check if schedule exists and create if not
     if (!schedule_id) {
       isNewSchedule = true;
@@ -96,11 +96,6 @@ router.post(
         console.log("New thread created:", threadId);
       }
     }
-    const chatLog = await getLogByThreadId(threadId);
-
-    if (environment === "dev") {
-      console.log("chatLog: ", chatLog);
-    }
 
     // 5) Check if preferences are set and set defaults if not
     if (!preferences) {
@@ -117,7 +112,6 @@ router.post(
       preferences: { with_time_conflicts: preferences.withTimeConflicts },
       messages: [new HumanMessage({ content: userMsg })],
     };
-
     try {
       for await (const {
         chunk,
