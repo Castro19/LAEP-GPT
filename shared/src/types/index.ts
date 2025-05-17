@@ -16,4 +16,3 @@ export * from "./liveClasses";
 export * from "./section";
 export * from "./selectedSection";
 export * from "./schedule";
-export * from "./scheduleBuilderLog";

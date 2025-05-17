@@ -9,7 +9,9 @@ import {
   BaseMessage,
 } from "@langchain/core/messages";
 import { CourseTerm } from "@polylink/shared/types";
-import { environment } from "../../../index";
+import { MemorySaver } from "@langchain/langgraph";
+
+const memory = new MemorySaver();
 
 /*───────────────────────────────────────────────────────────────────────*/
 /* 1.  AI Agent                                                       */
@@ -21,8 +23,8 @@ const agent = createReactAgent({
   stateSchema: StateAnnotation,
   stateModifier: (state: any) =>
     stateModifier(state) as unknown as BaseMessage[],
+  checkpointSaver: memory,
 });
-
 /*───────────────────────────────────────────────────────────────────────*/
 /* 2.  Public helpers                                                   */
 /*───────────────────────────────────────────────────────────────────────*/
@@ -32,26 +34,16 @@ export const scheduleBuilderAgent = async (
 ) => {
   let config = { configurable: { thread_id: threadId }, recursionLimit: 10 };
 
-  // Create a new state with only the current message
-  const currentState = {
-    ...state,
-    messages: [state.messages[state.messages.length - 1]], // Only use the last message
-  };
-
-  const stream = await agent.stream(
-    currentState as typeof StateAnnotation.State,
-    {
-      ...config,
-      streamMode: "values",
-    }
-  );
+  // State already contains the user's messages; no extra SystemMessage needed
+  const stream = await agent.stream(state as typeof StateAnnotation.State, {
+    ...config,
+    streamMode: "values",
+  });
 
   let finalMsgs: BaseMessage[] = [];
   for await (const step of stream) {
     finalMsgs = step.messages;
-    if (environment === "dev") {
-      console.log("Final messages:", step.messages);
-    }
+    console.log("Final messages:", step.messages);
   }
   return finalMsgs;
 };
@@ -64,7 +56,6 @@ export type ScheduleBuilderParams = {
   threadId: string;
   userMsg: string;
 };
-
 export const run_chatbot = async ({
   userId,
   term,
