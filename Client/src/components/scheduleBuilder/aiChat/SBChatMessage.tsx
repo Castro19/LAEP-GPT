@@ -8,8 +8,6 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { ChevronDown } from "lucide-react";
-import SBFetchSections from "./SBFetchSections";
-import SBManageSchedule from "./SBManageSchedule";
 
 /* -------------------------------------------------------------------------
    📑  Types (replace with shared types when available)
@@ -86,40 +84,6 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
     ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-right"
     : "bg-gradient-to-r from-gray-800 to-gray-700 text-white text-left";
 
-  const renderToolContent = (tool: Tool) => {
-    switch (tool.call.name) {
-      case "fetch_sections":
-        return (
-          <SBFetchSections
-            args={tool.call.args as any}
-            message={tool.message.msg}
-          />
-        );
-      case "manage_schedule":
-        return (
-          <SBManageSchedule
-            args={tool.call.args as any}
-            message={tool.message.msg}
-          />
-        );
-      default:
-        return (
-          <>
-            <div className="max-w-full overflow-x-auto">
-              <pre className="min-w-max whitespace-pre text-slate-300">
-                {JSON.stringify(tool.call.args, null, 2)}
-              </pre>
-            </div>
-            <div className="max-w-full overflow-x-auto">
-              <pre className="min-w-max bg-slate-800 p-2 rounded text-slate-200 whitespace-pre">
-                {tool.message.msg}
-              </pre>
-            </div>
-          </>
-        );
-    }
-  };
-
   return (
     <div className={`my-4 max-w-full ${isUser ? "ml-auto" : "mr-auto"}`}>
       <div className="flex flex-col w-full">
@@ -161,7 +125,18 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
                       {tool.call.name}
                     </AccordionTrigger>
                     <AccordionContent className="bg-slate-900 px-3 py-2 text-xs space-y-3">
-                      {renderToolContent(tool)}
+                      {/* args with horizontal scroll */}
+                      <div className="max-w-full overflow-x-auto">
+                        <pre className="min-w-max whitespace-pre text-slate-300">
+                          {JSON.stringify(tool.call.args, null, 2)}
+                        </pre>
+                      </div>
+                      {/* tool message with horizontal scroll */}
+                      <div className="max-w-full overflow-x-auto">
+                        <pre className="min-w-max bg-slate-800 p-2 rounded text-slate-200 whitespace-pre">
+                          {tool.message.msg}
+                        </pre>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 ))}

@@ -23,16 +23,10 @@ import LabelSection from "@/components/classSearch/reusable/sectionInfo/LabelSec
 import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
 import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
 
-const SectionsChosen = ({
-  selectedSections,
-  inChat = false,
-}: {
-  selectedSections: SelectedSection[];
-  inChat?: boolean;
-}) => {
+const SectionsChosen = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { sectionsForSchedule } = useAppSelector(
+  const { selectedSections, sectionsForSchedule } = useAppSelector(
     (state) => state.sectionSelection
   );
   const { hiddenSections, currentSchedule } = useAppSelector(
@@ -143,34 +137,30 @@ const SectionsChosen = ({
       }}
       className="grid grid-cols-1 gap-2 w-full overflow-hidden"
     >
-      {!inChat && (
-        <>
-          {/* Header with select/deselect all buttons */}
-          <div className="flex flex-wrap justify-between items-center gap-2 mb-2 px-2">
-            <div className="text-xs font-medium text-slate-700 dark:text-gray-200 min-w-[120px]">
-              Select sections to include in schedule:
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSelectAll}
-                className="text-xs h-7 px-3"
-              >
-                Select All
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDeselectAll}
-                className="text-xs h-7 px-3"
-              >
-                Deselect All
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Header with select/deselect all buttons */}
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-2 px-2">
+        <div className="text-xs font-medium text-slate-700 dark:text-gray-200 min-w-[120px]">
+          Select sections to include in schedule:
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSelectAll}
+            className="text-xs h-7 px-3"
+          >
+            Select All
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDeselectAll}
+            className="text-xs h-7 px-3"
+          >
+            Deselect All
+          </Button>
+        </div>
+      </div>
 
       <AnimatePresence mode="wait">
         {Object.entries(groupedSections).map(
