@@ -32,7 +32,7 @@ export const scheduleBuilderAgent = async (
   state: typeof StateAnnotation.State,
   threadId: string
 ) => {
-  let config = { configurable: { thread_id: threadId }, recursionLimit: 10 };
+  let config = { configurable: { thread_id: threadId } };
 
   // State already contains the user's messages; no extra SystemMessage needed
   const stream = await agent.stream(state as typeof StateAnnotation.State, {
@@ -41,10 +41,7 @@ export const scheduleBuilderAgent = async (
   });
 
   let finalMsgs: BaseMessage[] = [];
-  for await (const step of stream) {
-    finalMsgs = step.messages;
-    console.log("Final messages:", step.messages);
-  }
+  for await (const step of stream) finalMsgs = step.messages;
   return finalMsgs;
 };
 

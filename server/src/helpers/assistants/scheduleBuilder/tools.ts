@@ -28,6 +28,7 @@ export const fetchSections = tool(
       sections_per_course?: number;
       full_data: boolean;
       search_query?: string;
+      state: typeof StateAnnotation.State;
     },
     config
   ) => {
@@ -248,6 +249,12 @@ export const fetchSections = tool(
         .describe(
           "Search query (only when fetch_type='search'). Be as specific as possible."
         ),
+      state: z
+        .object({
+          user_id: z.string(),
+          term: z.string(),
+        })
+        .describe("Injected user/session state."),
     }),
   }
 );
