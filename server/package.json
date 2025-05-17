@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "nodemon --no-deprecation",
     "build": "tsc",
@@ -16,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@langchain/core": "^0.3.55",
-    "@langchain/langgraph": "^0.2.71",
+    "@langchain/langgraph": "0.2.72",
     "@langchain/openai": "^0.5.10",
     "@polylink/shared": "^1.0.0",
     "@qdrant/js-client-rest": "^1.12.0",
