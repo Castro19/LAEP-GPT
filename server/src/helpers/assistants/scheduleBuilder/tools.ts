@@ -26,12 +26,18 @@ export const fetchSections = tool(
       fetch_type: "search" | "user_selected" | "curriculum";
       num_courses?: number;
       sections_per_course?: number;
+      full_data: boolean;
       search_query?: string;
     },
     config
   ) => {
-    const { fetch_type, num_courses, sections_per_course, search_query } =
-      input;
+    const {
+      fetch_type,
+      num_courses,
+      sections_per_course,
+      full_data,
+      search_query,
+    } = input;
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
 
     // ---------- validation ----------
@@ -187,7 +193,15 @@ export const fetchSections = tool(
       });
     }
 
-    console.log("sectionsToReturn", sectionsToReturn);
+    /* ------------------ compact output if needed ------------------ */
+    if (!full_data) {
+      const compact: Record<string, string> = {};
+      (sectionsToReturn as SectionEssential[]).forEach((s) => {
+        compact[s.classNumber] =
+          `${s.courseId}: ${s.courseName} ${JSON.stringify(s.meetings)}`;
+      });
+      sectionsToReturn = compact;
+    }
 
     /* ------------------ final payload ------------------ */
     return new Command({
@@ -215,15 +229,20 @@ export const fetchSections = tool(
       num_courses: z
         .number()
         .int()
-        .default(5)
+        .optional()
         .describe(
           "Number of courses to return (required for 'search' or 'curriculum')."
         ),
       sections_per_course: z
         .number()
         .int()
-        .default(1)
+        .optional()
         .describe("Max sections to return per course."),
+      full_data: z
+        .boolean()
+        .describe(
+          "Return full section data when true; otherwise just class numbers / minimal info."
+        ),
       search_query: z
         .string()
         .optional()

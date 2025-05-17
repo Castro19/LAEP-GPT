@@ -113,18 +113,12 @@ router.post(
       messages: [new HumanMessage({ content: userMsg })],
     };
     try {
-      for await (const {
-        chunk,
-        toolCalls,
-        lastState: s,
-      } of scheduleBuilderStream(initState, threadId)) {
-        if (toolCalls) {
-          res.write(`event: tool_call\ndata: ${JSON.stringify(toolCalls)}\n\n`);
-        }
+      for await (const { chunk, lastState: s } of scheduleBuilderStream(
+        initState,
+        threadId
+      )) {
         if (chunk) {
-          res.write(
-            `event: assistant\ndata: ${JSON.stringify({ text: chunk })}\n\n`
-          );
+          res.write(`data: ${JSON.stringify({ assistantChunk: chunk })}\n\n`);
         }
         if (s) {
           lastState = s;
@@ -175,7 +169,7 @@ router.post(
         return {
           ...baseMessage,
           tool_calls: msg.tool_calls?.map((tool) => ({
-            id: tool.id || uuidv4(),
+            id: tool.id,
             name: tool.name,
             args: tool.args,
             type: "tool_call",
@@ -214,15 +208,7 @@ router.post(
       } as ScheduleBuilderMessage;
     });
 
-    // 7a) Stream out each message as its own SSE event
-    for (const msg of messages) {
-      if (msg.role === "user") continue; // don't re-send the user's message
-      console.log("msg", msg);
-      res.write("event: message\n");
-      res.write(`data: ${JSON.stringify(msg)}\n\n`);
-    }
-
-    // 7b) Calculate token usage for this turn
+    // 8) Calculate token usage for this turn
     const turnTokenUsage = messages.reduce(
       (acc, msg) => {
         if (msg.token_usage) {
@@ -244,7 +230,7 @@ router.post(
       }
     );
 
-    // 8) Create the conversation turn
+    // 9) Create the conversation turn
     const turn: ConversationTurn = {
       turn_id: uuidv4(),
       timestamp: new Date(),
@@ -256,14 +242,15 @@ router.post(
       },
     };
 
-    // 9) Add the conversation turn to the log
+    // 10) Add the conversation turn to the log
     await addConversationTurn(threadId, turn);
 
-    // 10) Send final metadata and close
+    // 11) return the response
     const schedule = await getScheduleById(userId, schedule_id);
     res.write(
       `event: done\n` +
         `data: ${JSON.stringify({
+          conversation,
           isNewSchedule,
           isNewThread,
           schedule_id,

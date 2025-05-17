@@ -62,7 +62,7 @@ interface Props {
 const SBChatMessage: React.FC<Props> = ({ msg }) => {
   const isUser = msg.role === "user";
   const hasTools = !!(msg.tool_calls?.length || msg.toolMessages?.length);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const variant = isUser
     ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-right"
@@ -97,7 +97,6 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
               <Accordion
                 type="multiple"
                 className="mt-2 border border-slate-700/60 rounded-md overflow-hidden"
-                defaultValue={msg.tool_calls?.map((call) => call.id)}
               >
                 {msg.tool_calls?.map((call) => (
                   <AccordionItem

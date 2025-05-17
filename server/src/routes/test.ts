@@ -3,6 +3,7 @@ import {
   getSelectedSectionsTool,
   getUserNextEligibleSections,
 } from "../helpers/assistants/scheduleBuilder/helpers";
+import { run_chatbot } from "../helpers/assistants/scheduleBuilder/scheduleBuilderAgent";
 
 const router = express.Router();
 
