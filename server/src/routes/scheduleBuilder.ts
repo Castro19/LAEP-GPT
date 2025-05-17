@@ -47,9 +47,9 @@ router.post(
       return;
     }
 
-    let { state, threadId, userMsg } = req.body;
-    let { term, schedule_id, preferences } = state;
-    if (!schedule_id) {
+    let { term, scheduleId, preferences, threadId, userMsg } = req.body;
+
+    if (!scheduleId) {
       isNewSchedule = true;
       //   create new schedule
       const result = await createOrUpdateSchedule(
@@ -59,10 +59,10 @@ router.post(
         undefined,
         []
       );
-      schedule_id = result.scheduleId;
+      scheduleId = result.scheduleId;
     }
 
-    if (threadId.includes("temp")) {
+    if (!threadId) {
       isNewThread = true;
       //   create new thread
       threadId = uuidv4();
@@ -90,7 +90,7 @@ router.post(
     const result = await run_chatbot({
       userId,
       term,
-      scheduleId: schedule_id,
+      scheduleId,
       preferences,
       threadId,
       userMsg,
@@ -116,7 +116,7 @@ router.post(
             term,
             sections: [],
             user_query: userMsg,
-            schedule_id: schedule_id,
+            schedule_id: scheduleId,
             diff: { added: [], removed: [] },
             preferences: { with_time_conflicts: preferences.withTimeConflicts },
             messages: [],
@@ -168,10 +168,6 @@ router.post(
         } as ScheduleBuilderMessage;
       }
     );
-    const lastMsg = result.conversation[result.conversation.length - 1];
-    if (lastMsg instanceof AIMessage) {
-      state = lastMsg.response_metadata?.state;
-    }
 
     // Calculate token usage for this turn
     const turnTokenUsage = messages.reduce(
@@ -215,9 +211,8 @@ router.post(
       conversation: result.conversation,
       isNewSchedule,
       isNewThread,
-      schedule_id,
+      scheduleId,
       threadId,
-      state,
     });
   })
 );

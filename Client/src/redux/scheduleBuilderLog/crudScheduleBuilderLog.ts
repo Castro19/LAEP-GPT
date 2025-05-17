@@ -1,8 +1,6 @@
 import {
   FetchedScheduleBuilderLog,
   FetchedScheduleBuilderLogListItem,
-  ScheduleBuilderResponse,
-  ScheduleBuilderState,
 } from "@polylink/shared/types";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 
@@ -85,47 +83,6 @@ export async function deleteLogFromDB(threadId: string): Promise<void> {
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to delete log:", error);
-    }
-    throw error;
-  }
-}
-
-export async function sendScheduleBuilderRequest({
-  threadId,
-  userMsg,
-  state,
-}: {
-  threadId: string;
-  userMsg: string;
-  state: ScheduleBuilderState;
-}): Promise<ScheduleBuilderResponse> {
-  try {
-    const response = await fetch(`${serverUrl}/scheduleBuilder/respond`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        threadId,
-        userMsg,
-        state,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.error || "Failed to send schedule builder request");
-    }
-
-    return data.data;
-  } catch (error) {
-    if (environment === "dev") {
-      console.error("Failed to send schedule builder request:", error);
     }
     throw error;
   }
