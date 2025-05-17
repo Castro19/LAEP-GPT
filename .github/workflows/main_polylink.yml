@@ -20,6 +20,7 @@ jobs:
         with:
           # Use at least Node 18 (or Node 20)
           node-version: "20.x"
+          cache: "npm"
 
       # Step 3: Install dependencies at the root (for all workspaces: shared + server)
       - name: Install All Dependencies (Workspace)
@@ -44,16 +45,33 @@ jobs:
           rm -rf node_modules
           # Install ONLY production dependencies, pinned by the root lock file
           npm ci --only=production
+
+          # Debug: List all top-level node_modules folders
+          echo "📦 Top-level node_modules contents:"
+          ls -la node_modules/
+
+          # Debug: Check if @langchain folder exists and its contents
+          echo "🔍 @langchain folder contents:"
+          ls -la node_modules/@langchain/ || echo "❌ @langchain folder not found!"
+
+          # Debug: Check langgraph folder specifically
+          echo "🔍 langgraph folder contents:"
+          ls -la node_modules/@langchain/langgraph/ || echo "❌ langgraph folder not found!"
+
+          # Debug: Check prebuilt folder specifically
+          echo "🔍 prebuilt folder contents:"
+          ls -la node_modules/@langchain/langgraph/prebuilt/ || echo "❌ prebuilt folder not found!"
+
           # Double-check what version of openai we actually have
           npm list openai --depth=0 || true
 
           # 2. Quick sanity check
-          test -f server/node_modules/@langchain/langgraph/prebuilt/index.js && \
+          test -f node_modules/@langchain/langgraph/prebuilt/index.js && \
             echo "✅ prebuilt sub-path present" || \
             (echo "❌ prebuilt sub-path missing!")
 
           # 3. Sanity-check that the file Node will require is present
-          test -f server/node_modules/@langchain/langgraph/prebuilt.js && \
+          test -f node_modules/@langchain/langgraph/prebuilt.js && \
             echo "✅ prebuilt.js present" || \
             (echo "❌ @langchain/langgraph/prebuilt.js missing!")
 

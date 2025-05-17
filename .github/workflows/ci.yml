@@ -99,24 +99,42 @@ jobs:
           path: shared/dist
           key: ${{ runner.os }}-shared-build-${{ github.sha }}
 
-      - name: Install Dependencies and Link Shared
+      # Step 1: Install dependencies at the root (for all workspaces: shared + server)
+      - name: Install All Dependencies (Workspace)
         run: |
-          # Install shared package
-          cd shared
-          npm install
-          npm run build
-          npm link
+          npm ci
+          # Optional debug info
+          npm list openai --depth=0 || true
 
-          # Install server package and link to shared
-          cd ../server
-          npm install --ignore-scripts
-          npm link @polylink/shared
+      # Step 2: Build Shared + Server
+      - name: Build Shared
+        run: npm run build:shared
+
+      - name: Build Server
+        run: npm run build:server
+
+      # Step 3: Create a self-contained production install for the **server workspace**
+      - name: Production install (server workspace)
+        run: |
+          # Run from the repo root — not inside `server`
+          npm ci --omit=dev \
+                 --workspace=server \
+                 --include-workspace-root \
+                 --install-strategy=nested
+
+          # Critical check for the required file
+          test -f server/node_modules/@langchain/langgraph/prebuilt.js || {
+            echo "❌ prebuilt.js missing!"; exit 1;
+          }
 
       - name: Run lint
         run: cd server && npm run lint
 
-      - name: Build Server
-        run: cd server && npm run build
+      # Step 4: Create artifact with server contents
+      - name: Create artifact
+        run: |
+          cd server
+          zip -r release.zip dist node_modules package.json package-lock.json
 
     # Placeholder for future server-side testing
     # - name: Run Server Tests
