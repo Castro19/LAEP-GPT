@@ -27,7 +27,6 @@ import scheduleRouter from "./routes/schedule";
 import testRouter from "./routes/test";
 // LLM API
 import OpenAI from "openai";
-import { wrapOpenAI } from "langsmith/wrappers";
 
 // Initialize express app
 const app = express();
@@ -85,8 +84,13 @@ app.use("/selectedSections", authenticate, selectedSectionRouter);
 app.use("/schedules", authenticate, scheduleRouter);
 app.use("/professors", authenticate, professorRouter);
 app.use("/test", testRouter);
+// Initialize OpenAI API client
+export const deepseek = new OpenAI({
+  baseURL: "https://api.deepseek.com",
+  apiKey: process.env.DEEPSEEK_API_KEY,
+});
 
-export const client = wrapOpenAI(new OpenAI());
+export const client = new OpenAI();
 
 export const ASST_MAP = {
   professor_ratings_query: process.env.FORMAT_ASST_ID,

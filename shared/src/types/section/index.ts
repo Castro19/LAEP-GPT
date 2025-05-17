@@ -1,15 +1,5 @@
 import { CourseTerm } from "../selectedSection";
 
-export type InstructorWithRating = {
-  name: string;
-  id: string;
-  courseId: string;
-  overallRating: number;
-  numEvals: number;
-  courseRating: number | null;
-  studentDifficulties: number | null;
-};
-
 export type Section = {
   term: CourseTerm;
   classNumber: number; // unique section number (e.g. 1001)
@@ -55,8 +45,17 @@ export type Section = {
     email: string; // email of the instructor (e.g. "john.doe@illinois.edu")
   }>;
 
-  instructorsWithRatings: InstructorWithRating[] | null;
+  instructorsWithRatings: Array<{
+    name: string; // name of the instructor (e.g. "John Doe")
+    id: string; // unique identifier for the instructor (e.g. "1234567890")
+    courseId: string; // unique identifier for the course (e.g. "CSC357")
+    overallRating: number; // overall rating of the instructor (e.g. 4.5)
+    numEvals: number; // number of evaluations for the instructor (e.g. 100)
+    courseRating: number | null; // rating of the instructor for the course (e.g. 4.5)
+    studentDifficulties: number | null; // student difficulties of the instructor (e.g. 3.5)
+  }> | null;
   techElectives: string[];
+
   classPair: number | null; // class number of the section paired with (e.g. 1002)
   isCreditNoCredit: boolean;
 };
