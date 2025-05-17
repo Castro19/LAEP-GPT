@@ -205,7 +205,6 @@ export const sendMessage = createAsyncThunk<
       },
     };
 
-    console.log("state schedule sections", parsedMsgs[parsedMsgs.length - 1]);
     return {
       fullTurn,
       placeholderTurnId,
