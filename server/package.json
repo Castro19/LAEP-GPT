@@ -10,13 +10,14 @@
     "check": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{js,ts}' --report-unused-disable-directives",
     "lint:fix": "eslint 'src/**/*.{js,ts}' --fix",
-    "format": "prettier --write 'src/**/*.{js,ts}'"
+    "format": "prettier --write 'src/**/*.{js,ts}'",
+    "postinstall": "npm run build"
   },
   "author": "Cristian Castro Oliva",
   "license": "ISC",
   "dependencies": {
     "@langchain/core": "^0.3.55",
-    "@langchain/langgraph": "^0.2.71",
+    "@langchain/langgraph": "0.2.72",
     "@langchain/openai": "^0.5.10",
     "@polylink/shared": "^1.0.0",
     "@qdrant/js-client-rest": "^1.12.0",

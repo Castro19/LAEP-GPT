@@ -3,12 +3,14 @@ import {
   getSelectedSectionsTool,
   getUserNextEligibleSections,
 } from "../helpers/assistants/scheduleBuilder/helpers";
+import { test } from "../helpers/assistants/scheduleBuilder/scheduleBuilderAgent";
 
 const router = express.Router();
 
 // test route
 router.get("/", (async (req, res) => {
-  res.status(200).json({ message: "Hello, world!" });
+  const result = test();
+  res.status(200).json({ message: result });
 }) as RequestHandler);
 
 router.get("/schedule", (async (req, res) => {

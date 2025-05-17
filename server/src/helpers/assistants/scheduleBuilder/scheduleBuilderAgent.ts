@@ -149,3 +149,8 @@ export async function* scheduleBuilderStream(
     },
   };
 }
+
+export const test = () => {
+  console.log("Testing deployment workflow");
+  return "Test successful";
+};

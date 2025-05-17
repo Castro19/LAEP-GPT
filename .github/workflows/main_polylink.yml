@@ -1,4 +1,4 @@
-name: Build and deploy Node.js app to Azure Web App - PolyLink
+name: Deploy to Azure Web App
 
 on:
   push:
@@ -6,86 +6,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Install and Build
+    environment: Production
 
     steps:
-      # Step 1: Checkout the code
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js version
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          # Use at least Node 18 (or Node 20)
           node-version: "20.x"
+          cache: "npm"
 
-      # Step 3: Install dependencies at the root (for all workspaces: shared + server)
-      - name: Install All Dependencies (Workspace)
+      - name: Install dependencies
         run: |
           npm ci
-          # Optional debug info
-          npm list openai --depth=0 || true
+          cd server && npm ci --only=production
 
-      # Step 4: Build Shared + Server
-      - name: Build Shared
-        run: npm run build:shared
+      - name: Build packages
+        run: |
+          npm run build:shared
+          npm run build:server
 
-      - name: Build Server
-        run: npm run build:server
-
-      # Step 5: Prune down to production dependencies *inside the server folder*
-      #         so we only ship what's needed for runtime.
-      - name: Prune for Production (Server)
+      - name: Verify dependencies
         run: |
           cd server
-          # Remove any old node_modules
-          rm -rf node_modules
-          # Install ONLY production dependencies, pinned by the root lock file
-          npm ci --only=production
-          # Double-check what version of openai we actually have
-          npm list openai --depth=0 || true
+          echo "Verifying critical dependencies..."
+          npm list @langchain/langgraph --depth=0 || true
+          npm list @langchain/core --depth=0 || true
 
-      # Step 6: Create final deployment artifact with dist + node_modules + package.json
-      - name: Create zip artifact
+      - name: Prepare deployment package
         run: |
           cd server
-          zip -r release.zip dist node_modules package.json
-
-      # Step 7: Show ZIP contents (for debugging)
-      - name: Show ZIP contents
-        run: |
-          cd server
-          zipinfo release.zip
-
-      # Step 8: Upload Artifact
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: server-app
-          path: server/release.zip
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write # required for requesting the JWT
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: server-app
-
-      - name: Unzip artifact for deployment
-        run: |
-          mkdir server-build
-          cd server-build
-          unzip ../release.zip
+          # Create deployment directory
+          mkdir -p deploy
+          # Copy only what's needed
+          cp -r dist deploy/
+          cp -r node_modules deploy/
+          cp package.json deploy/
+          # Create zip
+          cd deploy
+          zip -r ../deploy.zip .
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -94,12 +57,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLink"
           slot-name: "Production"
-          # We now have node_modules already included,
-          # so Azure won't attempt to re-install anything.
-          package: ./server-build
+          package: server/deploy.zip
