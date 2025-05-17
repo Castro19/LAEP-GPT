@@ -113,42 +113,35 @@ jobs:
       - name: Build Server
         run: npm run build:server
 
-      # Step 3: Prune down to production dependencies *inside the server folder*
-      #         so we only ship what's needed for runtime.
-      - name: Prune for Production (Server)
+      # Step 3: Create a self-contained production install for the **server workspace**
+      - name: Production install (server workspace)
         run: |
-          cd server
-          # Remove any old node_modules
-          rm -rf node_modules
-          # Install ONLY production dependencies, pinned by the root lock file
-          npm ci --only=production
-          # Double-check what version of openai we actually have
-          npm list openai --depth=0 || true
+          # Run from the repo root — not inside `server`
+          npm ci --omit=dev \
+                 --workspace=server \
+                 --include-workspace-root \
+                 --install-links=false      # copy real files instead of symlinks
 
           # Debug: List all top-level node_modules folders
           echo "📦 Top-level node_modules contents:"
-          ls -la node_modules/
+          ls -la server/node_modules/
 
           # Debug: Check if @langchain folder exists and its contents
           echo "🔍 @langchain folder contents:"
-          ls -la node_modules/@langchain/ || echo "❌ @langchain folder not found!"
+          ls -la server/node_modules/@langchain/ || echo "❌ @langchain folder not found!"
 
           # Debug: Check langgraph folder specifically
           echo "🔍 langgraph folder contents:"
-          ls -la node_modules/@langchain/langgraph/ || echo "❌ langgraph folder not found!"
+          ls -la server/node_modules/@langchain/langgraph/ || echo "❌ langgraph folder not found!"
 
           # Debug: Check prebuilt folder specifically
           echo "🔍 prebuilt folder contents:"
-          ls -la node_modules/@langchain/langgraph/prebuilt/ || echo "❌ prebuilt folder not found!"
+          ls -la server/node_modules/@langchain/langgraph/prebuilt/ || echo "❌ prebuilt folder not found!"
 
-          # Sanity checks for prebuilt files
-          test -f node_modules/@langchain/langgraph/prebuilt/index.js && \
-            echo "✅ prebuilt sub-path present" || \
-            (echo "❌ prebuilt sub-path missing!")
-
-          test -f node_modules/@langchain/langgraph/prebuilt.js && \
+          # Smoke-test: the file Node resolves at runtime must exist
+          test -f server/node_modules/@langchain/langgraph/prebuilt.js && \
             echo "✅ prebuilt.js present" || \
-            (echo "❌ @langchain/langgraph/prebuilt.js missing!")
+            (echo "❌ @langchain/langgraph/prebuilt.js missing!" && exit 1)
 
       - name: Run lint
         run: cd server && npm run lint
