@@ -154,12 +154,7 @@ export async function streamScheduleBuilderRequest(
 
       switch (ev) {
         case "tool_call":
-          console.log("tool_call", raw);
-          const toolCalls: ToolCall[] = JSON.parse(raw).map((call: any) => ({
-            ...call,
-            args:
-              typeof call.args === "string" ? JSON.parse(call.args) : call.args,
-          }));
+          const toolCalls: ToolCall[] = JSON.parse(raw);
           onToolCall(toolCalls);
           break;
 

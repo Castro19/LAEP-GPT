@@ -22,7 +22,7 @@ import {
   getAllLogs,
   getLogByThreadId,
 } from "../db/models/scheduleBuilderLog/scheduleBuilderLogServices";
-import { HumanMessage, AIMessageChunk } from "@langchain/core/messages";
+import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { environment } from "..";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
 const router = express.Router();
@@ -151,13 +151,12 @@ router.post(
 
     // 7) Create a new conversation turn
     const messages: ScheduleBuilderMessage[] = conversation.map((msg) => {
-      console.log("msg", msg);
       const baseMessage: Partial<ScheduleBuilderMessage> = {
         msg_id: msg.id || uuidv4(),
         role:
           msg instanceof HumanMessage
             ? "user"
-            : msg instanceof AIMessageChunk
+            : msg instanceof AIMessage
               ? "assistant"
               : "tool",
         msg:
@@ -178,7 +177,7 @@ router.post(
         response_time: 0,
       };
 
-      if (msg instanceof AIMessageChunk) {
+      if (msg instanceof AIMessage) {
         return {
           ...baseMessage,
           tool_calls: msg.tool_calls?.map((tool) => ({
@@ -224,6 +223,7 @@ router.post(
     // 7a) Stream out each message as its own SSE event
     for (const msg of messages) {
       if (msg.role === "user") continue; // don't re-send the user's message
+      console.log("msg", msg);
       res.write("event: message\n");
       res.write(`data: ${JSON.stringify(msg)}\n\n`);
     }
@@ -249,12 +249,6 @@ router.post(
         total_tokens?: number;
       }
     );
-
-    // Ensure there's always one assistant bubble
-    if (!messages.some((m) => m.role === "assistant")) {
-      const last = messages[messages.length - 1];
-      last.role = "assistant";
-    }
 
     // 8) Create the conversation turn
     const turn: ConversationTurn = {

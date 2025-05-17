@@ -1,18 +1,27 @@
-import { AIMessage, BaseMessage } from "@langchain/core/messages";
-import { nanoid } from "nanoid";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { ChatOpenAI } from "@langchain/openai";
 import { StateAnnotation, stateModifier } from "./state";
 import { fetchSections, manageSchedule } from "./tools";
-import e from "express";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { ChatOpenAI } from "@langchain/openai";
+import { AIMessage, BaseMessage } from "@langchain/core/messages";
+import { CourseTerm } from "@polylink/shared/types";
+import { Response } from "express";
+import { nanoid } from "nanoid";
+
+/*───────────────────────────────────────────────────────────────────────*/
+/* 1.  AI Agent                                                       */
+/*───────────────────────────────────────────────────────────────────────*/
 
 const agent = createReactAgent({
   llm: new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 }),
   tools: [fetchSections, manageSchedule],
   stateSchema: StateAnnotation,
-  stateModifier: (s: any) => stateModifier(s) as unknown as BaseMessage[],
+  stateModifier: (state: any) =>
+    stateModifier(state) as unknown as BaseMessage[],
 });
 
+/*───────────────────────────────────────────────────────────────────────*/
+/* 2.  Public helpers                                                   */
+/*───────────────────────────────────────────────────────────────────────*/
 export async function* scheduleBuilderStream(
   initState: typeof StateAnnotation.State,
   threadId: string
@@ -26,91 +35,62 @@ export async function* scheduleBuilderStream(
   }[];
   lastState?: typeof StateAnnotation.State;
 }> {
-  const eventStream = agent.streamEvents(initState, {
+  const stream = await agent.stream(initState, {
     configurable: { thread_id: threadId },
     recursionLimit: 10,
-    version: "v2",
+    streamMode: "values",
   });
 
-  let currentToolCall: {
-    id?: string;
-    name?: string;
-    args: string;
-    type: string;
-  } | null = null;
-  let lastState: typeof StateAnnotation.State | undefined;
+  let prevLength = 0;
+  let lastChunk: typeof StateAnnotation.State | undefined;
 
-  for await (const { event, data } of eventStream) {
-    if (event === "on_chat_model_stream" && data.chunk) {
-      // Handle tool call chunks
+  for await (const step of stream) {
+    const currentMessage = step.messages[step.messages.length - 1];
+    console.log("Current message: ", currentMessage);
+
+    lastChunk = step as typeof StateAnnotation.State;
+
+    if (currentMessage instanceof AIMessage) {
+      // 1) if there are tool calls, yield them immediately
       if (
-        data.chunk.tool_call_chunks &&
-        data.chunk.tool_call_chunks.length > 0
+        Array.isArray(currentMessage.tool_calls) &&
+        currentMessage.tool_calls.length > 0
       ) {
-        for (const toolChunk of data.chunk.tool_call_chunks) {
-          if (toolChunk.type === "tool_call_chunk") {
-            // Start of a new tool call
-            if (toolChunk.name && toolChunk.id) {
-              if (
-                currentToolCall &&
-                currentToolCall.id &&
-                currentToolCall.name
-              ) {
-                // Yield the completed tool call
-                yield {
-                  toolCalls: [
-                    {
-                      id: currentToolCall.id,
-                      name: currentToolCall.name,
-                      args: currentToolCall.args,
-                      type: "tool_call",
-                    },
-                  ],
-                };
-              }
-              currentToolCall = {
-                id: toolChunk.id,
-                name: toolChunk.name,
-                args: toolChunk.args || "",
-                type: "tool_call",
-              };
-            } else if (currentToolCall && toolChunk.args) {
-              // Append to existing tool call args
-              currentToolCall.args += toolChunk.args;
-            }
-          }
+        yield {
+          toolCalls: currentMessage.tool_calls.map((tool) => ({
+            id: tool.id || nanoid(), // Ensure we always have an ID
+            name: tool.name,
+            args: tool.args,
+            type: "tool_call",
+          })),
+        };
+      }
+
+      // 2) then if there's new assistant text, yield that too
+      if (typeof currentMessage.content === "string") {
+        const newText = currentMessage.content.slice(prevLength);
+        prevLength = currentMessage.content.length;
+        if (newText) {
+          yield { chunk: newText };
         }
       }
-
-      // Handle regular text chunks
-      if (typeof data.chunk.content === "string" && data.chunk.content) {
-        yield { chunk: data.chunk.content };
-      }
-    }
-
-    // Update last state
-    if (event === "on_chain_end" && data.output) {
-      lastState = data.output;
     }
   }
 
-  // Yield any remaining tool call
-  if (currentToolCall && currentToolCall.id && currentToolCall.name) {
-    yield {
-      toolCalls: [
-        {
-          id: currentToolCall.id,
-          name: currentToolCall.name,
-          args: currentToolCall.args,
-          type: "tool_call",
-        },
-      ],
-    };
-  }
-
-  // Yield final state
-  if (!lastState) {
+  if (!lastChunk) {
     throw new Error("No state was generated during the stream");
   }
-  yield { lastState };
+
+  // finally send the last state so the caller knows we're done
+  yield { lastState: lastChunk };
 }
+
+export type ScheduleBuilderParams = {
+  userId: string;
+  term: CourseTerm;
+  scheduleId: string;
+  preferences: { withTimeConflicts: boolean };
+  threadId: string;
+  userMsg: string;
+  res: Response;
+};
