@@ -36,7 +36,7 @@ jobs:
       - name: Build Server
         run: npm run build:server
 
-      # Step 5: Prepare server for deployment
+      # Step 5: Prepare Server for Deployment (Option A)
       - name: Prepare Server for Deployment
         run: |
           # 1. Production-only, workspace-aware install that copies real files
