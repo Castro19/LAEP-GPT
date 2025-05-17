@@ -99,24 +99,59 @@ jobs:
           path: shared/dist
           key: ${{ runner.os }}-shared-build-${{ github.sha }}
 
-      - name: Install Dependencies and Link Shared
+      # Step 1: Install dependencies at the root (for all workspaces: shared + server)
+      - name: Install All Dependencies (Workspace)
         run: |
-          # Install shared package
-          cd shared
-          npm install
-          npm run build
-          npm link
+          npm ci
+          # Optional debug info
+          npm list openai --depth=0 || true
 
-          # Install server package and link to shared
-          cd ../server
-          npm install --ignore-scripts
-          npm link @polylink/shared
+      # Step 2: Build Shared + Server
+      - name: Build Shared
+        run: npm run build:shared
+
+      - name: Build Server
+        run: npm run build:server
+
+      # Step 3: Prune down to production dependencies *inside the server folder*
+      #         so we only ship what's needed for runtime.
+      - name: Prune for Production (Server)
+        run: |
+          cd server
+          # Remove any old node_modules
+          rm -rf node_modules
+          # Install ONLY production dependencies, pinned by the root lock file
+          npm ci --only=production
+          # Double-check what version of openai we actually have
+          npm list openai --depth=0 || true
+
+          # Debug: List all top-level node_modules folders
+          echo "📦 Top-level node_modules contents:"
+          ls -la node_modules/
+
+          # Debug: Check if @langchain folder exists and its contents
+          echo "🔍 @langchain folder contents:"
+          ls -la node_modules/@langchain/ || echo "❌ @langchain folder not found!"
+
+          # Debug: Check langgraph folder specifically
+          echo "🔍 langgraph folder contents:"
+          ls -la node_modules/@langchain/langgraph/ || echo "❌ langgraph folder not found!"
+
+          # Debug: Check prebuilt folder specifically
+          echo "🔍 prebuilt folder contents:"
+          ls -la node_modules/@langchain/langgraph/prebuilt/ || echo "❌ prebuilt folder not found!"
+
+          # Sanity checks for prebuilt files
+          test -f node_modules/@langchain/langgraph/prebuilt/index.js && \
+            echo "✅ prebuilt sub-path present" || \
+            (echo "❌ prebuilt sub-path missing!")
+
+          test -f node_modules/@langchain/langgraph/prebuilt.js && \
+            echo "✅ prebuilt.js present" || \
+            (echo "❌ @langchain/langgraph/prebuilt.js missing!")
 
       - name: Run lint
         run: cd server && npm run lint
-
-      - name: Build Server
-        run: cd server && npm run build
 
     # Placeholder for future server-side testing
     # - name: Run Server Tests
