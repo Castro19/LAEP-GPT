@@ -2,14 +2,10 @@ import { useAppDispatch, useAppSelector } from "@/redux";
 import { SelectedSection } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  EyeIcon,
-  CalendarMinus,
-  Trash2,
-  ChevronRight,
-  CheckCircle,
-  Circle,
-} from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FaEye } from "react-icons/fa";
+
+import { ChevronRight } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 import {
   Collapsible,
@@ -26,14 +22,6 @@ import { useNavigate } from "react-router-dom";
 import LabelSection from "@/components/classSearch/reusable/sectionInfo/LabelSection";
 import BadgeSection from "@/components/classSearch/reusable/sectionInfo/BadgeSection";
 import { toggleHiddenSection } from "@/redux/schedule/scheduleSlice";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipPortal,
-} from "@/components/ui/tooltip";
-import { Toggle } from "@/components/ui/toggle";
 
 const SectionsChosen = ({
   selectedSections,
@@ -278,7 +266,7 @@ const SectionsChosen = ({
                               handleToggleCourseVisibility(courseId);
                             }}
                           >
-                            <EyeIcon className="h-3 w-3" />
+                            <FaEye className="h-3 w-3" />
                           </Button>
                         )}
                       </div>
@@ -428,11 +416,6 @@ const SectionCard: React.FC<{
     dispatch(toggleHiddenSection(section.classNumber));
   };
 
-  const handleRemoveFromCalendar = () => {
-    // TODO: Implement remove from calendar action
-    console.log("Remove from calendar:", section.classNumber);
-  };
-
   // Extract and format start & end time
   const { meetings } = section;
   const startTime = meetings?.[0]?.start_time
@@ -447,15 +430,7 @@ const SectionCard: React.FC<{
   const uniqueDays = [...new Set(days)];
 
   return (
-    <div
-      className="
-        group relative 
-        border border-gray-200 dark:border-slate-700 
-        rounded-md p-2 
-        flex flex-col bg-transparent
-      "
-    >
-      {/* Content of the card */}
+    <div className="border border-gray-200 dark:border-slate-700 rounded-md p-2 bg-transparent transition-colors flex flex-col">
       <div className="space-y-1 flex-1">
         {/* First Row: Format as 'LAB 3500' with checkbox on the right */}
         <div className="flex items-center justify-between gap-2">
@@ -481,6 +456,28 @@ const SectionCard: React.FC<{
                   : "Closed"}
             </span>
           </div>
+
+          {/* Checkbox and Eye Icon */}
+          <div className="flex items-center gap-2">
+            {isInSchedule && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-6 w-6 text-gray-700 dark:text-gray-700 dark:hover:text-gray-800 dark:hover:bg-transparent ${
+                  isHidden ? "opacity-50" : ""
+                }`}
+                onClick={handleToggleHidden}
+              >
+                <FaEye className="h-3 w-3" />
+              </Button>
+            )}
+            <Checkbox
+              id={`section-${section.classNumber}`}
+              checked={isSelected}
+              onCheckedChange={handleToggleSelection}
+              className="h-4 w-4 border-gray-700 dark:border-slate-900"
+            />
+          </div>
         </div>
 
         {/* Days - Bubble Style */}
@@ -500,180 +497,45 @@ const SectionCard: React.FC<{
             )}
           </div>
         </div>
-
-        {/* Time */}
-        <div className="flex flex-row gap-2 items-center">
-          <LabelSection className="text-gray-700 dark:text-gray-800">
-            Time
-          </LabelSection>
-          <div className="flex flex-row gap-2 items-center">
-            <BadgeSection variant="selected">{startTime}</BadgeSection>
-            <span className="text-xs text-gray-700 dark:text-gray-800">to</span>
-            <BadgeSection variant="selected">{endTime}</BadgeSection>
-          </div>
-        </div>
-      </div>
-
-      {/* Hover toolbar */}
-      <div
-        className="
-          absolute top-2 right-2
-          flex items-center gap-3
-          opacity-0 translate-x-2
-          group-hover:opacity-100 group-hover:translate-x-0
-          transition-all duration-200 ease-out
-          pointer-events-none
-          rounded-md
-          p-1
-          shadow-sm
-          backdrop-blur-sm
-          z-50
-        "
-        style={{
-          backgroundColor: adjustColorBrightness(
-            section.color || "#ffffff",
-            -75
-          ),
-        }}
-      >
-        {/* Enable pointer events only when visible */}
-        <div className="group-hover:pointer-events-auto flex items-center gap-3">
-          {/* Selection Actions Group */}
-          <div className="flex items-center gap-1">
-            {/* Include in schedule */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Toggle
-                    pressed={isSelected}
-                    onPressedChange={handleToggleSelection}
-                    className={`
-                      h-7 w-7 p-0
-                      ${
-                        isSelected
-                          ? "text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300"
-                          : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                      }
-                      hover:bg-gray-100 dark:hover:bg-gray-800/50
-                    `}
-                    aria-label={
-                      isSelected
-                        ? "Remove from schedule generation"
-                        : "Include in schedule generation"
-                    }
-                  >
-                    {isSelected ? (
-                      <CheckCircle className="h-4 w-4" />
-                    ) : (
-                      <Circle className="h-4 w-4" />
-                    )}
-                  </Toggle>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent
-                    side="top"
-                    sideOffset={5}
-                    className="z-[100]"
-                    avoidCollisions={true}
-                  >
-                    {isSelected
-                      ? "Remove from schedule generation"
-                      : "Include in schedule generation"}
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
-
-            {/* Remove from selected */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleRemove}
-                    className="h-7 w-7 text-red-700 dark:text-red-400 
-                      hover:bg-red-100/50 dark:hover:bg-red-900/50
-                      hover:text-red-800 dark:hover:text-red-300"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent
-                    side="top"
-                    sideOffset={5}
-                    className="z-[100]"
-                    avoidCollisions={true}
-                  >
-                    Remove from selected sections
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-
-          {/* Schedule Actions Group */}
-          {isInSchedule && (
-            <div className="flex items-center gap-1">
-              {/* Hide/Show */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleToggleHidden}
-                      className={`h-7 w-7 text-gray-900 dark:text-gray-50 
-                        hover:bg-gray-200/50 dark:hover:bg-gray-700/50
-                        hover:text-gray-950 dark:hover:text-white 
-                        ${isHidden ? "opacity-50" : ""}`}
-                    >
-                      <EyeIcon className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent
-                      side="top"
-                      sideOffset={5}
-                      className="z-[100]"
-                      avoidCollisions={true}
-                    >
-                      {isHidden ? "Show in calendar" : "Hide from calendar"}
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
-
-              {/* Remove from calendar */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleRemoveFromCalendar}
-                      className="h-7 w-7 text-orange-700 dark:text-orange-400 
-                        hover:bg-orange-100/50 dark:hover:bg-orange-900/50
-                        hover:text-orange-800 dark:hover:text-orange-300"
-                    >
-                      <CalendarMinus className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent
-                      side="top"
-                      sideOffset={5}
-                      className="z-[100]"
-                      avoidCollisions={true}
-                    >
-                      Remove from calendar
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
+        {/* Time & Remove Button - Flexible Layout */}
+        <div className="flex flex-col justify-start gap-4">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center">
+              <LabelSection className="text-gray-700 dark:text-gray-800">
+                Time
+              </LabelSection>
+              <div className="flex flex-row gap-2 items-center">
+                <BadgeSection variant="selected">{startTime}</BadgeSection>
+                <span className="text-xs text-gray-700 dark:text-gray-800">
+                  to
+                </span>
+                <BadgeSection variant="selected">{endTime}</BadgeSection>
+              </div>
             </div>
-          )}
+            {/* Remove Button - Will wrap to new line only when needed */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRemove}
+              className="text-xs h-7 px-2 text-red-600 hover:text-red-800 dark:text-red-700 dark:hover:text-red-900 ml-auto transition-colors"
+              style={{
+                backgroundColor: "transparent",
+              }}
+              onMouseOver={(e) => {
+                const target = e.currentTarget;
+                const currentColor = section.color || "#ffffff";
+                // Create a more subtle darker version of the color
+                const darkerColor = adjustColorBrightness(currentColor, -5);
+                target.style.backgroundColor = darkerColor;
+              }}
+              onMouseOut={(e) => {
+                const target = e.currentTarget;
+                target.style.backgroundColor = "transparent";
+              }}
+            >
+              Remove
+            </Button>
+          </div>
         </div>
       </div>
     </div>
