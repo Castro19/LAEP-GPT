@@ -66,14 +66,8 @@ const TurnConversationItem: React.FC<Props> = ({ turn }) => {
 
   return (
     <div className="w-full flex flex-col gap-2 py-2">
-      {turn.messages.length === 1 ? (
-        <SBChatMessage msg={user} />
-      ) : (
-        <>
-          <SBChatMessage msg={user} />
-          <SBChatMessage msg={assistant} />
-        </>
-      )}
+      <SBChatMessage msg={user} />
+      <SBChatMessage msg={assistant} />
     </div>
   );
 };

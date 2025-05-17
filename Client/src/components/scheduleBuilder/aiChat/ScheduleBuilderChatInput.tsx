@@ -49,11 +49,9 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
     if (!currentLog) {
       dispatch(scheduleBuilderLogActions.newScheduleChat());
     }
-
-    const placeholderTurnId = nanoid();
     /* optimistic user turn */
     const userTurn = {
-      turn_id: placeholderTurnId,
+      turn_id: nanoid(),
       timestamp: new Date(),
       messages: [{ msg_id: nanoid(), role: "user", msg: draftMsg }],
       state,
@@ -74,7 +72,6 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
       scheduleBuilderLogActions.sendMessage({
         text: draftMsg,
         state,
-        placeholderTurnId,
       })
     );
   };

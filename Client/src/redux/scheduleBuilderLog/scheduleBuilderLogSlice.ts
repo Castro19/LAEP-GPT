@@ -14,6 +14,8 @@ import {
   sendScheduleBuilderRequest,
 } from "./crudScheduleBuilderLog";
 import { nanoid } from "@reduxjs/toolkit";
+import { environment } from "@/helpers/getEnvironmentVars";
+import { HumanMessage } from "@langchain/core/messages";
 import { updateScheduleIdFromBuilder } from "../schedule/scheduleSlice";
 
 /* ------------------------------------------------------------------ */
@@ -101,108 +103,88 @@ export const deleteLog = createAsyncThunk<
 /* ------------------------------------------------------------------ */
 export const sendMessage = createAsyncThunk<
   {
-    fullTurn: ConversationTurn;
-    placeholderTurnId: string;
+    userTurn: ConversationTurn;
+    botTurn: ConversationTurn;
     threadId: string;
     isNewThread: boolean;
     isNewSchedule: boolean;
+    scheduleId: string;
   },
-  { text: string; state: ScheduleBuilderState; placeholderTurnId: string },
+  { text: string; state: ScheduleBuilderState },
   {
     state: { scheduleBuilderLog: ScheduleBuilderLogState };
     rejectValue: ErrorPayload;
   }
 >(
   "scheduleBuilderLog/send",
-  async ({ text, state, placeholderTurnId }, thunkAPI) => {
-    const { getState, dispatch, rejectWithValue } = thunkAPI;
+  async ({ text, state }, { getState, rejectWithValue }) => {
     const { currentLog } = getState().scheduleBuilderLog;
-
     if (!currentLog) {
       return rejectWithValue({ message: "No active log loaded" });
     }
-    let currentThreadId = currentLog.thread_id;
 
-    /* ---------- call backend ---------- */
-    let response;
+    const threadId = currentLog.thread_id;
     try {
-      response = await sendScheduleBuilderRequest({
-        threadId: currentThreadId,
+      /* ---------------- optimistic user-turn ---------------- */
+      const userTurn: ConversationTurn = {
+        turn_id: nanoid(),
+        timestamp: new Date(),
+        token_usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
+        messages: [
+          {
+            msg_id: nanoid(),
+            role: "user",
+            msg: text,
+            state,
+          } as ScheduleBuilderMessage,
+        ],
+      };
+
+      // push it to the DB + invoke AI
+      const response = await sendScheduleBuilderRequest({
+        threadId,
         userMsg: text,
         state,
       });
-    } catch (err) {
-      return rejectWithValue({
-        message: "Failed to send schedule builder request",
-      });
-    }
 
-    if (response.isNewThread) {
-      currentThreadId = response.threadId;
-    }
-
-    /* ---------- forward schedule-id to schedule slice ---------- */
-    if (response.scheduleId) {
-      dispatch(updateScheduleIdFromBuilder(response.scheduleId));
-    }
-    /* ---------- parse LangChain JSON ---------- */
-    const lcArr = response.conversation as any[];
-
-    const toSchedMsg = (obj: any): ScheduleBuilderMessage => {
-      const kind = Array.isArray(obj.id) ? obj.id[2] : "";
-      const role =
-        kind === "HumanMessage"
-          ? "user"
-          : kind === "ToolMessage"
-            ? "tool"
-            : "assistant";
-
-      /* -------- grab tool calls regardless of where they sit -------- */
-      const rawCalls =
-        obj.tool_calls ??
-        obj.kwargs?.additional_kwargs?.tool_calls ??
-        undefined;
-      const toolCalls =
-        role === "assistant" && Array.isArray(rawCalls) && rawCalls.length
-          ? rawCalls
-          : undefined;
+      // Transform the response into a ConversationTurn
+      const botTurn: ConversationTurn = {
+        turn_id: nanoid(),
+        timestamp: new Date(),
+        token_usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
+        messages: response.conversation.map((msg: any) => ({
+          msg_id: nanoid(),
+          role: msg instanceof HumanMessage ? "user" : "assistant",
+          msg:
+            typeof msg.content === "string"
+              ? msg.content
+              : JSON.stringify(msg.content),
+          state: state,
+          reaction: null,
+          response_time: 0,
+        })) as ScheduleBuilderMessage[],
+      };
 
       return {
-        msg_id: obj.kwargs?.id || obj.id || nanoid(),
-        role,
-        msg:
-          typeof obj.kwargs?.content === "string"
-            ? obj.kwargs.content
-            : typeof obj.content === "string"
-              ? obj.content
-              : JSON.stringify(obj.kwargs?.content ?? obj.content ?? ""),
-        state,
-        reaction: null,
-        response_time: 0,
-        tool_calls: toolCalls,
+        userTurn,
+        botTurn,
+        threadId,
+        isNewThread: response.isNewThread,
+        isNewSchedule: response.isNewSchedule,
+        scheduleId: response.scheduleId,
       };
-    };
-
-    const parsedMsgs = lcArr.map(toSchedMsg);
-
-    const fullTurn: ConversationTurn = {
-      turn_id: placeholderTurnId,
-      timestamp: new Date(),
-      messages: parsedMsgs,
-      token_usage: {
-        prompt_tokens: 0,
-        completion_tokens: 0,
-        total_tokens: 0,
-      },
-    };
-
-    return {
-      fullTurn,
-      placeholderTurnId,
-      threadId: currentThreadId,
-      isNewThread: response.isNewThread,
-      isNewSchedule: response.isNewSchedule,
-    };
+    } catch (err) {
+      if (environment === "dev") console.error(err);
+      return rejectWithValue({ message: "Failed to send message" });
+    }
   }
 );
 
@@ -283,13 +265,14 @@ const scheduleBuilderLog = createSlice({
     });
 
     /* ----- chat integration  ----- */
-    b.addCase(sendMessage.pending, (st) => {
+    b.addCase(sendMessage.pending, (st, a) => {
       const threadId = st.currentLog?.thread_id;
       if (threadId) st.loadingByThread[threadId] = true;
     });
 
     b.addCase(sendMessage.fulfilled, (st, a) => {
-      const { fullTurn, placeholderTurnId, threadId, isNewThread } = a.payload;
+      const { botTurn, threadId, isNewThread, isNewSchedule, scheduleId } =
+        a.payload;
       st.loadingByThread[threadId] = false;
 
       if (!st.currentLog) return;
@@ -302,14 +285,14 @@ const scheduleBuilderLog = createSlice({
         });
       }
 
-      const turns = st.currentLog.conversation_turns;
-      const idx = turns.findIndex((t) => t.turn_id === placeholderTurnId);
-
-      if (idx !== -1) {
-        turns[idx] = fullTurn; // overwrite placeholder with real data
-      } else {
-        turns.push(fullTurn); // fallback (shouldn't happen)
+      if (isNewSchedule && scheduleId) {
+        // Update the scheduleId in the schedule slice
+        st.state.schedule_id = scheduleId;
+        // Dispatch the update to the schedule slice
+        updateScheduleIdFromBuilder(scheduleId);
       }
+
+      st.currentLog.conversation_turns.push(botTurn);
     });
 
     b.addCase(sendMessage.rejected, (st, a) => {
