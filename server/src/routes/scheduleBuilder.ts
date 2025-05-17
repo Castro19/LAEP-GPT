@@ -151,17 +151,7 @@ router.post(
 
     // 7) Create a new conversation turn
     const messages: ScheduleBuilderMessage[] = conversation.map((msg) => {
-      console.log("Processing message:", {
-        type:
-          msg instanceof AIMessageChunk
-            ? "AIMessageChunk"
-            : msg instanceof HumanMessage
-              ? "HumanMessage"
-              : "ToolMessage",
-        response_metadata: msg.response_metadata,
-        usage: (msg as any).usage_metadata,
-      });
-
+      console.log("msg", msg);
       const baseMessage: Partial<ScheduleBuilderMessage> = {
         msg_id: msg.id || uuidv4(),
         role:
@@ -189,36 +179,6 @@ router.post(
       };
 
       if (msg instanceof AIMessageChunk) {
-        // pull usage from the correct place
-        const usageFromResponse = msg.response_metadata?.usage;
-        const usageFromLegacy = (msg as any).usage_metadata;
-
-        console.log("Token usage sources:", {
-          usageFromResponse,
-          usageFromLegacy,
-        });
-
-        const token_usage = usageFromResponse
-          ? {
-              prompt_tokens: usageFromResponse.prompt_tokens,
-              completion_tokens: usageFromResponse.completion_tokens,
-              total_tokens: usageFromResponse.total_tokens,
-              prompt_tokens_details: usageFromResponse.prompt_tokens_details,
-              completion_tokens_details:
-                usageFromResponse.completion_tokens_details,
-            }
-          : usageFromLegacy
-            ? {
-                prompt_tokens: usageFromLegacy.input_tokens,
-                completion_tokens: usageFromLegacy.output_tokens,
-                total_tokens: usageFromLegacy.total_tokens,
-                prompt_tokens_details: usageFromLegacy.input_token_details,
-                completion_tokens_details: usageFromLegacy.output_token_details,
-              }
-            : undefined;
-
-        console.log("Calculated token_usage:", token_usage);
-
         return {
           ...baseMessage,
           tool_calls: msg.tool_calls?.map((tool) => ({
@@ -227,7 +187,18 @@ router.post(
             args: tool.args,
             type: "tool_call",
           })),
-          token_usage,
+          token_usage: msg.response_metadata?.tokenUsage
+            ? {
+                prompt_tokens: msg.response_metadata.tokenUsage.promptTokens,
+                completion_tokens:
+                  msg.response_metadata.tokenUsage.completionTokens,
+                total_tokens: msg.response_metadata.tokenUsage.totalTokens,
+                prompt_tokens_details:
+                  msg.response_metadata.usage?.prompt_tokens_details,
+                completion_tokens_details:
+                  msg.response_metadata.usage?.completion_tokens_details,
+              }
+            : undefined,
           finish_reason: msg.response_metadata?.finish_reason,
           model_name: msg.response_metadata?.model_name,
           system_fingerprint: msg.response_metadata?.system_fingerprint,
@@ -258,18 +229,9 @@ router.post(
     }
 
     // 7b) Calculate token usage for this turn
-    console.log(
-      "Messages before token usage calculation:",
-      messages.map((m) => ({
-        role: m.role,
-        token_usage: m.token_usage,
-      }))
-    );
-
     const turnTokenUsage = messages.reduce(
       (acc, msg) => {
         if (msg.token_usage) {
-          console.log("Adding token usage from message:", msg.token_usage);
           return {
             prompt_tokens:
               (acc.prompt_tokens || 0) + msg.token_usage.prompt_tokens,
@@ -288,20 +250,10 @@ router.post(
       }
     );
 
-    console.log("Calculated turnTokenUsage:", turnTokenUsage);
-
-    // Ensure there's always one assistant bubble while preserving token usage
+    // Ensure there's always one assistant bubble
     if (!messages.some((m) => m.role === "assistant")) {
       const last = messages[messages.length - 1];
-      console.log("Last message before conversion:", last);
-      // Create a new assistant message that preserves the token usage
-      const assistantMessage: ScheduleBuilderMessage = {
-        ...last,
-        role: "assistant",
-        token_usage: last.token_usage, // Preserve the token usage
-      };
-      console.log("New assistant message:", assistantMessage);
-      messages[messages.length - 1] = assistantMessage;
+      last.role = "assistant";
     }
 
     // 8) Create the conversation turn
@@ -315,11 +267,6 @@ router.post(
         total_tokens: turnTokenUsage.total_tokens || 0,
       },
     };
-
-    console.log("Final turn with token usage:", {
-      turn_id: turn.turn_id,
-      token_usage: turn.token_usage,
-    });
 
     // 9) Add the conversation turn to the log
     await addConversationTurn(threadId, turn);
