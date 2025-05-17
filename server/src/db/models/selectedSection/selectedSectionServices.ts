@@ -214,8 +214,7 @@ export const bulkPostSelectedSections = async (
     sectionId: number;
     term: CourseTerm;
   }>,
-  operation: "add" | "remove" = "add",
-  selectedSections?: SelectedSection[]
+  operation: "add" | "remove" = "add"
 ): Promise<{
   selectedSections: SelectedSection[];
   message: string;
@@ -258,14 +257,9 @@ export const bulkPostSelectedSections = async (
             sectionId,
             term as CourseTerm
           );
-          const selectedSection = selectedSections?.find(
-            (s) => s.classNumber === sectionId
-          );
-          const color = selectedSection?.color
-            ? selectedSection.color
-            : courseId
-              ? getColorForCourseId(courseId)
-              : courseColors[Math.floor(Math.random() * courseColors.length)];
+          const color = courseId
+            ? getColorForCourseId(courseId)
+            : courseColors[Math.floor(Math.random() * courseColors.length)];
 
           // Add to update operations
           updateOperations[`selectedSections.${term}.${sectionId}`] = { color };

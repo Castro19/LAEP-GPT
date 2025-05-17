@@ -1,5 +1,7 @@
-import React, { useMemo } from "react";
+import { SelectedSection } from "@polylink/shared/types";
+import React, { useEffect, useState } from "react";
 import SectionsChosen from "../buildSchedule/selectedSections/SectionsChosen";
+import { useAppSelector } from "@/redux";
 
 interface FetchSectionsProps {
   args: {
@@ -12,11 +14,27 @@ interface FetchSectionsProps {
 }
 
 const SBFetchSections: React.FC<FetchSectionsProps> = ({ args, message }) => {
-  // Extract the sections array from the message using useMemo to prevent recreation on every render
-  const sections = useMemo(() => {
-    const sectionsMatch = message.match(/Fetched sections: (\[.*\])/);
-    return sectionsMatch ? JSON.parse(sectionsMatch[1]) : [];
-  }, [message]);
+  // Extract the sections array from the message
+  const sectionsMatch = message.match(/Fetched sections: (\[.*\])/);
+  const sections: SelectedSection[] = sectionsMatch
+    ? JSON.parse(sectionsMatch[1])
+    : [];
+  const { selectedSections } = useAppSelector(
+    (state) => state.sectionSelection
+  );
+  const [sectionsToDisplay, setSectionsToDisplay] = useState<SelectedSection[]>(
+    []
+  );
+  useEffect(() => {
+    setSectionsToDisplay(
+      selectedSections.filter((section) =>
+        sections.some(
+          (selectedSection) =>
+            selectedSection.classNumber === section.classNumber
+        )
+      )
+    );
+  }, [selectedSections, sections, message]);
 
   const renderFetchType = () => {
     switch (args.fetch_type) {
@@ -57,7 +75,8 @@ const SBFetchSections: React.FC<FetchSectionsProps> = ({ args, message }) => {
       <div className="bg-slate-800/50 p-2 rounded">{renderFetchType()}</div>
 
       {/* Sections List */}
-      <SectionsChosen selectedSections={sections} inChat={true} />
+
+      <SectionsChosen selectedSections={sectionsToDisplay} inChat={true} />
     </div>
   );
 };

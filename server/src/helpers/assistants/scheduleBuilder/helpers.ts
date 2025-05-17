@@ -87,16 +87,12 @@ export const getUserNextEligibleSections = async ({
 
   // Get sections for all courses at once
   const sections = await getSectionsByCourseIds(courseIds, term, userId);
-  const fetchedSelectedSections = await getSelectedSectionsByUserId(
-    userId,
-    term as CourseTerm
-  );
   if (!sections) {
     return [];
   }
   // Convert sections to SelectedSection format
   const fetchedSections: SelectedSection[] = sections.map((section) =>
-    transformSectionToSelectedSection(section, fetchedSelectedSections)
+    transformSectionToSelectedSection(section)
   );
 
   //   Group by course id and only take sectionsPerCourse sections per course
@@ -132,12 +128,8 @@ export const readAllSchedule = async (
   if (!sections) {
     return [];
   }
-  const fetchedSelectedSections = await getSelectedSectionsByUserId(
-    userId,
-    schedule.term as CourseTerm
-  );
   const selectedSections = sections.map((section) =>
-    transformSectionToSelectedSection(section, fetchedSelectedSections)
+    transformSectionToSelectedSection(section)
   );
   return selectedSections;
 };
@@ -202,13 +194,11 @@ export const addToSchedule = async ({
   classNumbersToAdd,
   scheduleId,
   preferences,
-  selectedSections,
 }: {
   userId: string;
   classNumbersToAdd: number[];
   scheduleId: string;
   preferences: any;
-  selectedSections: SelectedSection[];
 }): Promise<{
   classNumbersAdded: number[];
   messageToAdd: string;
@@ -282,12 +272,7 @@ export const addToSchedule = async ({
     schedule.sections.map((s) => s.classNumber)
   );
   // else add all sections to selectedSections
-  await bulkPostSelectedSections(
-    userId,
-    sectionsToAddWithTerm,
-    "add",
-    selectedSections
-  );
+  await bulkPostSelectedSections(userId, sectionsToAddWithTerm, "add");
   // and to schedule all at once
 
   await createOrUpdateSchedule(
@@ -348,8 +333,7 @@ export const removeFromSchedule = async ({
 };
 
 export const transformSectionToSelectedSection = (
-  section: Section,
-  selectedSections: SelectedSection[]
+  section: Section
 ): SelectedSection => {
   return {
     courseId: section.courseId,
@@ -371,9 +355,7 @@ export const transformSectionToSelectedSection = (
       section.instructorsWithRatings?.find(
         (instructor) => instructor.name === section.instructors[0].name
       )?.overallRating ?? 0,
-    color:
-      selectedSections.find((s) => s.classNumber === section.classNumber)
-        ?.color ?? getColorForCourseId(section.courseId),
+    color: getColorForCourseId(section.courseId),
   };
 };
 
