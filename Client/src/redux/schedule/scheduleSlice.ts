@@ -231,71 +231,6 @@ export const updateScheduleIdFromBuilder = createAsyncThunk(
   }
 );
 
-export const updateScheduleSection = createAsyncThunk(
-  "schedule/updateScheduleSection",
-  async (
-    { sectionId, action }: { sectionId: number; action: "add" | "remove" },
-    { getState }
-  ) => {
-    const state = getState() as RootState;
-    const { currentSchedule, currentScheduleId, currentScheduleTerm } =
-      state.schedule;
-    const { selectedSections } = state.sectionSelection;
-
-    if (!currentSchedule) {
-      throw new Error("No current schedule to update");
-    }
-
-    // If we have a currentScheduleId, we need to update the database
-    if (currentScheduleId) {
-      try {
-        // Get the updated sections based on the action
-        const updatedSections =
-          action === "remove"
-            ? currentSchedule.sections.filter(
-                (section) => section.classNumber !== sectionId
-              )
-            : [
-                ...currentSchedule.sections,
-                selectedSections.find((s) => s.classNumber === sectionId)!,
-              ];
-
-        // Make the API call to update the schedule
-        await createOrUpdateSchedule(
-          updatedSections.map((section) => section.classNumber),
-          currentScheduleTerm,
-          currentScheduleId,
-          currentSchedule.customEvents
-        );
-
-        return {
-          ...currentSchedule,
-          sections: updatedSections,
-        };
-      } catch (error) {
-        if (environment === "dev") {
-          console.error("Error updating schedule section:", error);
-        }
-        throw error;
-      }
-    } else {
-      // If no currentScheduleId, just update the local state
-      return {
-        ...currentSchedule,
-        sections:
-          action === "remove"
-            ? currentSchedule.sections.filter(
-                (section) => section.classNumber !== sectionId
-              )
-            : [
-                ...currentSchedule.sections,
-                selectedSections.find((s) => s.classNumber === sectionId)!,
-              ],
-      };
-    }
-  }
-);
-
 const scheduleSlice = createSlice({
   name: "schedule",
   initialState,
@@ -410,11 +345,6 @@ const scheduleSlice = createSlice({
         state.currentScheduleId = action.payload;
       })
       .addCase(updateScheduleSections.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.currentSchedule = action.payload;
-        }
-      })
-      .addCase(updateScheduleSection.fulfilled, (state, action) => {
         if (action.payload) {
           state.currentSchedule = action.payload;
         }
