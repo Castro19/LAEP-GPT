@@ -1,5 +1,4 @@
-import React, { useMemo } from "react";
-import SectionsChosen from "../buildSchedule/selectedSections/SectionsChosen";
+import React from "react";
 
 interface ManageScheduleProps {
   args: {
@@ -16,11 +15,6 @@ interface ManageScheduleProps {
 }
 
 const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
-  const sections = useMemo(() => {
-    const sectionsMatch = message.match(/(\[.*\])/);
-    return sectionsMatch ? JSON.parse(sectionsMatch[1]) : [];
-  }, [message]);
-
   const renderOperation = () => {
     switch (args.operation) {
       case "add":
@@ -41,13 +35,10 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
         );
       case "readall":
         return (
-          <div className="flex flex-col gap-2">
-            <div className="text-slate-400">
-              <span className="font-semibold">Reading Schedule</span>
-              <br />
-              Term: {args.state.term}
-            </div>
-            <SectionsChosen selectedSections={sections} inChat={true} />
+          <div className="text-slate-400">
+            <span className="font-semibold">Reading Schedule</span>
+            <br />
+            Term: {args.state.term}
           </div>
         );
       default:
@@ -64,15 +55,13 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
       <div className="bg-slate-800/50 p-2 rounded">{renderOperation()}</div>
 
       {/* Message Output */}
-      {args.operation !== "readall" && (
-        <div className="bg-slate-800/50 p-2 rounded">
-          {messageLines.map((line, index) => (
-            <div key={index} className="text-slate-200">
-              {line}
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="bg-slate-800/50 p-2 rounded">
+        {messageLines.map((line, index) => (
+          <div key={index} className="text-slate-200">
+            {line}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

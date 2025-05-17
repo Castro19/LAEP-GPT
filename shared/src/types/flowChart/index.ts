@@ -106,7 +106,7 @@ export type FetchedFlowchartObject = {
   name: string;
   primaryOption?: boolean;
   flowInfo?: FlowInfoDocument;
-  updatedAt: Date | string;
+  updatedAt: Date;
 };
 
 export type DeleteFlowchartResponse = {
@@ -123,6 +123,6 @@ export type FlowchartDocument = {
   primaryOption: boolean;
   userId: string;
   flowInfo: FlowInfoDocument;
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  createdAt: Date;
+  updatedAt: Date;
 };

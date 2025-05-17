@@ -307,18 +307,18 @@ const flowchartSlice = createSlice({
           state.flowchartList = [
             {
               ...action.payload,
-              updatedAt: new Date().toISOString() as string,
+              updatedAt: new Date(),
             },
           ];
         } else {
           state.flowchartList.push({
             ...action.payload,
-            updatedAt: new Date().toISOString() as string,
+            updatedAt: new Date(),
           });
         }
         state.currentFlowchart = {
           ...action.payload,
-          updatedAt: new Date().toISOString() as string,
+          updatedAt: new Date(),
         };
       })
       .addCase(postFlowchartInDB.rejected, (state, action) => {
@@ -388,7 +388,7 @@ const flowchartSlice = createSlice({
             flowchartId,
             name,
             primaryOption,
-            updatedAt: new Date().toISOString() as string,
+            updatedAt: new Date(),
           };
         }
         if (state.flowchartList) {

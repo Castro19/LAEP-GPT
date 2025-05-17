@@ -14,7 +14,6 @@ import {
   removeFromSchedule,
   transformSectionToSelectedSection,
   findSectionsByFilter,
-  getSectionsWithPairs,
 } from "./helpers";
 import {
   sectionQueryAssistant,
@@ -96,7 +95,6 @@ export const fetchSections = tool(
         numCourses: num_courses!,
         sectionsPerCourse: sections_per_course!,
       });
-
       if (!sections.length) {
         return new Command({
           update: {
@@ -189,11 +187,6 @@ export const fetchSections = tool(
     }
 
     console.log("sectionsToReturn", sectionsToReturn);
-    const sectionsWithPairs = await getSectionsWithPairs(
-      sectionsToReturn as SelectedSection[],
-      state.term as CourseTerm
-    );
-    sectionsToReturn = sectionsWithPairs as SelectedSection[];
 
     /* ------------------ final payload ------------------ */
     return new Command({

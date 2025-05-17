@@ -197,45 +197,6 @@ const checkForTimeConflicts = (
   return false; // No conflicts found
 };
 
-export const getSectionsWithPairs = async (
-  sections: Section[] | SelectedSection[],
-  term: CourseTerm
-): Promise<Section[] | SelectedSection[]> => {
-  // Get all class pair numbers from sections
-  const classPairNumbers = sections
-    .map((section) => section.classPair)
-    .filter((classPair): classPair is number => classPair !== null);
-
-  // Get all original class numbers
-  const originalClassNumbers = sections.map((section) => section.classNumber);
-
-  // Get only class pair numbers that aren't in the original list
-  const uniquePairNumbers = classPairNumbers.filter(
-    (classNumber) => !originalClassNumbers.includes(classNumber)
-  );
-
-  // Fetch the paired sections
-  const pairedSections = await getSectionsByIds(uniquePairNumbers, term);
-
-  if (!pairedSections) {
-    return sections;
-  }
-
-  // Check if the first section has properties unique to Section type
-  const isSectionType = "subject" in sections[0];
-
-  if (isSectionType) {
-    // If input is Section[], return Section[]
-    return [...(sections as Section[]), ...pairedSections];
-  } else {
-    // If input is SelectedSection[], transform paired sections to SelectedSection[]
-    const transformedPairedSections = pairedSections.map((section) =>
-      transformSectionToSelectedSection(section, [])
-    );
-    return [...(sections as SelectedSection[]), ...transformedPairedSections];
-  }
-};
-
 export const addToSchedule = async ({
   userId,
   classNumbersToAdd,
@@ -268,9 +229,19 @@ export const addToSchedule = async ({
   let sections: Section[] =
     (await getSectionsByIds(classNumbersToAdd, schedule.term)) || [];
 
-  // Get all sections including their pairs
-  const sectionsWithPairs = await getSectionsWithPairs(sections, schedule.term);
-  sections = sectionsWithPairs as Section[];
+  // Get class pair sections
+  const classPairSectionsClassNumbers = sections
+    .filter((s) => s.classPair)
+    .map((s) => s.classPair)
+    .filter((classPair): classPair is number => classPair !== null);
+  const classPairSections = await getSectionsByIds(
+    classPairSectionsClassNumbers,
+    schedule.term
+  );
+  // Add class pair sections to the list of sections
+  if (classPairSections) {
+    sections.push(...classPairSections);
+  }
 
   //  TODO: When checking for time conflicts, we should also check for conflicts between the classNumbersToAdd
   for (const section of sections) {
