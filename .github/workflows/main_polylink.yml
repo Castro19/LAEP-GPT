@@ -42,7 +42,9 @@ jobs:
           cd server
           # Remove any old node_modules
           rm -rf node_modules
-          # Install production dependencies
+          # Copy package-lock.json from root to server
+          cp ../package-lock.json .
+          # Install production dependencies using the lock file
           npm ci --only=production
           # Verify critical dependencies
           npm list @langchain/langgraph --depth=0 || true
@@ -50,13 +52,14 @@ jobs:
           # Create a .npmrc file to ensure proper resolution
           echo "legacy-peer-deps=true" > .npmrc
           echo "node-linker=hoisted" >> .npmrc
+          echo "package-lock=true" >> .npmrc
 
       # Step 6: Create final deployment artifact
       - name: Create zip artifact
         run: |
           cd server
-          # Include .npmrc in the deployment
-          zip -r release.zip dist node_modules package.json .npmrc
+          # Include package-lock.json in the deployment
+          zip -r release.zip dist node_modules package.json package-lock.json .npmrc
 
       # Step 7: Show ZIP contents (for debugging)
       - name: Show ZIP contents
