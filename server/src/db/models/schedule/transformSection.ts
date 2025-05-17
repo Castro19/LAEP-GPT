@@ -145,7 +145,9 @@ export async function transformClassNumbersToSelectedSections(
           for (const [classNum, sectionData] of Object.entries(termSections)) {
             // Find a section with the same courseId
             const matchingSection = sections.find(
-              (s) => s.courseId === section.courseId
+              (s) =>
+                s.classNumber === Number(classNum) &&
+                s.courseId === section.courseId
             );
             if (matchingSection) {
               color = sectionData.color;
