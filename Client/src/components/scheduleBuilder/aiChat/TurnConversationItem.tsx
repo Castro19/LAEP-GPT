@@ -8,9 +8,8 @@ export interface BackendMsg {
   msg_id: string;
   role: "user" | "assistant" | "tool";
   msg: string;
-  tool_calls?: ToolCall[] | null;
+  tool_calls?: any[] | null;
   toolMessages?: ToolMsg[] | null;
-  tools?: Tool[];
   // ...other fields omitted for layout only
 }
 
@@ -20,45 +19,27 @@ export interface BackendTurn {
   // ...token usage etc.
 }
 
-interface ToolCall {
-  id: string;
-  name: string;
-  args: any;
-  type: string;
-}
-
-interface Tool {
-  call: ToolCall;
-  message: ToolMsg;
-}
-
 /* --------------------------------------------------------------------
    Helper — reshape backend messages to props for SBChatMessage
 ----------------------------------------------------------------------*/
+/*  TurnConversationItem.tsx  – only the helper changed  */
 const buildProps = (messages: BackendMsg[]) => {
   // the user is always the first
   const userRaw = messages[0];
 
   // collect every assistant‐role object
   const assistantMsgs = messages.filter((m) => m.role === "assistant");
-  // the real "final" assistant bubble is the last one
+  // the real “final” assistant bubble is the last one
   const assistantRaw = assistantMsgs[assistantMsgs.length - 1];
 
-  // --- gather all the agent's tool_call payloads and their corresponding tool messages ---
-  const tools: Tool[] = [];
-  let currentToolCall: ToolCall | null = null;
+  // --- gather all the agent’s tool_call payloads (if any) ---
+  // those come back in assistant.tool_calls
+  const assistantCalls = assistantMsgs.flatMap((m) => m.tool_calls ?? []);
 
-  messages.forEach((m) => {
-    if (m.role === "assistant" && m.tool_calls) {
-      currentToolCall = m.tool_calls[0]; // Assuming one tool call per assistant message
-    } else if (m.role === "tool" && currentToolCall) {
-      tools.push({
-        call: currentToolCall,
-        message: { msg_id: m.msg_id, msg: m.msg },
-      });
-      currentToolCall = null;
-    }
-  });
+  // --- gather all tool‐role messages in this turn ---
+  const gatheredToolMsgs: ToolMsg[] = messages
+    .filter((m) => m.role === "tool")
+    .map((m) => ({ msg_id: m.msg_id, msg: m.msg }));
 
   const user: SBMessage = {
     msg_id: userRaw.msg_id,
@@ -66,20 +47,12 @@ const buildProps = (messages: BackendMsg[]) => {
     msg: userRaw.msg,
   };
 
-  // If the assistant message already has tools in the new format, use those
-  // Otherwise, use the tools we collected or the old format
   const assistant: SBMessage = {
     msg_id: assistantRaw.msg_id,
     role: "assistant",
     msg: assistantRaw.msg,
-    ...(assistantRaw.tools
-      ? { tools: assistantRaw.tools }
-      : tools.length > 0
-        ? { tools }
-        : {
-            tool_calls: assistantRaw.tool_calls || [],
-            toolMessages: assistantRaw.toolMessages || [],
-          }),
+    tool_calls: assistantCalls, // for any function‐call metadata
+    toolMessages: assistantRaw.toolMessages || gatheredToolMsgs, // for any “tool”‐role result bubbles
   };
 
   return { user, assistant };
