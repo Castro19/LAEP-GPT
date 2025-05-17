@@ -54,7 +54,7 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
     /* optimistic user turn */
     const userTurn = {
       turn_id: placeholderTurnId,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
       messages: [{ msg_id: nanoid(), role: "user", msg: draftMsg }],
       state,
     };

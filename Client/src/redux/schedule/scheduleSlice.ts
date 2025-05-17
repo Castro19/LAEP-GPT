@@ -4,7 +4,6 @@ import {
   CourseTerm,
   GeneratedSchedule,
   CustomScheduleEvent,
-  SelectedSection,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -15,7 +14,6 @@ import {
   updateSchedule,
 } from "./crudSchedule";
 import { scheduleToGeneratedSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
-import { RootState } from "../store";
 
 export interface Preferences {
   minUnits?: string;
@@ -189,20 +187,6 @@ export const getScheduleByIdAsync = createAsyncThunk(
   }
 );
 
-export const updateScheduleSections = createAsyncThunk(
-  "schedule/updateScheduleSections",
-  async (sections: SelectedSection[], { getState }) => {
-    const state = getState() as RootState;
-    if (!state.schedule.currentSchedule) return;
-
-    return {
-      ...state.schedule.currentSchedule,
-      sections: [...sections],
-      averageRating: state.schedule.currentSchedule.averageRating || 0,
-    };
-  }
-);
-
 // Remove schedule
 export const removeScheduleAsync = createAsyncThunk(
   "schedule/removeSchedule",
@@ -343,11 +327,6 @@ const scheduleSlice = createSlice({
       })
       .addCase(updateScheduleIdFromBuilder.fulfilled, (state, action) => {
         state.currentScheduleId = action.payload;
-      })
-      .addCase(updateScheduleSections.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.currentSchedule = action.payload;
-        }
       });
   },
 });

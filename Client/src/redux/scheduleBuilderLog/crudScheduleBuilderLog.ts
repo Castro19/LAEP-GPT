@@ -126,8 +126,6 @@ export async function sendScheduleBuilderRequest({
       isNewThread: data.isNewThread,
       scheduleId: data.scheduleId,
       threadId: data.threadId,
-      state: data.state,
-      schedule: data.schedule,
     };
   } catch (error) {
     if (environment === "dev") {
