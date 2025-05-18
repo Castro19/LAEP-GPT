@@ -5,7 +5,11 @@ import {
   classSearchActions,
   scheduleActions,
 } from "@/redux";
-import { GeneratedSchedule, SelectedSection } from "@polylink/shared/types";
+import {
+  GeneratedSchedule,
+  SectionDetail,
+  SelectedSection,
+} from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -115,9 +119,10 @@ const SectionsChosen = ({
   // Check if any section of a course is in the current schedule
   const isCourseInSchedule = (courseId: string) => {
     const sections = getCourseSections(courseId);
+    if (!sections || !currentSchedule?.sections) return false;
     return sections.some((section) => {
-      return currentSchedule?.sections.some(
-        (s) => s.classNumber === section.classNumber
+      return currentSchedule.sections.some(
+        (s) => s && s.classNumber === section.classNumber
       );
     });
   };
@@ -128,7 +133,7 @@ const SectionsChosen = ({
   };
 
   // Handle adding all sections of a course to schedule
-  const handleAddCourseToCalendar = (courseId: string) => {
+  const handleAddCourseToCalendar = async (courseId: string) => {
     if (!currentSchedule) {
       const currentBlankSchedule: GeneratedSchedule = {
         sections: [],
@@ -140,13 +145,16 @@ const SectionsChosen = ({
       dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
     }
     const sections = getCourseSections(courseId);
+    if (!sections || sections.length === 0) return;
+
     const sectionsToAdd = new Set<number>();
 
     // Get the first section that's not in the schedule
     const firstAvailableSection = sections.find(
       (section) =>
+        section &&
         !currentSchedule?.sections.some(
-          (s) => s.classNumber === section.classNumber
+          (s) => s && s.classNumber === section.classNumber
         )
     );
 
@@ -154,7 +162,7 @@ const SectionsChosen = ({
       // If this section has a class pair, add both sections
       if (firstAvailableSection.classPair) {
         const pairedSection = sections.find(
-          (s) => s.classNumber === firstAvailableSection.classPair
+          (s) => s && s.classNumber === firstAvailableSection.classPair
         );
         if (pairedSection) {
           sectionsToAdd.add(pairedSection.classNumber);
@@ -622,6 +630,9 @@ const SectionCard: React.FC<{
   const dispatch = useAppDispatch();
   const { currentScheduleTerm, hiddenSections, currentSchedule } =
     useAppSelector((state) => state.schedule);
+  const { selectedSections } = useAppSelector(
+    (state) => state.sectionSelection
+  );
   const isHidden = hiddenSections.includes(section.classNumber);
   const isInSchedule =
     currentSchedule?.sections.some(
@@ -674,7 +685,27 @@ const SectionCard: React.FC<{
     );
   };
 
-  const handleAddToCalendar = () => {
+  const handleAddToCalendar = async () => {
+    const isSectionNotSelected = !selectedSections.some(
+      (s) => s.classNumber === section.classNumber
+    );
+    if (isSectionNotSelected) {
+      try {
+        // await the server/local mutation
+        await dispatch(
+          sectionSelectionActions.createOrUpdateSelectedSectionAsync({
+            section: {
+              ...section,
+              term: currentScheduleTerm,
+            } as unknown as SectionDetail,
+          })
+        ).unwrap();
+      } catch (err) {
+        console.error("Failed to select section:", err);
+        return; // abort if the update failed
+      }
+    }
+
     if (!currentSchedule) {
       const currentBlankSchedule: GeneratedSchedule = {
         sections: [],
@@ -685,6 +716,9 @@ const SectionCard: React.FC<{
       };
       dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
     }
+
+    // Now that selectedSections is guaranteed to contain our section,
+    // update the schedule
     dispatch(
       scheduleActions.updateScheduleSection({
         sectionIds: [section.classNumber],

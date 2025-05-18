@@ -14,18 +14,20 @@ const ScheduleAverageRating: React.FC = () => {
 
   // stats
   const totalUnits = currentSchedule.sections.reduce(
-    (sum, s) => sum + +s.units,
+    (sum, s) => sum + (s?.units ? +s.units : 0),
     0
   );
   const avg = parseFloat(currentSchedule.averageRating.toFixed(1));
   const hasRating = !isNaN(avg);
   const lec = currentSchedule.sections.filter(
-    (s) => s.component === "LEC"
+    (s) => s && s.component === "LEC"
   ).length;
   const lab = currentSchedule.sections.filter(
-    (s) => s.component === "LAB"
+    (s) => s && s.component === "LAB"
   ).length;
-  const courses = new Set(currentSchedule.sections.map((s) => s.courseId)).size;
+  const courses = new Set(
+    currentSchedule.sections.map((s) => s?.courseId).filter(Boolean)
+  ).size;
 
   const termLabel =
     {

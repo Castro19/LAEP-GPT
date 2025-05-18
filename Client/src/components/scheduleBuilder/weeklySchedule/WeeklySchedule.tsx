@@ -71,13 +71,15 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
   // Build regular class events
   const memoizedEvents = useMemo(() => {
     return sections.flatMap((section) => {
+      if (!section) return [];
       const isAsync =
+        !section.meetings ||
         section.meetings.length === 0 ||
-        section.meetings.every((m) => !m.start_time || !m.end_time);
+        section.meetings.every((m) => !m?.start_time || !m?.end_time);
       if (isAsync) return [];
 
       return section.meetings.flatMap((meeting) => {
-        if (!meeting.start_time || !meeting.end_time) return [];
+        if (!meeting?.start_time || !meeting?.end_time) return [];
         return meeting.days.map((day) => {
           const offset = dayIndexMap[day];
           const date = new Date(monday);
@@ -271,10 +273,12 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
   // Filter for asynchronous courses
   const asyncSections = sections.filter(
     (section) =>
-      section.meetings.length === 0 ||
-      section.meetings.every(
-        (meeting) => !meeting.start_time || !meeting.end_time
-      )
+      section &&
+      (!section.meetings ||
+        section.meetings.length === 0 ||
+        section.meetings.every(
+          (meeting) => !meeting?.start_time || !meeting?.end_time
+        ))
   );
 
   const hasAsyncCourses = asyncSections.length > 0;
