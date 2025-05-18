@@ -9,8 +9,9 @@ import { useEffect } from "react";
 type UnitSliderProps = {
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
   min: number;
-  defaultValue?: number;
   max: number;
+  defaultMinValue?: number;
+  defaultMaxValue?: number;
   showRange?: boolean;
 };
 
@@ -19,15 +20,18 @@ const UnitSlider = ({
   min,
   max,
   showRange = true,
-  defaultValue,
+  defaultMinValue,
+  defaultMaxValue,
 }: UnitSliderProps) => {
   // Set initial form values if defaultValue is provided
   useEffect(() => {
-    if (defaultValue !== undefined) {
-      form.setValue("minUnits", min.toString());
-      form.setValue("maxUnits", defaultValue.toString());
+    if (defaultMinValue !== undefined) {
+      form.setValue("minUnits", defaultMinValue.toString());
     }
-  }, [defaultValue, form, min]); // Added missing dependencies
+    if (defaultMaxValue !== undefined) {
+      form.setValue("maxUnits", defaultMaxValue.toString());
+    }
+  }, [defaultMinValue, defaultMaxValue, form, min]); // Added missing dependencies
 
   return (
     <FormField
