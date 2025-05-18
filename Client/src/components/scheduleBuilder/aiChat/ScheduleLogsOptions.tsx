@@ -47,7 +47,7 @@ const ScheduleLogsOptions = ({
   };
 
   const onDelete = () => {
-    console.log("Delete log:", log.thread_id);
+    dispatch(scheduleBuilderLogActions.deleteLog(log.thread_id));
     setOpen(false);
   };
 
