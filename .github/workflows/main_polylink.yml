@@ -1,105 +1,97 @@
-name: Build and deploy Node.js app to Azure Web App - PolyLink
+# .github/workflows/azure-deploy.yml
+# • Builds on every push / PR
+# • Deploys only on push to main
+# • Uses hoisted node_modules (Strategy A)
+
+name: Build & deploy Node.js app to Azure Web App – PolyLink
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches: [main] # build + deploy
+  pull_request:
+    branches: [main] # build-only
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Install and Build
 
     steps:
-      # Step 1: Checkout the code
+      # 1 ▸ checkout + toolchain
       - uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          # Use at least Node 18 (or Node 20)
           node-version: "20.x"
+          cache: npm
 
-      # Step 3: Install dependencies at the root (for all workspaces: shared + server)
-      - name: Install All Dependencies (Workspace)
+      # 2 ▸ workspace install + build
+      - name: Install all workspaces
+        run: npm ci
+
+      - name: Build shared + server
         run: |
-          npm ci
-          # Optional debug info
-          npm list openai --depth=0 || true
+          npm run build:shared
+          npm run build:server
 
-      # Step 4: Build Shared + Server
-      - name: Build Shared
-        run: npm run build:shared
-
-      - name: Build Server
-        run: npm run build:server
-
-      # Step 5: Prune down to production dependencies *inside the server folder*
-      #         so we only ship what's needed for runtime.
-      - name: Prune for Production (Server)
+      # 3 ▸ prune dev-deps (keep hoisted tree)
+      - name: Prune to production dependencies
         run: |
-          cd server
-          # Remove any old node_modules
-          rm -rf node_modules
-          # Install ONLY production dependencies, pinned by the root lock file
-          npm ci --only=production
-          # Double-check what version of openai we actually have
-          npm list openai --depth=0 || true
+          npm prune --omit=dev     # modifies the *root* node_modules tree
 
-      # Step 6: Create final deployment artifact with dist + node_modules + package.json
-      - name: Create zip artifact
-        run: |
-          cd server
-          zip -r release.zip dist node_modules package.json
+          echo ""
+          echo "📦 Top-level packages in root node_modules (after prune):"
+          ls -1 node_modules | head -n 40
+          echo "… (total $(ls -1 node_modules | wc -l))"
 
-      # Step 7: Show ZIP contents (for debugging)
-      - name: Show ZIP contents
+          echo ""
+          echo "🔍 Smoke-test for langgraph prebuilt file:"
+          test -f node_modules/@langchain/langgraph/prebuilt.js \
+            && echo "✅ prebuilt.js present" \
+            || { echo "❌ prebuilt.js missing"; exit 1; }
+
+      # 4 ▸ package artifact (server + root node_modules)
+      - name: Zip server artifact
         run: |
           cd server
-          zipinfo release.zip
+          zip -r ../server.zip \
+            dist node_modules package.json package-lock.json .npmrc
 
-      # Step 8: Upload Artifact
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: server-app
-          path: server/release.zip
+          path: server.zip
 
+  # ────────── DEPLOY (only runs on push→main) ──────────
   deploy:
-    runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
     environment:
-      name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write # required for requesting the JWT
+      name: Production
+    permissions: # ← give the job an OIDC token
+      id-token: write
+      contents: read # (optional, but typical)
 
     steps:
-      - name: Download artifact from build job
+      # 1 ▸ pull the ZIP produced by the build job
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: server-app
 
-      - name: Unzip artifact for deployment
-        run: |
-          mkdir server-build
-          cd server-build
-          unzip ../release.zip
-
-      - name: Login to Azure
+      # 2 ▸ Azure login via OIDC (no client secret)
+      - name: Azure CLI login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F274D06961214893BCE0EE8D715C228C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
+          # ‼️  no client-secret here ⇒ azure/login defaults to OIDC
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-webapp
+      # 3 ▸ deploy
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLink"
           slot-name: "Production"
-          # We now have node_modules already included,
-          # so Azure won't attempt to re-install anything.
-          package: ./server-build
+          package: server.zip
