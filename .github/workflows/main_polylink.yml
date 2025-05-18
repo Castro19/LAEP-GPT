@@ -107,4 +107,5 @@ jobs:
         with:
           app-name: "PolyLink"
           slot-name: "Production"
-          package: server.zip # zip already includes node_modules
+          package: server.zip
+          type: runFromPackage # ← mount the ZIP; no incremental copy
