@@ -698,6 +698,7 @@ const SectionCard: React.FC<{
   isSelected: boolean;
 }> = ({ section, isSelected }) => {
   const dispatch = useAppDispatch();
+  const { toast } = useToast();
   const { currentScheduleTerm, hiddenSections, currentSchedule } =
     useAppSelector((state) => state.schedule);
   const selectedSectionInList = useAppSelector(
@@ -758,6 +759,31 @@ const SectionCard: React.FC<{
 
   const handleAddToCalendar = async () => {
     try {
+      // Check if section term matches current schedule term
+      if (section.term !== currentScheduleTerm) {
+        toast({
+          title: `${section.courseId} (${section.classNumber}) is from ${termMap[section.term as CourseTerm]}.`,
+          description: `Please switch to ${termMap[section.term as CourseTerm]} to add this section.`,
+          variant: "destructive",
+          action: (
+            <ToastAction
+              altText="Switch Term"
+              className="dark:bg-red dark:border-white border-2"
+              onClick={() => {
+                dispatch(
+                  scheduleActions.setCurrentScheduleTerm(
+                    section.term as CourseTerm
+                  )
+                );
+              }}
+            >
+              Switch Term
+            </ToastAction>
+          ),
+        });
+        return;
+      }
+
       // First ensure the section is in selectedSections
       const isSectionNotSelected = !selectedSectionInList.some(
         (s: SelectedSection) => s.classNumber === section.classNumber
