@@ -1,7 +1,7 @@
 # .github/workflows/azure-deploy.yml
 # • Builds on every push / PR
 # • Deploys only on push to main
-# • Uses hoisted node_modules (Strategy A)
+# • Uses hoisted node_modules (Strategy A) and ships them.
 
 name: Build & deploy Node.js app to Azure Web App – PolyLink
 
@@ -12,19 +12,14 @@ on:
     branches: [main] # build-only
 
 jobs:
+  # ───────── BUILD ──────────────────────────────────────────
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1 ▸ checkout + toolchain
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v3
-        with:
-          node-version: "20.x"
-          cache: npm
+        with: { node-version: "20.x", cache: npm }
 
-      # 2 ▸ workspace install + build
       - name: Install all workspaces
         run: npm ci
 
@@ -33,7 +28,6 @@ jobs:
           npm run build:shared
           npm run build:server
 
-      # 3 ▸ prune dev-deps (keep hoisted tree)
       - name: Prune to production dependencies
         run: |
           npm prune --omit=dev     # modifies the *root* node_modules tree
@@ -49,49 +43,68 @@ jobs:
             && echo "✅ prebuilt.js present" \
             || { echo "❌ prebuilt.js missing"; exit 1; }
 
-      # 4 ▸ package artifact (server + root node_modules)
-      - name: Zip server artifact
+      # ---------- Assemble deploy folder ----------
+      - name: Assemble deploy folder
         run: |
-          cd server
-          zip -r ../server.zip \
-            dist node_modules package.json package-lock.json .npmrc
+          rm -rf deploy
+          mkdir -p deploy
+
+          # ① app sources
+          cp -r server/dist deploy/
+
+          # ② manifest files Oryx needs at the root of the zip
+          cp server/package.json deploy/
+
+          # copy a lockfile if one exists in the server workspace, otherwise fallback to the root one
+          if [ -f server/package-lock.json ]; then
+            cp server/package-lock.json deploy/
+          else
+            echo "ℹ️  server/package-lock.json not found – copying root lock file"
+            cp package-lock.json deploy/
+          fi
+
+          # copy .npmrc if present
+          [ -f server/.npmrc ] && cp server/.npmrc deploy/ || true
+
+          # ③ hoisted node_modules with all actual packages
+          cp -r node_modules deploy/
+
+          echo "📦 deploy folder preview:"
+          ls -R deploy | head -n 40
+
+      - name: Zip deploy folder
+        run: |
+          cd deploy
+          zip -r ../server.zip .
 
       - uses: actions/upload-artifact@v4
         with:
           name: server-app
           path: server.zip
 
-  # ────────── DEPLOY (only runs on push→main) ──────────
+  # ───────── DEPLOY (push→main only) ────────────────────────
   deploy:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment:
-      name: Production
-    permissions: # ← give the job an OIDC token
-      id-token: write
-      contents: read # (optional, but typical)
+    environment: { name: Production }
+    permissions: { id-token: write } # OIDC login
 
     steps:
-      # 1 ▸ pull the ZIP produced by the build job
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: server-app
+      - uses: actions/download-artifact@v4
+        with: { name: server-app }
 
-      # 2 ▸ Azure login via OIDC (no client secret)
       - name: Azure CLI login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F274D06961214893BCE0EE8D715C228C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
-          # ‼️  no client-secret here ⇒ azure/login defaults to OIDC
+          # (no client-secret ⇒ OIDC token is used)
 
-      # 3 ▸ deploy
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLink"
           slot-name: "Production"
-          package: server.zip
+          package: server.zip # zip already includes node_modules
