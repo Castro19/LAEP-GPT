@@ -57,6 +57,7 @@ import { environment } from "@/helpers/getEnvironmentVars.ts";
 // Constants
 import Terms from "@/components/register/SignInFlow/Terms.tsx";
 import DefaultSEO from "./components/seo/DefaultSEO";
+import { ChatWidget } from "./components/chatbot-widget/chat-widget";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;
@@ -92,6 +93,10 @@ const router = routerChosen(
       element: <ProtectedRoute />, // Wrap protected routes
       errorElement: <ErrorPageChosen />,
       children: [
+        {
+          path: "widget",
+          element: <ChatWidget />,
+        },
         {
           path: "chat",
           element: <ChatPage />,
