@@ -41,6 +41,7 @@ import {
 import { Toggle } from "@/components/ui/toggle";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { Star } from "@/components/classSearch/reusable/sectionInfo/StarRating";
 
 const termMap = {
   spring2025: "Spring 2025",
@@ -111,12 +112,15 @@ const SectionsChosen = ({
         acc[courseKey] = {};
       }
       if (!acc[courseKey][professorKey]) {
-        acc[courseKey][professorKey] = [];
+        acc[courseKey][professorKey] = { rating: section.rating, sections: [] };
       }
-      acc[courseKey][professorKey].push(section);
+      acc[courseKey][professorKey].sections.push(section);
       return acc;
     },
-    {} as Record<string, Record<string, SelectedSection[]>>
+    {} as Record<
+      string,
+      Record<string, { rating: number; sections: SelectedSection[] }>
+    >
   );
 
   // Handle select all sections
@@ -142,7 +146,9 @@ const SectionsChosen = ({
 
   // Get all sections for a course
   const getCourseSections = (courseId: string) => {
-    return Object.values(groupedSections[courseId]).flat();
+    return Object.values(groupedSections[courseId]).flatMap(
+      (group) => group.sections
+    );
   };
 
   // Handle adding all sections of a course to schedule
@@ -290,7 +296,9 @@ const SectionsChosen = ({
 
   // Check if any section of a course is hidden
   const isCourseHidden = (courseId: string) => {
-    const sections = Object.values(groupedSections[courseId]).flat();
+    const sections = Object.values(groupedSections[courseId]).flatMap(
+      (group) => group.sections
+    );
     return sections.some((section) =>
       hiddenSections.includes(section.classNumber)
     );
@@ -298,7 +306,9 @@ const SectionsChosen = ({
 
   // Toggle visibility for all sections of a course
   const handleToggleCourseVisibility = (courseId: string) => {
-    const sections = Object.values(groupedSections[courseId]).flat();
+    const sections = Object.values(groupedSections[courseId]).flatMap(
+      (group) => group.sections
+    );
     const anyHidden = sections.some((section) =>
       hiddenSections.includes(section.classNumber)
     );
@@ -418,11 +428,11 @@ const SectionsChosen = ({
                     className="rounded-md border border-gray-200 dark:border-slate-700 w-full"
                     style={{
                       backgroundColor:
-                        professorGroups[Object.keys(professorGroups)[0]][0]
-                          .color || "#ffffff",
+                        professorGroups[Object.keys(professorGroups)[0]]
+                          .sections[0].color || "#ffffff",
                       borderColor:
-                        professorGroups[Object.keys(professorGroups)[0]][0]
-                          .color || "#e5e7eb",
+                        professorGroups[Object.keys(professorGroups)[0]]
+                          .sections[0].color || "#e5e7eb",
                     }}
                   >
                     <CollapsibleTrigger asChild>
@@ -430,14 +440,14 @@ const SectionsChosen = ({
                         className="flex justify-between items-center p-3 transition-colors cursor-pointer border-b border-gray-100 dark:border-slate-700 w-full"
                         style={{
                           backgroundColor:
-                            professorGroups[Object.keys(professorGroups)[0]][0]
-                              .color || "#ffffff",
+                            professorGroups[Object.keys(professorGroups)[0]]
+                              .sections[0].color || "#ffffff",
                         }}
                         onMouseOver={(e) => {
                           const target = e.currentTarget;
                           const currentColor =
-                            professorGroups[Object.keys(professorGroups)[0]][0]
-                              .color || "#ffffff";
+                            professorGroups[Object.keys(professorGroups)[0]]
+                              .sections[0].color || "#ffffff";
                           // Create a more subtle darker version of the color
                           const darkerColor = adjustColorBrightness(
                             currentColor,
@@ -448,8 +458,8 @@ const SectionsChosen = ({
                         onMouseOut={(e) => {
                           const target = e.currentTarget;
                           const currentColor =
-                            professorGroups[Object.keys(professorGroups)[0]][0]
-                              .color || "#ffffff";
+                            professorGroups[Object.keys(professorGroups)[0]]
+                              .sections[0].color || "#ffffff";
                           target.style.backgroundColor = currentColor;
                         }}
                       >
@@ -612,7 +622,7 @@ const SectionsChosen = ({
                                         const currentColor =
                                           professorGroups[
                                             Object.keys(professorGroups)[0]
-                                          ][0].color || "#ffffff";
+                                          ].sections[0].color || "#ffffff";
                                         // Create a more subtle darker version of the color
                                         const darkerColor =
                                           adjustColorBrightness(
@@ -628,51 +638,107 @@ const SectionsChosen = ({
                                           "transparent";
                                       }}
                                     >
-                                      <h3 className="text-sm font-medium text-slate-700 dark:text-gray-800">
-                                        {professor
-                                          .split(" ")
-                                          .map(
-                                            (name) =>
-                                              name.charAt(0).toUpperCase() +
-                                              name.slice(1).toLowerCase()
-                                          )
-                                          .join(" ")}
-                                      </h3>
+                                      <div className="flex justify-between w-full">
+                                        <div className="flex justify-start">
+                                          <h3 className="text-sm font-medium text-slate-700 dark:text-gray-800">
+                                            {professor
+                                              .split(" ")
+                                              .map(
+                                                (name) =>
+                                                  name.charAt(0).toUpperCase() +
+                                                  name.slice(1).toLowerCase()
+                                              )
+                                              .join(" ")}
+                                          </h3>
+                                          {/* Rating here  */}
+                                          <div className="flex items-center space-x-1 px-2 py-0.5 rounded-md ml-2">
+                                            {Array.from(
+                                              { length: 4 },
+                                              (_, i) => {
+                                                const fill = Math.max(
+                                                  0,
+                                                  Math.min(
+                                                    1,
+                                                    sections.rating - i
+                                                  )
+                                                );
+                                                return (
+                                                  <Star
+                                                    key={i}
+                                                    fillPercentage={fill}
+                                                    isNarrowScreen={false}
+                                                    strokeColor="grey"
+                                                  />
+                                                );
+                                              }
+                                            )}
+                                          </div>
+                                        </div>
+                                        {/* PolyRatings Icon */}
+                                        {sections.sections[0].professors[0]
+                                          .id && (
+                                          <a
+                                            href={
+                                              sections.sections[0].professors[0]
+                                                .name !==
+                                              sections.sections[0].professors[0]
+                                                .id
+                                                ? `https://polyratings.dev/professor/${sections.sections[0].professors[0].id}`
+                                                : `https://polyratings.dev/search/name?term=${encodeURIComponent(
+                                                    sections.sections[0]
+                                                      .professors[0].name
+                                                  )}`
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()} // Prevents collapsible from opening
+                                            className="mr-1 flex items-center justify-center"
+                                          >
+                                            <img
+                                              src="/polyratings.ico"
+                                              alt="PolyRatings"
+                                              className="w-3 h-3 cursor-pointer hover:opacity-80 brightness-0 opacity-50"
+                                            />
+                                          </a>
+                                        )}
+                                      </div>
                                     </div>
                                   </CollapsibleTrigger>
 
                                   <CollapsibleContent>
                                     <div className="grid grid-cols-1 gap-1.5">
-                                      {sections.map((section, sectionIndex) => (
-                                        <motion.div
-                                          key={section.classNumber}
-                                          initial={{ opacity: 0, y: 3 }}
-                                          animate={{ opacity: 1, y: 0 }}
-                                          transition={{
-                                            duration: 0.3,
-                                            delay:
-                                              0.2 +
-                                              courseIndex * 0.03 +
-                                              professorIndex * 0.02 +
-                                              sectionIndex * 0.01,
-                                            ease: [0.22, 1, 0.36, 1],
-                                          }}
-                                        >
-                                          <SectionCard
-                                            section={section}
-                                            isSelected={
-                                              Array.isArray(
-                                                sectionsForSchedule
-                                              ) &&
-                                              sectionsForSchedule.some(
-                                                (s) =>
-                                                  s.classNumber ===
-                                                  section.classNumber
-                                              )
-                                            }
-                                          />
-                                        </motion.div>
-                                      ))}
+                                      {sections.sections.map(
+                                        (section, sectionIndex) => (
+                                          <motion.div
+                                            key={section.classNumber}
+                                            initial={{ opacity: 0, y: 3 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                              duration: 0.3,
+                                              delay:
+                                                0.2 +
+                                                courseIndex * 0.03 +
+                                                professorIndex * 0.02 +
+                                                sectionIndex * 0.01,
+                                              ease: [0.22, 1, 0.36, 1],
+                                            }}
+                                          >
+                                            <SectionCard
+                                              section={section}
+                                              isSelected={
+                                                Array.isArray(
+                                                  sectionsForSchedule
+                                                ) &&
+                                                sectionsForSchedule.some(
+                                                  (s) =>
+                                                    s.classNumber ===
+                                                    section.classNumber
+                                                )
+                                              }
+                                            />
+                                          </motion.div>
+                                        )
+                                      )}
                                     </div>
                                   </CollapsibleContent>
                                 </div>
