@@ -64,6 +64,7 @@ export function transformSectionToSelectedSection(
     classPair,
     rating,
     color,
+    term: section.term,
   };
 }
 

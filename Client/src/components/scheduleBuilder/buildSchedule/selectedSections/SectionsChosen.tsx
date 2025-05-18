@@ -9,6 +9,7 @@ import {
   GeneratedSchedule,
   SectionDetail,
   SelectedSection,
+  CourseTerm,
 } from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +39,14 @@ import {
   TooltipPortal,
 } from "@/components/ui/tooltip";
 import { Toggle } from "@/components/ui/toggle";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+
+const termMap = {
+  spring2025: "Spring 2025",
+  summer2025: "Summer 2025",
+  fall2025: "Fall 2025",
+};
 
 const SectionsChosen = ({
   selectedSections,
@@ -56,6 +65,7 @@ const SectionsChosen = ({
   const selectedSectionInList = useAppSelector(
     (state) => state.sectionSelection.selectedSections
   );
+  const { toast } = useToast();
 
   // Group sections by courseId and professor
   if (
@@ -186,6 +196,33 @@ const SectionsChosen = ({
           .map((sectionId) => {
             const section = sections.find((s) => s.classNumber === sectionId);
             if (!section) return null;
+            if (section?.term !== currentScheduleTerm) {
+              // throw toast error
+              toast({
+                title: `${section.courseId} (${section.classNumber}) is from ${termMap[section?.term as CourseTerm]}.`,
+                description: `Please switch to ${termMap[section?.term as CourseTerm]} to add this section.`,
+                variant: "destructive",
+                action: (
+                  <ToastAction
+                    altText="Switch Term"
+                    className="dark:bg-red dark:border-white border-2"
+                    onClick={() => {
+                      dispatch(
+                        scheduleActions.setCurrentScheduleTerm(
+                          section?.term as CourseTerm
+                        )
+                      );
+                    }}
+                  >
+                    Switch Term
+                  </ToastAction>
+                ),
+              });
+              // Remove the section from sectionsToAdd Set
+              sectionsToAdd.delete(sectionId);
+              return null;
+            }
+
             return dispatch(
               sectionSelectionActions.createOrUpdateSelectedSectionAsync({
                 section: {

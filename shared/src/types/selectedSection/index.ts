@@ -17,6 +17,7 @@ export type SelectedSection = {
   classPair: number | null;
   rating: number;
   color: string;
+  term?: CourseTerm;
   // Generated on frontend
   isVisible?: boolean;
   isLocked?: boolean;
