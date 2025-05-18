@@ -19,7 +19,8 @@ const Preferences = ({
         form={form}
         min={0}
         max={24}
-        defaultValue={16}
+        defaultMinValue={4}
+        defaultMaxValue={16}
         showRange={false}
       />
       <InstructorRatingSlider

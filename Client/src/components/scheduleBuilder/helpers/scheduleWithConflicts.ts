@@ -1,4 +1,3 @@
-import { environment } from "@/helpers/getEnvironmentVars";
 import { SelectedSection } from "@polylink/shared/types";
 import { SchedulePreferencesForm } from "../buildSchedule/ScheduleBuilderForm";
 import {
@@ -7,32 +6,71 @@ import {
   Schedule,
 } from "./index";
 
-function combineCourseSelections(
+/**
+ * Helper: parse a section's "units" string into a number.
+ * E.g. "2 - 4" → (2 + 4) / 2 = 3, or "3" → 3.
+ */
+function getSectionUnits(section: SelectedSection): number {
+  if (!section.units) return 0;
+  const parts = section.units.split(" - ").map(Number);
+  return parts.length === 2 ? (parts[0] + parts[1]) / 2 : parts[0];
+}
+
+/**
+ * Recursively build schedules, carrying along unitCount.
+ * Prune as soon as unitCount > maxUnits.
+ * Only emit a completed schedule if unitCount >= minUnits.
+ */
+function combineWithUnitPruning(
   courseGroups: SelectedSection[][][],
   index: number,
-  currentSchedule: SelectedSection[]
+  currentSchedule: SelectedSection[],
+  unitCount: number,
+  preferences: SchedulePreferencesForm
 ): SelectedSection[][] {
+  const max = Number(preferences.maxUnits ?? Infinity);
+  const min = Number(preferences.minUnits ?? 0);
+
+  // leaf: we've considered every course
   if (index === courseGroups.length) {
-    return [currentSchedule];
+    return unitCount >= min ? [currentSchedule] : [];
   }
 
-  const combinations: SelectedSection[][] = [];
-  const currentCourseGroup = courseGroups[index];
+  const combos: SelectedSection[][] = [];
+  const group = courseGroups[index];
 
-  for (const selection of currentCourseGroup) {
-    // Skip empty selections
-    if (selection.length === 0) continue;
-
-    const newSchedule = [...currentSchedule, ...selection];
-    const subCombinations = combineCourseSelections(
+  // 1) SKIP this course entirely
+  combos.push(
+    ...combineWithUnitPruning(
       courseGroups,
       index + 1,
-      newSchedule
+      currentSchedule,
+      unitCount,
+      preferences
+    )
+  );
+
+  // 2) Try every real selection
+  for (const selection of group) {
+    if (selection.length === 0) continue;
+
+    const selUnits = selection.map(getSectionUnits).reduce((a, b) => a + b, 0);
+
+    // prune by maxUnits
+    if (unitCount + selUnits > max) continue;
+
+    combos.push(
+      ...combineWithUnitPruning(
+        courseGroups,
+        index + 1,
+        [...currentSchedule, ...selection],
+        unitCount + selUnits,
+        preferences
+      )
     );
-    combinations.push(...subCombinations);
   }
 
-  return combinations;
+  return combos;
 }
 
 /**
@@ -60,8 +98,6 @@ function generateScheduleWithConflicts(
   });
 
   // For each course group, compute valid selection options.
-  // Each element in courseSelections is an array of valid selections for one course.
-  // A valid selection is itself an array of SelectedSection (either one section or a pair).
   const courseGroups: SelectedSection[][][] = [];
   for (const [, courseSections] of coursesMap.entries()) {
     const validSelections = getValidSelectionsForCourse(
@@ -71,33 +107,35 @@ function generateScheduleWithConflicts(
     courseGroups.push(validSelections);
   }
 
-  if (environment === "dev") {
-    console.log("COURSE GROUPS", courseGroups);
-  }
+  // Kick off recursion with 0 units so far
+  const rawSchedules = combineWithUnitPruning(
+    courseGroups,
+    0,
+    [],
+    0,
+    preferences
+  );
 
-  const allSchedules: SelectedSection[][] = [];
-  for (
-    let courseGroupIndex = 0;
-    courseGroupIndex < courseGroups.length;
-    courseGroupIndex++
-  ) {
-    for (const selection of courseGroups[courseGroupIndex]) {
-      // Start processing the next course group (courseGroupIndex + 1)
-      const schedules = combineCourseSelections(
-        courseGroups,
-        courseGroupIndex + 1,
-        selection
-      );
-      if (environment === "dev") {
-        console.log(`SCHEDULES ${courseGroupIndex}: `, schedules);
-      }
-      allSchedules.push(...schedules);
+  // Now just apply rating-based filters & sorting
+  const rated = filterSchedules(rawSchedules, preferences);
+  return rated.sort((a, b) => {
+    // First compare by total units
+    const aUnits = a.sections.reduce(
+      (sum, section) => sum + getSectionUnits(section),
+      0
+    );
+    const bUnits = b.sections.reduce(
+      (sum, section) => sum + getSectionUnits(section),
+      0
+    );
+
+    if (aUnits !== bUnits) {
+      return bUnits - aUnits; // Higher units first
     }
-  }
 
-  const filteredSchedules = filterSchedules(allSchedules, preferences);
-
-  return filteredSchedules;
+    // If units are equal, use average rating as tiebreaker
+    return b.averageRating - a.averageRating;
+  });
 }
 
 export default generateScheduleWithConflicts;
