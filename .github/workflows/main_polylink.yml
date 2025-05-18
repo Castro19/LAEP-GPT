@@ -43,19 +43,33 @@ jobs:
             && echo "✅ prebuilt.js present" \
             || { echo "❌ prebuilt.js missing"; exit 1; }
 
-      # ---------- NEW: assemble deploy folder ----------
+      # ---------- Assemble deploy folder ----------
       - name: Assemble deploy folder
         run: |
           rm -rf deploy
           mkdir -p deploy
-          # ①   app sources
+
+          # ① app sources
           cp -r server/dist deploy/
-          # ②   manifest files at root so Oryx starts here
-          cp server/package.json server/package-lock.json deploy/
+
+          # ② manifest files Oryx needs at the root of the zip
+          cp server/package.json deploy/
+
+          # copy a lockfile if one exists in the server workspace, otherwise fallback to the root one
+          if [ -f server/package-lock.json ]; then
+            cp server/package-lock.json deploy/
+          else
+            echo "ℹ️  server/package-lock.json not found – copying root lock file"
+            cp package-lock.json deploy/
+          fi
+
+          # copy .npmrc if present
           [ -f server/.npmrc ] && cp server/.npmrc deploy/ || true
-          # ③   hoisted node_modules with all actual packages
+
+          # ③ hoisted node_modules with all actual packages
           cp -r node_modules deploy/
-          echo "📦 deploy folder contents:"
+
+          echo "📦 deploy folder preview:"
           ls -R deploy | head -n 40
 
       - name: Zip deploy folder
