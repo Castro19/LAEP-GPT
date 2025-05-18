@@ -106,3 +106,28 @@ export const deleteLog = async (threadId: string): Promise<void> => {
     throw new Error("Service error: " + (error as Error).message);
   }
 };
+
+// Update
+export const updateLogTitle = async (
+  threadId: string,
+  title: string
+): Promise<void> => {
+  try {
+    const result = await ScheduleBuilderLogModel.updateLogTitle(
+      threadId,
+      title
+    );
+    if (!result.acknowledged) {
+      if (environment === "dev") {
+        console.error("Service: Failed to update schedule builder log title");
+      }
+      throw new Error("Failed to update schedule builder log title");
+    }
+    return;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Service error in updateLogTitle:", error);
+    }
+    throw new Error("Service error: " + (error as Error).message);
+  }
+};
