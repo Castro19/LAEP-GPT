@@ -57,7 +57,7 @@ import { environment } from "@/helpers/getEnvironmentVars.ts";
 // Constants
 import Terms from "@/components/register/SignInFlow/Terms.tsx";
 import DefaultSEO from "./components/seo/DefaultSEO";
-import { ChatWidget } from "./components/chatbot-widget/chat-widget";
+import { ChatWidget } from "./components/chatbot-widget/ChatWidget";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let ErrorPageChosen: React.ComponentType<any> = ErrorPage;

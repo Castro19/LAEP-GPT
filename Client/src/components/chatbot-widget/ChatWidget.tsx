@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
@@ -7,9 +5,8 @@ import { MessageSquare, X, Send, Maximize2, Minimize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { ChatMessage } from "./chat-message"
+import { ChatMessage } from "./ChatMessage"
 import { cn } from "@/lib/utils"
-import { set } from "lodash"
 
 type Message = {
   role: "user" | "assistant"
@@ -17,10 +14,14 @@ type Message = {
 }
 
 export function ChatWidget() {
+  // widget/button states for animations
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
+  const [shouldAnimate, setShouldAnimate] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isPulsing, setIsPulsing] = useState(false)
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -29,24 +30,46 @@ export function ChatWidget() {
     },
   ])
   const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isPulsing, setIsPulsing] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // avoids doing animation for button component when pulsing timer resets
+  useEffect(() => {
+    if (shouldAnimate) {
+      const timer = setTimeout(() => {
+        setShouldAnimate(false)
+      }, 300) // Match animation duration
+      return () => clearTimeout(timer)
+    }
+  }, [shouldAnimate])
 
   // Start pulsing animation every 10 seconds when closed
   useEffect(() => {
     if (!isOpen) {
-      const interval = setInterval(() => {
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+      const intervalId = setInterval(() => {
         setIsPulsing(true)
-        setTimeout(() => setIsPulsing(false), 1000)
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => setIsPulsing(false), 1000)
       }, 10000)
-      return () => clearInterval(interval)
+
+      // cleanup both intervals when component unmounts
+      return () => {
+        clearInterval(intervalId)
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+        setIsPulsing(false)
+      }
     }
   }, [isOpen])
 
   // Handle animation timing for opening/closing
   useEffect(() => {
     if (isOpen) {
+      setShouldAnimate(false)
       setIsVisible(true)
       setIsClosing(false)
     } else {
@@ -55,6 +78,7 @@ export function ChatWidget() {
         setIsVisible(false)
         setIsClosing(false)
         setIsMinimized(false)
+        setShouldAnimate(true)
       }, 300) // Keep consistent animation duration
       return () => clearTimeout(timer)
     }
@@ -218,7 +242,7 @@ export function ChatWidget() {
         <Button
           className={cn(
             "rounded-full h-14 w-14 shadow-lg transition-all duration-300",
-            "animate-fade-in-up",
+            shouldAnimate ? "animate-fade-in-up" : "",
             isOpen ? "rotate-90 scale-95 opacity-0" : "rotate-0 scale-100   opacity-100",
             isPulsing && !isOpen ? "animate-pulse" : "",
           )}
