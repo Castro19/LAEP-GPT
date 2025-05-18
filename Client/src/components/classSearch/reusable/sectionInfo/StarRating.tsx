@@ -3,17 +3,20 @@ import { ProfessorGroup } from "@polylink/shared/types";
 interface StarRatingProps {
   group: ProfessorGroup;
   isNarrowScreen?: boolean;
+  strokeColor?: string;
 }
 
 interface StarProps {
   fillPercentage: number; // A value between 0 (empty) and 1 (full)
   isNarrowScreen?: boolean;
+  strokeColor?: string;
 }
 
 // A Star component that renders an SVG star with a filled overlay.
 export const Star: React.FC<StarProps> = ({
   fillPercentage,
   isNarrowScreen = false,
+  strokeColor = "white",
 }) => {
   const starSize = isNarrowScreen ? 14 : 18;
   const svgSize = isNarrowScreen ? 12 : 16;
@@ -35,7 +38,7 @@ export const Star: React.FC<StarProps> = ({
         width={svgSize}
         height={svgSize}
         fill="none"
-        stroke="#ccc"
+        stroke={strokeColor}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -57,7 +60,7 @@ export const Star: React.FC<StarProps> = ({
           width={svgSize}
           height={svgSize}
           fill="white"
-          stroke="white"
+          stroke={strokeColor}
           strokeWidth="1"
           strokeLinecap="round"
           strokeLinejoin="round"
