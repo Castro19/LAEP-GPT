@@ -141,7 +141,9 @@ export const fetchSections = tool(
       }
 
       const mongoSections: { sections: Section[]; total: number } =
-        await findSectionsByFilter(resp.query, state.term as CourseTerm);
+        await findSectionsByFilter(resp.query, state.term as CourseTerm, {
+          "instructorsWithRatings.0.overallRating": -1,
+        });
       if (!mongoSections?.sections?.length) {
         return new Command({
           update: {
