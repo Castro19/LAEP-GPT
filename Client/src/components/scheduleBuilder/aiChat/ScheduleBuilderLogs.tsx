@@ -5,6 +5,7 @@ import {
   useAppDispatch,
   scheduleBuilderLogActions,
 } from "@/redux";
+import ScheduleLogsOptions from "./ScheduleLogsOptions";
 
 type Props = {
   onClose: () => void;
@@ -21,7 +22,7 @@ const ScheduleBuilderLogs: FC<Props> = ({ onClose }) => {
 
   return (
     <div
-      className="absolute left-full top-0 ml-2   /* ← key changes */
+      className="absolute left-full top-0 ml-2
                 w-80 max-h-[80vh] bg-slate-800 text-white z-50
                 shadow-xl border border-slate-700 rounded-xl flex flex-col"
     >
@@ -36,26 +37,31 @@ const ScheduleBuilderLogs: FC<Props> = ({ onClose }) => {
       {/* log list */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
         {logs.map((log) => (
-          <Button
-            key={log.thread_id}
-            variant="ghost"
-            className="w-full h-16 px-2 py-1 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-900 dark:bg-opacity-70 active:bg-gray-200 dark:active:bg-gray-700"
-            onClick={() => handleLogClick(log.thread_id)}
-          >
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-left text-gray-900 dark:text-white truncate">
-                {log.title}
-              </h3>
-              <p className="text-xs text-left text-gray-500 dark:text-gray-400 truncate">
-                {new Date(log.updatedAt).toLocaleString(undefined, {
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
+          <div key={log.thread_id} className="group relative w-full">
+            <Button
+              variant="ghost"
+              className="w-full h-16 px-2 py-1 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-900 dark:bg-opacity-70 active:bg-gray-200 dark:active:bg-gray-700"
+              onClick={() => handleLogClick(log.thread_id)}
+            >
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium text-left text-gray-900 dark:text-white truncate">
+                  {log.title}
+                </h3>
+                <p className="text-xs text-left text-gray-500 dark:text-gray-400 truncate">
+                  {new Date(log.updatedAt).toLocaleString(undefined, {
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            </Button>
+            {/* Options button - only visible on hover */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <ScheduleLogsOptions log={log} />
             </div>
-          </Button>
+          </div>
         ))}
       </div>
     </div>
