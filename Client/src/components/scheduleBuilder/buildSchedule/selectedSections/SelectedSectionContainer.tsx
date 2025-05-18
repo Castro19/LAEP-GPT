@@ -30,12 +30,15 @@ const SelectedSectionContainer = ({
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col gap-4">
-        <CollapsibleContentWrapper title="Classes" icon={FaBook}>
+        <CollapsibleContentWrapper title="Selected Sections" icon={FaBook}>
           {fetchSelectedSectionsLoading ? (
             <LoadingContainer />
           ) : (
             <SectionsChosen selectedSections={selectedSections} />
           )}
+        </CollapsibleContentWrapper>
+        <CollapsibleContentWrapper title="Preferences" icon={FaCalendar}>
+          <Preferences form={form} />
         </CollapsibleContentWrapper>
         <CollapsibleContentWrapper title="Schedules" icon={FaCalendar}>
           {fetchSchedulesLoading ? (
@@ -43,9 +46,6 @@ const SelectedSectionContainer = ({
           ) : (
             <SavedSchedules onSwitchTab={onSwitchTab} />
           )}
-        </CollapsibleContentWrapper>
-        <CollapsibleContentWrapper title="Preferences" icon={FaCalendar}>
-          <Preferences form={form} />
         </CollapsibleContentWrapper>
       </div>
     </div>
