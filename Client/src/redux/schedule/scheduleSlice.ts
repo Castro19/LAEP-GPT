@@ -53,7 +53,7 @@ const initialState: ScheduleState = {
   totalPages: 1,
   schedules: [],
   fetchSchedulesLoading: false,
-  currentScheduleTerm: "spring2025",
+  currentScheduleTerm: "fall2025",
   preferences: {
     minUnits: "",
     maxUnits: "",
