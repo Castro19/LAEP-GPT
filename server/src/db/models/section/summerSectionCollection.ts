@@ -12,7 +12,8 @@ export const findSectionsByFilter = async (
   query: Filter<SectionDocument>,
   skip: number,
   limit: number,
-  projection?: Record<string, number>
+  projection?: Record<string, number>,
+  sort?: Record<string, 1 | -1>
 ): Promise<{ sections: Section[]; total: number }> => {
   if (!sectionCollection) {
     sectionCollection = initializeCollection();
@@ -25,8 +26,9 @@ export const findSectionsByFilter = async (
   const sections = (await sectionCollection
     .find(query)
     .project(projection || { _id: 0 })
-    .skip(skip)
+    .sort(sort || {})
     .limit(limit)
+    .skip(skip)
     .toArray()) as unknown as Promise<Section[]>;
 
   return { sections: sections as unknown as Section[], total };

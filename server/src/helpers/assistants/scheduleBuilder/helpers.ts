@@ -393,19 +393,38 @@ export const removeFromSchedule = async ({
 export async function findSectionsByFilter(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query: Record<string, any>,
-  term: CourseTerm = "fall2025"
+  term: CourseTerm = "fall2025",
+  sort: Record<string, 1 | -1> = {}
 ): Promise<{ sections: Section[]; total: number }> {
   try {
     let result;
 
     // Use the appropriate collection based on term
     if (term === "summer2025") {
-      result = await summerSectionCollection.findSectionsByFilter(query, 0, 25);
+      result = await summerSectionCollection.findSectionsByFilter(
+        query,
+        0,
+        25,
+        {},
+        sort
+      );
     } else if (term === "spring2025") {
-      result = await sectionCollection.findSectionsByFilter(query, 0, 25);
+      result = await sectionCollection.findSectionsByFilter(
+        query,
+        0,
+        25,
+        {},
+        sort
+      );
     } else {
       // fall2025 by default
-      result = await fallSectionCollection.findSectionsByFilter(query, 0, 25);
+      result = await fallSectionCollection.findSectionsByFilter(
+        query,
+        0,
+        25,
+        {},
+        sort
+      );
     }
 
     return {

@@ -5,7 +5,11 @@ import {
   classSearchActions,
   scheduleActions,
 } from "@/redux";
-import { GeneratedSchedule, SelectedSection } from "@polylink/shared/types";
+import {
+  GeneratedSchedule,
+  SectionDetail,
+  SelectedSection,
+} from "@polylink/shared/types";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -49,6 +53,9 @@ const SectionsChosen = ({
   );
   const { hiddenSections, currentSchedule, currentScheduleTerm } =
     useAppSelector((state) => state.schedule);
+  const selectedSectionInList = useAppSelector(
+    (state) => state.sectionSelection.selectedSections
+  );
 
   // Group sections by courseId and professor
   if (
@@ -115,9 +122,10 @@ const SectionsChosen = ({
   // Check if any section of a course is in the current schedule
   const isCourseInSchedule = (courseId: string) => {
     const sections = getCourseSections(courseId);
+    if (!sections || !currentSchedule?.sections) return false;
     return sections.some((section) => {
-      return currentSchedule?.sections.some(
-        (s) => s.classNumber === section.classNumber
+      return currentSchedule.sections.some(
+        (s) => s && s.classNumber === section.classNumber
       );
     });
   };
@@ -128,7 +136,7 @@ const SectionsChosen = ({
   };
 
   // Handle adding all sections of a course to schedule
-  const handleAddCourseToCalendar = (courseId: string) => {
+  const handleAddCourseToCalendar = async (courseId: string) => {
     if (!currentSchedule) {
       const currentBlankSchedule: GeneratedSchedule = {
         sections: [],
@@ -140,13 +148,17 @@ const SectionsChosen = ({
       dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
     }
     const sections = getCourseSections(courseId);
+
+    if (!sections || sections.length === 0) return;
+
     const sectionsToAdd = new Set<number>();
 
     // Get the first section that's not in the schedule
     const firstAvailableSection = sections.find(
       (section) =>
+        section &&
         !currentSchedule?.sections.some(
-          (s) => s.classNumber === section.classNumber
+          (s) => s && s.classNumber === section.classNumber
         )
     );
 
@@ -154,7 +166,7 @@ const SectionsChosen = ({
       // If this section has a class pair, add both sections
       if (firstAvailableSection.classPair) {
         const pairedSection = sections.find(
-          (s) => s.classNumber === firstAvailableSection.classPair
+          (s) => s && s.classNumber === firstAvailableSection.classPair
         );
         if (pairedSection) {
           sectionsToAdd.add(pairedSection.classNumber);
@@ -163,14 +175,43 @@ const SectionsChosen = ({
       sectionsToAdd.add(firstAvailableSection.classNumber);
     }
 
-    // Dispatch once with all sections to add
     if (sectionsToAdd.size > 0) {
-      dispatch(
-        scheduleActions.updateScheduleSection({
-          sectionIds: Array.from(sectionsToAdd),
-          action: "add",
-        })
-      );
+      try {
+        // First ensure all sections in sectionsToAdd are in selectedSections
+        const toCreate = Array.from(sectionsToAdd)
+          .filter(
+            (sectionId) =>
+              !selectedSectionInList.some((s) => s.classNumber === sectionId)
+          )
+          .map((sectionId) => {
+            const section = sections.find((s) => s.classNumber === sectionId);
+            if (!section) return null;
+            return dispatch(
+              sectionSelectionActions.createOrUpdateSelectedSectionAsync({
+                section: {
+                  ...section,
+                  term: currentScheduleTerm,
+                } as unknown as SectionDetail,
+              })
+            ).unwrap();
+          })
+          .filter(Boolean); // Remove any null entries
+
+        // Wait for all section selections to complete
+        if (toCreate.length > 0) {
+          await Promise.all(toCreate);
+        }
+
+        // Now that all sections are selected, update the schedule
+        await dispatch(
+          scheduleActions.updateScheduleSection({
+            sectionIds: Array.from(sectionsToAdd),
+            action: "add",
+          })
+        ).unwrap();
+      } catch (err) {
+        console.error("Failed to add course to calendar:", err);
+      }
     }
   };
 
@@ -622,6 +663,10 @@ const SectionCard: React.FC<{
   const dispatch = useAppDispatch();
   const { currentScheduleTerm, hiddenSections, currentSchedule } =
     useAppSelector((state) => state.schedule);
+  const selectedSectionInList = useAppSelector(
+    (state) => state.sectionSelection.selectedSections
+  );
+
   const isHidden = hiddenSections.includes(section.classNumber);
   const isInSchedule =
     currentSchedule?.sections.some(
@@ -674,23 +719,45 @@ const SectionCard: React.FC<{
     );
   };
 
-  const handleAddToCalendar = () => {
-    if (!currentSchedule) {
-      const currentBlankSchedule: GeneratedSchedule = {
-        sections: [],
-        customEvents: [],
-        name: "New Schedule",
-        id: "",
-        averageRating: 0,
-      };
-      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+  const handleAddToCalendar = async () => {
+    try {
+      // First ensure the section is in selectedSections
+      const isSectionNotSelected = !selectedSectionInList.some(
+        (s: SelectedSection) => s.classNumber === section.classNumber
+      );
+
+      if (isSectionNotSelected) {
+        await dispatch(
+          sectionSelectionActions.createOrUpdateSelectedSectionAsync({
+            section: {
+              ...section,
+              term: currentScheduleTerm,
+            } as unknown as SectionDetail,
+          })
+        ).unwrap();
+      }
+
+      if (!currentSchedule) {
+        const currentBlankSchedule: GeneratedSchedule = {
+          sections: [],
+          customEvents: [],
+          name: "New Schedule",
+          id: "",
+          averageRating: 0,
+        };
+        dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+      }
+
+      // Now that the section is selected, update the schedule
+      await dispatch(
+        scheduleActions.updateScheduleSection({
+          sectionIds: [section.classNumber],
+          action: "add",
+        })
+      ).unwrap();
+    } catch (err) {
+      console.error("Failed to add section to calendar:", err);
     }
-    dispatch(
-      scheduleActions.updateScheduleSection({
-        sectionIds: [section.classNumber],
-        action: "add",
-      })
-    );
   };
 
   // Extract and format start & end time
