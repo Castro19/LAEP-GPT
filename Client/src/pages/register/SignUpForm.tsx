@@ -11,7 +11,7 @@ import { clearRegisterError } from "@/redux/auth/authSlice";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 export function SignupFormDemo() {
   const [firstName, setFirstName] = useState("");
