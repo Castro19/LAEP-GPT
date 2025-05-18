@@ -243,7 +243,6 @@ export function ChatWidget() {
           className={cn(
             "rounded-full h-14 w-14 shadow-lg transition-all duration-300",
             shouldAnimate ? "animate-fade-in-up" : "",
-            isOpen ? "rotate-90 scale-95 opacity-0" : "rotate-0 scale-100   opacity-100",
             isPulsing && !isOpen ? "animate-pulse" : "",
           )}
           onClick={toggleChat}
