@@ -52,34 +52,45 @@ jobs:
       # 4 ▸ package artifact (server + root node_modules)
       - name: Zip server artifact
         run: |
-          zip -r server.zip \
-            server/dist server/package.json server/package-lock.json server/.npmrc 2>/dev/null || true \
-            node_modules
+          cd server
+          zip -r ../server.zip \
+            dist node_modules package.json package-lock.json .npmrc
 
       - uses: actions/upload-artifact@v4
         with:
           name: server-app
           path: server.zip
 
+  # ────────── DEPLOY (only runs on push→main) ──────────
   deploy:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
+    environment:
+      name: Production
+    permissions: # ← give the job an OIDC token
       id-token: write
+      contents: read # (optional, but typical)
 
     steps:
-      - uses: actions/download-artifact@v4
+      # 1 ▸ pull the ZIP produced by the build job
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
           name: server-app
 
-      - uses: azure/login@v2
+      # 2 ▸ Azure login via OIDC (no client secret)
+      - name: Azure CLI login
+        uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F274D06961214893BCE0EE8D715C228C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
+          # ‼️  no client-secret here ⇒ azure/login defaults to OIDC
 
-      - uses: azure/webapps-deploy@v3
+      # 3 ▸ deploy
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLink"
           slot-name: "Production"
