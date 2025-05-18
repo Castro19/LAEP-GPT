@@ -13,6 +13,7 @@ import {
   fetchLogByThreadIdFromDB,
   deleteLogFromDB,
   streamScheduleBuilderRequest,
+  updateLogTitleFromDB,
 } from "./crudScheduleBuilderLog";
 import { nanoid } from "@reduxjs/toolkit";
 import {
@@ -154,6 +155,23 @@ export const sendMessage = createAsyncThunk<
         message:
           err instanceof Error ? err.message : "An unknown error occurred",
       });
+    }
+  }
+);
+
+export const updateLogTitle = createAsyncThunk<
+  { threadId: string; title: string },
+  { threadId: string; title: string },
+  { rejectValue: ErrorPayload }
+>(
+  "scheduleBuilder/updateTitle",
+  async ({ threadId, title }, { dispatch, rejectWithValue }) => {
+    try {
+      await updateLogTitleFromDB(threadId, title);
+      dispatch(fetchAllLogs()); // Refresh the logs list to get updated title
+      return { threadId, title };
+    } catch {
+      return rejectWithValue({ message: "Failed to update log title" });
     }
   }
 );
@@ -365,6 +383,21 @@ const scheduleBuilderLog = createSlice({
           action.payload?.message ??
           action.error.message ??
           "Failed to send message";
+      })
+      .addCase(updateLogTitle.pending, (st, a) => {
+        st.loadingByThread[a.meta.arg.threadId] = true;
+      })
+      .addCase(updateLogTitle.fulfilled, (st, a) => {
+        st.loadingByThread[a.payload.threadId] = false;
+        // Update the title in the logs list
+        const log = st.logs.find((l) => l.thread_id === a.payload.threadId);
+        if (log) {
+          log.title = a.payload.title;
+        }
+      })
+      .addCase(updateLogTitle.rejected, (st, a) => {
+        st.loadingByThread[a.meta.arg.threadId] = false;
+        st.error = a.payload?.message || "Failed to update title";
       });
   },
 });

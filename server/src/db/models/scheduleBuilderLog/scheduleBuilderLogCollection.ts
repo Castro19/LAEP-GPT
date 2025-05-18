@@ -131,6 +131,30 @@ export const addConversationTurn = async (
   }
 };
 
+export const updateLogTitle = async (
+  threadId: string,
+  title: string
+): Promise<UpdateResult> => {
+  if (!scheduleBuilderLogCollection) initializeCollection();
+  try {
+    const result = await scheduleBuilderLogCollection.updateOne(
+      { thread_id: threadId },
+      {
+        $set: {
+          title,
+          updatedAt: new Date(),
+        },
+      }
+    );
+    return result;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error updating schedule builder log title:", error);
+    }
+    throw new Error("Error updating log title: " + (error as Error).message);
+  }
+};
+
 // Delete
 export const deleteLog = async (threadId: string): Promise<DeleteResult> => {
   if (!scheduleBuilderLogCollection) initializeCollection();

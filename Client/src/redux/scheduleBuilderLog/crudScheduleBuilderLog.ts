@@ -193,3 +193,30 @@ export async function streamScheduleBuilderRequest(
     }
   }
 }
+
+export async function updateLogTitleFromDB(
+  threadId: string,
+  title: string
+): Promise<void> {
+  try {
+    const response = await fetch(
+      `${serverUrl}/scheduleBuilder/logs/${threadId}/title`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title }),
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update log title");
+    }
+  } catch (error) {
+    console.error("Error updating log title:", error);
+    throw error;
+  }
+}

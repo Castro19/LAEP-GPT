@@ -21,6 +21,7 @@ import {
   addConversationTurn,
   getAllLogs,
   getLogByThreadId,
+  updateLogTitle,
 } from "../db/models/scheduleBuilderLog/scheduleBuilderLogServices";
 import { HumanMessage, AIMessageChunk } from "@langchain/core/messages";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
@@ -366,6 +367,45 @@ router.get(
       res.status(500).json({
         success: false,
         error: "Failed to fetch schedule builder log",
+        message: (error as Error).message,
+      });
+    }
+  })
+);
+
+// Update schedule builder log title
+router.patch(
+  "/logs/:threadId/title",
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.uid;
+
+    // Check if user is authorized
+    if (!userId || (await isUnauthorized(userId, res))) {
+      return;
+    }
+
+    const { threadId } = req.params;
+    const { title } = req.body;
+
+    if (!title) {
+      res.status(400).json({
+        success: false,
+        error: "Title is required",
+      });
+      return;
+    }
+
+    try {
+      await updateLogTitle(threadId, title);
+
+      res.status(200).json({
+        success: true,
+        message: "Log title updated successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Failed to update schedule builder log title",
         message: (error as Error).message,
       });
     }

@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { FetchedScheduleBuilderLogListItem } from "@polylink/shared/types";
+import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
 
 const ScheduleLogsOptions = ({
   log,
@@ -18,6 +19,7 @@ const ScheduleLogsOptions = ({
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(log.title);
 
+  const dispatch = useAppDispatch();
   // Reset input value when popover is closed without saving
   const handlePopoverClose = () => {
     setInputValue(log.title);
@@ -35,6 +37,12 @@ const ScheduleLogsOptions = ({
 
   const handleUpdateData = () => {
     console.log("Update title:", inputValue);
+    dispatch(
+      scheduleBuilderLogActions.updateLogTitle({
+        threadId: log.thread_id,
+        title: inputValue,
+      })
+    );
     setOpen(false);
   };
 
