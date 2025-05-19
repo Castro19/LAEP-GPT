@@ -216,7 +216,10 @@ const scheduleBuilderLog = createSlice({
     },
     receivedToolCalls: (
       st,
-      action: PayloadAction<{ placeholderTurnId: string; calls: ToolCall[] }>
+      action: PayloadAction<{
+        placeholderTurnId: string;
+        calls: ToolCall[] | string;
+      }>
     ) => {
       const { placeholderTurnId, calls } = action.payload;
       const turn = st.currentLog?.conversation_turns.find(
@@ -226,12 +229,40 @@ const scheduleBuilderLog = createSlice({
       if (!turn) return;
 
       const aiMsg = turn.messages.find((m) => m.role === "assistant");
-
       if (!aiMsg) return;
-      if (aiMsg.tool_calls) {
-        aiMsg.tool_calls = [...aiMsg.tool_calls, ...calls];
+
+      // If calls is a string, try to parse it as JSON
+      if (typeof calls === "string") {
+        try {
+          const parsedCalls = JSON.parse(calls);
+          if (Array.isArray(parsedCalls)) {
+            if (aiMsg.tool_calls) {
+              aiMsg.tool_calls = [...aiMsg.tool_calls, ...parsedCalls];
+            } else {
+              aiMsg.tool_calls = parsedCalls;
+            }
+          } else if (parsedCalls.id && parsedCalls.name && parsedCalls.args) {
+            // Single tool call object
+            if (aiMsg.tool_calls) {
+              aiMsg.tool_calls = [...aiMsg.tool_calls, parsedCalls];
+            } else {
+              aiMsg.tool_calls = [parsedCalls];
+            }
+          }
+        } catch (e) {
+          // If parsing fails, treat it as a streaming chunk
+          if (!aiMsg.tool_call_chunks) {
+            aiMsg.tool_call_chunks = [];
+          }
+          aiMsg.tool_call_chunks.push(calls);
+        }
       } else {
-        aiMsg.tool_calls = calls;
+        // Original array handling
+        if (aiMsg.tool_calls) {
+          aiMsg.tool_calls = [...aiMsg.tool_calls, ...calls];
+        } else {
+          aiMsg.tool_calls = calls;
+        }
       }
     },
     receivedToolCallMsgs: (

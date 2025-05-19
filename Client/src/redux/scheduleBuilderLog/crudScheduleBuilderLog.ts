@@ -158,15 +158,20 @@ export async function streamScheduleBuilderRequest(
       if (!ev || !raw) continue;
 
       switch (ev) {
-        case "tool_call":
-          console.log("tool_call", raw);
-          // eslint-disable-next-line no-case-declarations, @typescript-eslint/no-explicit-any
-          const toolCalls: ToolCall[] = JSON.parse(raw).map((call: any) => ({
-            ...call,
-            args:
-              typeof call.args === "string" ? JSON.parse(call.args) : call.args,
-          }));
-          onToolCall(toolCalls);
+        case "tool_call_chunk":
+          const { text: toolCallChunk } = JSON.parse(raw);
+          try {
+            // Try to parse as complete tool call object
+            const toolCall = JSON.parse(toolCallChunk);
+            if (toolCall.id && toolCall.name && toolCall.args) {
+              onToolCall([toolCall]);
+            } else {
+              onToolCall(toolCallChunk);
+            }
+          } catch (e) {
+            // If not valid JSON, treat as streaming chunk
+            onToolCall(toolCallChunk);
+          }
           break;
 
         case "tool_call_msg":
