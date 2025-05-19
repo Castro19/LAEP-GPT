@@ -103,13 +103,14 @@ export function ChatWidget() {
     setIsLoading(true)
 
     try {
+      const newMessages = [...messages, userMessage]
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage],
+          messages: newMessages,
         }),
       })
 
