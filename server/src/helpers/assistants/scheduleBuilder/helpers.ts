@@ -1,5 +1,6 @@
 import {
   bulkPostSelectedSections,
+  getColorForCourseId,
   getSelectedSectionsByUserId,
 } from "../../../db/models/selectedSection/selectedSectionServices";
 
@@ -12,6 +13,7 @@ import {
   SelectedSection,
   ScheduleResponse,
   ProfessorRatingDocument,
+  SectionAddedOrRemoved,
 } from "@polylink/shared/types";
 import { fetchPrimaryFlowchart } from "../../../db/models/flowchart/flowchartServices";
 import {
@@ -295,8 +297,13 @@ export const addToSchedule = async ({
       updatedSchedule: null,
     };
   }
+  const selectedSections = await getSelectedSectionsByUserId(
+    userId,
+    schedule.term as CourseTerm
+  );
   const meetings = schedule.sections.flatMap((s) => s.meetings);
   let sectionsToAdd: number[] = [];
+  let sectionsAdded: SectionAddedOrRemoved[] = [];
   let messageToAdd = "";
 
   let sections: Section[] =
@@ -322,7 +329,16 @@ export const addToSchedule = async ({
       }
     } else {
       sectionsToAdd.push(section.classNumber);
-      messageToAdd += `Added section ${section.courseId} (class number: ${section.classNumber}) to your schedule.\n`;
+      sectionsAdded.push({
+        courseId: section.courseId,
+        classNumber: section.classNumber,
+        term: schedule.term,
+        color:
+          selectedSections.find((s) => s.courseId === section.courseId)
+            ?.color || getColorForCourseId(section.courseId),
+        professor: section.instructors[0].name,
+        rating: section.instructorsWithRatings?.[0]?.overallRating,
+      });
     }
   }
   // Remove duplicates
@@ -358,7 +374,8 @@ export const addToSchedule = async ({
   const updatedSchedule = await getScheduleById(userId, scheduleId);
   return {
     classNumbersAdded: sectionsToAdd,
-    messageToAdd,
+    messageToAdd:
+      messageToAdd + `Added sections: ${JSON.stringify(sectionsAdded)}`,
     updatedSchedule,
   };
 };
@@ -397,11 +414,31 @@ export const removeFromSchedule = async ({
     ]),
   ].filter((classNumber): classNumber is number => classNumber !== null);
 
+  const selectedSections = await getSelectedSectionsByUserId(
+    userId,
+    schedule.term as CourseTerm
+  );
+
+  let sections: Section[] =
+    (await getSectionsByIds(allClassNumbersToRemove, schedule.term)) || [];
+
+  // Format sections for the message
+  const sectionsRemoved: SectionAddedOrRemoved[] = sections.map((section) => ({
+    courseId: section.courseId,
+    classNumber: section.classNumber,
+    term: schedule.term,
+    color:
+      selectedSections.find((s) => s.courseId === section.courseId)?.color ||
+      getColorForCourseId(section.courseId),
+    professor: section.instructors[0].name,
+    rating: section.instructorsWithRatings?.[0]?.overallRating,
+  }));
+
+  const messageToAdd = `Removed sections: ${JSON.stringify(sectionsRemoved)}`;
+
   return {
     classNumbersRemoved: allClassNumbersToRemove,
-    messageToAdd: `Removed sections ${sectionsToRemove
-      .map((s) => `${s.courseId} (classNumber: ${s.classNumber})`)
-      .join(", ")} from your schedule.\n`,
+    messageToAdd,
   };
 };
 
