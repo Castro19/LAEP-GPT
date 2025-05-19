@@ -11,6 +11,7 @@ import {
   Section,
   SelectedSection,
   ScheduleResponse,
+  ProfessorRatingDocument,
 } from "@polylink/shared/types";
 import { fetchPrimaryFlowchart } from "../../../db/models/flowchart/flowchartServices";
 import {
@@ -25,6 +26,7 @@ import { transformSectionToSelectedSection } from "../../../db/models/schedule/t
 import * as summerSectionCollection from "../../../db/models/section/summerSectionCollection";
 import * as sectionCollection from "../../../db/models/section/sectionCollection";
 import * as fallSectionCollection from "../../../db/models/section/fallSectionCollection";
+import { getProfessorRatings } from "../../../db/models/professorRatings/professorRatingServices";
 
 export const getSelectedSectionsTool = async ({
   userId,
@@ -435,4 +437,66 @@ export async function findSectionsByFilter(
     console.error("MongoDB error:", e);
     return { sections: [], total: 0 };
   }
+}
+
+export async function buildSectionSummaries(
+  sections: SelectedSection[]
+): Promise<string[]> {
+  const professorIds = Array.from(
+    new Set(
+      sections.flatMap((sec) =>
+        (sec.professors ?? [])
+          .map((p) => p.id)
+          .filter((id): id is string => !!id)
+      )
+    )
+  );
+  const courseIds = Array.from(new Set(sections.map((sec) => sec.courseId)));
+
+  const projection = {
+    firstName: 1,
+    lastName: 1,
+    overallRating: 1,
+    tags: 1,
+  } as unknown as Partial<ProfessorRatingDocument>;
+
+  const professorRatings = professorIds.length
+    ? await getProfessorRatings(professorIds, courseIds, projection)
+    : [];
+
+  const ratingMap = new Map<string, Partial<ProfessorRatingDocument>>();
+  professorRatings.forEach((doc) => {
+    if (doc.id) ratingMap.set(doc.id as string, doc);
+  });
+
+  const formatMeetingTimes = (sec: SelectedSection): string =>
+    sec.meetings
+      .map((m) => {
+        const days = Array.isArray(m.days) ? m.days.join("") : m.days || "";
+        return `${days} ${m.start_time}-${m.end_time}`;
+      })
+      .join("; ");
+
+  return sections.map((sec) => {
+    const instStrings = (sec.professors ?? [])
+      .map((prof) => {
+        const rating = prof.id ? ratingMap.get(prof.id) : undefined;
+        const score =
+          rating?.overallRating !== undefined
+            ? rating.overallRating?.toFixed(1)
+            : "N/A";
+        const tagsSnippet =
+          rating?.tags && Object.keys(rating.tags).length
+            ? ` [${Object.entries(rating.tags)
+                .sort((a, b) => (b[1] as number) - (a[1] as number))
+                .slice(0, 3)
+                .map(([tag]) => tag)
+                .join(", ")} ]`
+            : "";
+        return `${prof.name} (${score}/4.0 rating) Popular tags:${tagsSnippet}`;
+      })
+      .join("; ");
+
+    return `${sec.courseId} – ${sec.classNumber}\n${formatMeetingTimes(sec)}\n${instStrings}`;
+  });
 }

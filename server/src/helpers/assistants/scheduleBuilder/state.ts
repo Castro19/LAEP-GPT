@@ -106,7 +106,7 @@ export const stateModifier = (
       ‑ Use **fetch_sections** to find sections based on the user's request.
       ‑ Call **manage_schedule(add, class_nums=[…])** to add courses. **DO NOT** add duplicate sections of the same course.
       - When summarizing sections, be as thorough as possible with details of
-      the course and the reviews of the instructor.
+      the course and the reviews of the instructor. Always present time with am/pm
 
     ‑ Choose **fetch_type**:
         · "search"        when the user describes filters (e.g. "open CSC evening labs")
