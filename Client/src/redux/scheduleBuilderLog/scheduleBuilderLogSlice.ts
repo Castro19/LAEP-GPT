@@ -1,10 +1,5 @@
 // scheduleBuilder.ts
-import {
-  createSlice,
-  createAsyncThunk,
-  PayloadAction,
-  Middleware,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
   FetchedScheduleBuilderLog,
   FetchedScheduleBuilderLogListItem,
@@ -27,7 +22,6 @@ import {
   updateScheduleSection,
 } from "../schedule/scheduleSlice";
 import { updateSelectedSections } from "../sectionSelection/sectionSelectionSlice";
-import { RootState } from "../store";
 
 /* ------------------------------------------------------------------ */
 /*  Local helper types                                                */
@@ -543,63 +537,3 @@ export const {
 } = scheduleBuilderLog.actions;
 
 export const scheduleBuilderLogReducer = scheduleBuilderLog.reducer;
-
-/* ------------------------------------------------------------------ */
-/*  Usage in a React component                                        */
-/* ------------------------------------------------------------------ */
-// dispatch(setDraftMsg(text));                      ← update textarea
-// dispatch(appendUserTurnLocally(userTurn));         ← optimistic append
-// dispatch(sendMessage({ text }));                   ← triggers backend
-
-// Create a middleware to handle tool calls
-export const toolCallMiddleware: Middleware =
-  (store) => (next) => (action: unknown) => {
-    // First, let the action go through
-    const result = next(action);
-
-    // If this is a tool call being processed
-    if (
-      typeof action === "object" &&
-      action !== null &&
-      "type" in action &&
-      action.type === "scheduleBuilderLog/processToolCall"
-    ) {
-      const { toolCall } = (action as PayloadAction<{ toolCall: ToolCall }>)
-        .payload;
-      const state = store.getState() as RootState;
-
-      // Skip if already processed
-      if (state.scheduleBuilderLog.processedToolCallIds.includes(toolCall.id)) {
-        return result;
-      }
-
-      // Process based on tool call type
-      switch (toolCall.name) {
-        case "manage_schedule": {
-          const args = toolCall.args as {
-            operation: string;
-            class_nums?: number[];
-          };
-          if (args.operation === "add" && args.class_nums) {
-            store.dispatch(
-              updateScheduleSection({
-                sectionIds: args.class_nums,
-                action: "add",
-              }) as any
-            );
-          } else if (args.operation === "remove" && args.class_nums) {
-            store.dispatch(
-              updateScheduleSection({
-                sectionIds: args.class_nums,
-                action: "remove",
-              }) as any
-            );
-          }
-          break;
-        }
-        // Add other tool call types as needed
-      }
-    }
-
-    return result;
-  };
