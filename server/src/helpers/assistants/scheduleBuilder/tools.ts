@@ -217,7 +217,7 @@ export const fetchSections = tool(
       update: {
         messages: [
           new ToolMessage({
-            content: `Fetched sections:\n\n${sectionSummaries.join("\n\n")}`,
+            content: `Fetched sections: ${JSON.stringify(sectionsToReturn)}`,
             tool_call_id: config.toolCall.id,
           }),
         ],
