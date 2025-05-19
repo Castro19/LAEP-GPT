@@ -13,8 +13,8 @@ const StringOperators = z.object({
 
 /** Common operators for numeric fields: $eq, $ne, $gte, $lte, $in, $nin, etc. */
 const NumberOperators = z.object({
-  $eq: z.number().optional(),
-  $ne: z.number().optional(),
+  $eq: z.union([z.number(), z.null()]).optional(),
+  $ne: z.union([z.number(), z.null()]).optional(),
   $in: z.array(z.number()).optional(),
   $nin: z.array(z.number()).optional(),
   $gte: z.number().optional(),

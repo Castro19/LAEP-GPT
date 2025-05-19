@@ -70,14 +70,18 @@ export const FormatPrerequisites: React.FC<FormatPrerequisitesProps> = ({
                 key={`${index}-${subIndex}`}
                 className="text-slate-300 text-sm"
               >
-                {orArray.map((course, i) => (
-                  <li
-                    key={`${index}-${subIndex}-${i}`}
-                    className="text-slate-300 text-sm"
-                  >
-                    • {course}
-                  </li>
-                ))}
+                <div className="flex flex-wrap items-center gap-2">
+                  {orArray.map((course, i) => (
+                    <Fragment key={`${index}-${subIndex}-${i}`}>
+                      <BadgeSection variant="content" className="font-mono">
+                        {course}
+                      </BadgeSection>
+                      {i < orArray.length - 1 && (
+                        <span className="text-slate-400 text-xs">OR</span>
+                      )}
+                    </Fragment>
+                  ))}
+                </div>
               </li>
             ));
           }

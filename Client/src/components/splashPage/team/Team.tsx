@@ -1,6 +1,6 @@
 import { TeamDocument } from "@polylink/shared/types";
 import PersonCard from "./PersonCard";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const Team = ({ teamMembers }: { teamMembers: TeamDocument[] }) => {
   return (
