@@ -27,6 +27,8 @@ import * as summerSectionCollection from "../../../db/models/section/summerSecti
 import * as sectionCollection from "../../../db/models/section/sectionCollection";
 import * as fallSectionCollection from "../../../db/models/section/fallSectionCollection";
 import { getProfessorRatings } from "../../../db/models/professorRatings/professorRatingServices";
+import { combineClassPairs } from "./formatter";
+import { environment } from "../../..";
 
 export const getSelectedSectionsTool = async ({
   userId,
@@ -442,16 +444,22 @@ export async function findSectionsByFilter(
 export async function buildSectionSummaries(
   sections: SelectedSection[]
 ): Promise<string[]> {
+  // First combine the sections
+  const combinedSections = combineClassPairs(sections);
+
+  // Get professor IDs from the combined sections
   const professorIds = Array.from(
     new Set(
-      sections.flatMap((sec) =>
+      combinedSections.flatMap((sec) =>
         (sec.professors ?? [])
           .map((p) => p.id)
           .filter((id): id is string => !!id)
       )
     )
   );
-  const courseIds = Array.from(new Set(sections.map((sec) => sec.courseId)));
+  const courseIds = Array.from(
+    new Set(combinedSections.map((sec) => sec.courseId))
+  );
 
   const projection = {
     firstName: 1,
@@ -460,31 +468,44 @@ export async function buildSectionSummaries(
     tags: 1,
   } as unknown as Partial<ProfessorRatingDocument>;
 
-  const professorRatings = professorIds.length
-    ? await getProfessorRatings(professorIds, courseIds, projection)
-    : [];
+  let professorRatings: Partial<ProfessorRatingDocument>[] = [];
+  try {
+    professorRatings = professorIds.length
+      ? await getProfessorRatings(professorIds, courseIds, projection)
+      : [];
+  } catch (error) {
+    if (environment === "dev") {
+      console.log("Error fetching professor ratings:", error);
+    }
+  }
 
   const ratingMap = new Map<string, Partial<ProfessorRatingDocument>>();
   professorRatings.forEach((doc) => {
     if (doc.id) ratingMap.set(doc.id as string, doc);
   });
 
-  const formatMeetingTimes = (sec: SelectedSection): string =>
-    sec.meetings
-      .map((m) => {
-        const days = Array.isArray(m.days) ? m.days.join("") : m.days || "";
-        return `${days} ${m.start_time}-${m.end_time}`;
-      })
-      .join("; ");
+  const formatMeetingTimes = (sec: SelectedSection): string => {
+    const meetings = sec.meetings.map((m) => {
+      const days = Array.isArray(m.days) ? m.days.join(", ") : m.days || "";
+      const startTime = m.start_time?.replace(":", "") || "";
+      const endTime = m.end_time?.replace(":", "") || "";
+      return `${days}: ${startTime}-${endTime}`;
+    });
+    return meetings.length > 0 ? meetings.join("\n") : "No scheduled meetings";
+  };
 
-  return sections.map((sec) => {
-    const instStrings = (sec.professors ?? [])
+  const summaries = combinedSections.map((sec) => {
+    const courseHeader = `${sec.courseId} – ${sec.classNumber}`;
+    const meetingTimes = formatMeetingTimes(sec);
+
+    const professorInfo = (sec.professors ?? [])
       .map((prof) => {
         const rating = prof.id ? ratingMap.get(prof.id) : undefined;
         const score =
           rating?.overallRating !== undefined
             ? rating.overallRating?.toFixed(1)
             : "N/A";
+
         const tagsSnippet =
           rating?.tags && Object.keys(rating.tags).length
             ? ` [${Object.entries(rating.tags)
@@ -493,10 +514,37 @@ export async function buildSectionSummaries(
                 .map(([tag]) => tag)
                 .join(", ")} ]`
             : "";
-        return `${prof.name} (${score}/4.0 rating) Popular tags:${tagsSnippet} PolyRatings.dev URL: https://polyratings.dev/professor/${prof.id}`;
-      })
-      .join("; ");
 
-    return `${sec.courseId} – ${sec.classNumber}\n${formatMeetingTimes(sec)}\n${instStrings}`;
+        const ratingUrl =
+          prof.id !== prof.name
+            ? `https://polyratings.dev/professor/${prof.id}`
+            : `https://polyratings.dev/search/name?term=${prof.name}`;
+
+        return [
+          `Professor: ${prof.name}`,
+          `Rating: ${score}/4.0`,
+          tagsSnippet ? `Popular tags:${tagsSnippet}` : "",
+          `View on PolyRatings: ${ratingUrl}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+      })
+      .join("\n\n");
+
+    const sectionsArray = [
+      courseHeader,
+      "Meeting Times:",
+      meetingTimes,
+      "",
+      "Professor Information:",
+      professorInfo,
+    ].filter(Boolean);
+
+    const finalStr = sectionsArray.join("\n");
+    return finalStr;
   });
+  if (environment === "dev") {
+    console.log("\nFinal summaries:", summaries);
+  }
+  return summaries;
 }
