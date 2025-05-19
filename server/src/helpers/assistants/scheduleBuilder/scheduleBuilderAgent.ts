@@ -24,8 +24,7 @@ export async function* scheduleBuilderStream(
   toolCalls?: {
     id: string;
     name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    args: any;
+    args: string;
     type: string;
   }[];
   lastState?: typeof StateAnnotation.State;

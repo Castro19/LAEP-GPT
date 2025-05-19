@@ -236,17 +236,23 @@ const scheduleBuilderLog = createSlice({
         try {
           const parsedCalls = JSON.parse(calls);
           if (Array.isArray(parsedCalls)) {
-            if (aiMsg.tool_calls) {
-              aiMsg.tool_calls = [...aiMsg.tool_calls, ...parsedCalls];
-            } else {
-              aiMsg.tool_calls = parsedCalls;
+            // For arrays, only add new tool calls that don't already exist
+            const existingIds = new Set(
+              aiMsg.tool_calls?.map((tc) => tc.id) || []
+            );
+            const newCalls = parsedCalls.filter(
+              (tc) => !existingIds.has(tc.id)
+            );
+            if (newCalls.length > 0) {
+              aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
             }
           } else if (parsedCalls.id && parsedCalls.name && parsedCalls.args) {
-            // Single tool call object
-            if (aiMsg.tool_calls) {
-              aiMsg.tool_calls = [...aiMsg.tool_calls, parsedCalls];
-            } else {
-              aiMsg.tool_calls = [parsedCalls];
+            // For single tool call, only add if it doesn't exist
+            const exists = aiMsg.tool_calls?.some(
+              (tc) => tc.id === parsedCalls.id
+            );
+            if (!exists) {
+              aiMsg.tool_calls = [...(aiMsg.tool_calls || []), parsedCalls];
             }
           }
         } catch (e) {
@@ -257,11 +263,11 @@ const scheduleBuilderLog = createSlice({
           aiMsg.tool_call_chunks.push(calls);
         }
       } else {
-        // Original array handling
-        if (aiMsg.tool_calls) {
-          aiMsg.tool_calls = [...aiMsg.tool_calls, ...calls];
-        } else {
-          aiMsg.tool_calls = calls;
+        // For complete tool calls array, only add new ones
+        const existingIds = new Set(aiMsg.tool_calls?.map((tc) => tc.id) || []);
+        const newCalls = calls.filter((tc) => !existingIds.has(tc.id));
+        if (newCalls.length > 0) {
+          aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
         }
       }
     },
