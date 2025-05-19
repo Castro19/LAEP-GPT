@@ -48,11 +48,9 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
           case "search":
             return `Searching for courses matching "${search_query}"`;
           case "curriculum":
-            return `Fetching next ${num_courses} eligible courses from flowchart ${
-              sections_per_course
-                ? `(max ${sections_per_course} sections per course)`
-                : ""
-            }`;
+            return sections_per_course
+              ? `Fetching next ${num_courses} eligible courses from the flowchart (max ${sections_per_course} sections per course)`
+              : `Fetching next ${num_courses} eligible courses`;
           case "user_selected":
             return "Fetching your selected sections";
           default:
