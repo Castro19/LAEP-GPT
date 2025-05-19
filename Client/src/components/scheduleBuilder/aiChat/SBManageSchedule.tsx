@@ -16,9 +16,14 @@ interface ManageScheduleProps {
 }
 
 const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
-  const sections = useMemo(() => {
-    const sectionsMatch = message.match(/(\[.*\])/);
-    return sectionsMatch ? JSON.parse(sectionsMatch[1]) : [];
+  // Function to extract course codes from the message when operation is "readall"
+  const formattedCourses = useMemo(() => {
+    return Array.from(
+      new Set(
+        message.match(/\b[A-Z]{3,4}\d{3}\b/g) || // 3 or 4 letters followed by 3 digits
+          []
+      )
+    ).join(", ");
   }, [message]);
 
   const renderOperation = () => {
@@ -40,14 +45,14 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
           </div>
         );
       case "readall":
+        console.log(formattedCourses);
         return (
-          <div className="flex flex-col gap-2">
-            <div className="text-slate-400">
-              <span className="font-semibold">Reading Schedule</span>
-              <br />
-              Term: {args.state.term}
-            </div>
-            <SectionsChosen selectedSections={sections} inChat={true} />
+          <div className="text-slate-400">
+            <span className="font-semibold">
+              Schedule for {args.state.term}
+            </span>
+            <br />
+            {formattedCourses}
           </div>
         );
       default:

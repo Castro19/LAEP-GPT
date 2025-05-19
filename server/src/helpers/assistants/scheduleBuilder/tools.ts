@@ -296,12 +296,13 @@ export const manageSchedule = tool(
         config.configurable.user_id,
         schedule_id
       );
+
       return new Command({
         update: {
           messages: [
             new ToolMessage({
               content: sections.length
-                ? JSON.stringify(sections)
+                ? (await buildSectionSummaries(sections)).join("\n\n")
                 : "Your schedule is empty.",
               tool_call_id: config.toolCall.id,
             }),
