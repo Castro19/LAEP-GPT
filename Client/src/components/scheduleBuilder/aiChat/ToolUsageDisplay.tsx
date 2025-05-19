@@ -1,5 +1,6 @@
 import React from "react";
 import { ToolCall } from "./SBChatMessage";
+import { motion } from "framer-motion";
 
 interface ToolUsageDisplayProps {
   toolUsage: ToolCall[];
@@ -47,7 +48,9 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
           case "search":
             return `Searching for courses matching "${search_query}"`;
           case "curriculum":
-            return `Fetching next ${num_courses} eligible courses (max ${sections_per_course} sections per course)`;
+            return sections_per_course
+              ? `Fetching next ${num_courses} eligible courses from the flowchart (max ${sections_per_course} sections per course)`
+              : `Fetching next ${num_courses} eligible courses`;
           case "user_selected":
             return "Fetching your selected sections";
           default:
@@ -60,11 +63,17 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
   };
 
   return (
-    <div className="text-sm sm:text-md italic pt-1 relative overflow-hidden text-gray-400 w-full">
-      {toolUsage.map((tool) => (
-        <div key={tool.id} className="mb-1">
+    <div className="text-xs sm:text-sm italic relative overflow-hidden text-slate-400/70 dark:text-slate-400/70 w-full">
+      {toolUsage.map((tool, index) => (
+        <motion.div
+          key={tool.id}
+          className="mb-1.5 last:mb-0"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.1 + 0.4 }}
+        >
           {formatToolMessage(tool)}
-        </div>
+        </motion.div>
       ))}
     </div>
   );

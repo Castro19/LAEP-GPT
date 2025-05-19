@@ -3,7 +3,6 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { StateAnnotation, stateModifier } from "./state";
 import { fetchSections, manageSchedule } from "./tools";
-import { environment } from "../../..";
 
 const agent = createReactAgent({
   llm: new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 }),
