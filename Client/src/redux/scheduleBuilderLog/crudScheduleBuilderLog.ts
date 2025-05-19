@@ -158,7 +158,7 @@ export async function streamScheduleBuilderRequest(
       if (!ev || !raw) continue;
 
       switch (ev) {
-        case "tool_call_chunk":
+        case "tool_call_chunk": {
           const { text: toolCallChunk } = JSON.parse(raw);
           try {
             // Try to parse as complete tool call object
@@ -173,36 +173,34 @@ export async function streamScheduleBuilderRequest(
             onToolCall(toolCallChunk);
           }
           break;
+        }
 
-        case "tool_call_msg":
+        case "tool_call_msg": {
           const { text: toolCallText } = JSON.parse(raw);
           console.log("Tool message:", toolCallText);
           onToolCallMsg(toolCallText);
           break;
+        }
 
         case "assistant": {
-          // eslint-disable-next-line no-case-declarations
           const { text } = JSON.parse(raw);
           onChunk(text);
           break;
         }
 
         case "message": {
-          // eslint-disable-next-line no-case-declarations
           const msg: ScheduleBuilderMessage = JSON.parse(raw);
           onMessage(msg);
           break;
         }
 
         case "done": {
-          // eslint-disable-next-line no-case-declarations
           const payload: OnDonePayload = JSON.parse(raw);
           onDone(payload);
           return; // done reading
         }
 
         case "error": {
-          // eslint-disable-next-line no-case-declarations
           const { message } = JSON.parse(raw);
           throw new Error(message);
         }
