@@ -2,7 +2,12 @@
 import { tool } from "@langchain/core/tools";
 import { ToolMessage } from "@langchain/core/messages";
 import { z } from "zod";
-import { CourseTerm, Section, SelectedSection } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  Section,
+  SelectedSection,
+  ProfessorRatingDocument,
+} from "@polylink/shared/types";
 import { StateAnnotation } from "./state";
 
 // “Injected” helpers -------------------------------------------------
@@ -20,6 +25,7 @@ import {
   sectionQueryAssistant,
   SectionQueryResponse,
 } from "../SectionQuery/sectionQueryAssistant";
+import { getProfessorRatings } from "../../../db/models/professorRatings/professorRatingServices";
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
 import { getSelectedSectionsByUserId } from "../../../db/models/selectedSection/selectedSectionServices";
@@ -201,22 +207,97 @@ export const fetchSections = tool(
     // if (environment === "dev") {
     //   console.log("SECTIONS TO RETURN: ", sectionsToReturn);
     // }
+
     const sectionsWithPairs = await getSectionsWithPairs(
       sectionsToReturn as SelectedSection[],
       state.term as CourseTerm
     );
     sectionsToReturn = sectionsWithPairs as SelectedSection[];
 
+    // Get professor ratings for retrieved sections
+    let sectionSummaries: string[] = [];
+    try {
+      const professorIds = Array.from(
+        new Set(
+          (sectionsToReturn as SelectedSection[]).flatMap((sec) =>
+            (sec.professors ?? [])
+              .map((prof) => prof.id)
+              .filter((id): id is string => !!id)
+          )
+        )
+      );
+      const courseIds = Array.from(
+        new Set(
+          (sectionsToReturn as SelectedSection[]).map((sec) => sec.courseId)
+        )
+      );
+
+      const professorRatings = professorIds.length
+        ? await getProfessorRatings(professorIds, courseIds, {
+            firstName: 1,
+            lastName: 1,
+            overallRating: 1,
+            tags: 1,
+          } as unknown as Partial<ProfessorRatingDocument>)
+        : [];
+
+      const ratingMap = new Map<string, Partial<ProfessorRatingDocument>>();
+      professorRatings.forEach((doc) => {
+        if (doc.id) ratingMap.set(doc.id as string, doc);
+      });
+
+      const formatMeetingTimes = (sec: SelectedSection): string => {
+        return sec.meetings
+          .map((m) => {
+            const days = Array.isArray(m.days) ? m.days.join("") : m.days || "";
+            return `${days} ${m.start_time}-${m.end_time}`;
+          })
+          .join("; ");
+      };
+
+      // Create section summaries for the LLM to process
+      sectionSummaries = (sectionsToReturn as SelectedSection[]).map((sec) => {
+        const instStrings = (sec.professors ?? [])
+          .map((prof) => {
+            const rating = prof.id ? ratingMap.get(prof.id) : undefined;
+            const score =
+              rating?.overallRating !== undefined
+                ? rating.overallRating?.toFixed(1)
+                : "N/A";
+            const snippet = // Top 3 tags associated with the professor
+              rating?.tags && Object.keys(rating.tags).length
+                ? ` [${Object.entries(rating.tags)
+                    .sort((a, b) => (b[1] as number) - (a[1] as number))
+                    .slice(0, 3)
+                    .map(([tag]) => tag)
+                    .join(", ")} ]`
+                : "";
+            return `${prof.name} (${score}/4.0 rating) Popular tags:${snippet}`;
+          })
+          .join("; ");
+
+        return `${sec.courseId} – ${sec.classNumber}\n${formatMeetingTimes(sec)}\n${instStrings}`;
+      });
+    } catch (err) {
+      console.error("Error summarizing sections with ratings", err);
+      sectionSummaries = (sectionsToReturn as SelectedSection[]).map(
+        (sec) => `${sec.courseId} – ${sec.classNumber}`
+      );
+    }
+
+    console.log(sectionSummaries);
+
     /* ------------------ final payload ------------------ */
     return new Command({
       update: {
         messages: [
           new ToolMessage({
-            content: `Fetched sections: ${JSON.stringify(sectionsToReturn)}`,
+            content: `Fetched sections:\n\n${sectionSummaries.join("\n\n")}`,
             tool_call_id: config.toolCall.id,
           }),
         ],
         sections: sectionsToReturn,
+        sectionSummaries,
       },
     });
   },
