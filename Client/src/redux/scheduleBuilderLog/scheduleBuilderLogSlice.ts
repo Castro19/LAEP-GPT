@@ -189,7 +189,6 @@ export const updateLogTitle = createAsyncThunk<
 export const processToolCalls = createAsyncThunk(
   "scheduleBuilderLog/processToolCalls",
   async (toolCalls: ToolCall[], { dispatch }) => {
-    console.log("Processing tool calls:", toolCalls);
     // Process each tool call
     for (const toolCall of toolCalls) {
       switch (toolCall.name) {
