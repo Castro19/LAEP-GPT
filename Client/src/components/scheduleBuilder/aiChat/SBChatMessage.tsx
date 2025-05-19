@@ -140,6 +140,28 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
     }
   };
 
+  const renderToolName = (tool: ToolCall) => {
+    if (tool.name === "manage_schedule") {
+      if (tool.args.operation === "readall") {
+        return "Reading schedule";
+      } else if (tool.args.operation === "add") {
+        return "Adding sections";
+      } else if (tool.args.operation === "remove") {
+        return "Removing sections";
+      }
+    } else if (tool.name === "fetch_sections") {
+      if (tool.args.fetch_type === "search") {
+        return "Searching for courses";
+      } else if (tool.args.fetch_type === "user_selected") {
+        return "Fetching selected sections";
+      } else if (tool.args.fetch_type === "curriculum") {
+        return "Fetching sections from flowchart";
+      }
+    } else {
+      return tool.name;
+    }
+  };
+
   return (
     <div className={`my-4 max-w-full ${isUser ? "ml-auto" : "mr-auto"}`}>
       <div className="flex flex-col w-full">
@@ -182,7 +204,7 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
                     className="border-b border-slate-700/60"
                   >
                     <AccordionTrigger className="px-3 py-2 text-left text-sm font-medium bg-slate-800 hover:bg-slate-700">
-                      {tool.call.name}
+                      {renderToolName(tool.call)}
                     </AccordionTrigger>
                     <AccordionContent className="bg-slate-900 px-3 py-2 text-xs space-y-3">
                       {renderToolContent(tool)}
