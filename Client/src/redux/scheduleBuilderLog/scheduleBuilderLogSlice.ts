@@ -19,6 +19,7 @@ import { nanoid } from "@reduxjs/toolkit";
 import {
   updateScheduleIdFromBuilder,
   updateScheduleSections,
+  updateScheduleSection,
 } from "../schedule/scheduleSlice";
 import { updateSelectedSections } from "../sectionSelection/sectionSelectionSlice";
 
@@ -35,6 +36,7 @@ interface ScheduleBuilderLogState {
   currentLog: FetchedScheduleBuilderLog | null;
   draftMsg: string;
   loadingByThread: Record<string, boolean>;
+  messagePending: string | null;
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
@@ -46,6 +48,7 @@ const initialState: ScheduleBuilderLogState = {
   currentLog: null,
   draftMsg: "",
   loadingByThread: {},
+  messagePending: null,
   isLoading: false,
   error: null,
   deletingThreadIds: [],
@@ -106,10 +109,8 @@ export const sendMessage = createAsyncThunk<
     { getState, dispatch, rejectWithValue }
   ) => {
     const currentLog = getState().scheduleBuilderLog.currentLog;
-
     let threadId = currentLog?.thread_id ?? `temp-${nanoid()}`;
 
-    // 1) now open the SSE stream
     try {
       await streamScheduleBuilderRequest(
         { threadId, userMsg: text, state },
@@ -124,6 +125,10 @@ export const sendMessage = createAsyncThunk<
         // on tool call
         (calls) => {
           dispatch(receivedToolCalls({ placeholderTurnId, calls }));
+          // Process tool calls immediately
+          if (Array.isArray(calls)) {
+            dispatch(processToolCalls(calls));
+          }
         },
         // on tool call msg
         (toolMsgs) => {
@@ -176,6 +181,41 @@ export const updateLogTitle = createAsyncThunk<
       return { threadId, title };
     } catch {
       return rejectWithValue({ message: "Failed to update log title" });
+    }
+  }
+);
+
+// Create a thunk to handle tool calls
+export const processToolCalls = createAsyncThunk(
+  "scheduleBuilderLog/processToolCalls",
+  async (toolCalls: ToolCall[], { dispatch }) => {
+    // Process each tool call
+    for (const toolCall of toolCalls) {
+      switch (toolCall.name) {
+        case "manage_schedule": {
+          const args = toolCall.args as {
+            operation: string;
+            class_nums?: number[];
+          };
+          if (args.operation === "add" && args.class_nums) {
+            await dispatch(
+              updateScheduleSection({
+                sectionIds: args.class_nums,
+                action: "add",
+              })
+            );
+          } else if (args.operation === "remove" && args.class_nums) {
+            await dispatch(
+              updateScheduleSection({
+                sectionIds: args.class_nums,
+                action: "remove",
+              })
+            );
+          }
+          break;
+        }
+        // Add other tool call types as needed
+      }
     }
   }
 );
@@ -246,14 +286,6 @@ const scheduleBuilderLog = createSlice({
             if (newCalls.length > 0) {
               aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
             }
-          } else if (parsedCalls.id && parsedCalls.name && parsedCalls.args) {
-            // For single tool call, only add if it doesn't exist
-            const exists = aiMsg.tool_calls?.some(
-              (tc) => tc.id === parsedCalls.id
-            );
-            if (!exists) {
-              aiMsg.tool_calls = [...(aiMsg.tool_calls || []), parsedCalls];
-            }
           }
         } catch (e) {
           // If parsing fails, treat it as a streaming chunk
@@ -267,7 +299,8 @@ const scheduleBuilderLog = createSlice({
         const existingIds = new Set(aiMsg.tool_calls?.map((tc) => tc.id) || []);
         const newCalls = calls.filter((tc) => !existingIds.has(tc.id));
         if (newCalls.length > 0) {
-          aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
+          const newToolCalls = [...(aiMsg.tool_calls || []), ...newCalls];
+          aiMsg.tool_calls = newToolCalls;
         }
       }
     },
@@ -307,8 +340,13 @@ const scheduleBuilderLog = createSlice({
       const aiMsg = turn.messages.find((m) => m.role === "assistant");
       if (!aiMsg) return; // should never happen due to pending
 
-      // Append the chunk
-      aiMsg.msg += chunk;
+      if (aiMsg.isPending && aiMsg.msg === "Analyzing request...") {
+        aiMsg.msg = chunk;
+        aiMsg.isPending = false;
+      } else {
+        // Append the chunk
+        aiMsg.msg += chunk;
+      }
     },
     // 2) received a complete message
     receivedMessage: (
@@ -332,7 +370,6 @@ const scheduleBuilderLog = createSlice({
         if (aiMsg) {
           // overwrite its text (it's been collecting via assistantChunkArrived)
           aiMsg.msg = message.msg;
-
           // copy over token_usage etc. if you need it
           aiMsg.token_usage = message.token_usage;
           aiMsg.finish_reason = message.finish_reason;
@@ -433,9 +470,10 @@ const scheduleBuilderLog = createSlice({
         turn.messages.push({
           msg_id: nanoid(),
           role: "assistant",
-          msg: "", // will fill in onChunk / receivedMessage
+          msg: "Analyzing request...", // will fill in onChunk / receivedMessage
           reaction: null,
           response_time: 0,
+          isPending: true,
         });
       })
       .addCase(sendMessage.rejected, (st, action) => {
@@ -479,10 +517,3 @@ export const {
 } = scheduleBuilderLog.actions;
 
 export const scheduleBuilderLogReducer = scheduleBuilderLog.reducer;
-
-/* ------------------------------------------------------------------ */
-/*  Usage in a React component                                        */
-/* ------------------------------------------------------------------ */
-// dispatch(setDraftMsg(text));                      ← update textarea
-// dispatch(appendUserTurnLocally(userTurn));         ← optimistic append
-// dispatch(sendMessage({ text }));                   ← triggers backend

@@ -10,6 +10,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import SBFetchSections from "./SBFetchSections";
 import SBManageSchedule from "./SBManageSchedule";
+import AIChatLoadingMessage from "./AIChatLoadingMessage";
 
 /* -------------------------------------------------------------------------
    📑  Types (replace with shared types when available)
@@ -22,6 +23,7 @@ export interface SBMessage {
   tools?: Tool[];
   tool_calls?: ToolCall[];
   toolMessages?: ToolMsg[];
+  isPending?: boolean;
 }
 
 export interface ToolCall {
@@ -142,13 +144,17 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
     <div className={`my-4 max-w-full ${isUser ? "ml-auto" : "mr-auto"}`}>
       <div className="flex flex-col w-full">
         {/* Main bubble */}
-        <div className={`rounded-lg shadow-lg px-3 py-4 ${variant}`}>
-          <div
-            className="prose prose-invert weekly-planner-tables"
-            style={{ maxWidth: "100%" }}
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.msg) }}
-          />
-        </div>
+        {msg.isPending ? (
+          <AIChatLoadingMessage toolUsage={msg.tool_calls} msg={msg.msg} />
+        ) : (
+          <div className={`rounded-lg shadow-lg px-3 py-4 ${variant}`}>
+            <div
+              className="prose prose-invert weekly-planner-tables"
+              style={{ maxWidth: "100%" }}
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.msg) }}
+            />
+          </div>
+        )}
 
         {/* Dropdown for tool calls (assistant only) */}
         {!isUser && hasTools && (
