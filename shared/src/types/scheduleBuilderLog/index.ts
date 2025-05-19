@@ -96,3 +96,12 @@ export type ScheduleBuilderResponse = {
   state: ScheduleBuilderState;
   schedule: ScheduleResponse;
 };
+
+export type SectionAddedOrRemoved = {
+  courseId: string;
+  classNumber: number;
+  term: CourseTerm;
+  color: string;
+  professor: string;
+  rating?: number;
+};

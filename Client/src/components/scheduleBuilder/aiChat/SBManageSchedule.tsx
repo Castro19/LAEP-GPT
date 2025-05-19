@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
+import SectionChanges from "./SectionChanges";
 
 interface ManageScheduleProps {
   args: {
@@ -26,22 +27,39 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
     ).join(", ");
   }, [message]);
 
+  const sections = useMemo(() => {
+    try {
+      const operation = args.operation === "add" ? "Added" : "Removed";
+      const sectionsMatch = message.match(
+        new RegExp(`${operation} sections: (\\[.*?\\])`)
+      );
+
+      if (!sectionsMatch) return [];
+
+      const content = sectionsMatch[1].trim();
+      return JSON.parse(content);
+    } catch (error) {
+      console.error("Error parsing sections:", error);
+      return [];
+    }
+  }, [message, args.operation]);
+
   const renderOperation = () => {
     switch (args.operation) {
       case "add":
         return (
           <div className="text-slate-400">
-            <span className="font-semibold">Adding Sections:</span>
+            <span className="font-semibold">Added sections:</span>
             <br />
-            Class Numbers: {args.class_nums?.join(", ")}
+            {args.class_nums?.join(", ")}
           </div>
         );
       case "remove":
         return (
           <div className="text-slate-400">
-            <span className="font-semibold">Removing Sections:</span>
+            <span className="font-semibold">Removed sections:</span>
             <br />
-            Class Numbers: {args.class_nums?.join(", ")}
+            {args.class_nums?.join(", ")}
           </div>
         );
       case "readall":
@@ -62,9 +80,6 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
     }
   };
 
-  // Split message into lines and format each line
-  const messageLines = message.split("\n").filter((line) => line.trim());
-
   return (
     <div className="space-y-3">
       {/* Tool Arguments */}
@@ -73,11 +88,7 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
       {/* Message Output */}
       {args.operation !== "readall" && (
         <div className="bg-slate-800/50 p-2 rounded">
-          {messageLines.map((line, index) => (
-            <div key={index} className="text-slate-200">
-              {line}
-            </div>
-          ))}
+          <SectionChanges sections={sections} operation={args.operation} />
         </div>
       )}
     </div>
