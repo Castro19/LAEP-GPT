@@ -97,6 +97,7 @@ export async function deleteLogFromDB(threadId: string): Promise<void> {
 type OnChunk = (text: string) => void;
 type OnMessage = (msg: ScheduleBuilderMessage) => void;
 type OnToolCall = (calls: ToolCall[]) => void;
+type OnToolCallMsg = (toolChunk: string) => void;
 type OnDonePayload = {
   isNewSchedule: boolean;
   isNewThread: boolean;
@@ -121,6 +122,7 @@ export async function streamScheduleBuilderRequest(
   onChunk: OnChunk,
   onMessage: OnMessage,
   onToolCall: OnToolCall,
+  onToolCallMsg: OnToolCallMsg,
   onDone: OnDone
 ): Promise<void> {
   const response = await fetch(`${serverUrl}/scheduleBuilder/respond`, {
@@ -156,39 +158,52 @@ export async function streamScheduleBuilderRequest(
       if (!ev || !raw) continue;
 
       switch (ev) {
-        case "tool_call":
-          console.log("tool_call", raw);
-          // eslint-disable-next-line no-case-declarations, @typescript-eslint/no-explicit-any
-          const toolCalls: ToolCall[] = JSON.parse(raw).map((call: any) => ({
-            ...call,
-            args:
-              typeof call.args === "string" ? JSON.parse(call.args) : call.args,
-          }));
-          onToolCall(toolCalls);
+        case "tool_call_chunk": {
+          const { text: toolCallChunk } = JSON.parse(raw);
+          try {
+            // Try to parse as complete tool call object
+            const toolCall = JSON.parse(toolCallChunk);
+            if (toolCall.id && toolCall.name && toolCall.args) {
+              onToolCall([toolCall]);
+            } else {
+              onToolCall(toolCallChunk);
+            }
+          } catch (e) {
+            // If not valid JSON, treat as streaming chunk
+            onToolCall(toolCallChunk);
+          }
           break;
+        }
 
-        case "assistant":
-          // eslint-disable-next-line no-case-declarations
+        case "tool_call_msg": {
+          const { text: toolCallText } = JSON.parse(raw);
+          console.log("Tool message:", toolCallText);
+          onToolCallMsg(toolCallText);
+          break;
+        }
+
+        case "assistant": {
           const { text } = JSON.parse(raw);
           onChunk(text);
           break;
+        }
 
-        case "message":
-          // eslint-disable-next-line no-case-declarations
+        case "message": {
           const msg: ScheduleBuilderMessage = JSON.parse(raw);
           onMessage(msg);
           break;
+        }
 
-        case "done":
-          // eslint-disable-next-line no-case-declarations
+        case "done": {
           const payload: OnDonePayload = JSON.parse(raw);
           onDone(payload);
           return; // done reading
+        }
 
-        case "error":
-          // eslint-disable-next-line no-case-declarations
+        case "error": {
           const { message } = JSON.parse(raw);
           throw new Error(message);
+        }
       }
     }
   }

@@ -125,6 +125,10 @@ export const sendMessage = createAsyncThunk<
         (calls) => {
           dispatch(receivedToolCalls({ placeholderTurnId, calls }));
         },
+        // on tool call msg
+        (toolMsgs) => {
+          dispatch(receivedToolCallMsgs({ placeholderTurnId, toolMsgs }));
+        },
         // on done
         (payload) => {
           if (payload.isNewThread) {
@@ -212,7 +216,10 @@ const scheduleBuilderLog = createSlice({
     },
     receivedToolCalls: (
       st,
-      action: PayloadAction<{ placeholderTurnId: string; calls: ToolCall[] }>
+      action: PayloadAction<{
+        placeholderTurnId: string;
+        calls: ToolCall[] | string;
+      }>
     ) => {
       const { placeholderTurnId, calls } = action.payload;
       const turn = st.currentLog?.conversation_turns.find(
@@ -222,13 +229,68 @@ const scheduleBuilderLog = createSlice({
       if (!turn) return;
 
       const aiMsg = turn.messages.find((m) => m.role === "assistant");
-
       if (!aiMsg) return;
-      if (aiMsg.tool_calls) {
-        aiMsg.tool_calls = [...aiMsg.tool_calls, ...calls];
+
+      // If calls is a string, try to parse it as JSON
+      if (typeof calls === "string") {
+        try {
+          const parsedCalls = JSON.parse(calls);
+          if (Array.isArray(parsedCalls)) {
+            // For arrays, only add new tool calls that don't already exist
+            const existingIds = new Set(
+              aiMsg.tool_calls?.map((tc) => tc.id) || []
+            );
+            const newCalls = parsedCalls.filter(
+              (tc) => !existingIds.has(tc.id)
+            );
+            if (newCalls.length > 0) {
+              aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
+            }
+          } else if (parsedCalls.id && parsedCalls.name && parsedCalls.args) {
+            // For single tool call, only add if it doesn't exist
+            const exists = aiMsg.tool_calls?.some(
+              (tc) => tc.id === parsedCalls.id
+            );
+            if (!exists) {
+              aiMsg.tool_calls = [...(aiMsg.tool_calls || []), parsedCalls];
+            }
+          }
+        } catch (e) {
+          // If parsing fails, treat it as a streaming chunk
+          if (!aiMsg.tool_call_chunks) {
+            aiMsg.tool_call_chunks = [];
+          }
+          aiMsg.tool_call_chunks.push(calls);
+        }
       } else {
-        aiMsg.tool_calls = calls;
+        // For complete tool calls array, only add new ones
+        const existingIds = new Set(aiMsg.tool_calls?.map((tc) => tc.id) || []);
+        const newCalls = calls.filter((tc) => !existingIds.has(tc.id));
+        if (newCalls.length > 0) {
+          aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
+        }
       }
+    },
+    receivedToolCallMsgs: (
+      st,
+      action: PayloadAction<{ placeholderTurnId: string; toolMsgs: string }>
+    ) => {
+      const { placeholderTurnId, toolMsgs } = action.payload;
+      const turn = st.currentLog?.conversation_turns.find(
+        (t) => t.turn_id === placeholderTurnId
+      );
+      if (!turn) return;
+
+      const aiMsg = turn.messages.find((m) => m.role === "assistant");
+      if (!aiMsg) return;
+
+      if (!aiMsg.toolMessages) {
+        aiMsg.toolMessages = [];
+      }
+      aiMsg.toolMessages.push({
+        msg_id: nanoid(),
+        msg: toolMsgs,
+      });
     },
     // 1) incremental assistant stream
     assistantChunkArrived: (
@@ -412,6 +474,7 @@ export const {
   assistantChunkArrived,
   receivedMessage,
   receivedToolCalls,
+  receivedToolCallMsgs,
   turnComplete,
 } = scheduleBuilderLog.actions;
 

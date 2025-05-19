@@ -44,6 +44,7 @@ export type ScheduleBuilderMessage = {
   reaction: "like" | "dislike" | null;
   // assistant-only fields
   tool_calls?: ToolCall[];
+  tool_call_chunks?: string[];
   toolMessages?: { msg_id: string; msg: string }[];
   token_usage?: TokenUsage;
   response_time: number;

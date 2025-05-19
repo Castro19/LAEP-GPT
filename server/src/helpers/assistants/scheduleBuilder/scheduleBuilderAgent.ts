@@ -19,11 +19,12 @@ export async function* scheduleBuilderStream(
   userId: string
 ): AsyncGenerator<{
   chunk?: string;
+  toolChunk?: string;
+  toolCallChunk?: string;
   toolCalls?: {
     id: string;
     name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    args: any;
+    args: string;
     type: string;
   }[];
   lastState?: typeof StateAnnotation.State;
@@ -33,9 +34,9 @@ export async function* scheduleBuilderStream(
     total_tokens: number;
   };
 }> {
-  if (environment === "dev") {
-    console.log("INIT STATE: ", initState);
-  }
+  // if (environment === "dev") {
+  //   console.log("INIT STATE: ", initState);
+  // }
   const eventStream = agent.streamEvents(initState, {
     configurable: { thread_id: threadId, user_id: userId },
     recursionLimit: 10,
@@ -91,14 +92,35 @@ export async function* scheduleBuilderStream(
             } else if (currentToolCall && toolChunk.args) {
               // Append to existing tool call args
               currentToolCall.args += toolChunk.args;
+              try {
+                // Try to parse the accumulated args as JSON
+                const parsedArgs = JSON.parse(currentToolCall.args);
+                yield {
+                  toolCallChunk: JSON.stringify({
+                    id: currentToolCall.id,
+                    name: currentToolCall.name,
+                    args: parsedArgs,
+                    type: "tool_call",
+                  }),
+                };
+              } catch (e) {
+                // If not valid JSON yet, just stream the chunk
+                yield { toolCallChunk: toolChunk.args };
+              }
             }
           }
         }
       }
-
-      // Handle regular text chunks
-      if (typeof data.chunk.content === "string" && data.chunk.content) {
+      // Haxndle regular text chunks
+      else if (typeof data.chunk.content === "string" && data.chunk.content) {
         yield { chunk: data.chunk.content };
+      }
+    } else if (data.chunk && data.chunk.tools && data.chunk.tools.messages) {
+      // Stream out each ToolMessage
+      for (const message of data.chunk.tools.messages) {
+        if (message.constructor.name === "ToolMessage") {
+          yield { toolChunk: message.content };
+        }
       }
     }
 
