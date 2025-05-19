@@ -493,7 +493,7 @@ export async function buildSectionSummaries(
                 .map(([tag]) => tag)
                 .join(", ")} ]`
             : "";
-        return `${prof.name} (${score}/4.0 rating) Popular tags:${tagsSnippet}`;
+        return `${prof.name} (${score}/4.0 rating) Popular tags:${tagsSnippet} PolyRatings.dev URL: https://polyratings.dev/professor/${prof.id}`;
       })
       .join("; ");
 
