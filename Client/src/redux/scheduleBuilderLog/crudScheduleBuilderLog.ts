@@ -180,28 +180,32 @@ export async function streamScheduleBuilderRequest(
           onToolCallMsg(toolCallText);
           break;
 
-        case "assistant":
+        case "assistant": {
           // eslint-disable-next-line no-case-declarations
-          const { text: assistantText } = JSON.parse(raw);
-          onChunk(assistantText);
+          const { text } = JSON.parse(raw);
+          onChunk(text);
           break;
+        }
 
-        case "message":
+        case "message": {
           // eslint-disable-next-line no-case-declarations
           const msg: ScheduleBuilderMessage = JSON.parse(raw);
           onMessage(msg);
           break;
+        }
 
-        case "done":
+        case "done": {
           // eslint-disable-next-line no-case-declarations
           const payload: OnDonePayload = JSON.parse(raw);
           onDone(payload);
           return; // done reading
+        }
 
-        case "error":
+        case "error": {
           // eslint-disable-next-line no-case-declarations
           const { message } = JSON.parse(raw);
           throw new Error(message);
+        }
       }
     }
   }
