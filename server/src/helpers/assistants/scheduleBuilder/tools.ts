@@ -241,6 +241,7 @@ export const fetchSections = tool(
               type: "sections_data",
               potentialSections,
               suggestedSections: sectionsToReturn,
+              sectionSummaries: `use this content to summarize the sections fetched: ${sectionSummaries}`,
             }),
             tool_call_id: config.toolCall.id,
           }),
