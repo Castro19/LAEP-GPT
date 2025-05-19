@@ -1,5 +1,10 @@
 // scheduleBuilder.ts
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  Middleware,
+} from "@reduxjs/toolkit";
 import {
   FetchedScheduleBuilderLog,
   FetchedScheduleBuilderLogListItem,
@@ -19,8 +24,10 @@ import { nanoid } from "@reduxjs/toolkit";
 import {
   updateScheduleIdFromBuilder,
   updateScheduleSections,
+  updateScheduleSection,
 } from "../schedule/scheduleSlice";
 import { updateSelectedSections } from "../sectionSelection/sectionSelectionSlice";
+import { RootState } from "../store";
 
 /* ------------------------------------------------------------------ */
 /*  Local helper types                                                */
@@ -39,6 +46,7 @@ interface ScheduleBuilderLogState {
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
+  processedToolCallIds: string[]; // Changed from Set to string array
 }
 
 const initialState: ScheduleBuilderLogState = {
@@ -51,6 +59,7 @@ const initialState: ScheduleBuilderLogState = {
   isLoading: false,
   error: null,
   deletingThreadIds: [],
+  processedToolCallIds: [], // Initialize as empty array
 };
 
 /* ------------------------------------------------------------------ */
@@ -108,10 +117,8 @@ export const sendMessage = createAsyncThunk<
     { getState, dispatch, rejectWithValue }
   ) => {
     const currentLog = getState().scheduleBuilderLog.currentLog;
-
     let threadId = currentLog?.thread_id ?? `temp-${nanoid()}`;
 
-    // 1) now open the SSE stream
     try {
       await streamScheduleBuilderRequest(
         { threadId, userMsg: text, state },
@@ -126,6 +133,10 @@ export const sendMessage = createAsyncThunk<
         // on tool call
         (calls) => {
           dispatch(receivedToolCalls({ placeholderTurnId, calls }));
+          // Process tool calls immediately
+          if (Array.isArray(calls)) {
+            dispatch(processToolCalls(calls));
+          }
         },
         // on tool call msg
         (toolMsgs) => {
@@ -182,6 +193,42 @@ export const updateLogTitle = createAsyncThunk<
   }
 );
 
+// Create a thunk to handle tool calls
+export const processToolCalls = createAsyncThunk(
+  "scheduleBuilderLog/processToolCalls",
+  async (toolCalls: ToolCall[], { dispatch }) => {
+    console.log("Processing tool calls:", toolCalls);
+    // Process each tool call
+    for (const toolCall of toolCalls) {
+      switch (toolCall.name) {
+        case "manage_schedule": {
+          const args = toolCall.args as {
+            operation: string;
+            class_nums?: number[];
+          };
+          if (args.operation === "add" && args.class_nums) {
+            await dispatch(
+              updateScheduleSection({
+                sectionIds: args.class_nums,
+                action: "add",
+              })
+            );
+          } else if (args.operation === "remove" && args.class_nums) {
+            await dispatch(
+              updateScheduleSection({
+                sectionIds: args.class_nums,
+                action: "remove",
+              })
+            );
+          }
+          break;
+        }
+        // Add other tool call types as needed
+      }
+    }
+  }
+);
+
 /* ------------------------------------------------------------------ */
 /*  Slice                                                             */
 /* ------------------------------------------------------------------ */
@@ -215,6 +262,22 @@ const scheduleBuilderLog = createSlice({
         conversation_turns: [],
         title: "New Schedule Chat",
       };
+    },
+    processToolCall: (
+      st,
+      action: PayloadAction<{
+        toolCall: ToolCall;
+      }>
+    ) => {
+      const { toolCall } = action.payload;
+
+      // Skip if already processed
+      if (st.processedToolCallIds.includes(toolCall.id)) {
+        return;
+      }
+
+      // Mark as processed
+      st.processedToolCallIds.push(toolCall.id);
     },
     receivedToolCalls: (
       st,
@@ -262,7 +325,6 @@ const scheduleBuilderLog = createSlice({
         const newCalls = calls.filter((tc) => !existingIds.has(tc.id));
         if (newCalls.length > 0) {
           const newToolCalls = [...(aiMsg.tool_calls || []), ...newCalls];
-          console.log("newToolCalls", newToolCalls);
           aiMsg.tool_calls = newToolCalls;
         }
       }
@@ -477,6 +539,7 @@ export const {
   receivedToolCalls,
   receivedToolCallMsgs,
   turnComplete,
+  processToolCall,
 } = scheduleBuilderLog.actions;
 
 export const scheduleBuilderLogReducer = scheduleBuilderLog.reducer;
@@ -487,3 +550,56 @@ export const scheduleBuilderLogReducer = scheduleBuilderLog.reducer;
 // dispatch(setDraftMsg(text));                      ← update textarea
 // dispatch(appendUserTurnLocally(userTurn));         ← optimistic append
 // dispatch(sendMessage({ text }));                   ← triggers backend
+
+// Create a middleware to handle tool calls
+export const toolCallMiddleware: Middleware =
+  (store) => (next) => (action: unknown) => {
+    // First, let the action go through
+    const result = next(action);
+
+    // If this is a tool call being processed
+    if (
+      typeof action === "object" &&
+      action !== null &&
+      "type" in action &&
+      action.type === "scheduleBuilderLog/processToolCall"
+    ) {
+      const { toolCall } = (action as PayloadAction<{ toolCall: ToolCall }>)
+        .payload;
+      const state = store.getState() as RootState;
+
+      // Skip if already processed
+      if (state.scheduleBuilderLog.processedToolCallIds.includes(toolCall.id)) {
+        return result;
+      }
+
+      // Process based on tool call type
+      switch (toolCall.name) {
+        case "manage_schedule": {
+          const args = toolCall.args as {
+            operation: string;
+            class_nums?: number[];
+          };
+          if (args.operation === "add" && args.class_nums) {
+            store.dispatch(
+              updateScheduleSection({
+                sectionIds: args.class_nums,
+                action: "add",
+              }) as any
+            );
+          } else if (args.operation === "remove" && args.class_nums) {
+            store.dispatch(
+              updateScheduleSection({
+                sectionIds: args.class_nums,
+                action: "remove",
+              }) as any
+            );
+          }
+          break;
+        }
+        // Add other tool call types as needed
+      }
+    }
+
+    return result;
+  };
