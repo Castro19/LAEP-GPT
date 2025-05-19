@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import SectionsChosen from "../buildSchedule/selectedSections/SectionsChosen";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 interface ManageScheduleProps {
   args: {
@@ -45,7 +45,9 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
           </div>
         );
       case "readall":
-        console.log(formattedCourses);
+        if (environment === "dev") {
+          console.log(formattedCourses);
+        }
         return (
           <div className="text-slate-400">
             <span className="font-semibold">
