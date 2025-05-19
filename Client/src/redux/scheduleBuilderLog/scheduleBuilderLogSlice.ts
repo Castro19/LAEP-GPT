@@ -40,7 +40,6 @@ interface ScheduleBuilderLogState {
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
-  processedToolCallIds: string[]; // Changed from Set to string array
 }
 
 const initialState: ScheduleBuilderLogState = {
@@ -53,7 +52,6 @@ const initialState: ScheduleBuilderLogState = {
   isLoading: false,
   error: null,
   deletingThreadIds: [],
-  processedToolCallIds: [], // Initialize as empty array
 };
 
 /* ------------------------------------------------------------------ */
@@ -256,22 +254,6 @@ const scheduleBuilderLog = createSlice({
         conversation_turns: [],
         title: "New Schedule Chat",
       };
-    },
-    processToolCall: (
-      st,
-      action: PayloadAction<{
-        toolCall: ToolCall;
-      }>
-    ) => {
-      const { toolCall } = action.payload;
-
-      // Skip if already processed
-      if (st.processedToolCallIds.includes(toolCall.id)) {
-        return;
-      }
-
-      // Mark as processed
-      st.processedToolCallIds.push(toolCall.id);
     },
     receivedToolCalls: (
       st,
@@ -533,7 +515,6 @@ export const {
   receivedToolCalls,
   receivedToolCallMsgs,
   turnComplete,
-  processToolCall,
 } = scheduleBuilderLog.actions;
 
 export const scheduleBuilderLogReducer = scheduleBuilderLog.reducer;
