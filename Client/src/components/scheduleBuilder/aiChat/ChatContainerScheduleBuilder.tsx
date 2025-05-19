@@ -27,9 +27,6 @@ const ChatContainerScheduleBuilder: React.FC = () => {
   useEffect(() => {
     if (currentLog) {
       const { conversation_turns } = currentLog;
-      if (process.env.NODE_ENV !== "production") {
-        console.log("New messages received:", conversation_turns.length);
-      }
       setMsgList(conversation_turns);
     }
   }, [currentLog]);

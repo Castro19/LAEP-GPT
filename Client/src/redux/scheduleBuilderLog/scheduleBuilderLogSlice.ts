@@ -246,14 +246,6 @@ const scheduleBuilderLog = createSlice({
             if (newCalls.length > 0) {
               aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
             }
-          } else if (parsedCalls.id && parsedCalls.name && parsedCalls.args) {
-            // For single tool call, only add if it doesn't exist
-            const exists = aiMsg.tool_calls?.some(
-              (tc) => tc.id === parsedCalls.id
-            );
-            if (!exists) {
-              aiMsg.tool_calls = [...(aiMsg.tool_calls || []), parsedCalls];
-            }
           }
         } catch (e) {
           // If parsing fails, treat it as a streaming chunk
