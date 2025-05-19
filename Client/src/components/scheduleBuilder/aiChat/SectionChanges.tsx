@@ -10,6 +10,7 @@ import {
   TooltipPortal,
 } from "@/components/ui/tooltip";
 import { SectionAddedOrRemoved } from "@polylink/shared/types";
+import { scheduleActions, useAppDispatch } from "@/redux";
 
 interface SectionChangesProps {
   sections: SectionAddedOrRemoved[];
@@ -20,8 +21,14 @@ const SectionChanges: React.FC<SectionChangesProps> = ({
   sections,
   operation,
 }) => {
+  const dispatch = useAppDispatch();
   const handleRevert = (classNumber: number) => {
-    console.log(`Reverting section ${classNumber}`);
+    dispatch(
+      scheduleActions.updateScheduleSection({
+        sectionIds: [classNumber],
+        action: operation === "add" ? "remove" : "add", // revert the operation (do the opposite)
+      })
+    );
   };
 
   return (
