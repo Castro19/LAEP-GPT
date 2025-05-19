@@ -29,7 +29,10 @@ import * as fallSectionCollection from "../../../db/models/section/fallSectionCo
 import { getProfessorRatings } from "../../../db/models/professorRatings/professorRatingServices";
 import { combineClassPairs } from "./formatter";
 import { environment } from "../../..";
-
+import {
+  SUGGESTED_SECTIONS_PER_COURSE,
+  POTENTIAL_SECTIONS_PER_COURSE,
+} from "./const";
 export const getSelectedSectionsTool = async ({
   userId,
   term,
@@ -49,13 +52,14 @@ export const getUserNextEligibleSections = async ({
   userId,
   term,
   numCourses,
-  sectionsPerCourse,
 }: {
   userId: string;
   term: CourseTerm;
   numCourses: number;
-  sectionsPerCourse: number;
-}): Promise<SelectedSection[]> => {
+}): Promise<{
+  suggestedSections: SelectedSection[];
+  potentialSectionsClassNums: number[];
+}> => {
   const flowchart = await fetchPrimaryFlowchart(userId);
 
   // Sort terms by tIndex
@@ -78,7 +82,10 @@ export const getUserNextEligibleSections = async ({
   }
 
   if (eligibleCourses.length === 0) {
-    return [];
+    return {
+      suggestedSections: [],
+      potentialSectionsClassNums: [],
+    };
   }
 
   // Take only the number of courses we need
@@ -96,7 +103,10 @@ export const getUserNextEligibleSections = async ({
     term as CourseTerm
   );
   if (!sections) {
-    return [];
+    return {
+      suggestedSections: [],
+      potentialSectionsClassNums: [],
+    };
   }
   // Convert sections to SelectedSection format
   const fetchedSections: SelectedSection[] = sections.map((section) =>
@@ -118,10 +128,18 @@ export const getUserNextEligibleSections = async ({
 
   //   Take only the number of sections we need
   const selectedSections = Object.values(groupedSections).map((sections) =>
-    sections.slice(0, sectionsPerCourse)
+    sections.slice(0, POTENTIAL_SECTIONS_PER_COURSE)
+  );
+  const suggestedSections = Object.values(groupedSections).map((sections) =>
+    sections.slice(0, SUGGESTED_SECTIONS_PER_COURSE)
   );
 
-  return selectedSections.flat();
+  return {
+    suggestedSections: suggestedSections.flat(),
+    potentialSectionsClassNums: selectedSections
+      .flat()
+      .map((s) => s.classNumber),
+  };
 };
 
 // Manage Schedule
@@ -258,14 +276,12 @@ export const addToSchedule = async ({
   classNumbersToAdd,
   scheduleId,
   preferences,
-  selectedSections,
 }: {
   userId: string;
   classNumbersToAdd: number[];
   scheduleId: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   preferences: any;
-  selectedSections: SelectedSection[];
 }): Promise<{
   classNumbersAdded: number[];
   messageToAdd: string;
@@ -329,12 +345,7 @@ export const addToSchedule = async ({
     schedule.sections.map((s) => s.classNumber)
   );
   // else add all sections to selectedSections
-  await bulkPostSelectedSections(
-    userId,
-    sectionsToAddWithTerm,
-    "add",
-    selectedSections
-  );
+  await bulkPostSelectedSections(userId, sectionsToAddWithTerm, "add");
   // and to schedule all at once
 
   await createOrUpdateSchedule(

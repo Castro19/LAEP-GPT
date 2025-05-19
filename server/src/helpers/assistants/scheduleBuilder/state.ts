@@ -8,7 +8,7 @@ import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
 export const StateAnnotation = Annotation.Root({
   ...MessagesAnnotation.spec,
   term: Annotation<CourseTerm>,
-  sections: Annotation<SelectedSection[]>({
+  suggestedSections: Annotation<SelectedSection[]>({
     default: () => [],
     reducer: (a: SelectedSection[], b: SelectedSection[]) => {
       // If either value is undefined/null, return the other
@@ -16,6 +16,16 @@ export const StateAnnotation = Annotation.Root({
       if (!b) return a;
       // Concatenate the arrays
       return [...a, ...b];
+    },
+  }),
+  potentialSections: Annotation<number[]>({
+    default: () => [],
+    reducer: (a: number[], b: number[]) => {
+      // If either value is undefined/null, return the other
+      if (!a) return b;
+      if (!b) return a;
+      // Return the most recent array
+      return b;
     },
   }),
   user_query: Annotation<string>,
@@ -89,8 +99,7 @@ export const StateAnnotation = Annotation.Root({
 export const stateModifier = (
   state: typeof StateAnnotation.State
 ): typeof StateAnnotation.State => {
-  const { sections, preferences, term, schedule_id, diff, currentSchedule } =
-    state;
+  const { preferences, term, currentSchedule } = state;
 
   const systemMessage = `
   You are PolyLink Schedule Builder, a helpful AI agent to provide assistance with schedule building for courses at Cal Poly.
@@ -126,11 +135,8 @@ export const stateModifier = (
     summaries.
     
   Current State: 
-    - schedule_id: ${schedule_id}
     - term: ${term}
-    - sections: ${JSON.stringify(sections)}
     - preferences: ${JSON.stringify(preferences)}
-    - diff: ${JSON.stringify(diff)}
     - currentSchedule: ${JSON.stringify(currentSchedule)}
   `;
 

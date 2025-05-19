@@ -7,6 +7,7 @@ import {
   deleteSelectedSection,
   bulkPostSelectedSections,
 } from "../db/models/selectedSection/selectedSectionServices";
+import { transformClassNumbersToSelectedSections } from "../db/models/schedule/transformSection";
 import { CourseTerm } from "@polylink/shared/types";
 
 const router = express.Router();

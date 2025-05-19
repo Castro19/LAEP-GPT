@@ -78,14 +78,13 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
         text: draftMsg,
         placeholderTurnId,
         state: {
-          user_id: "",
           term: currentScheduleTerm as CourseTerm,
-          sections: [],
+          suggestedSections: [],
+          potentialSections: [],
           user_query: "",
-          schedule_id: currentSchedule?.id || "",
-          diff: { added: [], removed: [] },
           preferences: { with_time_conflicts: true },
           currentSchedule: currentSchedule as unknown as ScheduleResponse,
+          diff: { added: [], removed: [] },
         },
       })
     );
