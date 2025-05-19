@@ -22,29 +22,30 @@ const AIChatLoadingMessage = ({
         <Skeleton className="h-4 w-[200px] sm:w-[250px] bg-gray-300 dark:bg-slate-600/50" />
         <Skeleton className="h-4 w-[150px] sm:w-[200px] bg-gray-300 dark:bg-slate-600/50" />
         {toolUsage && (
-          <motion.div
-            className="text-sm sm:text-md italic pt-1 relative overflow-hidden text-gray-400 w-full"
-            style={{
-              background:
-                "linear-gradient(90deg, #9CA3AF 0%, #D1D5DB 50%, #9CA3AF 100%)",
-              backgroundSize: "200% 100%",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              color: "#9CA3AF",
-            }}
-            animate={{
-              backgroundPosition: ["0% 0%", "200% 0%"],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          >
+          <motion.div className="text-sm sm:text-md italic pt-1 relative overflow-hidden text-gray-400 w-full">
             {toolUsage && toolUsage.length > 0 ? (
               <ToolUsageDisplay toolUsage={toolUsage} />
             ) : (
-              msg
+              <motion.span
+                style={{
+                  background:
+                    "linear-gradient(90deg, #9CA3AF 0%, #D1D5DB 50%, #9CA3AF 100%)",
+                  backgroundSize: "200% 100%",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  color: "#9CA3AF",
+                }}
+                animate={{
+                  backgroundPosition: ["0% 0%", "200% 0%"],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                {msg}
+              </motion.span>
             )}
           </motion.div>
         )}

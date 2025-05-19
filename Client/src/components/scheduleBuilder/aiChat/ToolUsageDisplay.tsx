@@ -47,7 +47,11 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
           case "search":
             return `Searching for courses matching "${search_query}"`;
           case "curriculum":
-            return `Fetching next ${num_courses} eligible courses (max ${sections_per_course} sections per course)`;
+            return `Fetching next ${num_courses} eligible courses from flowchart ${
+              sections_per_course
+                ? `(max ${sections_per_course} sections per course)`
+                : ""
+            }`;
           case "user_selected":
             return "Fetching your selected sections";
           default:
@@ -60,7 +64,7 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
   };
 
   return (
-    <div className="text-sm sm:text-md italic pt-1 relative overflow-hidden text-gray-400 w-full">
+    <div className="text-sm sm:text-md italic pt-1 relative overflow-hidden  dark:text-gray-400 text-gray-400 w-full">
       {toolUsage.map((tool) => (
         <div key={tool.id} className="mb-1">
           {formatToolMessage(tool)}
