@@ -35,6 +35,7 @@ interface ScheduleBuilderLogState {
   currentLog: FetchedScheduleBuilderLog | null;
   draftMsg: string;
   loadingByThread: Record<string, boolean>;
+  messagePending: string | null;
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
@@ -46,6 +47,7 @@ const initialState: ScheduleBuilderLogState = {
   currentLog: null,
   draftMsg: "",
   loadingByThread: {},
+  messagePending: null,
   isLoading: false,
   error: null,
   deletingThreadIds: [],
@@ -259,7 +261,9 @@ const scheduleBuilderLog = createSlice({
         const existingIds = new Set(aiMsg.tool_calls?.map((tc) => tc.id) || []);
         const newCalls = calls.filter((tc) => !existingIds.has(tc.id));
         if (newCalls.length > 0) {
-          aiMsg.tool_calls = [...(aiMsg.tool_calls || []), ...newCalls];
+          const newToolCalls = [...(aiMsg.tool_calls || []), ...newCalls];
+          console.log("newToolCalls", newToolCalls);
+          aiMsg.tool_calls = newToolCalls;
         }
       }
     },
@@ -299,8 +303,13 @@ const scheduleBuilderLog = createSlice({
       const aiMsg = turn.messages.find((m) => m.role === "assistant");
       if (!aiMsg) return; // should never happen due to pending
 
-      // Append the chunk
-      aiMsg.msg += chunk;
+      if (aiMsg.isPending && aiMsg.msg === "Analyzing request...") {
+        aiMsg.msg = chunk;
+        aiMsg.isPending = false;
+      } else {
+        // Append the chunk
+        aiMsg.msg += chunk;
+      }
     },
     // 2) received a complete message
     receivedMessage: (
@@ -324,7 +333,6 @@ const scheduleBuilderLog = createSlice({
         if (aiMsg) {
           // overwrite its text (it's been collecting via assistantChunkArrived)
           aiMsg.msg = message.msg;
-
           // copy over token_usage etc. if you need it
           aiMsg.token_usage = message.token_usage;
           aiMsg.finish_reason = message.finish_reason;
@@ -425,9 +433,10 @@ const scheduleBuilderLog = createSlice({
         turn.messages.push({
           msg_id: nanoid(),
           role: "assistant",
-          msg: "", // will fill in onChunk / receivedMessage
+          msg: "Analyzing request...", // will fill in onChunk / receivedMessage
           reaction: null,
           response_time: 0,
+          isPending: true,
         });
       })
       .addCase(sendMessage.rejected, (st, action) => {

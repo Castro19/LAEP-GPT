@@ -11,6 +11,7 @@ export interface BackendMsg {
   tool_calls?: ToolCall[] | null;
   toolMessages?: ToolMsg[] | null;
   tools?: Tool[];
+  isPending?: boolean;
   // ...other fields omitted for layout only
 }
 
@@ -80,6 +81,7 @@ const buildProps = (messages: BackendMsg[]) => {
             tool_calls: assistantRaw.tool_calls || [],
             toolMessages: assistantRaw.toolMessages || [],
           }),
+    isPending: assistantRaw.isPending,
   };
 
   return { user, assistant };

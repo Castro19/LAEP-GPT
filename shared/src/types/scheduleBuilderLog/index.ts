@@ -42,6 +42,8 @@ export type ScheduleBuilderMessage = {
   role: "user" | "assistant" | "tool";
   msg: string;
   reaction: "like" | "dislike" | null;
+  // Client-only field
+  isPending?: boolean;
   // assistant-only fields
   tool_calls?: ToolCall[];
   tool_call_chunks?: string[];
