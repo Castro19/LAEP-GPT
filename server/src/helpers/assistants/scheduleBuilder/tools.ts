@@ -2,7 +2,12 @@
 import { tool } from "@langchain/core/tools";
 import { ToolMessage } from "@langchain/core/messages";
 import { z } from "zod";
-import { CourseTerm, Section, SelectedSection } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  Section,
+  SelectedSection,
+  ProfessorRatingDocument,
+} from "@polylink/shared/types";
 import { StateAnnotation } from "./state";
 
 // “Injected” helpers -------------------------------------------------
@@ -21,6 +26,7 @@ import {
   sectionQueryAssistant,
   SectionQueryResponse,
 } from "../SectionQuery/sectionQueryAssistant";
+import { getProfessorRatings } from "../../../db/models/professorRatings/professorRatingServices";
 import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
 import { getSelectedSectionsByUserId } from "../../../db/models/selectedSection/selectedSectionServices";
