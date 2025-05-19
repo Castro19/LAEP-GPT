@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Circle,
   CalendarPlus,
+  PlusCircle,
 } from "lucide-react";
 import { convertTo12HourFormat } from "@/components/classSearch/helpers/timeFormatter";
 import {
@@ -804,6 +805,16 @@ const SectionCard: React.FC<{
     );
   };
 
+  const handleAddToSelected = () => {
+    dispatch(
+      sectionSelectionActions.createOrUpdateSelectedSectionAsync({
+        section: {
+          ...section,
+          term: currentScheduleTerm,
+        } as unknown as SectionDetail,
+      })
+    );
+  };
   const handleToggleSelection = () => {
     dispatch(
       sectionSelectionActions.toggleSectionForSchedule(section.classNumber)
@@ -901,6 +912,10 @@ const SectionCard: React.FC<{
   // Remove any duplicate days
   const days = meetings.map((meeting) => meeting.days).flat();
   const uniqueDays = [...new Set(days)];
+
+  const isInSelectedSections = selectedSectionInList.some(
+    (s: SelectedSection) => s.classNumber === section.classNumber
+  );
 
   return (
     <div
@@ -1041,32 +1056,61 @@ const SectionCard: React.FC<{
             </TooltipProvider>
 
             {/* Remove from selected */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleRemove}
-                    className="h-7 w-7 text-red-700 dark:text-red-400 
+            {isInSelectedSections ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleRemove}
+                      className="h-7 w-7 text-red-700 dark:text-red-400 
                       hover:bg-red-100/50 dark:hover:bg-red-900/50
                       hover:text-red-800 dark:hover:text-red-300"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent
-                    side="top"
-                    sideOffset={5}
-                    className="z-[100]"
-                    avoidCollisions={true}
-                  >
-                    Remove from selected sections
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent
+                      side="top"
+                      sideOffset={5}
+                      className="z-[100]"
+                      avoidCollisions={true}
+                    >
+                      Remove from selected sections
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleAddToSelected}
+                      className="h-7 w-7 text-gray-900 dark:text-gray-50 
+                        hover:bg-gray-200/50 dark:hover:bg-gray-700/50
+                        hover:text-gray-950 dark:hover:text-white"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent
+                      side="top"
+                      sideOffset={5}
+                      className="z-[100]"
+                      avoidCollisions={true}
+                    >
+                      Add to selected sections
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
 
           {/* Schedule Actions Group */}
