@@ -26,11 +26,10 @@ export type TokenUsage = {
 };
 
 export type ScheduleBuilderState = {
-  user_id: string;
   term: CourseTerm;
-  sections: SelectedSection[];
+  suggestedSections: SelectedSection[];
+  potentialSections: number[];
   user_query: string;
-  schedule_id: string;
   currentSchedule: ScheduleResponse;
   diff: { added: number[]; removed: number[] };
   preferences: { with_time_conflicts: boolean };

@@ -8,6 +8,7 @@ import {
   ConversationTurn,
   ScheduleBuilderState,
   SelectedSection,
+  CourseTerm,
 } from "@polylink/shared/types";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
 import { v4 as uuidv4 } from "uuid";
@@ -27,6 +28,9 @@ import {
 import { HumanMessage, AIMessageChunk } from "@langchain/core/messages";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
 import { getSelectedSectionsByUserId } from "../db/models/selectedSection/selectedSectionServices";
+import { transformClassNumbersToSelectedSections } from "../db/models/schedule/transformSection";
+import { environment } from "../index";
+
 const router = express.Router();
 
 // Rate limiter for GPT messages
@@ -450,5 +454,34 @@ router.delete(
     }
   })
 );
+
+router.get("/potential-sections/:term/:classNumbers", async (req, res: any) => {
+  try {
+    const userId = req.user?.uid;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { term, classNumbers } = req.params as {
+      term: CourseTerm;
+      classNumbers: string;
+    };
+    const classNumbersArray = classNumbers.split(",").map(Number);
+    const selectedSections = await transformClassNumbersToSelectedSections(
+      userId,
+      classNumbersArray,
+      term
+    );
+
+    return res.status(200).json({
+      message: "Selected sections fetched successfully",
+      selectedSections,
+    });
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching selected sections:", error);
+    }
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 export default router;

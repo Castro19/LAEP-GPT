@@ -287,13 +287,16 @@ export const bulkPostSelectedSections = async (
     sectionId: number;
     term: CourseTerm;
   }>,
-  operation: "add" | "remove" = "add",
-  selectedSections?: SelectedSection[]
+  operation: "add" | "remove" = "add"
 ): Promise<{
   selectedSections: SelectedSection[];
   message: string;
 }> => {
   try {
+    const selectedSections = await getSelectedSectionsByUserId(
+      userId,
+      sections[0].term
+    );
     const existingSection =
       await selectedSelectionModel.findSelectedSectionsByUserId(userId);
 

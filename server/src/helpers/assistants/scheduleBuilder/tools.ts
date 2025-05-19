@@ -25,19 +25,21 @@ import { Command, getCurrentTaskInput } from "@langchain/langgraph";
 import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
 import { getSelectedSectionsByUserId } from "../../../db/models/selectedSection/selectedSectionServices";
 import { environment } from "../../..";
+import {
+  POTENTIAL_SECTIONS_PER_COURSE,
+  SUGGESTED_SECTIONS_PER_COURSE,
+} from "./const";
 
 export const fetchSections = tool(
   async (
     input: {
       fetch_type: "search" | "user_selected" | "curriculum";
       num_courses?: number;
-      sections_per_course?: number;
       search_query?: string;
     },
     config
   ) => {
-    const { fetch_type, num_courses, sections_per_course, search_query } =
-      input;
+    const { fetch_type, num_courses, search_query } = input;
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
 
     // ---------- validation ----------
@@ -53,16 +55,13 @@ export const fetchSections = tool(
         },
       });
     }
-    if (
-      ["search", "curriculum"].includes(fetch_type) &&
-      (!num_courses || !sections_per_course)
-    ) {
+    if (["search", "curriculum"].includes(fetch_type) && !num_courses) {
       return {
         update: {
           messages: [
             new ToolMessage({
               content:
-                "num_courses and sections_per_course must be specified for search or curriculum fetch.",
+                "num_courses must be specified for search or curriculum fetch.",
               tool_call_id: config.toolCall.id,
             }),
           ],
@@ -72,6 +71,7 @@ export const fetchSections = tool(
 
     /* ------------------ main branches ------------------ */
     let sectionsToReturn: SelectedSection[] | Record<string, string> = [];
+    let potentialSections: number[] = [];
 
     if (fetch_type === "user_selected") {
       const sections = await getSelectedSectionsTool({
@@ -90,16 +90,17 @@ export const fetchSections = tool(
           },
         });
       }
+      potentialSections = sections.map((s) => s.classNumber);
       sectionsToReturn = sections;
     } else if (fetch_type === "curriculum") {
-      const sections = await getUserNextEligibleSections({
-        userId: config.configurable.user_id,
-        term: state.term,
-        numCourses: num_courses!,
-        sectionsPerCourse: sections_per_course!,
-      });
+      const { potentialSectionsClassNums, suggestedSections } =
+        await getUserNextEligibleSections({
+          userId: config.configurable.user_id,
+          term: state.term,
+          numCourses: num_courses!,
+        });
 
-      if (!sections.length) {
+      if (!suggestedSections.length) {
         return new Command({
           update: {
             messages: [
@@ -111,7 +112,9 @@ export const fetchSections = tool(
           },
         });
       }
-      sectionsToReturn = sections;
+
+      sectionsToReturn = suggestedSections;
+      potentialSections = potentialSectionsClassNums;
     } else if (fetch_type === "search") {
       if (environment === "dev") {
         console.log(
@@ -161,8 +164,23 @@ export const fetchSections = tool(
       /* bucket → limit courses & sections per course */
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const courseBuckets: Record<string, any[]> = {};
+      const potentialBuckets: Record<string, any[]> = {};
       for (const sec of mongoSections.sections) {
         const cid = sec.courseId;
+        // Handle potential sections (up to POTENTIAL_SECTIONS_PER_COURSE)
+        if (
+          !(cid in potentialBuckets) &&
+          Object.keys(potentialBuckets).length < num_courses!
+        ) {
+          potentialBuckets[cid] = [sec];
+        } else if (
+          cid in potentialBuckets &&
+          potentialBuckets[cid].length < POTENTIAL_SECTIONS_PER_COURSE
+        ) {
+          potentialBuckets[cid].push(sec);
+        }
+
+        // Handle suggested sections (up to SUGGESTED_SECTIONS_PER_COURSE)
         if (
           !(cid in courseBuckets) &&
           Object.keys(courseBuckets).length < num_courses!
@@ -170,12 +188,13 @@ export const fetchSections = tool(
           courseBuckets[cid] = [sec];
         } else if (
           cid in courseBuckets &&
-          courseBuckets[cid].length < sections_per_course!
+          courseBuckets[cid].length < SUGGESTED_SECTIONS_PER_COURSE
         ) {
           courseBuckets[cid].push(sec);
         }
       }
       const flatSecs = Object.values(courseBuckets).flat();
+      const potentialSecs = Object.values(potentialBuckets).flat();
       const selectedSections = await getSelectedSectionsByUserId(
         config.configurable.user_id,
         state.term as CourseTerm
@@ -187,6 +206,7 @@ export const fetchSections = tool(
             selectedSections.find((s) => s.courseId === s.courseId)?.color
           )
       );
+      potentialSections = potentialSecs.map((s) => s.classNumber);
     } else {
       return new Command({
         update: {
@@ -217,11 +237,16 @@ export const fetchSections = tool(
       update: {
         messages: [
           new ToolMessage({
-            content: `Fetched sections: ${JSON.stringify(sectionsToReturn)}`,
+            content: JSON.stringify({
+              type: "sections_data",
+              potentialSections,
+              suggestedSections: sectionsToReturn,
+            }),
             tool_call_id: config.toolCall.id,
           }),
         ],
-        sections: sectionsToReturn,
+        potentialSections: potentialSections,
+        suggestedSections: sectionsToReturn,
         sectionSummaries,
       },
     });
@@ -243,11 +268,6 @@ export const fetchSections = tool(
         .describe(
           "Number of courses to return (required for 'search' or 'curriculum')."
         ),
-      sections_per_course: z
-        .number()
-        .int()
-        .default(1)
-        .describe("Max sections to return per course."),
       search_query: z
         .string()
         .optional()
@@ -321,7 +341,6 @@ export const manageSchedule = tool(
           classNumbersToAdd: class_nums, // this is the class numbers to add the sections to the schedule
           scheduleId: schedule_id,
           preferences,
-          selectedSections: state.sections, // only passing in to get colors for selected sections (not used for anything else)
         });
 
       return new Command({
@@ -381,6 +400,7 @@ export const manageSchedule = tool(
             added: [],
             removed: classNumbersRemoved,
           },
+          currentSchedule: currentSchedule,
         },
       });
     }

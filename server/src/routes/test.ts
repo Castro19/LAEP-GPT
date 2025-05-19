@@ -25,7 +25,6 @@ router.get("/next", (async (req, res) => {
     userId: "qiuJz2JJ22WwMPrtBpASYTXglem2",
     term: "fall2025",
     numCourses: 4,
-    sectionsPerCourse: 2,
   });
 
   res.status(200).json(result);

@@ -7,6 +7,8 @@ import {
   ScheduleBuilderMessage,
   ScheduleBuilderState,
   ToolCall,
+  CourseTerm,
+  SelectedSection,
 } from "@polylink/shared/types";
 import {
   fetchAllLogsFromDB,
@@ -14,6 +16,7 @@ import {
   deleteLogFromDB,
   streamScheduleBuilderRequest,
   updateLogTitleFromDB,
+  fetchPotentialSectionsFromDB,
 } from "./crudScheduleBuilderLog";
 import { nanoid } from "@reduxjs/toolkit";
 import {
@@ -216,6 +219,26 @@ export const processToolCalls = createAsyncThunk(
         }
         // Add other tool call types as needed
       }
+    }
+  }
+);
+
+export const fetchSelectedSectionsByClassNumbers = createAsyncThunk<
+  SelectedSection[],
+  { term: CourseTerm; classNumbers: number[] },
+  { rejectValue: ErrorPayload }
+>(
+  "scheduleBuilder/fetchSelectedSectionsByClassNumbers",
+  async ({ term, classNumbers }, { rejectWithValue }) => {
+    try {
+      return await fetchPotentialSectionsFromDB(term, classNumbers);
+    } catch (error) {
+      return rejectWithValue({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch selected sections",
+      });
     }
   }
 );

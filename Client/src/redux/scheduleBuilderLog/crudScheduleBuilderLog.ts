@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {
+  CourseTerm,
   FetchedScheduleBuilderLog,
   FetchedScheduleBuilderLogListItem,
   ScheduleBuilderMessage,
@@ -234,4 +235,24 @@ export async function updateLogTitleFromDB(
     console.error("Error updating log title:", error);
     throw error;
   }
+}
+
+export async function fetchPotentialSectionsFromDB(
+  term: CourseTerm,
+  classNumbers: number[]
+): Promise<SelectedSection[]> {
+  const response = await fetch(
+    `${serverUrl}/scheduleBuilder/potential-sections/${term}/${classNumbers.join(",")}`,
+    {
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  return data.selectedSections;
 }
