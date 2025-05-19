@@ -19,6 +19,7 @@ export async function* scheduleBuilderStream(
   userId: string
 ): AsyncGenerator<{
   chunk?: string;
+  toolChunk?: string;
   toolCalls?: {
     id: string;
     name: string;
@@ -33,9 +34,9 @@ export async function* scheduleBuilderStream(
     total_tokens: number;
   };
 }> {
-  if (environment === "dev") {
-    console.log("INIT STATE: ", initState);
-  }
+  // if (environment === "dev") {
+  //   console.log("INIT STATE: ", initState);
+  // }
   const eventStream = agent.streamEvents(initState, {
     configurable: { thread_id: threadId, user_id: userId },
     recursionLimit: 10,
@@ -55,12 +56,19 @@ export async function* scheduleBuilderStream(
   let completionTokens = 0;
 
   for await (const { event, data } of eventStream) {
+    if (event === "on_chain_start") {
+      if (environment === "dev") {
+        // console.log("ON CHAIN START: ", data);
+        // send back to client that we have started their request
+      }
+    }
     if (event === "on_chat_model_stream" && data.chunk) {
       // Handle tool call chunks
       if (
         data.chunk.tool_call_chunks &&
         data.chunk.tool_call_chunks.length > 0
       ) {
+        console.log("tool call chunks: ", data.chunk.tool_call_chunks);
         for (const toolChunk of data.chunk.tool_call_chunks) {
           if (toolChunk.type === "tool_call_chunk") {
             // Start of a new tool call
@@ -95,10 +103,17 @@ export async function* scheduleBuilderStream(
           }
         }
       }
-
-      // Handle regular text chunks
-      if (typeof data.chunk.content === "string" && data.chunk.content) {
+      // Haxndle regular text chunks
+      else if (typeof data.chunk.content === "string" && data.chunk.content) {
         yield { chunk: data.chunk.content };
+      }
+    } else if (data.chunk && data.chunk.tools && data.chunk.tools.messages) {
+      console.log("ToolMessage from tools:", data.chunk.tools.messages);
+      // Stream out each ToolMessage
+      for (const message of data.chunk.tools.messages) {
+        if (message.constructor.name === "ToolMessage") {
+          yield { toolChunk: message.content };
+        }
       }
     }
 

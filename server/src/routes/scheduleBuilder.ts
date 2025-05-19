@@ -118,6 +118,7 @@ router.post(
         chunk,
         toolCalls,
         lastState: s,
+        toolChunk,
       } of scheduleBuilderStream(initState, threadId, userId)) {
         if (toolCalls) {
           res.write(`event: tool_call\ndata: ${JSON.stringify(toolCalls)}\n\n`);
@@ -125,6 +126,12 @@ router.post(
         if (chunk) {
           res.write(
             `event: assistant\ndata: ${JSON.stringify({ text: chunk })}\n\n`
+          );
+        }
+        if (toolChunk) {
+          console.log("toolChunk: ", toolChunk);
+          res.write(
+            `event: tool_call_msg\ndata: ${JSON.stringify({ text: toolChunk })}\n\n`
           );
         }
         if (s) {

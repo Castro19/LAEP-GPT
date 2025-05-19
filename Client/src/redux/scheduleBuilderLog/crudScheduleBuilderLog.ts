@@ -97,6 +97,7 @@ export async function deleteLogFromDB(threadId: string): Promise<void> {
 type OnChunk = (text: string) => void;
 type OnMessage = (msg: ScheduleBuilderMessage) => void;
 type OnToolCall = (calls: ToolCall[]) => void;
+type OnToolCallMsg = (toolChunk: string) => void;
 type OnDonePayload = {
   isNewSchedule: boolean;
   isNewThread: boolean;
@@ -121,6 +122,7 @@ export async function streamScheduleBuilderRequest(
   onChunk: OnChunk,
   onMessage: OnMessage,
   onToolCall: OnToolCall,
+  onToolCallMsg: OnToolCallMsg,
   onDone: OnDone
 ): Promise<void> {
   const response = await fetch(`${serverUrl}/scheduleBuilder/respond`, {
@@ -167,10 +169,16 @@ export async function streamScheduleBuilderRequest(
           onToolCall(toolCalls);
           break;
 
+        case "tool_call_msg":
+          const { text: toolCallText } = JSON.parse(raw);
+          console.log("Tool message:", toolCallText);
+          onToolCallMsg(toolCallText);
+          break;
+
         case "assistant":
           // eslint-disable-next-line no-case-declarations
-          const { text } = JSON.parse(raw);
-          onChunk(text);
+          const { text: assistantText } = JSON.parse(raw);
+          onChunk(assistantText);
           break;
 
         case "message":

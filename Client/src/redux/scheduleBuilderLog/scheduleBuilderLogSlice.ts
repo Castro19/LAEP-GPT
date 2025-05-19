@@ -125,6 +125,10 @@ export const sendMessage = createAsyncThunk<
         (calls) => {
           dispatch(receivedToolCalls({ placeholderTurnId, calls }));
         },
+        // on tool call msg
+        (toolMsgs) => {
+          dispatch(receivedToolCallMsgs({ placeholderTurnId, toolMsgs }));
+        },
         // on done
         (payload) => {
           if (payload.isNewThread) {
@@ -229,6 +233,27 @@ const scheduleBuilderLog = createSlice({
       } else {
         aiMsg.tool_calls = calls;
       }
+    },
+    receivedToolCallMsgs: (
+      st,
+      action: PayloadAction<{ placeholderTurnId: string; toolMsgs: string }>
+    ) => {
+      const { placeholderTurnId, toolMsgs } = action.payload;
+      const turn = st.currentLog?.conversation_turns.find(
+        (t) => t.turn_id === placeholderTurnId
+      );
+      if (!turn) return;
+
+      const aiMsg = turn.messages.find((m) => m.role === "assistant");
+      if (!aiMsg) return;
+
+      if (!aiMsg.toolMessages) {
+        aiMsg.toolMessages = [];
+      }
+      aiMsg.toolMessages.push({
+        msg_id: nanoid(),
+        msg: toolMsgs,
+      });
     },
     // 1) incremental assistant stream
     assistantChunkArrived: (
@@ -412,6 +437,7 @@ export const {
   assistantChunkArrived,
   receivedMessage,
   receivedToolCalls,
+  receivedToolCallMsgs,
   turnComplete,
 } = scheduleBuilderLog.actions;
 

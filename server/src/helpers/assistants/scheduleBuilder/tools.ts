@@ -121,12 +121,12 @@ export const fetchSections = tool(
       const resp: SectionQueryResponse = await sectionQueryAssistant(
         search_query!
       );
-      if (environment === "dev") {
-        console.log(
-          "======================QUERY RESPONSE======================\n",
-          JSON.stringify(resp, null, 2)
-        );
-      }
+      // if (environment === "dev") {
+      //   console.log(
+      //     "======================QUERY RESPONSE======================\n",
+      //     JSON.stringify(resp, null, 2)
+      //   );
+      // }
       if (!resp || !resp.query) {
         return new Command({
           update: {
@@ -198,9 +198,9 @@ export const fetchSections = tool(
         },
       });
     }
-    if (environment === "dev") {
-      console.log("SECTIONS TO RETURN: ", sectionsToReturn);
-    }
+    // if (environment === "dev") {
+    //   console.log("SECTIONS TO RETURN: ", sectionsToReturn);
+    // }
     const sectionsWithPairs = await getSectionsWithPairs(
       sectionsToReturn as SelectedSection[],
       state.term as CourseTerm

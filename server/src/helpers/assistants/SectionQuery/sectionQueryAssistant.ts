@@ -22,10 +22,10 @@ export const sectionQueryAssistant = async (
       ],
       temperature: 0.7, // or your desired parameter
     });
-    console.log(
-      "======================RESPONSE======================\n",
-      response
-    );
+    // console.log(
+    //   "======================RESPONSE======================\n",
+    //   response
+    // );
 
     // 2. Extract the assistant's raw text output
     const message = response.choices[0].message.content;
