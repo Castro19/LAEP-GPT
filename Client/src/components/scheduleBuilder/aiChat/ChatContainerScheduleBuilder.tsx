@@ -9,6 +9,15 @@ import BuildScheduleAIChatContainer from "./BuildScheduleAIChatContainer";
    🟥  ChatContainerScheduleBuilder
 ---------------------------------------------------------------------------*/
 
+const BOTTOM_THRESHOLD = 60; // pixels from bottom to consider "at bottom"
+
+const findScrollAreaViewport = (
+  container: HTMLElement | null
+): Element | null => {
+  if (!container) return null;
+  return container.closest("[data-radix-scroll-area-viewport]");
+};
+
 const ChatContainerScheduleBuilder: React.FC = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { currentLog } = useAppSelector((state) => state.scheduleBuilderLog);
@@ -18,39 +27,22 @@ const ChatContainerScheduleBuilder: React.FC = () => {
   useEffect(() => {
     if (currentLog) {
       const { conversation_turns } = currentLog;
-      console.log("New messages received:", conversation_turns.length);
+      if (process.env.NODE_ENV !== "production") {
+        console.log("New messages received:", conversation_turns.length);
+      }
       setMsgList(conversation_turns);
     }
   }, [currentLog]);
 
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;
-    if (!messagesContainer) {
-      console.log("No messages container found");
-      return;
-    }
+    const viewport = findScrollAreaViewport(messagesContainer);
+    if (!viewport) return;
 
-    // Find the ScrollArea viewport
-    const viewport = messagesContainer.closest(
-      "[data-radix-scroll-area-viewport]"
-    );
-    if (!viewport) {
-      console.log("No ScrollArea viewport found");
-      return;
-    }
-
-    console.log("Initial scroll check");
     isUserAtBottomRef.current = checkIfUserAtBottom(viewport);
 
     const handleScroll = () => {
-      const wasAtBottom = isUserAtBottomRef.current;
       isUserAtBottomRef.current = checkIfUserAtBottom(viewport);
-      console.log(
-        "Scroll event - was at bottom:",
-        wasAtBottom,
-        "now at bottom:",
-        isUserAtBottomRef.current
-      );
     };
 
     viewport.addEventListener("scroll", handleScroll);
@@ -59,36 +51,11 @@ const ChatContainerScheduleBuilder: React.FC = () => {
 
   useEffect(() => {
     const messagesContainer = messagesContainerRef.current;
-    if (!messagesContainer) {
-      console.log("No messages container found for auto-scroll");
-      return;
-    }
+    const viewport = findScrollAreaViewport(messagesContainer);
+    if (!viewport) return;
 
-    // Find the ScrollArea viewport
-    const viewport = messagesContainer.closest(
-      "[data-radix-scroll-area-viewport]"
-    );
-    if (!viewport) {
-      console.log("No ScrollArea viewport found for auto-scroll");
-      return;
-    }
-
-    console.log(
-      "Auto-scroll check - isUserAtBottom:",
-      isUserAtBottomRef.current,
-      "msgList length:",
-      msgList.length
-    );
     if (isUserAtBottomRef.current || msgList.length <= 1) {
-      console.log("Attempting to scroll to bottom");
       setTimeout(() => {
-        const { scrollHeight, clientHeight } = viewport;
-        console.log(
-          "Scroll dimensions - height:",
-          scrollHeight,
-          "client height:",
-          clientHeight
-        );
         viewport.scrollTo({
           top: viewport.scrollHeight,
           behavior: "smooth",
@@ -98,24 +65,10 @@ const ChatContainerScheduleBuilder: React.FC = () => {
   }, [msgList]);
 
   const checkIfUserAtBottom = (viewport: Element) => {
-    if (!viewport) {
-      console.log("No viewport found for bottom check");
-      return true;
-    }
+    if (!viewport) return true;
 
     const { scrollTop, scrollHeight, clientHeight } = viewport;
-    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 60;
-    console.log(
-      "Bottom check - scrollTop:",
-      scrollTop,
-      "scrollHeight:",
-      scrollHeight,
-      "clientHeight:",
-      clientHeight,
-      "isAtBottom:",
-      isAtBottom
-    );
-    return isAtBottom;
+    return Math.abs(scrollHeight - clientHeight - scrollTop) < BOTTOM_THRESHOLD;
   };
 
   return (
