@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   motion,
   useMotionValue,
@@ -77,45 +77,65 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
   }, [isOpen, isMinimized]);
 
   // horizontal drag
-  const initDrag = (e: React.MouseEvent) => {
-    startX.current = e.clientX;
-    startW.current = containerRef.current?.offsetWidth ?? width;
-    document.addEventListener("mousemove", doDrag);
-    document.addEventListener("mouseup", stopDrag);
-    e.preventDefault();
-  };
-  const doDrag = (e: MouseEvent) => {
+  const doDrag = useCallback((e: MouseEvent) => {
     const dx = e.clientX - startX.current;
     const newW = startW.current - dx;
     setWidth(Math.max(200, Math.min(600, newW)));
-  };
-  const stopDrag = () => {
+  }, []);
+
+  const stopDrag = useCallback(() => {
     document.removeEventListener("mousemove", doDrag);
     document.removeEventListener("mouseup", stopDrag);
-  };
+  }, [doDrag]);
+
+  const initDrag = useCallback(
+    (e: React.MouseEvent) => {
+      startX.current = e.clientX;
+      startW.current = containerRef.current?.offsetWidth ?? width;
+      document.addEventListener("mousemove", doDrag);
+      document.addEventListener("mouseup", stopDrag);
+      e.preventDefault();
+    },
+    [doDrag, stopDrag, width]
+  );
 
   // corner drag
-  const initCorner = (e: React.MouseEvent) => {
-    startX.current = e.clientX;
-    startY.current = e.clientY;
-    startW.current = containerRef.current?.offsetWidth ?? width;
-    startH.current = containerRef.current?.offsetHeight ?? height;
-    document.addEventListener("mousemove", doCorner);
-    document.addEventListener("mouseup", stopCorner);
-    e.preventDefault();
-  };
-  const doCorner = (e: MouseEvent) => {
+  const doCorner = useCallback((e: MouseEvent) => {
     const dx = e.clientX - startX.current;
     const dy = e.clientY - startY.current;
     setWidth(Math.max(200, Math.min(600, startW.current - dx)));
     setHeight(
       Math.max(100, Math.min(window.innerHeight - 8, startH.current - dy))
     );
-  };
-  const stopCorner = () => {
+  }, []);
+
+  const stopCorner = useCallback(() => {
     document.removeEventListener("mousemove", doCorner);
     document.removeEventListener("mouseup", stopCorner);
-  };
+  }, [doCorner]);
+
+  const initCorner = useCallback(
+    (e: React.MouseEvent) => {
+      startX.current = e.clientX;
+      startY.current = e.clientY;
+      startW.current = containerRef.current?.offsetWidth ?? width;
+      startH.current = containerRef.current?.offsetHeight ?? height;
+      document.addEventListener("mousemove", doCorner);
+      document.addEventListener("mouseup", stopCorner);
+      e.preventDefault();
+    },
+    [doCorner, stopCorner, width, height]
+  );
+
+  // Cleanup event listeners on unmount
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mousemove", doDrag);
+      document.removeEventListener("mouseup", stopDrag);
+      document.removeEventListener("mousemove", doCorner);
+      document.removeEventListener("mouseup", stopCorner);
+    };
+  }, [doDrag, stopDrag, doCorner, stopCorner]);
 
   const toggleOpen = () => {
     setIsOpen((o) => !o);
