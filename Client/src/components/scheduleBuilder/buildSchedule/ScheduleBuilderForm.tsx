@@ -17,8 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { generatedScheduleToSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
-import { Preferences } from "@/redux/schedule/scheduleSlice";
-import { GeneratedSchedule } from "@polylink/shared/types";
+import { GeneratedSchedule, Preferences } from "@polylink/shared/types";
 import { environment } from "@/helpers/getEnvironmentVars";
 
 export type SchedulePreferencesForm = z.infer<
