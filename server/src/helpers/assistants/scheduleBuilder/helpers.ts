@@ -566,7 +566,9 @@ export async function buildSectionSummaries(
         const ratingUrl =
           prof.id !== prof.name
             ? `https://polyratings.dev/professor/${prof.id}`
-            : `https://polyratings.dev/search/name?term=${prof.name}`;
+            : `https://polyratings.dev/search/name?term=${encodeURIComponent(
+                prof.name
+              )}`;
 
         return [
           `Professor: ${prof.name}`,
