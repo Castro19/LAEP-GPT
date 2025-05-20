@@ -103,7 +103,7 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   /* render ------------------------------------------------------------- */
   return (
     <div
-      className="w-full mt-4 p-5 bg-slate-900 sticky bottom-0 border-t dark:border-slate-700"
+      className="w-full h-full bg-slate-900 border-t dark:border-slate-700 flex flex-col"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {lockedChat ? (
@@ -121,7 +121,7 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
 
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 p-4 border-t border-slate-700"
+            className="flex items-center gap-2 p-4 flex-1"
           >
             <textarea
               ref={textAreaRef}

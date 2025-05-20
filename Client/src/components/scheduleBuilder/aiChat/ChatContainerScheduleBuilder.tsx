@@ -3,7 +3,6 @@ import { useAppSelector } from "@/redux";
 import TurnConversationItem from "./TurnConversationItem";
 
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
-import BuildScheduleAIChatContainer from "./BuildScheduleAIChatContainer";
 import SBAssistantSuggestedMessages from "./SBAssistantSuggestedMessages";
 
 /* -------------------------------------------------------------------------
@@ -77,25 +76,23 @@ const ChatContainerScheduleBuilder: React.FC<{
   };
 
   return (
-    <BuildScheduleAIChatContainer ref={messagesContainerRef}>
-      <div className="p-2 h-full">
-        {!isEmpty ? (
-          msgList.map((turn, index) => (
-            <TurnConversationItem
-              key={index}
-              turn={{
-                turn_id: turn.turn_id,
-                messages: turn.messages,
-              }}
-            />
-          ))
-        ) : (
-          <div className="flex items-center justify-center h-full text-slate-400">
-            <SBAssistantSuggestedMessages sendButtonRef={sendButtonRef} />
-          </div>
-        )}
-      </div>
-    </BuildScheduleAIChatContainer>
+    <div className="p-2 h-full">
+      {!isEmpty ? (
+        msgList.map((turn, index) => (
+          <TurnConversationItem
+            key={index}
+            turn={{
+              turn_id: turn.turn_id,
+              messages: turn.messages,
+            }}
+          />
+        ))
+      ) : (
+        <div className="flex items-center justify-center text-slate-400">
+          <SBAssistantSuggestedMessages sendButtonRef={sendButtonRef} />
+        </div>
+      )}
+    </div>
   );
 };
 

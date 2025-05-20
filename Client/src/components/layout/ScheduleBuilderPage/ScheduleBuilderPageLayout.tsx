@@ -2,6 +2,7 @@ import React from "react";
 import OuterIconSidebar from "../dynamicLayouts/OuterIconSidebar";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileHeader from "../dynamicLayouts/MobileHeader";
+import { ChatWidget } from "@/components/ChatWidget/ChatWidget";
 
 type SectionPageLayoutProps = {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ const ScheduleBuilderPageLayout = ({ children }: SectionPageLayoutProps) => {
         >
           {isNarrowScreen ? <MobileHeader /> : null}
           <div className="flex-1">{children}</div>
+          <ChatWidget />
         </div>
       </div>
     </div>

@@ -5,9 +5,14 @@ import { Button } from "@/components/ui/button";
 import { IoMdChatboxes } from "react-icons/io";
 import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
 import ScheduleBuilderChatInput from "./ScheduleBuilderChatInput";
-
+import { ScrollArea } from "@/components/ui/scroll-area";
 import SBNewChat from "./SBNewChat";
-const ScheduleBuilderAIChat = () => {
+
+interface Props {
+  currentHeight: number;
+}
+
+const ScheduleBuilderAIChat: React.FC<Props> = ({ currentHeight }) => {
   const dispatch = useAppDispatch();
   /* refs for ChatInput – still stubs */
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -28,11 +33,10 @@ const ScheduleBuilderAIChat = () => {
   };
 
   return (
-    <>
-      {/* sticky top bar */}
-      <header className="sticky top-0 bg-slate-900 text-white p-1 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
-        <div className="flex items-center justify-end gap-2">
-          {/* ▸ give the button its own relative wrapper */}
+    <div className="h-full flex flex-col">
+      {/* Header with fixed height */}
+      <header className="h-12 bg-slate-900 text-white p-1 z-40 border-b-2 border-zinc-800 dark:border-slate-700 shadow-md">
+        <div className="flex items-center justify-end gap-2 h-full">
           <div className="relative">
             <Button
               variant="ghost"
@@ -41,27 +45,32 @@ const ScheduleBuilderAIChat = () => {
             >
               <IoMdChatboxes className="w-5 h-5" />
             </Button>
-
-            {/* ▸ panel mounts right next to the button */}
             {showLogs && (
               <ScheduleBuilderLogs onClose={onShowScheduleBuilderLogs} />
             )}
           </div>
-
           <SBNewChat />
         </div>
       </header>
 
-      {/* central chat column (≈ ⅓ page width in parent) */}
-      <ChatContainerScheduleBuilder sendButtonRef={sendButtonRef} />
+      {/* Chat container with ScrollArea */}
+      <div className="flex-1 min-h-0">
+        <div style={{ height: `${currentHeight - 12 * 16}px` }}>
+          <ScrollArea className="h-full">
+            <ChatContainerScheduleBuilder sendButtonRef={sendButtonRef} />
+          </ScrollArea>
+        </div>
+      </div>
 
-      {/* bottom composer stub (still separate from the internal one) */}
-      <ScheduleBuilderChatInput
-        messagesContainerRef={messagesContainerRef}
-        textAreaRef={textareaRef}
-        sendButtonRef={sendButtonRef}
-      />
-    </>
+      {/* Chat input with fixed height */}
+      <div className="h-16 bg-slate-900">
+        <ScheduleBuilderChatInput
+          messagesContainerRef={messagesContainerRef}
+          textAreaRef={textareaRef}
+          sendButtonRef={sendButtonRef}
+        />
+      </div>
+    </div>
   );
 };
 

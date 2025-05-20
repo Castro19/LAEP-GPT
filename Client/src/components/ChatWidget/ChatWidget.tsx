@@ -1,0 +1,187 @@
+import React, { useState, useEffect, useRef } from "react";
+import { MessageSquare, X, Maximize2, Minimize2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ScheduleBuilderAIChat } from "../scheduleBuilder";
+
+type ChatWidgetProps = { initialOpen?: boolean };
+
+export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
+  const [isOpen, setIsOpen] = useState(initialOpen);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  // dimensions and refs
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState<number>(isOpen ? 400 : 56);
+  const [height, setHeight] = useState<number>(isOpen ? 600 : 56);
+  const startX = useRef(0);
+  const startY = useRef(0);
+  const startW = useRef(width);
+  const startH = useRef(height);
+
+  // entry pulse/animation
+  useEffect(() => {
+    if (shouldAnimate) {
+      const t = setTimeout(() => setShouldAnimate(false), 300);
+      return () => clearTimeout(t);
+    }
+  }, [shouldAnimate]);
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    let timeout: ReturnType<typeof setTimeout>;
+    if (!isOpen && !isMinimized) {
+      interval = setInterval(() => {
+        setIsPulsing(true);
+        clearTimeout(timeout);
+        timeout = setTimeout(() => setIsPulsing(false), 1000);
+      }, 10000);
+    }
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+      setIsPulsing(false);
+    };
+  }, [isOpen, isMinimized]);
+
+  // sync on toggle
+  useEffect(() => {
+    setWidth(isOpen ? 400 : 56);
+    setHeight(isOpen && !isMinimized ? 600 : 56);
+  }, [isOpen, isMinimized]);
+
+  // horizontal drag
+  const initDrag = (e: React.MouseEvent) => {
+    startX.current = e.clientX;
+    startW.current = containerRef.current?.offsetWidth ?? width;
+    document.addEventListener("mousemove", doDrag);
+    document.addEventListener("mouseup", stopDrag);
+    e.preventDefault();
+  };
+  const doDrag = (e: MouseEvent) => {
+    const dx = e.clientX - startX.current;
+    const newW = startW.current - dx;
+    setWidth(Math.max(200, Math.min(600, newW)));
+  };
+  const stopDrag = () => {
+    document.removeEventListener("mousemove", doDrag);
+    document.removeEventListener("mouseup", stopDrag);
+  };
+
+  // corner drag
+  const initCorner = (e: React.MouseEvent) => {
+    startX.current = e.clientX;
+    startY.current = e.clientY;
+    startW.current = containerRef.current?.offsetWidth ?? width;
+    startH.current = containerRef.current?.offsetHeight ?? height;
+    document.addEventListener("mousemove", doCorner);
+    document.addEventListener("mouseup", stopCorner);
+    e.preventDefault();
+  };
+  const doCorner = (e: MouseEvent) => {
+    const dx = e.clientX - startX.current;
+    const dy = e.clientY - startY.current;
+    setWidth(Math.max(200, Math.min(600, startW.current - dx)));
+    setHeight(
+      Math.max(100, Math.min(window.innerHeight - 8, startH.current - dy))
+    );
+  };
+  const stopCorner = () => {
+    document.removeEventListener("mousemove", doCorner);
+    document.removeEventListener("mouseup", stopCorner);
+  };
+
+  const toggleOpen = () => {
+    if (isMinimized) setIsOpen(false);
+    else setIsOpen((o) => !o);
+  };
+
+  // render closed button
+  if (!isOpen && !isMinimized) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Button
+          className={cn(
+            "rounded-full h-14 w-14 shadow-lg transition-all duration-300",
+            shouldAnimate ? "animate-fade-in-up" : "",
+            isPulsing ? "animate-pulse" : ""
+          )}
+          onClick={() => setIsOpen(true)}
+        >
+          <MessageSquare className="h-6 w-6" />
+        </Button>
+      </div>
+    );
+  }
+
+  // render widget (open or minimized)
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      <div
+        ref={containerRef}
+        className={cn(
+          "bg-slate-900 shadow-lg rounded-lg overflow-hidden relative transition-all duration-300 origin-bottom-right",
+          isOpen && !isMinimized ? "animate-slide-in" : "animate-slide-out"
+        )}
+        style={{
+          width,
+          height: isMinimized ? 56 : height,
+          minWidth: 56,
+          maxWidth: 600,
+          minHeight: 56,
+          maxHeight: window.innerHeight - 8,
+        }}
+      >
+        {/* left drag */}
+        <div
+          className="absolute left-0 top-0 h-full w-2 cursor-w-resize z-10"
+          onMouseDown={initDrag}
+        />
+        {/* top-left corner */}
+        <div
+          className="absolute left-0 top-0 w-4 h-4 cursor-nw-resize z-10"
+          onMouseDown={initCorner}
+        />
+
+        <div className="flex flex-col h-full">
+          {/* header */}
+          <div className="flex items-center justify-between p-3 border-b">
+            <div className="flex items-center space-x-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              <h3 className="font-medium text-sm">Schedule Builder Chat</h3>
+            </div>
+            <div className="flex space-x-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={() => setIsMinimized((m) => !m)}
+              >
+                {isMinimized ? (
+                  <Maximize2 className="h-4 w-4" />
+                ) : (
+                  <Minimize2 className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={toggleOpen}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          {/* body */}
+          {!isMinimized && (
+            <div className="flex-1">
+              <ScheduleBuilderAIChat currentHeight={height} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
