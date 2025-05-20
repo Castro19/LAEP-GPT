@@ -24,8 +24,7 @@ export interface Preferences {
   maxInstructorRating?: string;
   timeRange?: string;
   openOnly: boolean;
-  useCurrentSchedule: boolean;
-  showOverlappingClasses: boolean;
+  withTimeConflicts: boolean;
 }
 
 export interface ScheduleState {
@@ -61,8 +60,7 @@ const initialState: ScheduleState = {
     maxInstructorRating: "",
     timeRange: "",
     openOnly: false,
-    useCurrentSchedule: false,
-    showOverlappingClasses: false,
+    withTimeConflicts: false,
   },
   hiddenSections: [],
 };

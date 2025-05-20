@@ -57,7 +57,7 @@ export const SCHEDULE_PREFERENCES_SCHEMA = z.object({
   minInstructorRating: z.string().optional(),
   maxInstructorRating: z.string().optional(),
   openOnly: z.boolean().optional(),
-  showOverlappingClasses: z.boolean().optional(),
+  withTimeConflicts: z.boolean().optional(),
   startTime: z.string().optional(),
   endTime: z.string().optional(),
 });
