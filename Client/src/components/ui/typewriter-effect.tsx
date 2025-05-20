@@ -102,6 +102,7 @@ export const TypewriterEffectSmooth = ({
   words,
   className,
   cursorClassName,
+  size = "default",
 }: {
   words: {
     text: string;
@@ -109,6 +110,7 @@ export const TypewriterEffectSmooth = ({
   }[];
   className?: string;
   cursorClassName?: string;
+  size?: "small" | "default";
 }) => {
   // split text inside of words into array of characters
   const wordsArray = words.map((word) => {
@@ -139,6 +141,14 @@ export const TypewriterEffectSmooth = ({
     );
   };
 
+  const textSize =
+    size === "small"
+      ? "text-sm sm:text-base md:text-lg"
+      : "sm:text-base md:text-xl lg:text:3xl xl:text-5xl";
+
+  const cursorSize =
+    size === "small" ? "h-4 sm:h-4 xl:h-6" : "h-6 sm:h-6 xl:h-12";
+
   return (
     <div className={cn("flex space-x-1 my-6", className)}>
       <motion.div
@@ -156,7 +166,7 @@ export const TypewriterEffectSmooth = ({
         }}
       >
         <div
-          className="sm:text-base md:text-xl lg:text:3xl xl:text-5xl font-bold"
+          className={cn("font-bold", textSize)}
           style={{
             whiteSpace: "nowrap",
           }}
@@ -173,12 +183,12 @@ export const TypewriterEffectSmooth = ({
         }}
         transition={{
           duration: 0.8,
-
           repeat: Infinity,
           repeatType: "reverse",
         }}
         className={cn(
-          "block rounded-sm w-[4px]  h-6 sm:h-6 xl:h-12 bg-blue-500",
+          "block rounded-sm w-[4px] bg-blue-500",
+          cursorSize,
           cursorClassName
         )}
       ></motion.span>
