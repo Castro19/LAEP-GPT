@@ -37,8 +37,8 @@ const Preferences = ({
       />
       <FormSwitch
         form={form}
-        label="Show Overlapping Classes"
-        name="showOverlappingClasses"
+        label="With Time Conflicts"
+        name="withTimeConflicts"
       />
       {/* <FormSwitch
         form={form}

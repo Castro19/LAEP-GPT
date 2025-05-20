@@ -63,6 +63,10 @@ router.post(
     let isNewSchedule = false;
     let isNewThread = false;
     let { state, threadId, userMsg } = req.body;
+    if (environment === "dev") {
+      console.log("STATE FROM CLIENT REQ: ", state);
+    }
+
     let { term, schedule_id, preferences } = state;
     // 3) Check if schedule exists and create if not
     if (!schedule_id) {
@@ -112,7 +116,7 @@ router.post(
       ...state,
       term: term,
       schedule_id: schedule_id,
-      preferences: { with_time_conflicts: preferences.withTimeConflicts },
+      preferences: { withTimeConflicts: preferences.withTimeConflicts },
       messages: [new HumanMessage({ content: userMsg })],
       currentSchedule: currentSchedule,
     };

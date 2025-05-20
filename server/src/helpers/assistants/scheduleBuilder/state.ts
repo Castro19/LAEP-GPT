@@ -1,5 +1,6 @@
 import {
   CourseTerm,
+  Preferences,
   ScheduleResponse,
   SelectedSection,
 } from "@polylink/shared/types";
@@ -46,9 +47,7 @@ export const StateAnnotation = Annotation.Root({
       };
     },
   }),
-  preferences: Annotation<{
-    with_time_conflicts: boolean;
-  }>,
+  preferences: Annotation<Preferences>,
   currentSchedule: Annotation<ScheduleResponse>({
     value: (a: ScheduleResponse, b: ScheduleResponse) => {
       // If either value is undefined/null, return the other

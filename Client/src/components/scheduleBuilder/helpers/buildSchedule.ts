@@ -15,7 +15,7 @@ const buildSchedule = (
       (section) => section.enrollmentStatus === "O"
     );
   }
-  if (preferences.showOverlappingClasses) {
+  if (preferences.withTimeConflicts) {
     const scheduleWithConflicts = generateScheduleWithConflicts(
       sections,
       preferences

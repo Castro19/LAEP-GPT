@@ -30,7 +30,7 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { currentScheduleTerm, currentSchedule } = useAppSelector(
+  const { currentScheduleTerm, currentSchedule, preferences } = useAppSelector(
     (state) => state.schedule
   );
   const { draftMsg, currentLog, error, loadingByThread } = useAppSelector(
@@ -82,7 +82,7 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
           suggestedSections: [],
           potentialSections: [],
           user_query: "",
-          preferences: { with_time_conflicts: true },
+          preferences,
           currentSchedule: currentSchedule as unknown as ScheduleResponse,
           diff: { added: [], removed: [] },
         },
