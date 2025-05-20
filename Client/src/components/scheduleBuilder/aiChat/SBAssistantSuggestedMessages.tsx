@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
-import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
+import {
+  useAppDispatch,
+  scheduleBuilderLogActions,
+  scheduleActions,
+  useAppSelector,
+} from "@/redux";
+import { GeneratedSchedule } from "@polylink/shared/types";
 
 const SBAssistantSuggestedMessages = ({
   sendButtonRef,
@@ -8,6 +14,7 @@ const SBAssistantSuggestedMessages = ({
   sendButtonRef: React.RefObject<HTMLButtonElement>;
 }) => {
   const dispatch = useAppDispatch();
+  const { currentSchedule } = useAppSelector((state) => state.schedule);
   const suggestions = ["Build schedule from flowchart", "Summarize schedule"];
 
   const words = [
@@ -31,6 +38,17 @@ const SBAssistantSuggestedMessages = ({
 
   const handleClick = async (message: string) => {
     await dispatch(scheduleBuilderLogActions.setDraftMsg(message));
+    if (!currentSchedule) {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+    }
     sendButtonRef.current?.click();
   };
 

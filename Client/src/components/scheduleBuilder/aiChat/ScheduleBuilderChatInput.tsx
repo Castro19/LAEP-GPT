@@ -7,6 +7,7 @@ import {
   useAppDispatch,
   useAppSelector,
   scheduleBuilderLogActions,
+  scheduleActions,
 } from "@/redux"; // <- barrel exports from new slice
 
 import {
@@ -14,7 +15,11 @@ import {
   resetInputAndScrollToBottom,
 } from "@/components/chat/helpers/formatHelper";
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
-import { CourseTerm, ScheduleResponse } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  GeneratedSchedule,
+  ScheduleResponse,
+} from "@polylink/shared/types";
 
 interface Props {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -49,6 +54,19 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!draftMsg.trim() || lockedChat) return;
+
+    // Ensure currentSchedule is set
+    if (!currentSchedule) {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+    }
 
     if (!currentLog) {
       dispatch(scheduleBuilderLogActions.newScheduleChat());
