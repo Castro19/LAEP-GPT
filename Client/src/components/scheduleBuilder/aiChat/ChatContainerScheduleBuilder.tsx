@@ -9,7 +9,7 @@ import BuildScheduleAIChatContainer from "./BuildScheduleAIChatContainer";
    🟥  ChatContainerScheduleBuilder
 ---------------------------------------------------------------------------*/
 
-const BOTTOM_THRESHOLD = 60; // pixels from bottom to consider "at bottom"
+const BOTTOM_THRESHOLD = 20; // pixels from bottom to consider "at bottom"
 
 const findScrollAreaViewport = (
   container: HTMLElement | null
@@ -52,12 +52,7 @@ const ChatContainerScheduleBuilder: React.FC = () => {
     if (!viewport) return;
 
     if (isUserAtBottomRef.current || msgList.length <= 1) {
-      setTimeout(() => {
-        viewport.scrollTo({
-          top: viewport.scrollHeight,
-          behavior: "smooth",
-        });
-      }, 100);
+      viewport.scrollTop = viewport.scrollHeight;
     }
   }, [msgList]);
 
