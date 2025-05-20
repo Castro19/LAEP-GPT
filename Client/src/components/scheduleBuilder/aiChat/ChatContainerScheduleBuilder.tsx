@@ -76,7 +76,7 @@ const ChatContainerScheduleBuilder: React.FC<{
   };
 
   return (
-    <div className="p-2 h-full">
+    <div ref={messagesContainerRef} className="p-2 h-full">
       {!isEmpty ? (
         msgList.map((turn, index) => (
           <TurnConversationItem
