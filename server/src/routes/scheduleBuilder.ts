@@ -114,7 +114,7 @@ router.post(
     }
 
     const currentLog = await getLogByThreadId(threadId);
-    const previousMessages = currentLog?.conversation_turns
+    const previousMessages = (currentLog?.conversation_turns ?? [])
       .map((turn) => turn.messages)
       .flat()
       .filter((msg) => msg.role === "assistant" && msg.msg !== "")
