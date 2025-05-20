@@ -15,7 +15,6 @@ import ScheduleBuilderForm from "@/components/scheduleBuilder/buildSchedule/Sche
 import {
   EmptySchedule,
   ScheduleContainer,
-  ScheduleBuilderAIChat,
   PaginationFooter,
   NoSelectedSections,
 } from "@/components/scheduleBuilder";
@@ -160,7 +159,7 @@ const ScheduleBuilderPage = () => {
             <Tabs
               value={tabValue}
               onValueChange={(value) =>
-                setTabValue(value as CourseTerm | "schedule" | "AI Chat")
+                setTabValue(value as CourseTerm | "schedule")
               }
               defaultValue={tabValue}
               className="space-y-2"
@@ -177,7 +176,7 @@ const ScheduleBuilderPage = () => {
                 {/* border */}
                 <div className="border-t border-border/50"></div>
                 <CardContent>
-                  <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900/50 bg-gray-100/50 p-1 rounded-lg">
+                  <TabsList className="grid w-full grid-cols-3 dark:bg-gray-900/50 bg-gray-100/50 p-1 rounded-lg">
                     <TabsTrigger
                       value="spring2025"
                       onClick={() => handleTermChange("spring2025")}
@@ -205,12 +204,6 @@ const ScheduleBuilderPage = () => {
                     >
                       FA25
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="AI Chat"
-                      disabled={!currentSchedule || !selectedSections}
-                    >
-                      AI Chat
-                    </TabsTrigger>
                   </TabsList>
                 </CardContent>
               </Card>
@@ -222,9 +215,6 @@ const ScheduleBuilderPage = () => {
               </TabsContent>
               <TabsContent value="fall2025">
                 <ScheduleBuilderForm onSwitchTab={() => {}} />
-              </TabsContent>
-              <TabsContent value="AI Chat">
-                <ScheduleBuilderAIChat />
               </TabsContent>
             </Tabs>
           </div>
@@ -251,13 +241,9 @@ const ScheduleBuilderPage = () => {
 };
 
 const ScheduleBuilderMobile = () => {
-  const { currentSchedule, currentScheduleTerm } = useAppSelector(
-    (state) => state.schedule
-  );
-  const { selectedSections } = useAppSelector(
-    (state) => state.sectionSelection
-  );
-  const [tabValue, setTabValue] = useState<CourseTerm | "schedule" | "AI Chat">(
+  const { currentScheduleTerm } = useAppSelector((state) => state.schedule);
+
+  const [tabValue, setTabValue] = useState<CourseTerm | "schedule">(
     currentScheduleTerm
   );
   const dispatch = useAppDispatch();
@@ -271,12 +257,10 @@ const ScheduleBuilderMobile = () => {
   return (
     <Tabs
       value={tabValue}
-      onValueChange={(value) =>
-        setTabValue(value as CourseTerm | "schedule" | "AI Chat")
-      }
+      onValueChange={(value) => setTabValue(value as CourseTerm | "schedule")}
       defaultValue={currentScheduleTerm}
     >
-      <TabsList className="grid w-full grid-cols-5 dark:bg-gray-900">
+      <TabsList className="grid w-full grid-cols-4 dark:bg-gray-900">
         <TabsTrigger
           value="spring2025"
           onClick={() => handleTermChange("spring2025")}
@@ -299,12 +283,6 @@ const ScheduleBuilderMobile = () => {
           FA25
         </TabsTrigger>
         <TabsTrigger value="schedule">Schedule</TabsTrigger>
-        <TabsTrigger
-          value="AI Chat"
-          disabled={!currentSchedule || !selectedSections}
-        >
-          AI Chat
-        </TabsTrigger>
       </TabsList>
       <TabsContent value="spring2025">
         <ScheduleBuilderForm onSwitchTab={() => setTabValue("schedule")} />
@@ -318,9 +296,6 @@ const ScheduleBuilderMobile = () => {
       <TabsContent value="schedule">
         <ScheduleContainer />
         <PaginationFooter />
-      </TabsContent>
-      <TabsContent value="AI Chat">
-        <ScheduleBuilderAIChat />
       </TabsContent>
     </Tabs>
   );
