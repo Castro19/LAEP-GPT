@@ -25,7 +25,11 @@ import {
   updateLogTitle,
   deleteLog,
 } from "../db/models/scheduleBuilderLog/scheduleBuilderLogServices";
-import { HumanMessage, AIMessageChunk } from "@langchain/core/messages";
+import {
+  HumanMessage,
+  AIMessageChunk,
+  AIMessage,
+} from "@langchain/core/messages";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
 import { getSelectedSectionsByUserId } from "../db/models/selectedSection/selectedSectionServices";
 import { transformClassNumbersToSelectedSections } from "../db/models/schedule/transformSection";
@@ -109,6 +113,13 @@ router.post(
       preferences = { withTimeConflicts: true };
     }
 
+    const currentLog = await getLogByThreadId(threadId);
+    const previousMessages = currentLog?.conversation_turns
+      .map((turn) => turn.messages)
+      .flat()
+      .filter((msg) => msg.role === "assistant" && msg.msg !== "")
+      .map((msg) => msg.msg);
+
     // 6) Run chatbot
     let lastState;
     const currentSchedule = await getScheduleById(userId, schedule_id);
@@ -117,7 +128,12 @@ router.post(
       term: term,
       schedule_id: schedule_id,
       preferences: { withTimeConflicts: preferences.withTimeConflicts },
-      messages: [new HumanMessage({ content: userMsg })],
+      messages: [
+        ...(previousMessages?.length
+          ? [new AIMessage({ content: previousMessages.join("\n") })]
+          : []),
+        new HumanMessage({ content: userMsg }),
+      ],
       currentSchedule: currentSchedule,
     };
 
