@@ -9,6 +9,7 @@ import { MessageSquare, X, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ScheduleBuilderAIChat } from "../scheduleBuilder";
+import ScheduleBuilderAIChatHeader from "../scheduleBuilder/aiChat/ScheduleBuilderAIChatHeader";
 
 type ChatWidgetProps = { initialOpen?: boolean };
 
@@ -169,34 +170,60 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
 
             <div className="flex flex-col h-full">
               {/* header */}
-              <div className="flex items-center justify-between p-3 border-b">
-                <div className="flex items-center space-x-2">
-                  <MessageSquare className="h-5 w-5 text-primary" />
-                  <h3 className="font-medium text-sm">Schedule Builder Chat</h3>
+              {!isMinimized ? (
+                <div className="flex items-center justify-between p-3 border-b">
+                  <ScheduleBuilderAIChatHeader />
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => setIsMinimized((m) => !m)}
+                    >
+                      {isMinimized ? (
+                        <Maximize2 className="h-4 w-4" />
+                      ) : (
+                        <Minimize2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={toggleOpen}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex space-x-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => setIsMinimized((m) => !m)}
-                  >
-                    {isMinimized ? (
+              ) : (
+                <div className="flex items-center justify-between p-3 border-b">
+                  <div className="flex items-center space-x-2">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium text-sm">
+                      Schedule Builder Chat
+                    </h3>
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => setIsMinimized((m) => !m)}
+                    >
                       <Maximize2 className="h-4 w-4" />
-                    ) : (
-                      <Minimize2 className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={toggleOpen}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={toggleOpen}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
               {/* body */}
               {!isMinimized && (
                 <div className="flex-1">
