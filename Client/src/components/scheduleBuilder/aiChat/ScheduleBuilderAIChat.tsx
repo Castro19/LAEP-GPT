@@ -53,7 +53,7 @@ const ScheduleBuilderAIChat = () => {
       </header>
 
       {/* central chat column (≈ ⅓ page width in parent) */}
-      <ChatContainerScheduleBuilder />
+      <ChatContainerScheduleBuilder sendButtonRef={sendButtonRef} />
 
       {/* bottom composer stub (still separate from the internal one) */}
       <ScheduleBuilderChatInput

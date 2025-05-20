@@ -4,6 +4,7 @@ import TurnConversationItem from "./TurnConversationItem";
 
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
 import BuildScheduleAIChatContainer from "./BuildScheduleAIChatContainer";
+import SBAssistantSuggestedMessages from "./SBAssistantSuggestedMessages";
 
 /* -------------------------------------------------------------------------
    🟥  ChatContainerScheduleBuilder
@@ -18,16 +19,23 @@ const findScrollAreaViewport = (
   return container.closest("[data-radix-scroll-area-viewport]");
 };
 
-const ChatContainerScheduleBuilder: React.FC = () => {
+const ChatContainerScheduleBuilder: React.FC<{
+  sendButtonRef: React.RefObject<HTMLButtonElement>;
+}> = ({ sendButtonRef }) => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { currentLog } = useAppSelector((state) => state.scheduleBuilderLog);
   const isUserAtBottomRef = useRef(true);
+  const isFirstMessageRef = useRef(true);
 
   const [msgList, setMsgList] = useState<ConversationTurn[]>([]);
+  const isEmpty = !currentLog || currentLog.conversation_turns.length === 0;
+
   useEffect(() => {
     if (currentLog) {
       const { conversation_turns } = currentLog;
       setMsgList(conversation_turns);
+      // Reset first message flag when we get a new log
+      isFirstMessageRef.current = conversation_turns.length === 0;
     }
   }, [currentLog]);
 
@@ -51,10 +59,15 @@ const ChatContainerScheduleBuilder: React.FC = () => {
     const viewport = findScrollAreaViewport(messagesContainer);
     if (!viewport) return;
 
-    if (isUserAtBottomRef.current || msgList.length <= 1) {
+    // Only scroll if we have messages and user is at bottom
+    if (!isEmpty && (isUserAtBottomRef.current || isFirstMessageRef.current)) {
       viewport.scrollTop = viewport.scrollHeight;
+      // After first message is complete, set flag to false
+      if (isFirstMessageRef.current && msgList.length > 0) {
+        isFirstMessageRef.current = false;
+      }
     }
-  }, [msgList]);
+  }, [msgList, isEmpty]);
 
   const checkIfUserAtBottom = (viewport: Element) => {
     if (!viewport) return true;
@@ -65,17 +78,22 @@ const ChatContainerScheduleBuilder: React.FC = () => {
 
   return (
     <BuildScheduleAIChatContainer ref={messagesContainerRef}>
-      <div className="p-2">
-        {/* Placeholder bubbles */}
-        {msgList.map((turn, index) => (
-          <TurnConversationItem
-            key={index}
-            turn={{
-              turn_id: turn.turn_id,
-              messages: turn.messages,
-            }}
-          />
-        ))}
+      <div className="p-2 h-full">
+        {!isEmpty ? (
+          msgList.map((turn, index) => (
+            <TurnConversationItem
+              key={index}
+              turn={{
+                turn_id: turn.turn_id,
+                messages: turn.messages,
+              }}
+            />
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-full text-slate-400">
+            <SBAssistantSuggestedMessages sendButtonRef={sendButtonRef} />
+          </div>
+        )}
       </div>
     </BuildScheduleAIChatContainer>
   );
