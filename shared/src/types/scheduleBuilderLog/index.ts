@@ -25,6 +25,16 @@ export type TokenUsage = {
   };
 };
 
+export type Preferences = {
+  minUnits?: string;
+  maxUnits?: string;
+  minInstructorRating?: string;
+  maxInstructorRating?: string;
+  timeRange?: string;
+  openOnly: boolean;
+  withTimeConflicts: boolean;
+};
+
 export type ScheduleBuilderState = {
   term: CourseTerm;
   suggestedSections: SelectedSection[];
@@ -32,7 +42,7 @@ export type ScheduleBuilderState = {
   user_query: string;
   currentSchedule: ScheduleResponse;
   diff: { added: number[]; removed: number[] };
-  preferences: { with_time_conflicts: boolean };
+  preferences: Preferences;
   messages?: string[];
 };
 

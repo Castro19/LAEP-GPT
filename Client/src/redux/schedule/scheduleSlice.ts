@@ -5,6 +5,7 @@ import {
   GeneratedSchedule,
   CustomScheduleEvent,
   SelectedSection,
+  Preferences,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -16,16 +17,6 @@ import {
 } from "./crudSchedule";
 import { scheduleToGeneratedSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
 import { RootState } from "../store";
-
-export interface Preferences {
-  minUnits?: string;
-  maxUnits?: string;
-  minInstructorRating?: string;
-  maxInstructorRating?: string;
-  timeRange?: string;
-  openOnly: boolean;
-  withTimeConflicts: boolean;
-}
 
 export interface ScheduleState {
   currentScheduleId: string | undefined;
