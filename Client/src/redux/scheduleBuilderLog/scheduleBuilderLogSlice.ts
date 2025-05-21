@@ -21,10 +21,9 @@ import {
 import { nanoid } from "@reduxjs/toolkit";
 import {
   updateScheduleIdFromBuilder,
-  updateScheduleSections,
   updateScheduleSection,
 } from "../schedule/scheduleSlice";
-import { updateSelectedSections } from "../sectionSelection/sectionSelectionSlice";
+import { addNewSectionsAndUpdateSelected } from "../sectionSelection/sectionSelectionSlice";
 import { RootState } from "../store";
 /* ------------------------------------------------------------------ */
 /*  Local helper types                                                */
@@ -135,6 +134,7 @@ export const sendMessage = createAsyncThunk<
         (calls) => {
           dispatch(receivedToolCalls({ placeholderTurnId, calls }));
           // Process tool calls immediately
+
           if (Array.isArray(calls)) {
             dispatch(processToolCalls(calls));
           }
@@ -152,27 +152,7 @@ export const sendMessage = createAsyncThunk<
           if (payload.isNewSchedule) {
             await dispatch(updateScheduleIdFromBuilder(payload.schedule_id));
           }
-          if (payload.selectedSections) {
-            // First update the selected sections
-            await dispatch(updateSelectedSections(payload.selectedSections));
-            // Then update the schedule sections
-            await dispatch(updateScheduleSections(payload.selectedSections));
-          }
-          if (
-            (payload.state.diff?.added &&
-              payload.state.diff.added.length > 0) ||
-            (payload.state.diff?.removed &&
-              payload.state.diff.removed.length > 0)
-          ) {
-            // First update the selected sections
-            await dispatch(
-              updateSelectedSections(payload.state.currentSchedule.sections)
-            );
-            // Then update the schedule sections
-            await dispatch(
-              updateScheduleSections(payload.state.currentSchedule.sections)
-            );
-          }
+
           dispatch(turnComplete());
         }
       );
@@ -210,27 +190,25 @@ export const processToolCalls = createAsyncThunk(
     for (const toolCall of toolCalls) {
       switch (toolCall.name) {
         case "manage_schedule": {
+          const state = getState() as RootState;
           const args = toolCall.args as {
             operation: string;
             class_nums?: number[];
           };
           if (args.operation === "add" && args.class_nums) {
-            // First, update the selected sections
-            const state = getState() as RootState;
-            const selectedSections = state.sectionSelection.selectedSections;
-            const sectionsToAdd = args.class_nums
-              .map((id) =>
-                selectedSections.find(
-                  (s: SelectedSection) => s.classNumber === id
-                )
-              )
-              .filter(Boolean);
+            // First, add new sections and update selected sections
+            const sectionsToAdd = await dispatch(
+              addNewSectionsAndUpdateSelected({
+                classNums: args.class_nums,
+                term: state.schedule.currentScheduleTerm,
+              })
+            ).unwrap();
 
+            // Then update the schedule sections if we have sections to add
             if (sectionsToAdd.length > 0) {
-              await dispatch(
-                updateSelectedSections(sectionsToAdd as SelectedSection[])
-              );
-              // Then update the schedule sections
+              // Wait a bit to ensure the state is fully updated
+              await new Promise((resolve) => setTimeout(resolve, 100));
+
               await dispatch(
                 updateScheduleSection({
                   sectionIds: args.class_nums,
@@ -239,14 +217,6 @@ export const processToolCalls = createAsyncThunk(
               );
             }
           } else if (args.operation === "remove" && args.class_nums) {
-            // First, update the selected sections
-            const state = getState() as RootState;
-            const selectedSections = state.sectionSelection.selectedSections;
-            const sectionsToKeep = selectedSections.filter(
-              (s: SelectedSection) => !args.class_nums?.includes(s.classNumber)
-            );
-
-            await dispatch(updateSelectedSections(sectionsToKeep));
             // Then update the schedule sections
             await dispatch(
               updateScheduleSection({

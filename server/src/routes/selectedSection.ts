@@ -7,8 +7,7 @@ import {
   deleteSelectedSection,
   bulkPostSelectedSections,
 } from "../db/models/selectedSection/selectedSectionServices";
-import { transformClassNumbersToSelectedSections } from "../db/models/schedule/transformSection";
-import { CourseTerm } from "@polylink/shared/types";
+import { CourseTerm, SelectedSectionItem } from "@polylink/shared/types";
 
 const router = express.Router();
 
@@ -57,6 +56,34 @@ router.post("/", async (req, res: any) => {
   } catch (error) {
     if (environment === "dev") {
       console.error("Error creating or updating selected section:", error);
+    }
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// bulkPostSelectedSections
+router.post("/bulk-add-selected-sections", async (req, res: any) => {
+  try {
+    const userId = req.user?.uid;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { sectionsToAdd } = req.body as {
+      sectionsToAdd: SelectedSectionItem[];
+    };
+
+    const { selectedSections } = await bulkPostSelectedSections(
+      userId,
+      sectionsToAdd
+    );
+
+    return res.status(200).json({
+      message: "Selected sections added successfully",
+      selectedSections,
+    });
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error adding selected sections:", error);
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }

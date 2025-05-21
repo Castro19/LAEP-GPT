@@ -287,14 +287,12 @@ export const addToSchedule = async ({
 }): Promise<{
   classNumbersAdded: number[];
   messageToAdd: string;
-  updatedSchedule: ScheduleResponse | null;
 }> => {
   const schedule = await getScheduleById(userId, scheduleId);
   if (!schedule) {
     return {
       classNumbersAdded: [],
       messageToAdd: "",
-      updatedSchedule: null,
     };
   }
   const selectedSections = await getSelectedSectionsByUserId(
@@ -312,7 +310,7 @@ export const addToSchedule = async ({
   // Get all sections including their pairs
   const sectionsWithPairs = await getSectionsWithPairs(sections, schedule.term);
   sections = sectionsWithPairs as Section[];
-
+  console.log("sections", sections);
   //  TODO: When checking for time conflicts, we should also check for conflicts between the classNumbersToAdd
   for (const section of sections) {
     // Check for time conflicts
@@ -348,35 +346,13 @@ export const addToSchedule = async ({
     return {
       classNumbersAdded: [],
       messageToAdd,
-      updatedSchedule: null,
     };
   }
 
-  const sectionsToAddWithTerm = sectionsToAdd.map((section) => ({
-    sectionId: section,
-    term: schedule.term,
-  }));
-
-  const updatedSections = sectionsToAdd.concat(
-    schedule.sections.map((s) => s.classNumber)
-  );
-  // else add all sections to selectedSections
-  await bulkPostSelectedSections(userId, sectionsToAddWithTerm, "add");
-  // and to schedule all at once
-
-  await createOrUpdateSchedule(
-    userId,
-    updatedSections,
-    schedule.term,
-    schedule.id
-  );
-
-  const updatedSchedule = await getScheduleById(userId, scheduleId);
   return {
     classNumbersAdded: sectionsToAdd,
     messageToAdd:
       messageToAdd + `Added sections: ${JSON.stringify(sectionsAdded)}`,
-    updatedSchedule,
   };
 };
 

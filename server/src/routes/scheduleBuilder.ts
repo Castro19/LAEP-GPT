@@ -31,7 +31,6 @@ import {
   AIMessage,
 } from "@langchain/core/messages";
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
-import { getSelectedSectionsByUserId } from "../db/models/selectedSection/selectedSectionServices";
 import { transformClassNumbersToSelectedSections } from "../db/models/schedule/transformSection";
 import { environment } from "../index";
 
@@ -347,10 +346,7 @@ router.post(
       state: lastState as unknown as ScheduleBuilderState,
     };
 
-    // 9) Get the selected sections for the term
-    const selectedSections = await getSelectedSectionsByUserId(userId, term);
-
-    // 10) Add the conversation turn to the log
+    // 9) Add the conversation turn to the log
     await addConversationTurn(threadId, turn);
 
     res.write(
@@ -361,7 +357,6 @@ router.post(
           schedule_id,
           threadId,
           state: lastState,
-          selectedSections: selectedSections,
         })}\n\n`
     );
     res.end();

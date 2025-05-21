@@ -39,6 +39,7 @@ const Preferences = ({
         form={form}
         label="With Time Conflicts"
         name="withTimeConflicts"
+        defaultChecked={false}
       />
       {/* <FormSwitch
         form={form}
