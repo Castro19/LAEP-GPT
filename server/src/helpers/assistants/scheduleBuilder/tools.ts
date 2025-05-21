@@ -307,13 +307,14 @@ export const manageSchedule = tool(
 
     const { schedule_id, preferences } = state;
 
+    const currentSchedule = await getScheduleById(
+      config.configurable.user_id,
+      schedule_id
+    );
+
     /* ---------- readall ---------- */
     if (operation === "readall") {
       const sections = await readAllSchedule(
-        config.configurable.user_id,
-        schedule_id
-      );
-      const updatedSchedule = await getScheduleById(
         config.configurable.user_id,
         schedule_id
       );
@@ -329,7 +330,7 @@ export const manageSchedule = tool(
             }),
           ],
           sections,
-          currentSchedule: updatedSchedule,
+          currentSchedule,
         },
       });
     }
@@ -343,6 +344,11 @@ export const manageSchedule = tool(
         preferences,
       });
 
+      const updatedSchedule = {
+        ...currentSchedule,
+        sections: [...(currentSchedule?.sections ?? []), ...classNumbersAdded],
+      };
+
       return new Command({
         update: {
           messages: [
@@ -355,18 +361,13 @@ export const manageSchedule = tool(
             added: classNumbersAdded,
             removed: [],
           },
+          currentSchedule: updatedSchedule,
         },
       });
     }
 
     /* ---------- remove ---------- */
     if (operation === "remove") {
-      // Get the current schedule state
-      const currentSchedule = await getScheduleById(
-        config.configurable.user_id,
-        schedule_id
-      );
-
       if (!currentSchedule) {
         return new Command({
           update: {
@@ -387,6 +388,12 @@ export const manageSchedule = tool(
         scheduleId: schedule_id,
       });
 
+      const updatedSchedule = {
+        ...currentSchedule,
+        sections: currentSchedule.sections.filter(
+          (s) => !classNumbersRemoved.includes(s.classNumber)
+        ),
+      };
       return new Command({
         update: {
           messages: [
@@ -399,6 +406,7 @@ export const manageSchedule = tool(
             added: [],
             removed: classNumbersRemoved,
           },
+          currentSchedule: updatedSchedule,
         },
       });
     }

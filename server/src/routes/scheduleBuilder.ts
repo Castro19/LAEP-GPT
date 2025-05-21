@@ -338,6 +338,17 @@ router.post(
           threadId,
         })}\n\n`
     );
+
+    // 10) Update the schedule
+    await createOrUpdateSchedule(
+      userId,
+      lastState?.currentSchedule.sections.map(
+        (s: SelectedSection) => s.classNumber
+      ) ?? [],
+      term,
+      schedule_id,
+      []
+    );
     res.end();
   })
 );
