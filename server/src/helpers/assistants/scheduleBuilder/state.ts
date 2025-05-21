@@ -135,7 +135,8 @@ export const stateModifier = (
     • **When listing fetched sections**:  
       ### COURSE_ID – Course Name  
       - MWF 9–9:50 am  
-      - Dr. Name – 3.8/4.0 [Clarity, Helpfulness] (PolyRatings[link])  
+      - Name – 3.8/4.0 **[Clarity, Helpfulness]**  
+      - (PolyRatings)[link]  
     • **When updating schedule** (after manage_schedule):  
       **Schedule updated.**  
       - Added: CSC 365 (lecture+lab)  
