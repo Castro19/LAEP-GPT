@@ -15,8 +15,8 @@ const SBAssistantSuggestedMessages = ({
 }) => {
   const dispatch = useAppDispatch();
   const { currentSchedule } = useAppSelector((state) => state.schedule);
-  const suggestions = ["Build schedule from flowchart", "Summarize schedule"];
 
+  const suggestions = ["Build schedule from flowchart", "Summarize schedule"];
   const words = [
     {
       text: "How",
@@ -36,8 +36,7 @@ const SBAssistantSuggestedMessages = ({
     },
   ];
 
-  const handleClick = async (message: string) => {
-    await dispatch(scheduleBuilderLogActions.setDraftMsg(message));
+  const handleClick = (message: string) => {
     if (!currentSchedule) {
       const currentBlankSchedule: GeneratedSchedule = {
         sections: [],
@@ -49,6 +48,7 @@ const SBAssistantSuggestedMessages = ({
 
       dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
     }
+    dispatch(scheduleBuilderLogActions.setDraftMsg(message));
     sendButtonRef.current?.click();
   };
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import MarkdownIt from "markdown-it";
-import DOMPurify from "dompurify";
+
 import {
   Accordion,
   AccordionItem,
@@ -11,6 +10,7 @@ import { ChevronDown } from "lucide-react";
 import SBFetchSections from "./SBFetchSections";
 import SBManageSchedule from "./SBManageSchedule";
 import AIChatLoadingMessage from "./AIChatLoadingMessage";
+import FormattedChatMessage from "./FormattedChatMessage";
 
 /* -------------------------------------------------------------------------
    📑  Types (replace with shared types when available)
@@ -60,26 +60,6 @@ export interface ManageScheduleArgs {
     preferences?: Record<string, unknown>;
   };
 }
-
-/* -------------------------------------------------------------------------
-   🧩  Helpers
----------------------------------------------------------------------------*/
-const md = new MarkdownIt({ linkify: true, breaks: true });
-const defaultLinkRenderer =
-  md.renderer.rules.link_open ||
-  function (tokens, idx, options, _env, self) {
-    return self.renderToken(tokens, idx, options);
-  };
-md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-  tokens[idx].attrSet("target", "_blank");
-  tokens[idx].attrSet("rel", "noopener noreferrer");
-  return defaultLinkRenderer(tokens, idx, options, env, self);
-};
-
-const renderMarkdown = (raw: string) => {
-  const dirtyHtml = md.render(raw || "");
-  return DOMPurify.sanitize(dirtyHtml, { ADD_ATTR: ["target", "rel"] });
-};
 
 /* -------------------------------------------------------------------------
    💬  Component
@@ -169,13 +149,7 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
         {msg.isPending ? (
           <AIChatLoadingMessage toolUsage={msg.tool_calls} msg={msg.msg} />
         ) : (
-          <div className={`rounded-lg shadow-lg px-3 py-4 ${variant}`}>
-            <div
-              className="prose prose-invert weekly-planner-tables"
-              style={{ maxWidth: "100%" }}
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.msg) }}
-            />
-          </div>
+          <FormattedChatMessage msg={msg.msg} variant={variant} />
         )}
 
         {/* Dropdown for tool calls (assistant only) */}
