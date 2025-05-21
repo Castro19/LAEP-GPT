@@ -28,7 +28,14 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
       if (!sectionsMatch) return [];
 
       const content = sectionsMatch[1].trim();
-      return JSON.parse(content);
+      // Handle both string and object formats
+      try {
+        return JSON.parse(content);
+      } catch (e) {
+        // If parsing fails, try to extract class numbers from the message
+        const classNumbers = message.match(/\b\d{5}\b/g) || [];
+        return classNumbers.map((num) => ({ classNumber: parseInt(num) }));
+      }
     } catch (error) {
       console.error("Error parsing sections:", error);
       return [];

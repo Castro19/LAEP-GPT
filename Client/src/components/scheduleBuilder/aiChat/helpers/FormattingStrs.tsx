@@ -41,9 +41,6 @@ const renderOperation = (args: OperationArgs) => {
     case "remove":
       return `**Removed sections:**\n${args.class_nums?.join(", ") || "none"}`;
     case "readall":
-      if (environment === "dev") {
-        console.log(args.formattedCourses);
-      }
       return `**Reading Schedule for ${args.state.term}**\n\nClasses: ${args.formattedCourses || args.class_nums?.join(", ")}`;
     default:
       return "";

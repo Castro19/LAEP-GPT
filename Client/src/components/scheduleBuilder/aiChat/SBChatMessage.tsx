@@ -59,6 +59,7 @@ export interface ManageScheduleArgs {
     term: string;
     preferences?: Record<string, unknown>;
   };
+  formattedCourses: string;
 }
 
 /* -------------------------------------------------------------------------
