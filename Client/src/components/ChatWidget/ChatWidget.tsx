@@ -228,7 +228,10 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
               ) : (
                 <div>
                   <div className="flex items-center justify-between p-3">
-                    <CurrentToolCall currentWidth={width} />
+                    <CurrentToolCall
+                      currentWidth={width}
+                      minimized={isMinimized}
+                    />
                     <div className="flex space-x-1">
                       <Button
                         variant="ghost"
