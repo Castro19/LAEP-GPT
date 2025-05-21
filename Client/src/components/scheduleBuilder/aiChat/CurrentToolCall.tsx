@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 import { useAppSelector } from "@/redux";
-import renderToolName from "./helpers/formattingStr";
+import { renderToolName } from "./helpers/FormattingStrs";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare } from "lucide-react";
 import {
