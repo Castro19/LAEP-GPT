@@ -1,4 +1,10 @@
-import { useLayoutEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useEffect,
+} from "react";
 import { useAppSelector } from "@/redux";
 import renderToolName from "./helpers/formattingStr";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,11 +14,11 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  TooltipPortal,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import FormattedChatMessage from "./FormattedChatMessage";
 
-const BOTTOM_THRESHOLD = 40;
 const SCROLL_AREA_ID = "assistant-tooltip-scroll";
 const VIEWPORT_ID = `${SCROLL_AREA_ID}-viewport`;
 
@@ -28,52 +34,64 @@ const findScrollAreaViewport = (
 };
 
 const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
-  const { currentAssistantMsg, currentToolCalls } = useAppSelector(
-    (state) => state.scheduleBuilderLog
-  );
+  const { currentAssistantMsg, currentToolCalls, assistantMsgBeingStreamed } =
+    useAppSelector((state) => state.scheduleBuilderLog);
   const currentToolCall = currentToolCalls?.[currentToolCalls.length - 1];
   const toolName = currentToolCall ? renderToolName(currentToolCall) : null;
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLElement | null>(null);
-  const scrollHandlerRef = useRef<() => void>();
   const isAtBottomRef = useRef(true);
   const isFirstRenderRef = useRef(true);
+  const prevMessageIdRef = useRef<string | null>(null);
+
+  /**
+   * Tooltip state management
+   * - `open`: controls the Radix Tooltip visibility
+   * - `pinned`: when true, the tooltip stays open until the icon is clicked again
+   * - `forceMount`: ensures Radix keeps the portal mounted while open/pinned
+   */
+  const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const [forceMount, setForceMount] = useState(false);
+
+  // Reset tooltip when a brand‑new assistant message completes
+  useEffect(() => {
+    if (!currentAssistantMsg?.msg_id) return;
+
+    if (prevMessageIdRef.current !== currentAssistantMsg.msg_id) {
+      setForceMount(true);
+      setOpen(true);
+      setPinned(false);
+      prevMessageIdRef.current = currentAssistantMsg.msg_id;
+    }
+  }, [currentAssistantMsg?.msg_id]);
 
   const handleScrollAreaMount = useCallback((node: HTMLDivElement | null) => {
     if (node) {
       const vp = findScrollAreaViewport(node);
-      if (vp && !vp.id) {
-        vp.id = VIEWPORT_ID;
-      }
+      if (vp && !vp.id) vp.id = VIEWPORT_ID;
     }
   }, []);
 
-  const onTooltipOpenChange = useCallback((open: boolean) => {
-    const vp = findScrollAreaViewport(scrollContainerRef.current);
-    if (open && vp) {
-      viewportRef.current = vp;
+  /**
+   * Close on outside click ONLY when not pinned.
+   * We attach a one‑shot listener each time the tooltip opens.
+   */
+  useLayoutEffect(() => {
+    if (!open || pinned) return;
 
-      scrollHandlerRef.current = () => {
-        const { scrollTop, scrollHeight, clientHeight } = vp;
-        const distanceFromBottom = Math.abs(
-          scrollHeight - clientHeight - scrollTop
-        );
-        isAtBottomRef.current = distanceFromBottom < BOTTOM_THRESHOLD;
-      };
+    const handleClickAway = () => {
+      setOpen(false);
+      setForceMount(false);
+    };
 
-      vp.addEventListener("scroll", scrollHandlerRef.current);
-      vp.scrollTop = vp.scrollHeight;
-      isFirstRenderRef.current = false;
-    } else if (viewportRef.current && scrollHandlerRef.current) {
-      viewportRef.current.removeEventListener(
-        "scroll",
-        scrollHandlerRef.current
-      );
-      viewportRef.current = null;
-    }
-  }, []);
+    window.addEventListener("pointerdown", handleClickAway, { once: true });
+    return () => window.removeEventListener("pointerdown", handleClickAway);
+  }, [open, pinned]);
 
+  /**
+   * Auto‑scroll to the bottom while we are streaming content.
+   */
   useLayoutEffect(() => {
     const vp = findScrollAreaViewport(scrollContainerRef.current);
     if (!vp || !currentAssistantMsg?.msg) return;
@@ -84,6 +102,21 @@ const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
     }
   }, [currentAssistantMsg?.msg]);
 
+  /**
+   * Icon click toggles the pinned/open states
+   */
+  const handleIconClick = () => {
+    if (pinned) {
+      setPinned(false);
+      setOpen(false);
+      setForceMount(false);
+    } else {
+      setPinned(true);
+      setOpen(true);
+      setForceMount(true);
+    }
+  };
+
   return (
     <div className="flex items-center space-x-4">
       <motion.div
@@ -92,38 +125,81 @@ const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
         className="flex items-center"
       >
         <TooltipProvider>
-          <Tooltip onOpenChange={onTooltipOpenChange}>
+          <Tooltip
+            open={open}
+            onOpenChange={(next) => {
+              // Ignore hover‑driven close events while pinned
+              if (!pinned) {
+                setOpen(next);
+                if (!next) setForceMount(false);
+              }
+            }}
+          >
             <TooltipTrigger asChild>
-              <div className="flex items-center">
-                <MessageSquare className="h-5 w-5" />
+              <div
+                className="flex items-center cursor-pointer"
+                onClick={handleIconClick}
+              >
+                <motion.div
+                  animate={{
+                    scale:
+                      currentAssistantMsg && assistantMsgBeingStreamed
+                        ? [1, 1.1, 1]
+                        : 1,
+                    color:
+                      currentAssistantMsg && assistantMsgBeingStreamed
+                        ? "#22d3ee"
+                        : "#94a3b8",
+                  }}
+                  transition={{
+                    scale: {
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                    color: { duration: 0.3, ease: "easeOut" },
+                  }}
+                >
+                  <MessageSquare className="h-5 w-5" />
+                </motion.div>
               </div>
             </TooltipTrigger>
 
-            <TooltipContent
-              className="p-0 mb-2 opacity-75"
-              side="top"
-              align="start"
-              alignOffset={-10}
-            >
-              {currentAssistantMsg?.msg && (
-                <div
-                  style={{
-                    maxWidth: `${currentWidth}px`,
-                    height: "400px",
-                  }}
-                >
-                  <ScrollArea
-                    id={SCROLL_AREA_ID}
-                    className="h-full"
-                    ref={handleScrollAreaMount}
+            <TooltipPortal>
+              <TooltipContent
+                forceMount={forceMount as true}
+                side="top"
+                align="start"
+                alignOffset={-10}
+                className="p-0 mb-2 opacity-75 z-[9999]"
+              >
+                {currentAssistantMsg?.msg && (
+                  <div
+                    style={{ maxWidth: `${currentWidth}px`, height: "400px" }}
                   >
-                    <div className="p-2 h-full" ref={scrollContainerRef}>
-                      <FormattedChatMessage msg={currentAssistantMsg.msg} />
-                    </div>
-                  </ScrollArea>
-                </div>
-              )}
-            </TooltipContent>
+                    <ScrollArea
+                      id={SCROLL_AREA_ID}
+                      className="h-full"
+                      ref={handleScrollAreaMount}
+                    >
+                      <div
+                        className="p-2 h-full"
+                        ref={scrollContainerRef}
+                        onScroll={(e) => {
+                          const el = e.target as HTMLElement;
+                          const atBottom =
+                            el.scrollHeight - el.scrollTop - el.clientHeight <
+                            2;
+                          isAtBottomRef.current = atBottom;
+                        }}
+                      >
+                        <FormattedChatMessage msg={currentAssistantMsg.msg} />
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )}
+              </TooltipContent>
+            </TooltipPortal>
           </Tooltip>
         </TooltipProvider>
       </motion.div>
@@ -141,10 +217,7 @@ const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
             {toolName && (
               <motion.div
                 className="h-2 w-2 rounded-full bg-cyan-400"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 1, 0.5],
-                }}
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{
                   duration: 1.5,
                   repeat: Infinity,
@@ -158,7 +231,7 @@ const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              {toolName || "Schedule Builder"}
+              {toolName}
             </motion.span>
           </motion.div>
         </AnimatePresence>
