@@ -88,6 +88,16 @@ router.post(
       schedule_id = result.scheduleId;
     }
 
+    // do checks to avoid tampering:
+    // ensure message is not too long
+    if (userMsg.length > 2000) {
+      res.write(
+        `event: error\ndata: ${JSON.stringify({ message: "Message too long" })}\n\n`
+      );
+      res.end();
+      return;
+    }
+
     // 4) Check if thread exists and create if not
     if (threadId.includes("temp")) {
       isNewThread = true;
@@ -117,9 +127,18 @@ router.post(
     const previousMessages = (currentLog?.conversation_turns ?? [])
       .map((turn) => turn.messages)
       .flat()
-      .filter((msg) => msg.role === "assistant" && msg.msg !== "")
-      .map((msg) => msg.msg);
+      .filter(
+        (msg) =>
+          msg.msg !== "" && (msg.role === "assistant" || msg.role === "user")
+      ) // Only filter out empty messages
+      .slice(-8) // Keep only the last 8 messages
+      .map((msg) => ({
+        role: msg.role,
+        content: msg.msg,
+      }));
 
+    console.log("Previous messages: ", previousMessages);
+    console.log("Prev messags size: ", previousMessages.length);
     // 6) Run chatbot
     let lastState;
     const currentSchedule = await getScheduleById(userId, schedule_id);
@@ -129,9 +148,11 @@ router.post(
       schedule_id: schedule_id,
       preferences: { withTimeConflicts: preferences.withTimeConflicts },
       messages: [
-        ...(previousMessages?.length
-          ? [new AIMessage({ content: previousMessages.join("\n") })]
-          : []),
+        ...previousMessages.map((msg) =>
+          msg.role === "assistant"
+            ? new AIMessage({ content: msg.content })
+            : new HumanMessage({ content: msg.content })
+        ),
         new HumanMessage({ content: userMsg }),
       ],
       currentSchedule: currentSchedule,
@@ -165,10 +186,11 @@ router.post(
         }
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An unknown error occurred";
+      if (environment === "dev") {
+        console.error("Error in schedule builder:", error);
+      }
       res.write(
-        `event: error\ndata: ${JSON.stringify({ message: errorMessage })}\n\n`
+        `event: error\ndata: ${JSON.stringify({ message: "Unknown error occured. Try again" })}\n\n`
       );
       res.end();
       return;
