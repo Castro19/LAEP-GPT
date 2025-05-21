@@ -19,7 +19,7 @@ const ScheduleBuilderAIChat: React.FC<Props> = ({
     <div className="h-full flex flex-col">
       {/* Chat container with ScrollArea */}
       <div className="flex-1 min-h-0">
-        <div style={{ height: `${currentHeight - 8 * 16}px` }}>
+        <div style={{ height: `${currentHeight - 10 * 16}px` }}>
           <ScrollArea className="h-full">
             <ChatContainerScheduleBuilder sendButtonRef={sendButtonRef} />
           </ScrollArea>
@@ -27,7 +27,7 @@ const ScheduleBuilderAIChat: React.FC<Props> = ({
       </div>
 
       {/* Chat input with fixed height */}
-      <div className="h-16 bg-slate-900">
+      <div className="h-20 bg-slate-900">
         <ScheduleBuilderChatInput
           messagesContainerRef={messagesContainerRef}
           textAreaRef={textareaRef}

@@ -265,7 +265,7 @@ export const fetchSections = tool(
       num_courses: z
         .number()
         .int()
-        .default(5)
+        .default(3)
         .describe(
           "Number of courses to return (required for 'search' or 'curriculum')."
         ),
