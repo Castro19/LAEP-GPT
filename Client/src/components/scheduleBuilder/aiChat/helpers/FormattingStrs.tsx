@@ -37,11 +37,11 @@ interface OperationArgs {
 const renderOperation = (args: OperationArgs) => {
   switch (args.operation) {
     case "add":
-      return `**Added sections:**\n${args.class_nums?.join(", ") || "none"}`;
+      return `**Added sections:**\n${args.class_nums?.join(", ") || "No sections added"}`;
     case "remove":
-      return `**Removed sections:**\n${args.class_nums?.join(", ") || "none"}`;
+      return `**Removed sections:**\n${args.class_nums?.join(", ") || "No sections removed"}`;
     case "readall":
-      return `**Reading Schedule for ${args.state.term}**\n\nClasses: ${args.formattedCourses || args.class_nums?.join(", ")}`;
+      return `**Reading Schedule for ${args.state.term}**\n\nClasses: ${args.formattedCourses || args.class_nums?.join(", ") || "No classes found"}`;
     default:
       return "";
   }
@@ -76,11 +76,12 @@ interface FetchSectionsArgs {
 }
 
 const renderFetchType = (args: FetchSectionsArgs) => {
+  const numCourses = args.num_courses ?? 3;
   switch (args.fetch_type) {
     case "search":
-      return `**Search Query:** ${args.search_query}\n\n**Results:** ${args.num_courses} courses found`;
+      return `**Search Query:** ${args.search_query || "No query provided"}\n\n**Results:** ${numCourses} courses found`;
     case "curriculum":
-      return `**Curriculum Fetch:** Next ${args.num_courses} eligible courses from flowchart`;
+      return `**Curriculum Fetch:** Next ${numCourses} eligible courses from flowchart`;
     case "user_selected":
       return `**User Selected Sections**`;
     default:

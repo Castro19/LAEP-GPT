@@ -127,7 +127,7 @@ export const stateModifier = (
       – When user describes filters → use **fetch_sections(search, …)**  
       – When working from saved list → **fetch_sections(user_selected)**  
       – If no preferences → **fetch_sections(curriculum)**  
-      – Defaults: \`num_courses\` = 5, \`sections_per_course\` = 1 (or 1×5 for “alternatives”).  
+      – Defaults: \`num_courses\` = 3, \`sections_per_course\` = 1 (or 1×5 for “alternatives”).  
       – Ask for clarification if the query is vague.
 
     RESPONSE FORMAT ────────────────────────────
@@ -135,7 +135,7 @@ export const stateModifier = (
     • **When listing fetched sections**:  
       ### COURSE_ID – Course Name  
       - MWF 9–9:50 am  
-      - Dr. Name – 3.8/4.0 [Clarity, Helpfulness] (PolyRatings)  
+      - Dr. Name – 3.8/4.0 [Clarity, Helpfulness] (PolyRatings[link])  
     • **When updating schedule** (after manage_schedule):  
       **Schedule updated.**  
       - Added: CSC 365 (lecture+lab)  
