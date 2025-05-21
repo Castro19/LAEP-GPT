@@ -39,7 +39,8 @@ export function PlaceholdersAndVanishInput({
   const inputFieldFocus = useAppSelector(
     (state) => state.layout.inputFieldFocus
   );
-  // Track the index of the placeholder that’s currently displayed
+  const draftMsg = useAppSelector((state) => state.scheduleBuilderLog.draftMsg);
+  // Track the index of the placeholder that's currently displayed
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -222,6 +223,13 @@ export function PlaceholdersAndVanishInput({
       vanishAndSubmit();
     }
   };
+
+  // Sync value with draft message
+  useEffect(() => {
+    if (draftMsg && !value) {
+      setValue(draftMsg);
+    }
+  }, [draftMsg]);
 
   return (
     <div
