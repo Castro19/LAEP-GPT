@@ -38,7 +38,7 @@ export async function* scheduleBuilderStream(
   // }
   const eventStream = agent.streamEvents(initState, {
     configurable: { thread_id: threadId, user_id: userId },
-    recursionLimit: 10,
+    recursionLimit: 15,
     version: "v2",
   });
 

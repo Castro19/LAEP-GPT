@@ -90,7 +90,7 @@ export type SectionsFilterParams = {
     major: string;
     concentration: string;
   };
-  withNoConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
+  withTimeConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
   isCreditNoCredit?: boolean;
   term: CourseTerm;
 };

@@ -47,7 +47,7 @@ export const SECTION_FILTERS_SCHEMA = z.object({
       concentration: z.string(),
     })
     .optional(),
-  withNoConflicts: z.boolean().optional(),
+  withTimeConflicts: z.boolean().optional(),
   isCreditNoCredit: z.boolean().optional(),
 });
 
@@ -89,7 +89,7 @@ export const getInitialFilterValues = (
       major,
       concentration,
     },
-    withNoConflicts: false,
+    withTimeConflicts: true,
     isCreditNoCredit: false,
   };
 };

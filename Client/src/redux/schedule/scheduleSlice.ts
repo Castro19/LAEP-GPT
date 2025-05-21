@@ -51,7 +51,7 @@ const initialState: ScheduleState = {
     maxInstructorRating: "",
     timeRange: "",
     openOnly: false,
-    withTimeConflicts: false,
+    withTimeConflicts: true,
   },
   hiddenSections: [],
 };

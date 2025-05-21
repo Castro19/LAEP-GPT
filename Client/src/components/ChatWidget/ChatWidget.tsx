@@ -181,7 +181,7 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
             className={cn(
               "shadow-lg rounded-lg overflow-hidden relative origin-bottom-right border backdrop-blur-sm",
               isMinimized
-                ? "bg-gray-900/95 border-gray-700/50"
+                ? "bg-gray-900/50 border-gray-100/50"
                 : "bg-slate-900/95 border-slate-600/50",
               isOpen && !isMinimized ? "animate-slide-in" : "animate-slide-out"
             )}
