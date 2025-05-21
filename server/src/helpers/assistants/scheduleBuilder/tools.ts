@@ -336,13 +336,12 @@ export const manageSchedule = tool(
 
     /* ---------- add ---------- */
     if (operation === "add") {
-      const { classNumbersAdded, messageToAdd, updatedSchedule } =
-        await addToSchedule({
-          userId: config.configurable.user_id,
-          classNumbersToAdd: class_nums, // this is the class numbers to add the sections to the schedule
-          scheduleId: schedule_id,
-          preferences,
-        });
+      const { classNumbersAdded, messageToAdd } = await addToSchedule({
+        userId: config.configurable.user_id,
+        classNumbersToAdd: class_nums, // this is the class numbers to add the sections to the schedule
+        scheduleId: schedule_id,
+        preferences,
+      });
 
       return new Command({
         update: {
@@ -356,7 +355,6 @@ export const manageSchedule = tool(
             added: classNumbersAdded,
             removed: [],
           },
-          currentSchedule: updatedSchedule,
         },
       });
     }
@@ -401,7 +399,6 @@ export const manageSchedule = tool(
             added: [],
             removed: classNumbersRemoved,
           },
-          currentSchedule: currentSchedule,
         },
       });
     }

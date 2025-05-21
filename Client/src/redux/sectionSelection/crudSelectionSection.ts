@@ -57,6 +57,42 @@ export async function createOrUpdateSection(
   return data;
 }
 
+export async function bulkAddSelectedSections(
+  sectionsToAdd: SelectedSectionItem[]
+): Promise<{
+  selectedSections: SelectedSection[];
+  message: string;
+}> {
+  try {
+    const response = await fetch(
+      `${serverUrl}/selectedSections/bulk-add-selected-sections`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ sectionsToAdd }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Failed to add selected sections");
+    }
+    const data: {
+      selectedSections: SelectedSection[];
+      message: string;
+    } = await response.json();
+    return data;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error adding selected sections:", error);
+    }
+    throw error;
+  }
+}
+
 export async function removeSection(
   sectionId: number,
   term: CourseTerm

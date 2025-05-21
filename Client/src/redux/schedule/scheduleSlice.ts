@@ -184,11 +184,20 @@ export const updateScheduleSections = createAsyncThunk(
     const state = getState() as RootState;
     if (!state.schedule.currentSchedule) return;
 
-    return {
+    const updatedSchedule = {
       ...state.schedule.currentSchedule,
       sections: [...sections],
       averageRating: state.schedule.currentSchedule.averageRating || 0,
     };
+
+    await createOrUpdateSchedule(
+      updatedSchedule.sections.map((section) => section.classNumber),
+      state.schedule.currentScheduleTerm,
+      state.schedule.currentScheduleId,
+      updatedSchedule.customEvents
+    );
+
+    return updatedSchedule;
   }
 );
 

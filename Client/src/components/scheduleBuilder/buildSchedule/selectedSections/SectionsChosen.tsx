@@ -51,7 +51,7 @@ const termMap = {
 };
 
 const SectionsChosen = ({
-  selectedSections,
+  selectedSections = [],
   inChat = false,
 }: {
   selectedSections: SelectedSection[];
@@ -64,9 +64,8 @@ const SectionsChosen = ({
   );
   const { hiddenSections, currentSchedule, currentScheduleTerm } =
     useAppSelector((state) => state.schedule);
-  const selectedSectionInList = useAppSelector(
-    (state) => state.sectionSelection.selectedSections
-  );
+  const selectedSectionInList =
+    useAppSelector((state) => state.sectionSelection.selectedSections) || [];
   const { toast } = useToast();
 
   // Group sections by courseId and professor
