@@ -45,6 +45,7 @@ interface ScheduleBuilderLogState {
   deletingThreadIds: string[];
   currentToolCalls: ToolCall[];
   currentAssistantMsg: ScheduleBuilderMessage | null;
+  assistantMsgBeingStreamed: boolean;
 }
 
 const initialState: ScheduleBuilderLogState = {
@@ -59,6 +60,7 @@ const initialState: ScheduleBuilderLogState = {
   deletingThreadIds: [],
   currentToolCalls: [],
   currentAssistantMsg: null,
+  assistantMsgBeingStreamed: false,
 };
 
 /* ------------------------------------------------------------------ */
@@ -369,6 +371,7 @@ const scheduleBuilderLog = createSlice({
       if (!aiMsg) return; // should never happen due to pending
 
       if (aiMsg.isPending && aiMsg.msg === "Analyzing request...") {
+        st.assistantMsgBeingStreamed = true;
         aiMsg.msg = chunk;
         aiMsg.isPending = false;
       } else {
@@ -445,6 +448,7 @@ const scheduleBuilderLog = createSlice({
     turnComplete: (st) => {
       // update the builder state
       st.loadingByThread[st.currentLog!.thread_id] = false;
+      st.assistantMsgBeingStreamed = false;
     },
   },
   extraReducers: (builder) => {
@@ -511,6 +515,7 @@ const scheduleBuilderLog = createSlice({
       .addCase(sendMessage.rejected, (st, action) => {
         const threadId = st.currentLog!.thread_id;
         st.loadingByThread[threadId] = false;
+        st.assistantMsgBeingStreamed = false;
         st.error =
           action.payload?.message ??
           action.error.message ??

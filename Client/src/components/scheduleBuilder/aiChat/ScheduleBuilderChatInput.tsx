@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Send, X } from "lucide-react";
+
 import { nanoid } from "nanoid";
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 
 import {
   useAppDispatch,
@@ -10,16 +10,19 @@ import {
   scheduleActions,
 } from "@/redux"; // <- barrel exports from new slice
 
-import {
-  adjustTextareaHeight,
-  resetInputAndScrollToBottom,
-} from "@/components/chat/helpers/formatHelper";
+import { resetInputAndScrollToBottom } from "@/components/chat/helpers/formatHelper";
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
 import {
   CourseTerm,
   GeneratedSchedule,
   ScheduleResponse,
 } from "@polylink/shared/types";
+
+const placeholders = [
+  "Find GE B classes in the morning",
+  "Find open CSC101 classes",
+  "Add an easy USCP class",
+];
 
 interface Props {
   messagesContainerRef: React.RefObject<HTMLDivElement>;
@@ -46,13 +49,11 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   const lockedChat = !!loadingByThread[threadId || ""];
 
   /* handlers ----------------------------------------------------------- */
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(scheduleBuilderLogActions.setDraftMsg(e.target.value));
-    adjustTextareaHeight(e.target);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!draftMsg.trim() || lockedChat) return;
 
     // Ensure currentSchedule is set
@@ -108,11 +109,6 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
     );
   };
 
-  const handleCancel = () => {
-    dispatch(scheduleBuilderLogActions.setDraftMsg(""));
-    if (inputRef.current) inputRef.current.value = "";
-  };
-
   /* autofocus once ----------------------------------------------------- */
   useEffect(() => {
     inputRef.current?.focus();
@@ -121,67 +117,32 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   /* render ------------------------------------------------------------- */
   return (
     <div
-      className="w-full h-full bg-slate-900 border-t dark:border-slate-700 flex flex-col"
+      className="w-full h-full bg-gray-900/95 border-t dark:border-gray-700 flex flex-col"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {lockedChat ? (
-        <div className="flex justify-center text-sm text-gray-500 px-2 pt-2">
-          Waiting for assistant…
-        </div>
-      ) : (
-        <>
-          {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-          {draftMsg.length > 1500 && (
-            <div className="text-yellow-500 text-sm">
-              You have reached {draftMsg.length} of 2000 characters.
-            </div>
-          )}
+      <div className="flex flex-col gap-2">
+        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+        {draftMsg.length > 1500 && (
+          <div className="text-yellow-500 text-sm">
+            You have reached {draftMsg.length} of 2000 characters.
+          </div>
+        )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="flex items-center gap-2 p-4 flex-1"
-          >
-            <textarea
-              ref={textAreaRef}
-              id="ChatInput"
-              className="flex-1 resize-none p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 overflow-y-hidden"
-              placeholder="Type your message here..."
-              rows={1}
-              value={draftMsg}
+        <div className="flex items-center gap-2 p-4 flex-1 w-full">
+          <div className="flex-1 w-full">
+            <PlaceholdersAndVanishInput
+              placeholders={placeholders}
               onChange={handleInputChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
+              onSubmit={handleSubmit}
+              maxLength={2000}
+              interval={5000}
+              loading={lockedChat}
+              disabled={lockedChat}
+              sendButtonRef={sendButtonRef}
             />
-
-            {lockedChat ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={handleCancel}
-                ref={sendButtonRef}
-                className="text-slate-400 hover:text-white hover:bg-slate-700"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                variant="outline"
-                className="bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 px-4 py-2"
-                disabled={!draftMsg.trim()}
-                ref={sendButtonRef}
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            )}
-          </form>
-        </>
-      )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

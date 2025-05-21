@@ -1,18 +1,20 @@
-import { useRef } from "react";
 import ChatContainerScheduleBuilder from "./ChatContainerScheduleBuilder";
 import ScheduleBuilderChatInput from "./ScheduleBuilderChatInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Props {
   currentHeight: number;
+  sendButtonRef: React.RefObject<HTMLButtonElement>;
+  messagesContainerRef: React.RefObject<HTMLDivElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
 }
 
-const ScheduleBuilderAIChat: React.FC<Props> = ({ currentHeight }) => {
-  /* refs for ChatInput – still stubs */
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const sendButtonRef = useRef<HTMLButtonElement>(null);
-
+const ScheduleBuilderAIChat: React.FC<Props> = ({
+  currentHeight,
+  sendButtonRef,
+  messagesContainerRef,
+  textareaRef,
+}) => {
   return (
     <div className="h-full flex flex-col">
       {/* Chat container with ScrollArea */}

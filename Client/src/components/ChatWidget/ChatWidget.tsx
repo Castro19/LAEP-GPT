@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { ScheduleBuilderAIChat } from "../scheduleBuilder";
 import ScheduleBuilderAIChatHeader from "../scheduleBuilder/aiChat/ScheduleBuilderAIChatHeader";
 import CurrentToolCall from "../scheduleBuilder/aiChat/CurrentToolCall";
+import ScheduleBuilderChatInput from "../scheduleBuilder/aiChat/ScheduleBuilderChatInput";
 
 type ChatWidgetProps = { initialOpen?: boolean };
 
@@ -19,6 +20,10 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const [isPulsing, setIsPulsing] = useState(false);
+  /* refs for ChatInput – still stubs */
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const sendButtonRef = useRef<HTMLButtonElement>(null);
 
   // dimensions and refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -168,13 +173,16 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
               height: springH,
               minWidth: 56,
               maxWidth: 600,
-              minHeight: 56,
+              minHeight: 140,
               maxHeight: window.innerHeight - 8,
             }}
             initial={false}
-            exit={{ width: 56, height: 56, opacity: 0 }}
+            exit={{ width: 56, height: 150, opacity: 0 }}
             className={cn(
-              "bg-slate-900 shadow-lg rounded-lg overflow-hidden relative origin-bottom-right",
+              "shadow-lg rounded-lg overflow-hidden relative origin-bottom-right border backdrop-blur-sm",
+              isMinimized
+                ? "bg-gray-900/95 border-gray-700/50"
+                : "bg-slate-900/95 border-slate-600/50",
               isOpen && !isMinimized ? "animate-slide-in" : "animate-slide-out"
             )}
           >
@@ -218,33 +226,45 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between p-3 border-b">
-                  <CurrentToolCall currentWidth={width} />
-
-                  <div className="flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => setIsMinimized((m) => !m)}
-                    >
-                      <Maximize2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={toggleOpen}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                <div>
+                  <div className="flex items-center justify-between p-3">
+                    <CurrentToolCall currentWidth={width} />
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => setIsMinimized((m) => !m)}
+                      >
+                        <Maximize2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={toggleOpen}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
+
+                  <ScheduleBuilderChatInput
+                    messagesContainerRef={messagesContainerRef}
+                    textAreaRef={textareaRef}
+                    sendButtonRef={sendButtonRef}
+                  />
                 </div>
               )}
               {/* body */}
               {!isMinimized && (
                 <div className="flex-1">
-                  <ScheduleBuilderAIChat currentHeight={height} />
+                  <ScheduleBuilderAIChat
+                    currentHeight={height}
+                    sendButtonRef={sendButtonRef}
+                    messagesContainerRef={messagesContainerRef}
+                    textareaRef={textareaRef}
+                  />
                 </div>
               )}
             </div>
