@@ -43,7 +43,7 @@ interface ScheduleBuilderLogState {
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
-  currentToolCalls: ToolCall[] | null;
+  currentToolCalls: ToolCall[];
   currentAssistantMsg: ScheduleBuilderMessage | null;
 }
 
@@ -375,7 +375,7 @@ const scheduleBuilderLog = createSlice({
         // Append the chunk
         aiMsg.msg += chunk;
       }
-      st.currentToolCalls = null;
+      st.currentToolCalls = [];
       st.currentAssistantMsg = aiMsg;
     },
     // 2) received a complete message
