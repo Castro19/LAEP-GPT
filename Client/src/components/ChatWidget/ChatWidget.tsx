@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ScheduleBuilderAIChat } from "../scheduleBuilder";
 import ScheduleBuilderAIChatHeader from "../scheduleBuilder/aiChat/ScheduleBuilderAIChatHeader";
+import CurrentToolCall from "../scheduleBuilder/aiChat/CurrentToolCall";
 
 type ChatWidgetProps = { initialOpen?: boolean };
 
@@ -218,12 +219,9 @@ export function ChatWidget({ initialOpen = false }: ChatWidgetProps) {
                 </div>
               ) : (
                 <div className="flex items-center justify-between p-3 border-b">
-                  <div className="flex items-center space-x-2">
-                    <MessageSquare className="h-5 w-5 text-primary" />
-                    <h3 className="font-medium text-sm">
-                      Schedule Builder Chat
-                    </h3>
-                  </div>
+                  <h3 className="font-medium text-sm">
+                    <CurrentToolCall currentWidth={width} />
+                  </h3>
                   <div className="flex space-x-1">
                     <Button
                       variant="ghost"

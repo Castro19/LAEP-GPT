@@ -43,6 +43,8 @@ interface ScheduleBuilderLogState {
   isLoading: boolean; // fetch lists / detail
   error: string | null;
   deletingThreadIds: string[];
+  currentToolCalls: ToolCall[] | null;
+  currentAssistantMsg: ScheduleBuilderMessage | null;
 }
 
 const initialState: ScheduleBuilderLogState = {
@@ -55,6 +57,8 @@ const initialState: ScheduleBuilderLogState = {
   isLoading: false,
   error: null,
   deletingThreadIds: [],
+  currentToolCalls: [],
+  currentAssistantMsg: null,
 };
 
 /* ------------------------------------------------------------------ */
@@ -324,6 +328,7 @@ const scheduleBuilderLog = createSlice({
         if (newCalls.length > 0) {
           const newToolCalls = [...(aiMsg.tool_calls || []), ...newCalls];
           aiMsg.tool_calls = newToolCalls;
+          st.currentToolCalls = aiMsg.tool_calls;
         }
       }
     },
@@ -370,6 +375,8 @@ const scheduleBuilderLog = createSlice({
         // Append the chunk
         aiMsg.msg += chunk;
       }
+      st.currentToolCalls = null;
+      st.currentAssistantMsg = aiMsg;
     },
     // 2) received a complete message
     receivedMessage: (
@@ -482,6 +489,8 @@ const scheduleBuilderLog = createSlice({
         const { placeholderTurnId } = action.meta.arg;
         // mark loading
         st.loadingByThread[st.currentLog!.thread_id] = true;
+        // Clear the current assistant message
+        st.currentAssistantMsg = null;
 
         // find the turn we already optimistically added (with only the user msg)
         const turn = st.currentLog?.conversation_turns.find(
