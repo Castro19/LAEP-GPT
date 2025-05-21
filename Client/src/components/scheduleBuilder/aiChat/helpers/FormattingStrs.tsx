@@ -44,7 +44,7 @@ const renderOperation = (args: OperationArgs) => {
       if (environment === "dev") {
         console.log(args.formattedCourses);
       }
-      return `**Reading Schedule for ${args.state.term}**\n\nClasses: ${args.formattedCourses}`;
+      return `**Reading Schedule for ${args.state.term}**\n\nClasses: ${args.formattedCourses || args.class_nums?.join(", ")}`;
     default:
       return "";
   }
@@ -112,6 +112,23 @@ const FetchSectionsMessage: React.FC<FetchSectionsMessageProps> = ({
   return <FormattedChatMessage msg={message} variant={variant} />;
 };
 
+type ToolArgs = OperationArgs | FetchSectionsArgs;
+
+const isOperationArgs = (args: ToolArgs): args is OperationArgs => {
+  return "operation" in args;
+};
+
+const renderToolMessage = (args: ToolArgs): string => {
+  if (environment === "dev") {
+    console.log("ARGS: ", args);
+  }
+  if (isOperationArgs(args)) {
+    return renderOperation(args);
+  } else {
+    return renderFetchType(args);
+  }
+};
+
 export {
   renderToolName,
   renderOperation,
@@ -120,4 +137,6 @@ export {
   renderFetchType,
   FetchSectionsMessage,
   type FetchSectionsArgs,
+  renderToolMessage,
+  type ToolArgs,
 };
