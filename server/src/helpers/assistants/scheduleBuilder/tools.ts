@@ -2,7 +2,12 @@
 import { tool } from "@langchain/core/tools";
 import { ToolMessage } from "@langchain/core/messages";
 import { z } from "zod";
-import { CourseTerm, Section, SelectedSection } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  ScheduleResponse,
+  Section,
+  SelectedSection,
+} from "@polylink/shared/types";
 import { StateAnnotation } from "./state";
 
 // “Injected” helpers -------------------------------------------------
@@ -16,7 +21,10 @@ import {
   getSectionsWithPairs,
   buildSectionSummaries,
 } from "./helpers";
-import { transformSectionToSelectedSection } from "../../../db/models/schedule/transformSection";
+import {
+  transformClassNumbersToSelectedSections,
+  transformSectionToSelectedSection,
+} from "../../../db/models/schedule/transformSection";
 import {
   sectionQueryAssistant,
   SectionQueryResponse,
@@ -344,9 +352,31 @@ export const manageSchedule = tool(
         preferences,
       });
 
-      const updatedSchedule = {
+      const newSelectedSections = await transformClassNumbersToSelectedSections(
+        config.configurable.user_id,
+        classNumbersAdded,
+        state.term as CourseTerm
+      );
+
+      if (!currentSchedule) {
+        return new Command({
+          update: {
+            messages: [
+              new ToolMessage({
+                content: "Schedule not found.",
+                tool_call_id: config.toolCall.id,
+              }),
+            ],
+          },
+        });
+      }
+
+      const updatedSchedule: ScheduleResponse = {
         ...currentSchedule,
-        sections: [...(currentSchedule?.sections ?? []), ...classNumbersAdded],
+        sections: [
+          ...(currentSchedule?.sections ?? []),
+          ...newSelectedSections,
+        ],
       };
 
       return new Command({

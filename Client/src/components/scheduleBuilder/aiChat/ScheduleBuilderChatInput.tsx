@@ -112,6 +112,16 @@ const ScheduleBuilderChatInput: React.FC<Props> = ({
   /* autofocus once ----------------------------------------------------- */
   useEffect(() => {
     inputRef.current?.focus();
+    if (!currentSchedule) {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
+    }
   }, []);
 
   /* render ------------------------------------------------------------- */

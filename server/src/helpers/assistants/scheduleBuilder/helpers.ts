@@ -1,5 +1,4 @@
 import {
-  bulkPostSelectedSections,
   getColorForCourseId,
   getSelectedSectionsByUserId,
 } from "../../../db/models/selectedSection/selectedSectionServices";
@@ -11,7 +10,6 @@ import {
   Meeting,
   Section,
   SelectedSection,
-  ScheduleResponse,
   ProfessorRatingDocument,
   SectionAddedOrRemoved,
 } from "@polylink/shared/types";
@@ -20,10 +18,7 @@ import {
   getSectionsByCourseIds,
   getSectionsByIds,
 } from "../../../db/models/section/sectionServices";
-import {
-  createOrUpdateSchedule,
-  getScheduleById,
-} from "../../../db/models/schedule/scheduleServices";
+import { getScheduleById } from "../../../db/models/schedule/scheduleServices";
 import { transformSectionToSelectedSection } from "../../../db/models/schedule/transformSection";
 import * as summerSectionCollection from "../../../db/models/section/summerSectionCollection";
 import * as sectionCollection from "../../../db/models/section/sectionCollection";

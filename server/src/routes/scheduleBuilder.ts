@@ -347,7 +347,7 @@ router.post(
       ) ?? [],
       term,
       schedule_id,
-      []
+      lastState?.currentSchedule.customEvents ?? []
     );
     res.end();
   })
