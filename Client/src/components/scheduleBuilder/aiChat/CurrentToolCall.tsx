@@ -33,7 +33,13 @@ const findScrollAreaViewport = (
   ) as HTMLElement | null;
 };
 
-const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
+const CurrentToolCall = ({
+  currentWidth,
+  minimized,
+}: {
+  currentWidth: number;
+  minimized: boolean;
+}) => {
   const { currentAssistantMsg, currentToolCalls, assistantMsgBeingStreamed } =
     useAppSelector((state) => state.scheduleBuilderLog);
   const currentToolCall = currentToolCalls?.[currentToolCalls.length - 1];
@@ -53,6 +59,15 @@ const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
   const [open, setOpen] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [forceMount, setForceMount] = useState(false);
+
+  // Close whenever the widget is minimised
+  useEffect(() => {
+    if (minimized) {
+      setOpen(false);
+      setPinned(false);
+      setForceMount(false);
+    }
+  }, [minimized]);
 
   // Reset tooltip when a brand‑new assistant message completes
   useEffect(() => {
@@ -167,7 +182,7 @@ const CurrentToolCall = ({ currentWidth }: { currentWidth: number }) => {
 
             <TooltipPortal>
               <TooltipContent
-                forceMount={forceMount as true}
+                forceMount={(forceMount && !minimized) as true}
                 side="top"
                 align="start"
                 alignOffset={-10}
