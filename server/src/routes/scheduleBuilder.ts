@@ -137,8 +137,6 @@ router.post(
         content: msg.msg,
       }));
 
-    console.log("Previous messages: ", previousMessages);
-    console.log("Prev messags size: ", previousMessages.length);
     // 6) Run chatbot
     let lastState;
     const currentSchedule = await getScheduleById(userId, schedule_id);
