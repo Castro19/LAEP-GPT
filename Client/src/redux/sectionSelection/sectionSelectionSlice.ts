@@ -211,12 +211,6 @@ const sectionSelectionSlice = createSlice({
         state.message = action.payload.message;
       }
     );
-    builder.addCase(
-      addNewSectionsAndUpdateSelected.fulfilled,
-      (state, action) => {
-        state.selectedSections = action.payload;
-      }
-    );
     builder
       .addCase(removeSelectedSectionAsync.pending, (state, action) => {
         // Remove the section from both arrays immediately for better UX

@@ -120,6 +120,8 @@ router.post(
     // 5) Check if preferences are set and set defaults if not
     if (!preferences) {
       preferences = { withTimeConflicts: true };
+    } else {
+      preferences.withTimeConflicts = true;
     }
 
     const currentLog = await getLogByThreadId(threadId);
