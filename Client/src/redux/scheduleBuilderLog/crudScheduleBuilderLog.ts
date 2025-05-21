@@ -178,7 +178,6 @@ export async function streamScheduleBuilderRequest(
 
         case "tool_call_msg": {
           const { text: toolCallText } = JSON.parse(raw);
-          console.log("Tool message:", toolCallText);
           onToolCallMsg(toolCallText);
           break;
         }

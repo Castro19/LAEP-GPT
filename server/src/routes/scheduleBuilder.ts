@@ -33,6 +33,7 @@ import {
 import { StateAnnotation } from "../helpers/assistants/scheduleBuilder/state";
 import { transformClassNumbersToSelectedSections } from "../db/models/schedule/transformSection";
 import { environment } from "../index";
+import { buildSectionSummaries } from "../helpers/assistants/scheduleBuilder/helpers";
 
 const router = express.Router();
 
@@ -128,10 +129,7 @@ router.post(
     const previousMessages = (currentLog?.conversation_turns ?? [])
       .map((turn) => turn.messages)
       .flat()
-      .filter(
-        (msg) =>
-          msg.msg !== "" && (msg.role === "assistant" || msg.role === "user")
-      ) // Only filter out empty messages
+      .filter((msg) => msg.msg !== "" && msg.role === "assistant") // Only filter out empty messages
       .slice(-8) // Keep only the last 8 messages
       .map((msg) => ({
         role: msg.role,
@@ -146,6 +144,8 @@ router.post(
       term: term,
       schedule_id: schedule_id,
       preferences: { withTimeConflicts: preferences.withTimeConflicts },
+      user_query: userMsg,
+      currentSchedule: currentSchedule,
       messages: [
         ...previousMessages.map((msg) =>
           msg.role === "assistant"
@@ -154,7 +154,9 @@ router.post(
         ),
         new HumanMessage({ content: userMsg }),
       ],
-      currentSchedule: currentSchedule,
+      sectionSummaries: await buildSectionSummaries(
+        currentSchedule?.sections ?? []
+      ),
     };
 
     try {
@@ -193,30 +195,6 @@ router.post(
       );
       res.end();
       return;
-    }
-
-    // 6.5) Apply accumulated diff to the database
-    if (lastState) {
-      const { diff, currentSchedule: prevSchedule } = lastState;
-      const added = diff?.added ?? [];
-      const removed = diff?.removed ?? [];
-
-      // Start from whatever was in state.currentSchedule
-      const prevClassNums = prevSchedule.sections.map((s) => s.classNumber);
-      // Remove then add, then dedupe
-      let finalClassNums = prevClassNums
-        .filter((cn) => !removed.includes(cn))
-        .concat(added);
-      finalClassNums = Array.from(new Set(finalClassNums));
-
-      // Persist the one merged update
-      await createOrUpdateSchedule(userId, finalClassNums, term, schedule_id);
-
-      // Update lastState with the final schedule
-      const updatedSchedule = await getScheduleById(userId, schedule_id);
-      if (updatedSchedule) {
-        lastState.currentSchedule = updatedSchedule;
-      }
     }
 
     const conversation = lastState!.messages;
@@ -295,12 +273,12 @@ router.post(
       } as ScheduleBuilderMessage;
     });
 
-    // 7a) Stream out each message as its own SSE event
-    for (const msg of messages) {
-      if (msg.role === "user") continue; // don't re-send the user's message
-      res.write("event: message\n");
-      res.write(`data: ${JSON.stringify(msg)}\n\n`);
-    }
+    // // 7a) Stream out each message as its own SSE event
+    // for (const msg of messages) {
+    //   if (msg.role === "user") continue; // don't re-send the user's message
+    //   res.write("event: message\n");
+    //   res.write(`data: ${JSON.stringify(msg)}\n\n`);
+    // }
 
     // 7b) Calculate token usage for this turn
     const turnTokenUsage = messages.reduce(
@@ -358,7 +336,6 @@ router.post(
           isNewThread,
           schedule_id,
           threadId,
-          state: lastState,
         })}\n\n`
     );
     res.end();
