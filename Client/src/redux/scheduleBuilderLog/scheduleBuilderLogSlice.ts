@@ -25,7 +25,7 @@ import {
   updateScheduleSection,
 } from "../schedule/scheduleSlice";
 import { updateSelectedSections } from "../sectionSelection/sectionSelectionSlice";
-
+import { RootState } from "../store";
 /* ------------------------------------------------------------------ */
 /*  Local helper types                                                */
 /* ------------------------------------------------------------------ */
@@ -216,16 +216,20 @@ export const processToolCalls = createAsyncThunk(
           };
           if (args.operation === "add" && args.class_nums) {
             // First, update the selected sections
-            const state = getState() as any;
+            const state = getState() as RootState;
             const selectedSections = state.sectionSelection.selectedSections;
             const sectionsToAdd = args.class_nums
               .map((id) =>
-                selectedSections.find((s: any) => s.classNumber === id)
+                selectedSections.find(
+                  (s: SelectedSection) => s.classNumber === id
+                )
               )
               .filter(Boolean);
 
             if (sectionsToAdd.length > 0) {
-              await dispatch(updateSelectedSections(sectionsToAdd));
+              await dispatch(
+                updateSelectedSections(sectionsToAdd as SelectedSection[])
+              );
               // Then update the schedule sections
               await dispatch(
                 updateScheduleSection({
@@ -236,10 +240,10 @@ export const processToolCalls = createAsyncThunk(
             }
           } else if (args.operation === "remove" && args.class_nums) {
             // First, update the selected sections
-            const state = getState() as any;
+            const state = getState() as RootState;
             const selectedSections = state.sectionSelection.selectedSections;
             const sectionsToKeep = selectedSections.filter(
-              (s: any) => !args.class_nums?.includes(s.classNumber)
+              (s: SelectedSection) => !args.class_nums?.includes(s.classNumber)
             );
 
             await dispatch(updateSelectedSections(sectionsToKeep));
