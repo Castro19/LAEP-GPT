@@ -1,18 +1,9 @@
 import React, { useMemo } from "react";
-import { environment } from "@/helpers/getEnvironmentVars";
 import SectionChanges from "./SectionChanges";
+import { type OperationArgs, OperationMessage } from "./helpers/FormattingStrs";
 
 interface ManageScheduleProps {
-  args: {
-    operation: "readall" | "add" | "remove";
-    class_nums?: number[];
-    state: {
-      user_id: string;
-      schedule_id: string;
-      term: string;
-      preferences?: Record<string, unknown>;
-    };
-  };
+  args: OperationArgs;
   message: string;
 }
 
@@ -44,46 +35,17 @@ const SBManageSchedule: React.FC<ManageScheduleProps> = ({ args, message }) => {
     }
   }, [message, args.operation]);
 
-  const renderOperation = () => {
-    switch (args.operation) {
-      case "add":
-        return (
-          <div className="text-slate-400">
-            <span className="font-semibold">Added sections:</span>
-            <br />
-            {args.class_nums?.join(", ")}
-          </div>
-        );
-      case "remove":
-        return (
-          <div className="text-slate-400">
-            <span className="font-semibold">Removed sections:</span>
-            <br />
-            {args.class_nums?.join(", ")}
-          </div>
-        );
-      case "readall":
-        if (environment === "dev") {
-          console.log(formattedCourses);
-        }
-        return (
-          <div className="text-slate-400">
-            <span className="font-semibold">
-              Schedule for {args.state.term}
-            </span>
-            <br />
-            {formattedCourses}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="space-y-3">
       {/* Tool Arguments */}
-      <div className="bg-slate-800/50 p-2 rounded">{renderOperation()}</div>
+      <div className="bg-slate-800/50 p-2 rounded">
+        <OperationMessage
+          operation={args.operation}
+          class_nums={args.class_nums}
+          state={args.state}
+          formattedCourses={formattedCourses}
+        />
+      </div>
 
       {/* Message Output */}
       {args.operation !== "readall" && (
