@@ -45,6 +45,27 @@ const SectionsChosen = ({
     );
   }, [currentSchedule?.conflictGroups]);
 
+  // Find which conflict group a course belongs to and its position within that group
+  const getConflictGroupInfo = (courseId: string) => {
+    if (!currentSchedule?.conflictGroups)
+      return { groupIndex: -1, positionInGroup: -1 };
+
+    // Find the conflict group that contains this course
+    const groupIndex = currentSchedule.conflictGroups.findIndex((group) =>
+      group.some((section) => section.courseId === courseId)
+    );
+
+    if (groupIndex === -1) return { groupIndex: -1, positionInGroup: -1 };
+
+    // Find the position of the first section of this course in the conflict group
+    const group = currentSchedule.conflictGroups[groupIndex];
+    const positionInGroup = group.findIndex(
+      (section) => section.courseId === courseId
+    );
+
+    return { groupIndex, positionInGroup };
+  };
+
   // Group sections by courseId and professor
   if (
     (selectedSections.length === 0 || !Array.isArray(selectedSections)) &&
@@ -282,21 +303,27 @@ const SectionsChosen = ({
       {!inChat && <SelectOrDeselectAllSections />}
       <AnimatePresence mode="wait">
         {Object.entries(groupedSections).map(
-          ([courseId, professorGroups], courseIndex) => (
-            <CourseAccordion
-              key={courseId}
-              courseId={courseId}
-              professorGroups={professorGroups}
-              courseIndex={courseIndex}
-              conflictIds={conflictIds}
-              sectionsForSchedule={sectionsForSchedule}
-              isInSchedule={isCourseInSchedule(courseId)}
-              isHidden={isCourseHidden(courseId)}
-              onAddCourse={handleAddCourseToCalendar}
-              onRemoveCourse={handleRemoveCourseFromCalendar}
-              onToggleVisibility={handleToggleCourseVisibility}
-            />
-          )
+          ([courseId, professorGroups], courseIndex) => {
+            const { groupIndex, positionInGroup } =
+              getConflictGroupInfo(courseId);
+            return (
+              <CourseAccordion
+                key={courseId}
+                courseId={courseId}
+                professorGroups={professorGroups}
+                courseIndex={courseIndex}
+                conflictGroupIndex={groupIndex}
+                positionInGroup={positionInGroup}
+                conflictIds={conflictIds}
+                sectionsForSchedule={sectionsForSchedule}
+                isInSchedule={isCourseInSchedule(courseId)}
+                isHidden={isCourseHidden(courseId)}
+                onAddCourse={handleAddCourseToCalendar}
+                onRemoveCourse={handleRemoveCourseFromCalendar}
+                onToggleVisibility={handleToggleCourseVisibility}
+              />
+            );
+          }
         )}
       </AnimatePresence>
     </motion.div>

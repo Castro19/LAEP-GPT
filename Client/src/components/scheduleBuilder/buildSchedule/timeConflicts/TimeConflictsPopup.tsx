@@ -17,7 +17,6 @@ const TimeConflictsPopup = () => {
 
   const editManually = () => {
     /* … */
-    console.log("editManually");
 
     dispatch(layoutActions.fireExpandConflicts()); // <── trigger auto-open
   };

@@ -1,4 +1,4 @@
-import { FC, MouseEvent } from "react";
+import { FC, MouseEvent, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   EyeIcon,
@@ -22,6 +22,9 @@ import { Button } from "@/components/ui/button";
 import { adjustColorBrightness } from "./utils";
 import type { SelectedSection } from "@polylink/shared/types";
 import ProfessorCollapsibleCard from "./ProfessorCollapsibleTrigger";
+import { useAppSelector } from "@/redux";
+import useAutoExpand from "@/hooks/useAutoExpand";
+import { SCROLL_VIEWPORT_ID } from "../layout/BuildScheduleContainer";
 
 export interface CourseAccordionProps {
   courseId: string;
@@ -30,6 +33,8 @@ export interface CourseAccordionProps {
     { rating: number; sections: SelectedSection[] }
   >;
   courseIndex: number;
+  conflictGroupIndex: number;
+  positionInGroup: number;
   conflictIds: Set<number>;
   sectionsForSchedule: SelectedSection[];
   /** computed booleans */
@@ -41,10 +46,30 @@ export interface CourseAccordionProps {
   onToggleVisibility: (courseId: string) => void;
 }
 
+// Helper function to find the scroll viewport with retry
+const findScrollAreaViewport = (retryCount = 0): HTMLElement | null => {
+  // Try both by ID and by data attribute
+  const viewport =
+    document.getElementById(SCROLL_VIEWPORT_ID) ||
+    (document.querySelector(
+      "[data-radix-scroll-area-viewport]"
+    ) as HTMLElement | null);
+
+  if (!viewport && retryCount < 5) {
+    // Wait a bit and try again
+    setTimeout(() => findScrollAreaViewport(retryCount + 1), 100);
+    return null;
+  }
+
+  return viewport;
+};
+
 const CourseAccordion: FC<CourseAccordionProps> = ({
   courseId,
   professorGroups,
   courseIndex,
+  conflictGroupIndex,
+  positionInGroup,
   conflictIds,
   sectionsForSchedule,
   isInSchedule,
@@ -53,15 +78,56 @@ const CourseAccordion: FC<CourseAccordionProps> = ({
   onRemoveCourse,
   onToggleVisibility,
 }) => {
-  const firstProfKey = Object.keys(professorGroups)[0];
-  const bgColor = professorGroups[firstProfKey].sections[0].color || "#ffffff";
+  const expandTick = useAppSelector(
+    (state) => state.layout.expandConflictsTick
+  );
+  const rowRef = useRef<HTMLDivElement>(null);
   const isConflicted = Object.values(professorGroups)
     .flatMap((g) => g.sections)
     .some((s) => conflictIds.has(s.classNumber));
 
+  // Calculate the total position across all conflict groups
+  const totalPosition = conflictGroupIndex * 100 + positionInGroup;
+
+  // Only force open if this is the current position to handle
+  const shouldForceOpen = isConflicted && expandTick === totalPosition + 1;
+
+  const [open, setOpen] = useAutoExpand(shouldForceOpen);
+
+  const firstProfKey = Object.keys(professorGroups)[0];
+  const bgColor = professorGroups[firstProfKey].sections[0].color || "#ffffff";
+
   const sectionCount = Object.values(professorGroups).flatMap(
     (g) => g.sections
   ).length;
+
+  useEffect(() => {
+    if (shouldForceOpen && rowRef.current) {
+      // Add a small delay to ensure the collapsible is open
+      setTimeout(() => {
+        const viewport = findScrollAreaViewport();
+
+        if (viewport) {
+          const elementRect = rowRef.current!.getBoundingClientRect();
+          const viewportRect = viewport.getBoundingClientRect();
+          const scrollTop =
+            viewport.scrollTop + (elementRect.top - viewportRect.top);
+
+          viewport.scrollTo({
+            top: scrollTop,
+            behavior: "smooth",
+          });
+        }
+      }, 300);
+    }
+  }, [
+    shouldForceOpen,
+    courseId,
+    conflictGroupIndex,
+    positionInGroup,
+    totalPosition,
+    expandTick,
+  ]);
 
   return (
     <motion.div
@@ -75,8 +141,13 @@ const CourseAccordion: FC<CourseAccordionProps> = ({
         ease: [0.22, 1, 0.36, 1],
       }}
       className="w-full"
+      ref={rowRef}
     >
-      <Collapsible className="group/collapsible w-full">
+      <Collapsible
+        className="group/collapsible w-full"
+        open={open}
+        onOpenChange={setOpen}
+      >
         <div
           className={`rounded-md border w-full ${isConflicted ? "ring-2 ring-red-500/60" : ""}`}
           style={{
