@@ -35,6 +35,7 @@ import {
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTermName } from "@/constants/schedule";
+
 const SectionCard: React.FC<{
   section: SelectedSection;
   isSelected: boolean;

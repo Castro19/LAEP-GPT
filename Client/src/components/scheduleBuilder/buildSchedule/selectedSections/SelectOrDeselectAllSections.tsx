@@ -12,7 +12,7 @@ import {
   sectionSelectionActions,
 } from "@/redux";
 
-const SelectOrDeselectAllSections = ({}: {}) => {
+const SelectOrDeselectAllSections = () => {
   const dispatch = useAppDispatch();
   const { sectionsForSchedule, selectedSections } = useAppSelector(
     (state) => state.sectionSelection

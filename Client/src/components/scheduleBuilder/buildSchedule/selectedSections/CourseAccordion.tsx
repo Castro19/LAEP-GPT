@@ -104,7 +104,7 @@ const CourseAccordion: FC<CourseAccordionProps> = ({
   useEffect(() => {
     if (shouldForceOpen && rowRef.current) {
       // Add a small delay to ensure the collapsible is open
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         const viewport = findScrollAreaViewport();
 
         if (viewport) {
@@ -119,6 +119,9 @@ const CourseAccordion: FC<CourseAccordionProps> = ({
           });
         }
       }, 300);
+
+      // Cleanup function to clear the timeout
+      return () => clearTimeout(timeoutId);
     }
   }, [
     shouldForceOpen,
