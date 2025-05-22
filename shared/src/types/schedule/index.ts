@@ -40,7 +40,7 @@ export type GeneratedSchedule = {
   id?: string;
   name?: string;
   withConflicts?: boolean;
-  conflictGroups?: SelectedSection[];
+  conflictGroups?: SelectedSection[][];
 };
 
 // ScheduleResponse

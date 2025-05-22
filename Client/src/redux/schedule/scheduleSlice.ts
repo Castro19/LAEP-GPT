@@ -407,6 +407,8 @@ const scheduleSlice = createSlice({
         };
         state.currentScheduleId = schedule.id;
         state.currentScheduleTerm = term as CourseTerm;
+        state.page = 1;
+        state.totalPages = 1;
       })
       .addCase(removeScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
@@ -426,7 +428,7 @@ const scheduleSlice = createSlice({
           );
           state.currentSchedule = {
             ...action.payload,
-            conflictGroups,
+            conflictGroups: conflictGroups as SelectedSection[][],
             withConflicts,
           };
         }
@@ -438,7 +440,7 @@ const scheduleSlice = createSlice({
           );
           state.currentSchedule = {
             ...action.payload,
-            conflictGroups,
+            conflictGroups: conflictGroups as SelectedSection[][],
             withConflicts,
           };
         }
