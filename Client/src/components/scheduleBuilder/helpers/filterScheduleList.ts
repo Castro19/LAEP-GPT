@@ -1,7 +1,6 @@
 import { SelectedSection } from "@polylink/shared/types";
 import { SchedulePreferencesForm } from "../buildSchedule/ScheduleBuilderForm";
 import { Schedule } from ".";
-import { environment } from "@/helpers/getEnvironmentVars";
 
 function filterSchedules(
   allSchedules: SelectedSection[][],
@@ -33,14 +32,7 @@ function filterSchedules(
         unitCount += Number(unitNumber);
       }
     }
-    if (environment === "dev") {
-      console.log("--------------------------------");
-      console.log("PREFERENCES: ", preferences);
-      console.log("UNIT COUNT: ", unitCount);
-      console.log("RATING COUNT: ", ratingCount);
-      console.log("PROFESSOR WITH RATING COUNT: ", professorWithRatingCount);
-      console.log("--------------------------------");
-    }
+
     // Check the preferences to see if the schedule fits
     if (preferences.minUnits && unitCount < Number(preferences.minUnits)) {
       continue;

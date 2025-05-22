@@ -263,3 +263,57 @@ export function transformSectionsToScheduleBuilderSections(
     })),
   }));
 }
+
+/**
+ * Transforms a Section or SectionDetail to a SelectedSection
+ * @param section The Section or SectionDetail to transform
+ * @param color The color to assign to the section (default: "#000000")
+ * @returns A SelectedSection object
+ */
+export function transformSectionToSelectedSection(
+  section: Section | SectionDetail,
+  color: string = "#000000"
+): SelectedSection {
+  // Extract the first instructor's rating or default to 0
+  const rating = section.instructorsWithRatings?.[0]?.overallRating || 0;
+
+  // Transform instructors to professors format
+  const professors =
+    section.instructorsWithRatings && section.instructorsWithRatings.length > 0
+      ? section.instructorsWithRatings.map((instructor) => ({
+          name: instructor.name,
+          id: instructor.id,
+        }))
+      : section.instructors.map((instructor) => ({
+          name: instructor.name,
+          id: instructor.name,
+        }));
+
+  // Determine classPair based on the type of section
+  let classPair: number | null = null;
+  if ("pairedSections" in section && section.pairedSections.length > 0) {
+    classPair = section.pairedSections[0];
+  } else if ("classPair" in section) {
+    classPair = section.classPair;
+  }
+
+  // Create the SelectedSection object
+  return {
+    courseId: section.courseId,
+    courseName: section.courseName,
+    classNumber: section.classNumber,
+    component: section.component,
+    units: section.units,
+    professors,
+    enrollmentStatus: section.enrollmentStatus,
+    meetings: section.meetings.map((meeting) => ({
+      days: meeting.days,
+      start_time: meeting.start_time,
+      end_time: meeting.end_time,
+    })),
+    classPair,
+    rating,
+    color,
+    term: section.term,
+  };
+}
