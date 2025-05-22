@@ -78,7 +78,6 @@ const SectionsChosen = ({
     );
   }, [currentSchedule?.conflictGroups]);
 
-  const conflicGroups = currentSchedule?.conflictGroups;
   // Group sections by courseId and professor
   if (
     (selectedSections.length === 0 || !Array.isArray(selectedSections)) &&
