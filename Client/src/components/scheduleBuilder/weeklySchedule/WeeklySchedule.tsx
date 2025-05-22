@@ -20,10 +20,7 @@ import CustomEventSlot from "./CustomEventSlot";
 import { Modal } from "@/components/ui/animated-modal";
 
 // Helpers
-import {
-  getConflictGroups,
-  buildBackgroundEventsForGroup,
-} from "@/components/scheduleBuilder";
+import { buildBackgroundEventsForGroup } from "@/components/scheduleBuilder";
 
 // Types
 import { SelectedSection } from "@polylink/shared/types";
@@ -35,9 +32,8 @@ type WeeklyScheduleProps = {
 
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
   const dispatch = useAppDispatch();
-  const { currentScheduleTerm, hiddenSections } = useAppSelector(
-    (s) => s.schedule
-  );
+  const { currentScheduleTerm, hiddenSections, currentSchedule } =
+    useAppSelector((s) => s.schedule);
   const customEvents = useAppSelector(
     (s) => s.schedule.currentSchedule?.customEvents || []
   );
@@ -114,19 +110,35 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ sections }) => {
     });
   }, [sections, monday, dayIndexMap]);
 
-  // Build background conflict events
+  // Build background conflict events using Redux state
   const memoizedBackgroundEvents = useMemo(() => {
-    const groups = getConflictGroups(
-      memoizedEvents.map((e) => ({
-        ...e.extendedProps,
-        start: e.start,
-        end: e.end,
-      }))
-    );
-    return groups
-      .filter((g) => g.length > 1)
-      .flatMap((g) => buildBackgroundEventsForGroup(g, monday));
-  }, [memoizedEvents, monday]);
+    if (!currentSchedule?.withConflicts || !currentSchedule.conflictGroups)
+      return [];
+
+    // Convert sections to events for buildBackgroundEventsForGroup
+    const events = currentSchedule.conflictGroups.map((group) => {
+      const groupEvents = group.flatMap((section) =>
+        section.meetings.flatMap((meeting) => {
+          if (!meeting.start_time || !meeting.end_time) return [];
+          return meeting.days.map((day) => ({
+            courseName: section.courseName,
+            classNumber: section.classNumber,
+            enrollmentStatus: section.enrollmentStatus,
+            professors: section.professors,
+            color: section.color,
+            days: [day],
+            start_time: meeting.start_time,
+            end_time: meeting.end_time,
+          }));
+        })
+      );
+      return groupEvents;
+    });
+
+    return events
+      .filter((group) => group.length > 1)
+      .flatMap((group) => buildBackgroundEventsForGroup(group, monday));
+  }, [currentSchedule?.conflictGroups, currentSchedule?.withConflicts, monday]);
 
   // Build custom events
   const calendarCustomEvents = useMemo(() => {
