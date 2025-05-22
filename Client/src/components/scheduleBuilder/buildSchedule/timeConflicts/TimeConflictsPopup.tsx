@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Info, X } from "lucide-react";
 import { useAppSelector, useAppDispatch, layoutActions } from "@/redux";
 import { useEffect, useState } from "react";
@@ -20,10 +20,10 @@ const TimeConflictsPopup = () => {
 
     dispatch(layoutActions.fireExpandConflicts()); // <── trigger auto-open
   };
-  const autoResolve = () => {
-    /* … */
-    console.log("autoResolve");
-  };
+  // const autoResolve = () => {
+  //   /* … */
+  //   console.log("autoResolve");
+  // };
 
   return (
     <AnimatePresence mode="wait">
@@ -69,12 +69,12 @@ const TimeConflictsPopup = () => {
               >
                 Edit Manually
               </button>
-              <Button
+              {/* <Button
                 onClick={autoResolve}
                 className="dark:bg-blue-100 dark:hover:bg-blue-200 text-primary font-semibold px-5 py-2 rounded-md shadow-sm hover:bg-muted-foreground/80 transition-colors"
               >
                 Auto-Resolve
-              </Button>
+              </Button> */}
             </div>
           </Card>
         </motion.div>
