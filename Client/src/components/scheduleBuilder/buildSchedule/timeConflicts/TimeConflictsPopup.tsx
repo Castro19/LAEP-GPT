@@ -1,14 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Info, X } from "lucide-react";
-import { useAppSelector } from "@/redux";
+import { useAppSelector, useAppDispatch, layoutActions } from "@/redux";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const TimeConflictsPopup = () => {
   const { currentSchedule } = useAppSelector((s) => s.schedule);
   const [isOpen, setIsOpen] = useState(false);
-
+  const dispatch = useAppDispatch();
   /* re-open on a *new* schedule with conflicts ---------------- */
   useEffect(() => {
     setIsOpen(Boolean(currentSchedule?.withConflicts));
@@ -18,6 +18,8 @@ const TimeConflictsPopup = () => {
   const editManually = () => {
     /* … */
     console.log("editManually");
+
+    dispatch(layoutActions.fireExpandConflicts()); // <── trigger auto-open
   };
   const autoResolve = () => {
     /* … */
