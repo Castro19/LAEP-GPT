@@ -66,6 +66,22 @@ export const fetchSectionsAsync = createAsyncThunk(
   }
 );
 
+export const fetchSectionsByCourseIds = createAsyncThunk(
+  "sections/fetchSectionsByCourseIds",
+  async ({ courseIds, term }: { courseIds: string[]; term: CourseTerm }) => {
+    const filters = {
+      courseIds: courseIds,
+      term: term,
+    };
+    const response = await fetchSections(filters, 1);
+
+    if (response?.data.length > 0) {
+      return response.data;
+    }
+    return [];
+  }
+);
+
 export const queryAIAsync = createAsyncThunk(
   "sections/queryAI",
   async (query: string, { getState }) => {
