@@ -17,6 +17,10 @@ import {
 } from "./crudSchedule";
 import { scheduleToGeneratedSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
 import { RootState } from "../store";
+import {
+  computeScheduleConflicts,
+  enrichWithConflicts,
+} from "./helpers/computeConflicts";
 
 export interface ScheduleState {
   currentScheduleId: string | undefined;
@@ -315,7 +319,7 @@ const scheduleSlice = createSlice({
       state.totalPages = action.payload;
     },
     setCurrentSchedule(state, action) {
-      state.currentSchedule = action.payload;
+      state.currentSchedule = enrichWithConflicts(action.payload);
     },
     setPreferences(state, action) {
       state.preferences = action.payload;
@@ -373,7 +377,6 @@ const scheduleSlice = createSlice({
       .addCase(createOrUpdateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
-
         if (action.payload.scheduleId) {
           state.currentScheduleId = action.payload.scheduleId;
         }
@@ -392,13 +395,20 @@ const scheduleSlice = createSlice({
         }
       })
       .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
-        state.currentSchedule = action.payload.schedule;
-        state.currentScheduleId = action.payload.schedule.id;
+        const { schedule, term } = action.payload;
+        const { conflictGroups, withConflicts } = computeScheduleConflicts(
+          schedule.sections
+        );
+
+        state.currentSchedule = {
+          ...schedule,
+          conflictGroups,
+          withConflicts,
+        };
+        state.currentScheduleId = schedule.id;
+        state.currentScheduleTerm = term as CourseTerm;
         state.page = 1;
         state.totalPages = 1;
-        if (action.payload.term) {
-          state.currentScheduleTerm = action.payload.term as CourseTerm;
-        }
       })
       .addCase(removeScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
@@ -413,12 +423,26 @@ const scheduleSlice = createSlice({
       })
       .addCase(updateScheduleSections.fulfilled, (state, action) => {
         if (action.payload) {
-          state.currentSchedule = action.payload;
+          const { conflictGroups, withConflicts } = computeScheduleConflicts(
+            action.payload.sections
+          );
+          state.currentSchedule = {
+            ...action.payload,
+            conflictGroups: conflictGroups as SelectedSection[][],
+            withConflicts,
+          };
         }
       })
       .addCase(updateScheduleSection.fulfilled, (state, action) => {
         if (action.payload) {
-          state.currentSchedule = action.payload;
+          const { conflictGroups, withConflicts } = computeScheduleConflicts(
+            action.payload.sections
+          );
+          state.currentSchedule = {
+            ...action.payload,
+            conflictGroups: conflictGroups as SelectedSection[][],
+            withConflicts,
+          };
         }
       });
   },

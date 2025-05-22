@@ -9,6 +9,7 @@ const initialState: LayoutSliceType = {
   inputFieldFocus: false,
   isDragging: false,
   dragDirection: null,
+  expandConflictsTick: 0,
 };
 
 const layoutSlice = createSlice({
@@ -40,6 +41,11 @@ const layoutSlice = createSlice({
       state.isDragging = action.payload.isDragging;
       state.dragDirection = action.payload.direction;
     },
+    fireExpandConflicts(state) {
+      // <── new action
+      // bump the counter → every subscriber‘s useEffect will run once
+      state.expandConflictsTick += 1;
+    },
   },
 });
 
@@ -50,6 +56,7 @@ export const {
   setScrollTrigger,
   setInputFieldFocus,
   setDragState,
+  fireExpandConflicts,
 } = layoutSlice.actions;
 
 export const layoutReducer = layoutSlice.reducer;
