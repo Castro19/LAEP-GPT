@@ -43,6 +43,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Star } from "@/components/classSearch/reusable/sectionInfo/StarRating";
+import { useMemo } from "react";
 
 const termMap = {
   spring2025: "Spring 2025",
@@ -68,6 +69,16 @@ const SectionsChosen = ({
     useAppSelector((state) => state.sectionSelection.selectedSections) || [];
   const { toast } = useToast();
 
+  const conflictIds = useMemo(() => {
+    if (!currentSchedule?.conflictGroups) return new Set<number>();
+    return new Set(
+      currentSchedule.conflictGroups.flatMap((group) =>
+        group.map((sec) => sec.classNumber)
+      )
+    );
+  }, [currentSchedule?.conflictGroups]);
+
+  const conflicGroups = currentSchedule?.conflictGroups;
   // Group sections by courseId and professor
   if (
     (selectedSections.length === 0 || !Array.isArray(selectedSections)) &&
@@ -409,6 +420,9 @@ const SectionsChosen = ({
           ([courseId, professorGroups], courseIndex) => {
             const isInSchedule = isCourseInSchedule(courseId);
             const isHidden = isCourseHidden(courseId);
+            const isCourseConflicted = Object.values(professorGroups)
+              .flatMap((group) => group.sections)
+              .some((section) => conflictIds.has(section.classNumber));
 
             return (
               <motion.div
@@ -425,14 +439,15 @@ const SectionsChosen = ({
               >
                 <Collapsible className="group/collapsible w-full">
                   <div
-                    className="rounded-md border border-gray-200 dark:border-slate-700 w-full"
+                    className={`rounded-md border w-full 
+                    ${isCourseConflicted ? "ring-2 ring-red-500/60" : ""}`}
                     style={{
                       backgroundColor:
                         professorGroups[Object.keys(professorGroups)[0]]
                           .sections[0].color || "#ffffff",
-                      borderColor:
-                        professorGroups[Object.keys(professorGroups)[0]]
-                          .sections[0].color || "#e5e7eb",
+                      borderLeft: isCourseConflicted
+                        ? "6px solid rgba(239, 68, 68, 0.8)"
+                        : "1px solid #e5e7eb",
                     }}
                   >
                     <CollapsibleTrigger asChild>
@@ -735,6 +750,7 @@ const SectionsChosen = ({
                                                     section.classNumber
                                                 )
                                               }
+                                              conflictIds={conflictIds}
                                             />
                                           </motion.div>
                                         )
@@ -762,7 +778,8 @@ const SectionsChosen = ({
 const SectionCard: React.FC<{
   section: SelectedSection;
   isSelected: boolean;
-}> = ({ section, isSelected }) => {
+  conflictIds: Set<number>;
+}> = ({ section, isSelected, conflictIds }) => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { currentScheduleTerm, hiddenSections, currentSchedule } =
@@ -776,6 +793,7 @@ const SectionCard: React.FC<{
     currentSchedule?.sections.some(
       (s) => s.classNumber === section.classNumber
     ) ?? false;
+  const isConflicted = conflictIds.has(section.classNumber);
 
   // Check if any other section with same courseId is in schedule
   const hasOtherSectionsInSchedule =
@@ -918,13 +936,17 @@ const SectionCard: React.FC<{
 
   return (
     <div
-      className="
-        group relative 
-        border border-gray-200 dark:border-slate-700 
-        rounded-md p-2 
-        flex flex-col bg-transparent
-      "
+      className={`
+        group relative rounded-md p-2 flex flex-col
+        border ${isConflicted ? "border-red-500" : "border-gray-200 dark:border-slate-700"}
+        ${isConflicted ? "ring-2 ring-red-500/60" : ""}
+        bg-transparent
+      `}
     >
+      {/* subtle red veil */}
+      {isConflicted && (
+        <div className="absolute inset-0 rounded-md bg-red-500/10 pointer-events-none" />
+      )}
       {/* Content of the card */}
       <div className="space-y-1 flex-1">
         {/* First Row: Format as 'LAB 3500' with checkbox on the right */}
