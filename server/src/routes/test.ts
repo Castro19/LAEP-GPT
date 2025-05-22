@@ -1,34 +1,34 @@
-import express, { RequestHandler } from "express";
-import {
-  getSelectedSectionsTool,
-  getUserNextEligibleSections,
-} from "../helpers/assistants/scheduleBuilder/helpers";
+// import express, { RequestHandler } from "express";
+// import {
+//   getSelectedSectionsTool,
+//   getUserNextEligibleSections,
+// } from "../helpers/assistants/scheduleBuilder/helpers";
 
-const router = express.Router();
+// const router = express.Router();
 
-// test route
-router.get("/", (async (req, res) => {
-  res.status(200).json({ message: "Hello, world!" });
-}) as RequestHandler);
+// // test route
+// router.get("/", (async (req, res) => {
+//   res.status(200).json({ message: "Hello, world!" });
+// }) as RequestHandler);
 
-router.get("/schedule", (async (req, res) => {
-  const result = await getSelectedSectionsTool({
-    userId: "qiuJz2JJ22WwMPrtBpASYTXglem2",
-    term: "fall2025",
-  });
+// router.get("/schedule", (async (req, res) => {
+//   const result = await getSelectedSectionsTool({
+//     userId: "qiuJz2JJ22WwMPrtBpASYTXglem2",
+//     term: "fall2025",
+//   });
 
-  res.status(200).json(result);
-}) as RequestHandler);
+//   res.status(200).json(result);
+// }) as RequestHandler);
 
-router.get("/next", (async (req, res) => {
-  const result = await getUserNextEligibleSections({
-    userId: "qiuJz2JJ22WwMPrtBpASYTXglem2",
-    term: "fall2025",
-    numCourses: 4,
-  });
+// router.get("/next", (async (req, res) => {
+//   const result = await getUserNextEligibleSections({
+//     userId: "qiuJz2JJ22WwMPrtBpASYTXglem2",
+//     term: "fall2025",
+//     numCourses: 4,
+//   });
 
-  res.status(200).json(result);
-}) as RequestHandler);
+//   res.status(200).json(result);
+// }) as RequestHandler);
 
 // router.post("/schedule-agent", (async (req, res) => {
 //   const userId = "qiuJz2JJ22WwMPrtBpASYTXglem2";
@@ -40,4 +40,4 @@ router.get("/next", (async (req, res) => {
 //   res.status(200).json(result);
 // }) as RequestHandler);
 
-export default router;
+// export default router;

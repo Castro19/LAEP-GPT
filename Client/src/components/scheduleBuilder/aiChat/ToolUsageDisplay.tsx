@@ -17,7 +17,7 @@ interface ManageScheduleArgs {
 }
 
 interface FetchSectionsArgs {
-  fetch_type: "search" | "user_selected" | "curriculum";
+  fetch_type: "search" | "alternate" | "curriculum";
   num_courses?: number;
   sections_per_course?: number;
   search_query?: string;
@@ -51,8 +51,8 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
             return sections_per_course
               ? `Fetching next ${num_courses} eligible courses from the flowchart (max ${sections_per_course} sections per course)`
               : `Fetching next ${num_courses} eligible courses`;
-          case "user_selected":
-            return "Fetching your selected sections";
+          case "alternate":
+            return "Fetching alternate sections";
           default:
             return "Fetching sections";
         }

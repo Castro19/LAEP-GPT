@@ -24,7 +24,7 @@ import classSearchRouter from "./routes/classSearch";
 import selectedSectionRouter from "./routes/selectedSection";
 import professorRouter from "./routes/professor";
 import scheduleRouter from "./routes/schedule";
-import testRouter from "./routes/test";
+// import testRouter from "./routes/test";
 import scheduleBuilderRouter from "./routes/scheduleBuilder";
 // LLM API
 import OpenAI from "openai";
@@ -85,7 +85,7 @@ app.use("/classSearch", authenticate, classSearchRouter);
 app.use("/selectedSections", authenticate, selectedSectionRouter);
 app.use("/schedules", authenticate, scheduleRouter);
 app.use("/professors", authenticate, professorRouter);
-app.use("/test", testRouter);
+// app.use("/test", testRouter);
 app.use("/scheduleBuilder", authenticate, scheduleBuilderRouter);
 export const client = wrapOpenAI(new OpenAI());
 

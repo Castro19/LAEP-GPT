@@ -12,7 +12,7 @@ import { StateAnnotation } from "./state";
 
 // “Injected” helpers -------------------------------------------------
 import {
-  getSelectedSectionsTool,
+  getAlternateSections,
   getUserNextEligibleSections,
   readAllSchedule,
   addToSchedule,
@@ -41,15 +41,16 @@ import {
 export const fetchSections = tool(
   async (
     input: {
-      fetch_type: "search" | "user_selected" | "curriculum";
+      fetch_type: "search" | "alternate" | "curriculum";
       num_courses?: number;
       search_query?: string;
+      course_ids?: string[];
     },
     config
   ) => {
-    const { fetch_type, num_courses, search_query } = input;
+    const { fetch_type, num_courses, search_query, course_ids } = input;
     const state = getCurrentTaskInput() as typeof StateAnnotation.State;
-
+    const { schedule_id, term } = state;
     // ---------- validation ----------
     if (search_query && fetch_type !== "search") {
       return new Command({
@@ -63,28 +64,17 @@ export const fetchSections = tool(
         },
       });
     }
-    if (["search", "curriculum"].includes(fetch_type) && !num_courses) {
-      return {
-        update: {
-          messages: [
-            new ToolMessage({
-              content:
-                "num_courses must be specified for search or curriculum fetch.",
-              tool_call_id: config.toolCall.id,
-            }),
-          ],
-        },
-      };
-    }
 
     /* ------------------ main branches ------------------ */
     let sectionsToReturn: SelectedSection[] | Record<string, string> = [];
     let potentialSections: number[] = [];
 
-    if (fetch_type === "user_selected") {
-      const sections = await getSelectedSectionsTool({
+    if (fetch_type === "alternate") {
+      const sections = await getAlternateSections({
         userId: config.configurable.user_id,
-        term: state.term,
+        term: term,
+        scheduleId: schedule_id,
+        courseIds: course_ids,
       });
       if (!sections.length) {
         return new Command({
@@ -104,8 +94,8 @@ export const fetchSections = tool(
       const { potentialSectionsClassNums, suggestedSections } =
         await getUserNextEligibleSections({
           userId: config.configurable.user_id,
-          term: state.term,
-          numCourses: num_courses!,
+          term: term,
+          numCourses: num_courses,
         });
 
       if (!suggestedSections.length) {
@@ -133,12 +123,12 @@ export const fetchSections = tool(
       const resp: SectionQueryResponse = await sectionQueryAssistant(
         search_query!
       );
-      // if (environment === "dev") {
-      //   console.log(
-      //     "======================QUERY RESPONSE======================\n",
-      //     JSON.stringify(resp, null, 2)
-      //   );
-      // }
+      if (environment === "dev") {
+        console.log(
+          "======================QUERY RESPONSE======================\n",
+          JSON.stringify(resp, null, 2)
+        );
+      }
       if (!resp || !resp.query) {
         return new Command({
           update: {
@@ -153,7 +143,7 @@ export const fetchSections = tool(
       }
 
       const mongoSections: { sections: Section[]; total: number } =
-        await findSectionsByFilter(resp.query, state.term as CourseTerm, {
+        await findSectionsByFilter(resp.query, term as CourseTerm, {
           "instructorsWithRatings.0.overallRating": -1,
         });
       if (!mongoSections?.sections?.length) {
@@ -205,7 +195,7 @@ export const fetchSections = tool(
       const potentialSecs = Object.values(potentialBuckets).flat();
       const selectedSections = await getSelectedSectionsByUserId(
         config.configurable.user_id,
-        state.term as CourseTerm
+        term as CourseTerm
       );
       sectionsToReturn = flatSecs.map(
         (s): SelectedSection =>
@@ -233,7 +223,7 @@ export const fetchSections = tool(
 
     const sectionsWithPairs = await getSectionsWithPairs(
       sectionsToReturn as SelectedSection[],
-      state.term as CourseTerm
+      term as CourseTerm
     );
     sectionsToReturn = sectionsWithPairs as SelectedSection[];
 
@@ -266,7 +256,7 @@ export const fetchSections = tool(
       "Search for course sections using natural-language filters, the user's curriculum, or their currently-selected classes.",
     schema: z.object({
       fetch_type: z
-        .enum(["search", "user_selected", "curriculum"])
+        .enum(["search", "alternate", "curriculum"])
         .describe(
           "Whether to perform a search, pull the user's selected sections, or fetch the next curriculum-required course sections."
         ),
@@ -282,6 +272,12 @@ export const fetchSections = tool(
         .optional()
         .describe(
           "Search query (only when fetch_type='search'). Be as specific as possible."
+        ),
+      course_ids: z
+        .array(z.string())
+        .optional()
+        .describe(
+          "List of course IDs to fetch alternate sections for (only when fetch_type='alternate')."
         ),
     }),
   }
@@ -313,7 +309,7 @@ export const manageSchedule = tool(
       });
     }
 
-    const { schedule_id, preferences } = state;
+    const { schedule_id, preferences, term } = state;
 
     const currentSchedule = await getScheduleById(
       config.configurable.user_id,
@@ -355,7 +351,7 @@ export const manageSchedule = tool(
       const newSelectedSections = await transformClassNumbersToSelectedSections(
         config.configurable.user_id,
         classNumbersAdded,
-        state.term as CourseTerm
+        term as CourseTerm
       );
 
       if (!currentSchedule) {
