@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { generateAllScheduleCombinations } from "../../helpers";
 import { CourseTerm, Section, SelectedSection } from "@polylink/shared/types";
 import { transformSectionToSelectedSection } from "@/helpers/transformSection";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 const TimeConflictsPopup = () => {
   const { currentSchedule, preferences, currentScheduleTerm } = useAppSelector(
@@ -53,17 +54,25 @@ const TimeConflictsPopup = () => {
 
     // 2) Figure out which ones were in conflict, fetch alternates, then
     //    for each alternate section grab its course’s color out of the map:
-    const alternateSections = await dispatch(
-      classSearchActions.fetchSectionsByCourseIds({
-        courseIds: conflictingCourses as string[],
-        term: currentScheduleTerm as CourseTerm,
-      })
-    ).unwrap();
+    let alternateSections: Section[] = [];
+
+    try {
+      alternateSections = await dispatch(
+        classSearchActions.fetchSectionsByCourseIds({
+          courseIds: conflictingCourses as string[],
+          term: currentScheduleTerm as CourseTerm,
+        })
+      ).unwrap();
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Failed to fetch alternate sections:", error);
+      }
+    }
 
     const alternateSelectedSections = alternateSections.map(
       (section: Section) => {
         const color =
-          courseColorMap.get(section.courseId) ?? /* fallback */ "#DDD";
+          courseColorMap.get(section.courseId) ?? /* fallback */ "#FFFFFF";
         return transformSectionToSelectedSection(section, color);
       }
     );
