@@ -44,7 +44,7 @@ export interface Tool {
 }
 
 export interface FetchSectionsArgs {
-  fetch_type: "search" | "user_selected" | "curriculum";
+  fetch_type: "search" | "alternate" | "curriculum";
   num_courses?: number;
   sections_per_course?: number;
   search_query?: string;
@@ -133,8 +133,8 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
     } else if (tool.name === "fetch_sections") {
       if (tool.args.fetch_type === "search") {
         return "Searching for courses";
-      } else if (tool.args.fetch_type === "user_selected") {
-        return "Fetching selected sections";
+      } else if (tool.args.fetch_type === "alternate") {
+        return "Fetching alternate sections";
       } else if (tool.args.fetch_type === "curriculum") {
         return "Fetching sections from flowchart";
       }

@@ -15,8 +15,8 @@ const renderToolName = (tool: ToolCall) => {
   } else if (tool.name === "fetch_sections") {
     if (tool.args.fetch_type === "search") {
       return "Searching for courses";
-    } else if (tool.args.fetch_type === "user_selected") {
-      return "Fetching selected sections";
+    } else if (tool.args.fetch_type === "alternate") {
+      return "Fetching alternate sections";
     } else if (tool.args.fetch_type === "curriculum") {
       return "Fetching sections from flowchart";
     }
@@ -69,10 +69,11 @@ const OperationMessage: React.FC<OperationMessageProps> = ({
 };
 
 interface FetchSectionsArgs {
-  fetch_type: "search" | "user_selected" | "curriculum";
+  fetch_type: "search" | "alternate" | "curriculum";
   num_courses?: number;
   sections_per_course?: number;
   search_query?: string;
+  course_ids?: string[];
 }
 
 const renderFetchType = (args: FetchSectionsArgs) => {
@@ -82,8 +83,8 @@ const renderFetchType = (args: FetchSectionsArgs) => {
       return `**Search Query:** ${args.search_query || "No query provided"}\n\n**Results:** ${numCourses} courses found`;
     case "curriculum":
       return `**Curriculum Fetch:** Next ${numCourses} eligible courses from flowchart`;
-    case "user_selected":
-      return `**User Selected Sections**`;
+    case "alternate":
+      return `**Alternate Sections:** ${args.course_ids?.join(", ") || "No sections provided"}`;
     default:
       return "";
   }
@@ -98,6 +99,7 @@ const FetchSectionsMessage: React.FC<FetchSectionsMessageProps> = ({
   num_courses,
   sections_per_course,
   search_query,
+  course_ids,
   variant = "bg-slate-800",
 }) => {
   const message = renderFetchType({
@@ -105,6 +107,7 @@ const FetchSectionsMessage: React.FC<FetchSectionsMessageProps> = ({
     num_courses,
     sections_per_course,
     search_query,
+    course_ids,
   });
 
   return <FormattedChatMessage msg={message} variant={variant} />;

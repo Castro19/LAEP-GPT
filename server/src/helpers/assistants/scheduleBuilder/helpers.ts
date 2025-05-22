@@ -30,29 +30,59 @@ import {
   SUGGESTED_SECTIONS_PER_COURSE,
   POTENTIAL_SECTIONS_PER_COURSE,
 } from "./const";
-export const getSelectedSectionsTool = async ({
+
+export const getAlternateSections = async ({
   userId,
   term,
+  scheduleId,
+  courseIds,
 }: {
   userId: string;
   term: CourseTerm;
+  scheduleId: string;
+  courseIds: string[] | undefined;
 }): Promise<SelectedSection[]> => {
-  const selectedSections = await getSelectedSectionsByUserId(
-    userId,
-    term as CourseTerm
+  if (!courseIds) {
+    return [];
+  }
+
+  const schedule = await getScheduleById(userId, scheduleId);
+
+  const sections = await getSectionsByCourseIds(courseIds, term, userId);
+  if (!sections) {
+    return [];
+  }
+
+  const classNumbersInSchedule =
+    schedule?.sections.map((section) => section.classNumber) || [];
+
+  const alternateSections = sections.filter(
+    (section) => !classNumbersInSchedule.includes(section.classNumber)
   );
 
-  return selectedSections;
+  const sortedAlternateSelectedSections = alternateSections
+    .sort((a, b) => {
+      const ratingA = a.instructorsWithRatings?.[0]?.overallRating ?? 0;
+      const ratingB = b.instructorsWithRatings?.[0]?.overallRating ?? 0;
+      return ratingB - ratingA; // Sort in descending order
+    })
+    .map((section) =>
+      transformSectionToSelectedSection(
+        section,
+        getColorForCourseId(section.courseId)
+      )
+    );
+  return sortedAlternateSelectedSections;
 };
 
 export const getUserNextEligibleSections = async ({
   userId,
   term,
-  numCourses,
+  numCourses = 3,
 }: {
   userId: string;
   term: CourseTerm;
-  numCourses: number;
+  numCourses: number | undefined;
 }): Promise<{
   suggestedSections: SelectedSection[];
   potentialSectionsClassNums: number[];
@@ -305,7 +335,7 @@ export const addToSchedule = async ({
   // Get all sections including their pairs
   const sectionsWithPairs = await getSectionsWithPairs(sections, schedule.term);
   sections = sectionsWithPairs as Section[];
-  console.log("sections", sections);
+
   //  TODO: When checking for time conflicts, we should also check for conflicts between the classNumbersToAdd
   for (const section of sections) {
     // Check for time conflicts
@@ -564,8 +594,5 @@ export async function buildSectionSummaries(
     const finalStr = sectionsArray.join("\n");
     return finalStr;
   });
-  if (environment === "dev") {
-    console.log("\nFinal summaries:", summaries);
-  }
   return summaries;
 }
