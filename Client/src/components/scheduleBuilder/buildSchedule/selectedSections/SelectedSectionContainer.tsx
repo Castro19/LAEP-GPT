@@ -14,6 +14,7 @@ import { FaBook, FaCalendar } from "react-icons/fa";
 
 // constants
 import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
+import TimeConflictsPopup from "../timeConflicts/TimeConflictsPopup";
 
 const SelectedSectionContainer = ({
   form,
@@ -30,6 +31,7 @@ const SelectedSectionContainer = ({
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col gap-4">
+        <TimeConflictsPopup />
         <CollapsibleContentWrapper title="Selected Sections" icon={FaBook}>
           {fetchSelectedSectionsLoading ? (
             <LoadingContainer />
