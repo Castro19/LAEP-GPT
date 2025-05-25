@@ -12,6 +12,13 @@ type PersonCardProps = {
   funFact: string;
   linkedin: string;
   github?: string;
+  type:
+    | "Contributor"
+    | "Previous Contributor"
+    | "Founder"
+    | "Product / Marketing"
+    | "Design"
+    | "Engineering";
 };
 
 const PersonCard = ({
