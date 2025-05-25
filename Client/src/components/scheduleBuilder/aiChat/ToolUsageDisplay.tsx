@@ -16,8 +16,14 @@ interface ManageScheduleArgs {
   };
 }
 
+interface SuggestNextRequiredSectionsArgs {
+  requiredLimit?: number;
+  techElective?: { name: string; limit: number };
+  geArea?: { name: string; limit: number };
+}
+
 interface FetchSectionsArgs {
-  fetch_type: "search" | "alternate" | "curriculum";
+  fetch_type: "search" | "alternate";
   num_courses?: number;
   sections_per_course?: number;
   search_query?: string;
@@ -26,6 +32,9 @@ interface FetchSectionsArgs {
 const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
   const formatToolMessage = (tool: ToolCall): string => {
     switch (tool.name) {
+      case "get_academic_plan_summary": {
+        return "Reading your flowchart";
+      }
       case "manage_schedule": {
         const args = tool.args as unknown as ManageScheduleArgs;
         const { operation, class_nums } = args;
@@ -42,20 +51,22 @@ const ToolUsageDisplay: React.FC<ToolUsageDisplayProps> = ({ toolUsage }) => {
       }
       case "fetch_sections": {
         const args = tool.args as unknown as FetchSectionsArgs;
-        const { fetch_type, num_courses, sections_per_course, search_query } =
-          args;
+        const { fetch_type, search_query } = args;
         switch (fetch_type) {
           case "search":
             return `Searching for courses matching "${search_query}"`;
-          case "curriculum":
-            return sections_per_course
-              ? `Fetching next ${num_courses} eligible courses from the flowchart (max ${sections_per_course} sections per course)`
-              : `Fetching next ${num_courses} eligible courses`;
           case "alternate":
             return "Fetching alternate sections";
           default:
             return "Fetching sections";
         }
+      }
+      case "suggest_next_required_sections": {
+        const args = tool.args as unknown as SuggestNextRequiredSectionsArgs;
+        const { requiredLimit, techElective, geArea } = args;
+        const techElectiveLimit = techElective?.limit || 1;
+        const geAreaLimit = geArea?.limit || 1;
+        return `Suggesting next ${requiredLimit} required sections, ${techElectiveLimit} tech electives, and ${geAreaLimit} GE areas`;
       }
       default:
         return `Using ${tool.name}`;

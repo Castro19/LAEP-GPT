@@ -2,11 +2,21 @@ import { BaseMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { StateAnnotation, stateModifier } from "./state";
-import { fetchSections, manageSchedule } from "./tools";
+import {
+  fetchSections,
+  getAcademicPlanSummary,
+  manageSchedule,
+  suggestNextRequiredSections,
+} from "./tools";
 
 const agent = createReactAgent({
   llm: new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 }),
-  tools: [fetchSections, manageSchedule],
+  tools: [
+    fetchSections,
+    manageSchedule,
+    getAcademicPlanSummary,
+    suggestNextRequiredSections,
+  ],
   stateSchema: StateAnnotation,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stateModifier: (s: any) => stateModifier(s) as unknown as BaseMessage[],

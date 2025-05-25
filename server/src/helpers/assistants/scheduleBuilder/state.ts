@@ -1,4 +1,6 @@
 import {
+  AcademicPlan,
+  SectionBuckets,
   CourseTerm,
   Preferences,
   ScheduleResponse,
@@ -46,6 +48,22 @@ export const StateAnnotation = Annotation.Root({
         removed: [...(a.removed || []), ...(b.removed || [])],
       };
     },
+  }),
+  academicPlan: Annotation<AcademicPlan | null>({
+    default: () => null,
+    reducer: (_, b) => b ?? null, // always keep the newest summary
+  }),
+  sectionBuckets: Annotation<SectionBuckets | null>({
+    default: () => null,
+    reducer: (_, b) => b ?? null,
+  }),
+  planMeta: Annotation<{
+    openTechNames: string[];
+    openGECategories: string[];
+    nextRequiredCount: number;
+  } | null>({
+    default: () => null,
+    reducer: (_, b) => b ?? null,
   }),
   preferences: Annotation<Preferences>,
   currentSchedule: Annotation<ScheduleResponse>({
@@ -98,7 +116,15 @@ export const StateAnnotation = Annotation.Root({
 export const stateModifier = (
   state: typeof StateAnnotation.State
 ): typeof StateAnnotation.State => {
-  const { preferences, term, currentSchedule, user_query } = state;
+  const { preferences, term, currentSchedule, user_query, academicPlan } =
+    state;
+
+  const planPreview = academicPlan
+    ? `Required left: ${academicPlan.requiredCoursesLeft.length}; ` +
+      `Tech-elec buckets left: ${academicPlan.techElectives.techElectives.length}; ` +
+      `GE areas left: ${academicPlan.GEAreasLeft.map((a) => a.category).join(", ")}`
+    : "Not loaded";
+
   const systemMessage = `
     You are **PolyLink Schedule Builder**, an AI agent that helps Cal Poly students build and manage their course schedules.
 
@@ -110,37 +136,54 @@ export const stateModifier = (
     * the rule (“single uppercase string, no spaces”)
     * the exact pattern (\`AAAA999\`)
     * a concrete example (\`CSC101\`)
-    * a clear warning that deviations aren’t accepted
+    * a clear warning that deviations aren't accepted
 
     TOOLS ─────────────────────────────────────
     • **fetch_sections(fetch_type, num_courses, search_query?)**  
       – Retrieves course sections via three modes:  
         • **search**: use natural-language filters (e.g. “CSC labs after 6 pm”)  
         • **alternate**: pull alternate sections for the given course IDs  (e.g. “CSC365”).
-        • **curriculum**: pull the next courses from their flowchart  
       – Returns: \`suggestedSections\`, \`potentialSections\`, and raw \`sectionSummaries\`  
+    
+    • **suggest_next_required_sections(requiredLimit?, techElective: {name, limit}, geArea: {name, limit})**
+      – Chooses the next eligible **courseIds** from the academic plan  
+      – pulls live sections for each ID and returns the same section arrays  
+      – use after you already have an academic plan in memory
 
     • **manage_schedule(operation, class_nums)**  
-      – **readall**: list or summarize the current schedule  
-      – **add**: add class_numbers to the schedule  
-      – **remove**: remove class_numbers from the schedule  
+      – **if (operation === "readall")**: list or summarize the current schedule  
+      – **if (operation === "add")**: add class_numbers to the schedule  
+      – **if (operation === "remove")**: remove class_numbers from the schedule  
       – Returns: updated \`diff.added\` / \`diff.removed\` and confirmation message  
 
+    • **get_academic_plan_summary()**
+      – Returns: a summary of the user's academic plan / flowchart
+      - Use this tool to get the academic plan summary / flowchart when the user asks for it. Use if the student's schedule is empty and we need to get the academic plan summary to know what courses to add. 
+
     DECISION GUIDELINES ───────────────────────
-    1. **Adding/Dropping**  
+    1. **Need degree progress?**  
+      – Use **get_academic_plan_summary()** to get the academic plan summary / flowchart when the user asks for graduation progress.
+      - Use if the student's schedule is empty and we need to get the academic plan summary to know what courses to add. 
+      - If we are building the schedule use **suggest_next_eligible_sections()** to get the next eligible sections.
+      - If you already have \`planMeta\`, you may infer the correct \`techElective\` or \`geArea\` arguments from the user's question; otherwise ask for clarification.
+
+    2. **Recommend courses for next term**  
+      – Call **suggest_next_required_sections** first (it internally picks required + tech-elec + GE).  
+      – Then let the user approve, or call **manage_schedule(add)** yourself if they said "yes, add them".
+
+    3. **Adding/Dropping**  
       – To change the schedule, call **manage_schedule**:  
-        1. **readall** → get exact class numbers  
-        2. **add** / **remove** with complete paired class numbers  
+        1. **if (operation === "readall")** → get exact class numbers  
+        2. **if (operation === "add")** / **if (operation === "remove")** with complete paired class numbers  
+      - When replacing with alternatives, remove then add the new sections.
       – Always include all class-pair numbers (e.g., lecture+lab).
 
-    2. **Finding Sections**  
+    4. **Finding Sections**  
       – When user describes filters → use **fetch_sections(search, …)**  
       – When working from saved list → **fetch_sections(user_selected)**  
-      – If no preferences → **fetch_sections(curriculum)**  
-      – Defaults: \`num_courses\` = 3, \`sections_per_course\` = 1 (or 1×5 for “alternatives”).  
+      – Defaults: \`num_courses\` = 3, \`sections_per_course\` = 1 (or 1×5 for "alternatives").  
       – Ask for clarification if the query is vague.
 
-      
     RESPONSE FORMAT ────────────────────────────
     • **Markdown only**.  
     • **When listing fetched sections**:  
@@ -161,11 +204,12 @@ export const stateModifier = (
     - term: ${term}  
     - preferences: ${JSON.stringify(preferences)}  
     - schedule: ${JSON.stringify(currentSchedule)}
-    
+    - academic plan: ${planPreview}
+
     Answer the user's query in a concise manner.
     If the user's query is not clear, ask for clarification.
     If the user's query is not related to the schedule, or fetching sections, say so.
-    User query: ${user_query}
+    User query: ${user_query.trim()}
     `;
 
   return [

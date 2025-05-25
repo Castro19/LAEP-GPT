@@ -1,8 +1,9 @@
 // fetchSections.ts
 import { tool } from "@langchain/core/tools";
-import { ToolMessage } from "@langchain/core/messages";
+import { AIMessage, ToolMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import {
+  AcademicPlan,
   CourseTerm,
   ScheduleResponse,
   Section,
@@ -20,6 +21,8 @@ import {
   findSectionsByFilter,
   getSectionsWithPairs,
   buildSectionSummaries,
+  getFlowchartSummary,
+  pickNextEligibleCourses,
 } from "./helpers";
 import {
   transformClassNumbersToSelectedSections,
@@ -41,7 +44,7 @@ import {
 export const fetchSections = tool(
   async (
     input: {
-      fetch_type: "search" | "alternate" | "curriculum";
+      fetch_type: "search" | "alternate";
       num_courses?: number;
       search_query?: string;
       course_ids?: string[];
@@ -90,29 +93,6 @@ export const fetchSections = tool(
       }
       potentialSections = sections.map((s) => s.classNumber);
       sectionsToReturn = sections;
-    } else if (fetch_type === "curriculum") {
-      const { potentialSectionsClassNums, suggestedSections } =
-        await getUserNextEligibleSections({
-          userId: config.configurable.user_id,
-          term: term,
-          numCourses: num_courses,
-        });
-
-      if (!suggestedSections.length) {
-        return new Command({
-          update: {
-            messages: [
-              new ToolMessage({
-                content: "No eligible sections found.",
-                tool_call_id: config.toolCall.id,
-              }),
-            ],
-          },
-        });
-      }
-
-      sectionsToReturn = suggestedSections;
-      potentialSections = potentialSectionsClassNums;
     } else if (fetch_type === "search") {
       if (environment === "dev") {
         console.log(
@@ -256,17 +236,15 @@ export const fetchSections = tool(
       "Search for course sections using natural-language filters, the user's curriculum, or their currently-selected classes.",
     schema: z.object({
       fetch_type: z
-        .enum(["search", "alternate", "curriculum"])
+        .enum(["search", "alternate"])
         .describe(
-          "Whether to perform a search, pull the user's selected sections, or fetch the next curriculum-required course sections."
+          "Whether to perform a search or pull alternate sections for courseIds"
         ),
       num_courses: z
         .number()
         .int()
         .default(3)
-        .describe(
-          "Number of courses to return (required for 'search' or 'curriculum')."
-        ),
+        .describe("Number of courses to return (required for 'search')."),
       search_query: z
         .string()
         .optional()
@@ -473,6 +451,212 @@ export const manageSchedule = tool(
           preferences: z.record(z.any()).optional(),
         })
         .describe("Injected user/session state."),
+    }),
+  }
+);
+
+export const getAcademicPlanSummary = tool(
+  async (input: {}, config) => {
+    const academicPlan = await getFlowchartSummary(config.configurable.user_id);
+    if (!academicPlan) {
+      return new Command({
+        update: {
+          messages: [
+            new ToolMessage({
+              content:
+                "No summary found. Please build your academic plan using the [flowchart tool](https://polylink.dev/flowchart).",
+              tool_call_id: config.toolCall.id,
+            }),
+          ],
+        },
+      });
+    }
+
+    /* ---------- build planMeta ---------- */
+    const planMeta = {
+      // the buckets that still need *something*
+      openTechNames: academicPlan.techElectives.techElectives
+        .filter((b) =>
+          b.courses.some((c) => !academicPlan.completedCoursesIds.includes(c))
+        )
+        .map((b) => b.name ?? "Un-named"),
+      openGECategories: academicPlan.GEAreasLeft.map((a) => a.category),
+      nextRequiredCount: academicPlan.requiredCoursesLeft.length,
+    };
+
+    return new Command({
+      update: {
+        messages: [
+          new ToolMessage({
+            content: academicPlan ? academicPlan.summary : "No summary found.",
+            tool_call_id: config.toolCall.id,
+          }),
+        ],
+        academicPlan: academicPlan,
+        planMeta,
+      },
+    });
+  },
+  {
+    name: "get_academic_plan_summary",
+    description:
+      "Get the academic plan summary for the user. This is a summary of the user's academic plan, including the courses they have completed, the courses they have remaining, and the GE areas they have remaining.",
+    schema: z.object({}),
+  }
+);
+
+export const suggestNextRequiredSections = tool(
+  async (
+    {
+      requiredLimit = 3,
+      techElective = { name: "any", limit: 1 },
+      geArea = { name: "any", limit: 1 },
+    }: {
+      requiredLimit?: number;
+      techElective?: { name: string; limit: number };
+      geArea?: { name: string; limit: number };
+    },
+    cfg
+  ) => {
+    const state = getCurrentTaskInput() as typeof StateAnnotation.State;
+    const plan = state.academicPlan;
+    if (!plan) {
+      return new Command({
+        update: {
+          messages: [
+            new ToolMessage({
+              content:
+                "No academic plan in memory; call get_academic_plan_summary() first.",
+              tool_call_id: cfg.toolCall.id,
+            }),
+          ],
+        },
+      });
+    }
+
+    /* ---------- pick course IDs ---------- */
+    const { pickedInOrder, buckets } = await pickNextEligibleCourses({
+      plan,
+      term: state.term as CourseTerm,
+      userId: cfg.configurable.user_id,
+      requiredLimit,
+      techElective: techElective?.name,
+      geArea: geArea?.name,
+    });
+
+    if (requiredLimit === 0) buckets.required = [];
+
+    if (!pickedInOrder.length) {
+      return new Command({
+        update: {
+          messages: [
+            new ToolMessage({
+              content:
+                "No courses with available sections were found for next term.",
+              tool_call_id: cfg.toolCall.id,
+            }),
+          ],
+        },
+      });
+    }
+
+    /* ---------- fetch sections once ---------- */
+    const {
+      suggestedSections: requiredSections,
+      potentialSectionsClassNums: requiredPotentialSections,
+    } = await getUserNextEligibleSections({
+      // renamed helper
+      userId: cfg.configurable.user_id,
+      term: state.term as CourseTerm,
+      courseIds: buckets.required,
+    });
+
+    let {
+      suggestedSections: techSections = [],
+      potentialSectionsClassNums: techPotentialSections = [],
+    } = await getUserNextEligibleSections({
+      // renamed helper
+      userId: cfg.configurable.user_id,
+      term: state.term as CourseTerm,
+      courseIds: buckets.tech,
+    });
+
+    if (techElective?.limit) {
+      techSections = techSections.slice(0, techElective.limit);
+      techPotentialSections = techPotentialSections.slice(
+        0,
+        techElective.limit
+      );
+    }
+
+    let {
+      suggestedSections: geSections = [],
+      potentialSectionsClassNums: gePotentialSections = [],
+    } = await getUserNextEligibleSections({
+      // renamed helper
+      userId: cfg.configurable.user_id,
+      term: state.term as CourseTerm,
+      courseIds: buckets.ge,
+    });
+
+    if (geArea?.limit) {
+      geSections = geSections.slice(0, geArea.limit);
+      gePotentialSections = gePotentialSections.slice(0, geArea.limit);
+    }
+
+    let suggestedSections = [
+      ...requiredSections,
+      ...techSections,
+      ...geSections,
+    ];
+    const potentialSectionsClassNums = [
+      ...requiredPotentialSections,
+      ...techPotentialSections,
+      ...gePotentialSections,
+    ];
+
+    const sectionsWithPairs = await getSectionsWithPairs(
+      suggestedSections as SelectedSection[],
+      state.term as CourseTerm
+    );
+
+    suggestedSections = sectionsWithPairs as SelectedSection[];
+    console.log("SUGGESTED SECTIONS: ", suggestedSections);
+
+    const sectionSummaries = await buildSectionSummaries(suggestedSections);
+
+    return new Command({
+      update: {
+        messages: [
+          new ToolMessage({
+            content: JSON.stringify({
+              type: "sections_data",
+              potentialSections: potentialSectionsClassNums,
+              suggestedSections,
+              sectionSummaries: `use this content to summarize the sections fetched: ${sectionSummaries}`,
+            }),
+            tool_call_id: cfg.toolCall.id,
+          }),
+        ],
+        suggestedSections,
+        potentialSections: potentialSectionsClassNums,
+        sectionBuckets: buckets, // persist to state for later
+        sectionSummaries,
+      },
+    });
+  },
+  {
+    name: "suggest_next_required_sections",
+    description:
+      "Pick next-term course IDs from the academic plan (required + tech-elective + GE) and return live sections.",
+    schema: z.object({
+      requiredLimit: z.number().int().default(3),
+      techElective: z
+        .object({ name: z.string(), limit: z.number().int().default(1) })
+        .default({ name: "any", limit: 1 }),
+      geArea: z
+        .object({ name: z.string(), limit: z.number().int().default(1) })
+        .default({ name: "any", limit: 1 }),
     }),
   }
 );

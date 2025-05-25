@@ -44,7 +44,7 @@ export interface Tool {
 }
 
 export interface FetchSectionsArgs {
-  fetch_type: "search" | "alternate" | "curriculum";
+  fetch_type: "search" | "alternate";
   num_courses?: number;
   sections_per_course?: number;
   search_query?: string;
@@ -88,6 +88,7 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
     : "bg-gradient-to-r from-gray-800 to-gray-700 text-white text-left";
 
   const renderToolContent = (tool: Tool) => {
+    console.log("TOOL: ", tool);
     switch (tool.call.name) {
       case "fetch_sections":
         return (
@@ -100,6 +101,13 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
         return (
           <SBManageSchedule
             args={tool.call.args as unknown as ManageScheduleArgs}
+            message={tool.message.msg}
+          />
+        );
+      case "suggest_next_required_sections":
+        return (
+          <SBFetchSections
+            args={tool.call.args as unknown as FetchSectionsArgs}
             message={tool.message.msg}
           />
         );
@@ -137,7 +145,11 @@ const SBChatMessage: React.FC<Props> = ({ msg }) => {
         return "Fetching alternate sections";
       } else if (tool.args.fetch_type === "curriculum") {
         return "Fetching sections from flowchart";
+      } else {
+        return tool.name;
       }
+    } else if (tool.name === "suggest_next_required_sections") {
+      return "Suggesting next required sections";
     } else {
       return tool.name;
     }

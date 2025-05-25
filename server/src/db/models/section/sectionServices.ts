@@ -463,5 +463,10 @@ export async function getSectionsByCourseIds(
 
   const result = await getSectionsByFilter(filter, userId, 0, 25);
 
-  return result.sections;
+  // sort by professor rating descending
+  return result.sections.sort((a, b) => {
+    const aRating = a.instructorsWithRatings?.[0]?.overallRating || 0;
+    const bRating = b.instructorsWithRatings?.[0]?.overallRating || 0;
+    return bRating - aRating;
+  });
 }
