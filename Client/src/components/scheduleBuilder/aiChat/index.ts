@@ -19,6 +19,7 @@ export * from "./input";
 export * from "./tools";
 
 // Log Components - Components for logging and history
+// Exporting individually to avoid circular dependencies
 export {
   ScheduleBuilderLogs,
   ScheduleLogsOptions,
