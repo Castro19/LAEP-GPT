@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient, Db } from "mongodb";
+import { jest } from "@jest/globals";
 
 // Load environment variables
 dotenv.config();
@@ -13,6 +14,21 @@ jest.mock("firebase-admin", () => ({
     createSessionCookie: jest.fn(),
   }),
   initializeApp: jest.fn(),
+}));
+
+// Mock OpenAI client
+const mockOpenAI = jest.fn().mockImplementation(() => ({
+  // Add any methods you need to mock here
+}));
+
+jest.mock("openai", () => ({
+  __esModule: true,
+  default: mockOpenAI,
+}));
+
+// Mock langsmith wrapper
+jest.mock("langsmith/wrappers", () => ({
+  wrapOpenAI: jest.fn().mockImplementation((client) => client),
 }));
 
 let mongoServer: MongoMemoryServer;

@@ -88,7 +88,11 @@ app.use("/schedules", authenticate, scheduleRouter);
 app.use("/professors", authenticate, professorRouter);
 // app.use("/test", testRouter);
 app.use("/scheduleBuilder", authenticate, scheduleBuilderRouter);
-export const client = wrapOpenAI(new OpenAI());
+export const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || "dummy-key-for-testing",
+  })
+);
 
 export const ASST_MAP = {
   professor_ratings_query: process.env.FORMAT_ASST_ID,

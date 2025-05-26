@@ -6,7 +6,12 @@ const config: Config.InitialOptions = {
   roots: ["<rootDir>/src"],
   testMatch: ["**/__tests__/**/*.test.ts"],
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.json",
+      },
+    ],
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
@@ -14,11 +19,11 @@ const config: Config.InitialOptions = {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coveragePathIgnorePatterns: ["/node_modules/", "/dist/", "/__tests__/"],
-  globals: {
-    "ts-jest": {
-      tsconfig: "tsconfig.json",
-    },
-  },
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/__tests__/**",
+  ],
 };
 
 export default config;
