@@ -24,7 +24,7 @@ export {
   ScheduleBuilderLogs,
   ScheduleLogsOptions,
   SectionChanges,
-} from "./logs";
+} from "./logs/index";
 
 // Header Components - Components for the chat header
 export * from "./header";
