@@ -103,17 +103,28 @@ export const qdrant = {
 };
 
 export const environment = process.env.ENVIRONMENT;
-// Connect to the database and start the server
-connectToDb()
-  .then(() => {
-    app.listen(port, () => {
+
+// Create server instance but don't start it automatically
+const server = app.listen(port, () => {
+  if (environment === "dev") {
+    console.log(`Server listening at http://localhost:${port}`);
+  }
+});
+
+// Export both app and server for testing
+export { app, server };
+
+// Only start the server if this file is being run directly
+if (require.main === module) {
+  // Connect to the database and start the server
+  connectToDb()
+    .then(() => {
       if (environment === "dev") {
         console.log(`Server listening at http://localhost:${port}`);
       }
+    })
+    .catch((error) => {
+      console.error("Failed to connect to database:", error);
+      process.exit(1);
     });
-  })
-  .catch((error) => {
-    if (environment === "dev") {
-      console.error("Failed to connect to the database:", error);
-    }
-  });
+}
