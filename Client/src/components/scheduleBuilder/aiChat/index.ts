@@ -19,7 +19,11 @@ export * from "./input";
 export * from "./tools";
 
 // Log Components - Components for logging and history
-export * from "./logs";
+export {
+  ScheduleBuilderLogs,
+  ScheduleLogsOptions,
+  SectionChanges,
+} from "./logs";
 
 // Header Components - Components for the chat header
 export * from "./header";
