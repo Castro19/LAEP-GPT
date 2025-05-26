@@ -29,6 +29,7 @@ import scheduleBuilderRouter from "./routes/scheduleBuilder";
 // LLM API
 import OpenAI from "openai";
 import { wrapOpenAI } from "langsmith/wrappers";
+import { Server, IncomingMessage, ServerResponse } from "http";
 
 // Initialize express app
 const app = express();
@@ -105,26 +106,30 @@ export const qdrant = {
 export const environment = process.env.ENVIRONMENT;
 
 // Create server instance but don't start it automatically
-const server = app.listen(port, () => {
-  if (environment === "dev") {
-    console.log(`Server listening at http://localhost:${port}`);
+let server: Server<typeof IncomingMessage, typeof ServerResponse>;
+
+// Function to start the server
+const startServer = async () => {
+  try {
+    // Connect to the database first
+    await connectToDb();
+
+    // Then start the server
+    server = app.listen(port, () => {
+      if (environment === "dev") {
+        console.log(`Server listening at http://localhost:${port}`);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
   }
-});
+};
 
 // Export both app and server for testing
 export { app, server };
 
 // Only start the server if this file is being run directly
 if (require.main === module) {
-  // Connect to the database and start the server
-  connectToDb()
-    .then(() => {
-      if (environment === "dev") {
-        console.log(`Server listening at http://localhost:${port}`);
-      }
-    })
-    .catch((error) => {
-      console.error("Failed to connect to database:", error);
-      process.exit(1);
-    });
+  startServer();
 }
