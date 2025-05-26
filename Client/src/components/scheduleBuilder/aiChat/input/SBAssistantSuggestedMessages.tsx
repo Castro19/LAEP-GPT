@@ -1,12 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import {
   useAppDispatch,
   scheduleBuilderLogActions,
   scheduleActions,
   useAppSelector,
 } from "@/redux";
+// Types
 import { GeneratedSchedule } from "@polylink/shared/types";
+// UI components:
+import { Button } from "@/components/ui/button";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 
 const SBAssistantSuggestedMessages = ({
   sendButtonRef,

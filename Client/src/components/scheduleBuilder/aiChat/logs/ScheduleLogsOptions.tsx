@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
+// Redux:
+import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
+// Types
+import { FetchedScheduleBuilderLogListItem } from "@polylink/shared/types";
+// UI components:
 import { Button } from "@/components/ui/button";
-import { SlOptionsVertical } from "react-icons/sl";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
-import { FetchedScheduleBuilderLogListItem } from "@polylink/shared/types";
-import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
+import { Label } from "@/components/ui/label";
+
+// Icons
+import { SlOptionsVertical } from "react-icons/sl";
 
 const ScheduleLogsOptions = ({
   log,

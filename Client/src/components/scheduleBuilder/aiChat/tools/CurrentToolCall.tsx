@@ -5,9 +5,14 @@ import {
   useRef,
   useEffect,
 } from "react";
+// Redux:
 import { useAppSelector } from "@/redux";
-import { renderToolName } from "./helpers/FormattingStrs";
 import { motion, AnimatePresence } from "framer-motion";
+
+// My components:
+import { renderToolName } from "@/components/scheduleBuilder/aiChat/helpers/FormattingStrs";
+import { FormattedChatMessage } from "@/components/scheduleBuilder/aiChat";
+// UI components:
 import { MessageSquare } from "lucide-react";
 import {
   Tooltip,
@@ -17,7 +22,6 @@ import {
   TooltipPortal,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import FormattedChatMessage from "./FormattedChatMessage";
 
 const SCROLL_AREA_ID = "assistant-tooltip-scroll";
 const VIEWPORT_ID = `${SCROLL_AREA_ID}-viewport`;

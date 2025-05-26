@@ -1,12 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
-import SectionsChosen from "../buildSchedule/selectedSections/SectionsChosen";
-import { useAppDispatch, useAppSelector } from "@/redux";
-import { fetchSelectedSectionsByClassNumbers } from "@/redux/scheduleBuilderLog/scheduleBuilderLogSlice";
+// Redux:
+import {
+  useAppDispatch,
+  useAppSelector,
+  scheduleBuilderLogActions,
+} from "@/redux";
+// Types
 import { CourseTerm, SelectedSection } from "@polylink/shared/types";
+// helpers
 import {
   FetchSectionsMessage,
   type FetchSectionsArgs,
-} from "./helpers/FormattingStrs";
+} from "@/components/scheduleBuilder/aiChat/helpers/FormattingStrs";
+// My components:
+import SectionsChosen from "@/components/scheduleBuilder/buildSchedule/selectedSections/SectionsChosen";
 
 interface FetchSectionsProps {
   args: FetchSectionsArgs;
@@ -49,7 +56,7 @@ const SBFetchSections: React.FC<FetchSectionsProps> = ({ args, message }) => {
     if (sections.potentialSections.length > 0) {
       const classNumbers = sections.potentialSections;
       dispatch(
-        fetchSelectedSectionsByClassNumbers({
+        scheduleBuilderLogActions.fetchSelectedSectionsByClassNumbers({
           term: currentScheduleTerm as CourseTerm,
           classNumbers,
         })

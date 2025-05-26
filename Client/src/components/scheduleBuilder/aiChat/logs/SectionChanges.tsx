@@ -1,7 +1,10 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Undo2, Star, MinusCircle, PlusCircle } from "lucide-react";
+// Redux:
+import { scheduleActions, useAppDispatch } from "@/redux";
+// Types
+import { SectionAddedOrRemoved } from "@polylink/shared/types";
+// UI components:
+import { Button } from "@/components/ui/button";
 import {
   TooltipProvider,
   Tooltip,
@@ -9,8 +12,9 @@ import {
   TooltipContent,
   TooltipPortal,
 } from "@/components/ui/tooltip";
-import { SectionAddedOrRemoved } from "@polylink/shared/types";
-import { scheduleActions, useAppDispatch } from "@/redux";
+
+// Icons
+import { Undo2, Star, MinusCircle, PlusCircle } from "lucide-react";
 
 interface SectionChangesProps {
   sections: SectionAddedOrRemoved[];

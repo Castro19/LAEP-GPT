@@ -1,6 +1,11 @@
 import React, { useMemo } from "react";
-import SectionChanges from "./SectionChanges";
-import { type OperationArgs, OperationMessage } from "./helpers/FormattingStrs";
+// My components:
+import { SectionChanges } from "@/components/scheduleBuilder/aiChat";
+// Types
+import {
+  type OperationArgs,
+  OperationMessage,
+} from "@/components/scheduleBuilder/aiChat/helpers/FormattingStrs";
 
 interface ManageScheduleProps {
   args: OperationArgs;

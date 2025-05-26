@@ -1,7 +1,11 @@
 import React from "react";
+// Helpers
 import { environment } from "@/helpers/getEnvironmentVars";
-import { ToolCall } from "../SBChatMessage";
-import FormattedChatMessage from "../FormattedChatMessage";
+// My components:
+import { FormattedChatMessage } from "@/components/scheduleBuilder/aiChat";
+// Types
+import { ToolCall } from "@/components/scheduleBuilder/aiChat/messages/SBChatMessage";
+// My components:
 
 const renderToolName = (tool: ToolCall) => {
   if (tool.name === "manage_schedule") {

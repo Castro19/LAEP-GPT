@@ -1,22 +1,22 @@
 import React, { useRef, useEffect } from "react";
-
-import { nanoid } from "nanoid";
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-
 import {
   useAppDispatch,
   useAppSelector,
   scheduleBuilderLogActions,
   scheduleActions,
-} from "@/redux"; // <- barrel exports from new slice
-
-import { resetInputAndScrollToBottom } from "@/components/chat/helpers/formatHelper";
+} from "@/redux";
+import { nanoid } from "nanoid";
+// My components:
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
 import {
   CourseTerm,
   GeneratedSchedule,
   ScheduleResponse,
 } from "@polylink/shared/types";
+// UI components:
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+// helpers
+import { resetInputAndScrollToBottom } from "@/components/chat/helpers/formatHelper";
 
 const placeholders = [
   "Find GE B classes in the morning",

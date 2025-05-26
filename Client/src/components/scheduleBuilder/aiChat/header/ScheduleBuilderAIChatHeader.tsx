@@ -1,9 +1,15 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { IoMdChatboxes } from "react-icons/io";
+// Redux:
 import { useAppDispatch, scheduleBuilderLogActions } from "@/redux";
-import ScheduleBuilderLogs from "./ScheduleBuilderLogs";
-import SBNewChat from "./SBNewChat";
+// My components:
+import {
+  ScheduleBuilderLogs,
+  SBNewChat,
+} from "@/components/scheduleBuilder/aiChat";
+// UI components:
+import { Button } from "@/components/ui/button";
+// Icons
+import { IoMdChatboxes } from "react-icons/io";
 
 const ScheduleBuilderAIChatHeader: React.FC = () => {
   const dispatch = useAppDispatch();

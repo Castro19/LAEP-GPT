@@ -1,11 +1,14 @@
-import { RiChatNewFill } from "react-icons/ri";
-import { onNewScheduleBuilderChat } from "./helpers/newScheduleBuilderChatHandler";
 // Redux:
 import { useAppDispatch, useAppSelector } from "@/redux";
+// My components:
+import { onNewScheduleBuilderChat } from "@/components/scheduleBuilder/aiChat/helpers/newScheduleBuilderChatHandler";
+// UI components:
 import { Button } from "@/components/ui/button";
 import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@/components/ui/tooltip";
+// Icons
+import { RiChatNewFill } from "react-icons/ri";
 
 const NewChat = () => {
   // Redux:

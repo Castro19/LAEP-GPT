@@ -26,6 +26,26 @@ import { buildBackgroundEventsForGroup } from "@/components/scheduleBuilder";
 import { SelectedSection } from "@polylink/shared/types";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
+export type ScheduleClassSection = {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  color?: string;
+  extendedProps: {
+    courseName: string;
+    classNumber: number;
+    enrollmentStatus: string;
+    professors: { id: string | null; name: string }[];
+    color: string;
+    days: string[];
+    start_time: string;
+    end_time: string;
+    isAsynchronous: boolean;
+    isCustomEvent: boolean;
+  };
+};
+
 type WeeklyScheduleProps = {
   sections: SelectedSection[];
 };

@@ -1,11 +1,14 @@
 import { FC } from "react";
-import { Button } from "@/components/ui/button";
+// Redux:
 import {
   useAppSelector,
   useAppDispatch,
   scheduleBuilderLogActions,
 } from "@/redux";
+// My components:
 import ScheduleLogsOptions from "./ScheduleLogsOptions";
+// UI components:
+import { Button } from "@/components/ui/button";
 
 type Props = {
   onClose: () => void;
