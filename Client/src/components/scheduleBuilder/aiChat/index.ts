@@ -20,11 +20,7 @@ export * from "./tools";
 
 // Log Components - Components for logging and history
 // Exporting individually to avoid circular dependencies
-export {
-  ScheduleBuilderLogs,
-  ScheduleLogsOptions,
-  SectionChanges,
-} from "./logs/index";
+export * from "./logs";
 
 // Header Components - Components for the chat header
 export * from "./header";
