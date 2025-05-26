@@ -1,3 +1,4 @@
+import { TechElectiveData } from "../courses";
 import { ScheduleResponse } from "../schedule";
 
 import { CourseTerm, SelectedSection } from "../selectedSection";
@@ -114,4 +115,12 @@ export type SectionAddedOrRemoved = {
   color: string;
   professor: string;
   rating?: number;
+};
+
+export type AcademicPlan = {
+  completedCoursesIds: string[];
+  requiredCoursesLeft: string[];
+  techElectives: TechElectiveData;
+  GEAreasLeft: { category: string; courses: string[] }[];
+  summary: string;
 };

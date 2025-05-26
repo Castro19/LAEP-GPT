@@ -8,6 +8,9 @@ import {
   CourseDocument,
   CourseObject,
   FormattedGeCourses,
+  TechElectiveDocument,
+  TechElective,
+  TechElectiveData,
 } from "@polylink/shared/types";
 import * as geCollection from "./geCollection";
 import { MongoQuery } from "../../../types/mongo";
@@ -513,6 +516,25 @@ export const getTechElectiveCourseDetails = async (
   } catch (error) {
     if (environment === "dev") {
       console.error("Error fetching tech elective course details: ", error);
+    }
+    throw error;
+  }
+};
+
+export const getTechElectivesCourses = async (
+  code: string
+): Promise<TechElectiveData> => {
+  if (!code) {
+    throw new Error("Code is required");
+  }
+  try {
+    const techElectives =
+      await techElectiveCollection.findTechElectiveCourses(code);
+
+    return techElectives;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching tech electives courses: ", error);
     }
     throw error;
   }
