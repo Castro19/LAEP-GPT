@@ -1,8 +1,10 @@
-// file: ChatLoadingMessage.tsx
 import { motion } from "framer-motion";
+// Types
+import { ToolCall } from "@/components/scheduleBuilder/aiChat/messages/SBChatMessage";
+// My components:
+import { ToolUsageDisplay } from "@/components/scheduleBuilder/aiChat";
+// UI components:
 import { Skeleton } from "@/components/ui/skeleton";
-import { ToolCall } from "./SBChatMessage";
-import ToolUsageDisplay from "./ToolUsageDisplay";
 
 const AIChatLoadingMessage = ({
   msg,

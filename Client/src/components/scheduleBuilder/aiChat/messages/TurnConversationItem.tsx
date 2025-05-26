@@ -1,5 +1,11 @@
 import React from "react";
-import SBChatMessage, { SBMessage, ToolMsg } from "./SBChatMessage";
+// My components:
+import { SBChatMessage } from "@/components/scheduleBuilder/aiChat";
+// Types
+import {
+  SBMessage,
+  ToolMsg,
+} from "@/components/scheduleBuilder/aiChat/messages/SBChatMessage";
 
 /* --------------------------------------------------------------------
    Types coming from backend (simplified)

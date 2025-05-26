@@ -1,16 +1,19 @@
-import React, { useState } from "react";
-
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+// My components:
+import {
+  AIChatLoadingMessage,
+  FormattedChatMessage,
+  SBFetchSections,
+  SBManageSchedule,
+} from "@/components/scheduleBuilder/aiChat";
+// UI components:
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import SBFetchSections from "./SBFetchSections";
-import SBManageSchedule from "./SBManageSchedule";
-import AIChatLoadingMessage from "./AIChatLoadingMessage";
-import FormattedChatMessage from "./FormattedChatMessage";
 
 /* -------------------------------------------------------------------------
    📑  Types (replace with shared types when available)

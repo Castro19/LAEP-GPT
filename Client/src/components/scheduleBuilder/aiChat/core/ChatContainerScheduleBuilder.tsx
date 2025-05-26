@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppSelector } from "@/redux";
-import TurnConversationItem from "./TurnConversationItem";
-
+// Types
 import { ConversationTurn } from "@polylink/shared/types/scheduleBuilderLog";
-import SBAssistantSuggestedMessages from "./SBAssistantSuggestedMessages";
+// My components:
+import {
+  TurnConversationItem,
+  SBAssistantSuggestedMessages,
+} from "@/components/scheduleBuilder/aiChat";
 
 /* -------------------------------------------------------------------------
    🟥  ChatContainerScheduleBuilder

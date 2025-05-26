@@ -16,7 +16,7 @@ export { default as SavedSchedules } from "./buildSchedule/savedSchedules/SavedS
 export { default as ScheduleOptions } from "./buildSchedule/savedSchedules/ScheduleOptions";
 
 // AI Chat Components
-export { default as ScheduleBuilderAIChat } from "./aiChat/ScheduleBuilderAIChat";
+export { default as ScheduleBuilderAIChat } from "./aiChat/core/ScheduleBuilderAIChat";
 
 // Helpers
 export { formatProfessorNames } from "./helpers";

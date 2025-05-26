@@ -1,5 +1,9 @@
-import ChatContainerScheduleBuilder from "./ChatContainerScheduleBuilder";
-import ScheduleBuilderChatInput from "./ScheduleBuilderChatInput";
+// My components:
+import {
+  ChatContainerScheduleBuilder,
+  ScheduleBuilderChatInput,
+} from "@/components/scheduleBuilder/aiChat";
+// UI components:
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Props {

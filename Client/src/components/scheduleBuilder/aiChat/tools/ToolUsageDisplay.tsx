@@ -1,5 +1,7 @@
 import React from "react";
-import { ToolCall } from "./SBChatMessage";
+// Types
+import { ToolCall } from "@/components/scheduleBuilder/aiChat/messages/SBChatMessage";
+// UI components:
 import { motion } from "framer-motion";
 
 interface ToolUsageDisplayProps {

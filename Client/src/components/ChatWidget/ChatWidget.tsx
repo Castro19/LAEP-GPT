@@ -8,10 +8,12 @@ import {
 import { MessageSquare, X, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ScheduleBuilderAIChat } from "../scheduleBuilder";
-import ScheduleBuilderAIChatHeader from "../scheduleBuilder/aiChat/ScheduleBuilderAIChatHeader";
-import CurrentToolCall from "../scheduleBuilder/aiChat/CurrentToolCall";
-import ScheduleBuilderChatInput from "../scheduleBuilder/aiChat/ScheduleBuilderChatInput";
+import {
+  ScheduleBuilderAIChat,
+  ScheduleBuilderAIChatHeader,
+  CurrentToolCall,
+  ScheduleBuilderChatInput,
+} from "@/components/scheduleBuilder/aiChat";
 
 type ChatWidgetProps = { initialOpen?: boolean };
 
