@@ -4,7 +4,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { Button } from "@/components/ui/button";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaInstagram } from "react-icons/fa";
 
 import SplashHeaderButton from "@/components/splashPage/SplashHeaderButton";
 import { IoIosInformationCircleOutline } from "react-icons/io";
@@ -22,8 +22,8 @@ const SplashHeader = () => {
     setIsMenuOpen(false);
   };
 
-  const handleGithubClick = (path: string) => {
-    window.open(path, "_blank");
+  const handleExternalLinkClick = (url: string) => {
+    window.open(url, "_blank");
   };
 
   const mobileMenuStyles =
@@ -61,13 +61,28 @@ const SplashHeader = () => {
                 </button>
                 <Button
                   onClick={() =>
-                    handleGithubClick("https://github.com/Castro19/LAEP-GPT")
+                    handleExternalLinkClick(
+                      "https://github.com/Castro19/LAEP-GPT"
+                    )
                   }
                   className={mobileMenuStyles}
                 >
                   <div className="flex items-center space-x-2">
                     <p className="text-white">Github</p>
                     <FaGithub className="size-5 text-white" />
+                  </div>
+                </Button>
+                <Button
+                  onClick={() =>
+                    handleExternalLinkClick(
+                      "https://www.instagram.com/polylinkai/"
+                    )
+                  }
+                  className={mobileMenuStyles}
+                >
+                  <div className="flex items-center space-x-2">
+                    <p className="text-white">Instagram</p>
+                    <FaInstagram className="size-5 text-white" />
                   </div>
                 </Button>
                 <Button
@@ -86,11 +101,19 @@ const SplashHeader = () => {
           <div className="flex items-center space-x-2 mr-2">
             <Button
               onClick={() =>
-                handleGithubClick("https://github.com/Castro19/LAEP-GPT")
+                handleExternalLinkClick("https://github.com/Castro19/LAEP-GPT")
               }
               className={menuStyles}
             >
               <FaGithub className="size-8 text-white" />
+            </Button>
+            <Button
+              onClick={() =>
+                handleExternalLinkClick("https://www.instagram.com/polylinkai/")
+              }
+              className={menuStyles}
+            >
+              <FaInstagram className="size-8 text-white" />
             </Button>
             <Button
               onClick={() => handleLinkClick("/team")}
