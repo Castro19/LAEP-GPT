@@ -4,7 +4,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaInstagram } from "react-icons/fa";
 
 import SplashHeaderButton from "@/components/splashPage/SplashHeaderButton";
 import { IoIosInformationCircleOutline } from "react-icons/io";
@@ -19,7 +19,7 @@ const SplashHeader = () => {
     setIsMenuOpen(false);
   };
 
-  const handleGithubClick = (path: string) => {
+  const handleExternalLinkClick = (path: string) => {
     window.open(path, "_blank");
   };
 
@@ -58,13 +58,34 @@ const SplashHeader = () => {
                 </button>
                 <Button
                   onClick={() =>
-                    handleGithubClick("https://github.com/Castro19/LAEP-GPT")
+                    handleExternalLinkClick(
+                      "https://github.com/Castro19/LAEP-GPT"
+                    )
                   }
                   className={mobileMenuStyles}
                 >
                   <div className="flex items-center space-x-2">
                     <p className="text-white">Github</p>
-                    <FaGithub className="size-5 text-white" />
+                    <FaGithub
+                      style={{ width: "20px", height: "20px" }}
+                      className="text-white"
+                    />
+                  </div>
+                </Button>
+                <Button
+                  onClick={() =>
+                    handleExternalLinkClick(
+                      "https://www.instagram.com/polylinkai/"
+                    )
+                  }
+                  className={mobileMenuStyles}
+                >
+                  <div className="flex items-center space-x-2">
+                    <p className="text-white">Instagram</p>
+                    <FaInstagram
+                      style={{ width: "20px", height: "20px" }}
+                      className="text-white"
+                    />
                   </div>
                 </Button>
                 <Button
@@ -73,7 +94,10 @@ const SplashHeader = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <p className="text-white font-bold">About</p>
-                    <IoIosInformationCircleOutline className="size-5 text-white" />
+                    <IoIosInformationCircleOutline
+                      style={{ width: "20px", height: "20px" }}
+                      className="text-white"
+                    />
                   </div>
                 </Button>
               </div>
@@ -83,11 +107,25 @@ const SplashHeader = () => {
           <div className="flex items-center space-x-2 mr-2">
             <Button
               onClick={() =>
-                handleGithubClick("https://github.com/Castro19/LAEP-GPT")
+                handleExternalLinkClick("https://github.com/Castro19/LAEP-GPT")
               }
               className={menuStyles}
             >
-              <FaGithub className="size-8 text-white" />
+              <FaGithub
+                style={{ width: "28px", height: "28px" }}
+                className="text-white"
+              />
+            </Button>
+            <Button
+              onClick={() =>
+                handleExternalLinkClick("https://www.instagram.com/polylinkai/")
+              }
+              className={menuStyles}
+            >
+              <FaInstagram
+                style={{ width: "28px", height: "28px" }}
+                className="text-white"
+              />
             </Button>
             <Button
               onClick={() => handleLinkClick("/team")}
