@@ -69,7 +69,10 @@ const SplashHeader = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <p className="text-white">Github</p>
-                    <FaGithub className="size-5 text-white" />
+                    <FaGithub
+                      style={{ width: "20px", height: "20px" }}
+                      className="text-white"
+                    />
                   </div>
                 </Button>
                 <Button
@@ -82,7 +85,10 @@ const SplashHeader = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <p className="text-white">Instagram</p>
-                    <FaInstagram className="size-5 text-white" />
+                    <FaInstagram
+                      style={{ width: "20px", height: "20px" }}
+                      className="text-white"
+                    />
                   </div>
                 </Button>
                 <Button
@@ -91,7 +97,10 @@ const SplashHeader = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <p className="text-white font-bold">About</p>
-                    <IoIosInformationCircleOutline className="size-5 text-white" />
+                    <IoIosInformationCircleOutline
+                      style={{ width: "20px", height: "20px" }}
+                      className="text-white"
+                    />
                   </div>
                 </Button>
               </div>
@@ -105,7 +114,10 @@ const SplashHeader = () => {
               }
               className={menuStyles}
             >
-              <FaGithub className="size-8 text-white" />
+              <FaGithub
+                style={{ width: "28px", height: "28px" }}
+                className="text-white"
+              />
             </Button>
             <Button
               onClick={() =>
@@ -113,7 +125,10 @@ const SplashHeader = () => {
               }
               className={menuStyles}
             >
-              <FaInstagram className="size-8 text-white" />
+              <FaInstagram
+                style={{ width: "28px", height: "28px" }}
+                className="text-white"
+              />
             </Button>
             <Button
               onClick={() => handleLinkClick("/team")}

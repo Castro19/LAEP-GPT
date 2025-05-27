@@ -27,3 +27,4 @@ dist-ssr
 .env.sentry-build-plugin
 
 dist
+coverage
