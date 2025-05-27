@@ -22,8 +22,8 @@ const SplashHeader = () => {
     setIsMenuOpen(false);
   };
 
-  const handleExternalLinkClick = (url: string) => {
-    window.open(url, "_blank");
+  const handleExternalLinkClick = (path: string) => {
+    window.open(path, "_blank");
   };
 
   const mobileMenuStyles =
