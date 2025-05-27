@@ -17,7 +17,7 @@ import {
 import { Form } from "@/components/ui/form";
 
 // Types
-import { SectionsFilterParams } from "@polylink/shared/types";
+import { CourseTerm, SectionsFilterParams } from "@polylink/shared/types";
 
 // Constants
 import {
@@ -28,6 +28,7 @@ import {
 import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 import useDeviceType from "@/hooks/useDeviceType";
 import MobileBuildScheduleContainer from "@/components/scheduleBuilder/buildSchedule/layout/MobileBuildScheduleContainer";
+
 export type SectionFiltersForm = z.infer<typeof SECTION_FILTERS_SCHEMA>;
 
 const SectionForm = ({
@@ -47,6 +48,7 @@ const SectionForm = ({
   const form = useForm<SectionFiltersForm>({
     resolver: zodResolver(SECTION_FILTERS_SCHEMA),
     defaultValues: {
+      term: (reduxFilters.term || "fall2025") as CourseTerm,
       courseIds: reduxFilters.courseIds || [],
       status: reduxFilters.status || "",
       subject: reduxFilters.subject || "",
@@ -94,7 +96,7 @@ const SectionForm = ({
 
     // Create a filters object matching API's expected shape.
     const updatedFilters: SectionsFilterParams = {
-      term: watchedValues.term || "summer2025",
+      term: watchedValues.term || ("fall2025" as CourseTerm),
       courseIds: watchedValues.courseIds || [],
       status: watchedValues.status || "",
       subject: watchedValues.subject || "",
@@ -162,7 +164,7 @@ const SectionForm = ({
     // For example, build query string:
     const queryString = buildQueryString(updatedFilters);
     if (environment === "dev") {
-      console.log("Filtering Query", queryString);
+      console.log("FILTERING QUERY: ", queryString);
     }
     // You can then use queryString in your API call.
     dispatch(classSearchActions.setFilters(updatedFilters));

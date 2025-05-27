@@ -3,17 +3,17 @@ import express from "express";
 import { CustomRequest } from "../types/express";
 import { environment } from "../index";
 import {
-  getScheduleListByUserId,
   createOrUpdateSchedule,
   deleteScheduleItem,
   getScheduleById,
-  updateScheduleListItem,
+  getScheduleListByUserId,
+  updateScheduleInfo,
 } from "../db/models/schedule/scheduleServices";
-import { CourseTerm, ScheduleListItem } from "@polylink/shared/types";
+import { CourseTerm, CustomScheduleEvent } from "@polylink/shared/types";
 
 const router = express.Router();
 
-const VALID_TERMS = ["spring2025", "summer2025"] as const;
+const VALID_TERMS = ["spring2025", "summer2025", "fall2025"] as const;
 
 router.get("/", async (req: CustomRequest, res: any) => {
   try {
@@ -49,19 +49,28 @@ router.post("/", async (req, res: any) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { classNumbers, term } = req.body as {
+    const { classNumbers, term, scheduleId, customEvents } = req.body as {
       classNumbers: number[];
       term: CourseTerm;
+      scheduleId: string | undefined;
+      customEvents: CustomScheduleEvent[];
     };
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
 
-    const result = await createOrUpdateSchedule(userId, classNumbers, term);
+    const result = await createOrUpdateSchedule(
+      userId,
+      classNumbers,
+      term,
+      scheduleId,
+      customEvents
+    );
     return res.status(200).json({
       message: "Schedule created or updated successfully",
       schedules: result.schedules,
       primaryScheduleId: result.primaryScheduleId,
+      scheduleId: result.scheduleId,
     });
   } catch (error) {
     if (environment === "dev") {
@@ -101,32 +110,29 @@ router.put("/:scheduleId", async (req, res: any) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { scheduleId } = req.params;
-    const { schedule, primaryScheduleId, name, term } = req.body as {
-      schedule: ScheduleListItem;
-      primaryScheduleId: string;
+    const { name, term, primaryScheduleId } = req.body as {
       name: string;
       term: CourseTerm;
+      primaryScheduleId: string;
     };
-    if (environment === "dev") {
-      console.log("Schedule:", schedule);
-      console.log("Primary schedule ID:", primaryScheduleId);
-      console.log("Name:", name);
-      console.log("Term:", term);
-    }
     if (!term || !VALID_TERMS.includes(term)) {
       return res.status(400).json({ message: "Invalid term" });
     }
-    const result = await updateScheduleListItem({
+
+    const result = await updateScheduleInfo({
       userId,
       scheduleId,
-      primaryScheduleId,
       name,
       term,
+      isPrimary: primaryScheduleId === scheduleId,
     });
+
     return res.status(200).json({
       message: "Schedule updated successfully",
       schedules: result.schedules,
       primaryScheduleId: result.primaryScheduleId,
+      scheduleId: scheduleId,
+      name,
     });
   } catch (error) {
     if (environment === "dev") {

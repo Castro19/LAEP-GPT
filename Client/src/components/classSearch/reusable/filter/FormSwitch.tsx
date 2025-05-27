@@ -1,4 +1,5 @@
 import { UseFormReturn } from "react-hook-form";
+import React from "react";
 
 // My Components
 
@@ -19,36 +20,35 @@ type FormSwitchProps = {
   defaultChecked?: boolean;
 };
 
-const FormSwitch = ({
-  form,
-  label,
-  name,
-  defaultChecked = false,
-}: FormSwitchProps) => {
-  return (
-    <FormItem>
-      <div className="flex items-center justify-between gap-1">
-        <FormLabel className="font-medium dark:text-gray-400 flex items-center text-md">
-          {label}
-        </FormLabel>
-        <FormField
-          control={form.control}
-          name={name}
-          render={({ field }) => {
-            return (
-              <FormControl>
-                <Switch
-                  checked={field.value as boolean}
-                  onCheckedChange={field.onChange}
-                  defaultChecked={defaultChecked}
-                />
-              </FormControl>
-            );
-          }}
-        />
-      </div>
-    </FormItem>
-  );
-};
+const FormSwitch = React.forwardRef<HTMLDivElement, FormSwitchProps>(
+  ({ form, label, name, defaultChecked = false }, ref) => {
+    return (
+      <FormItem ref={ref}>
+        <div className="flex items-center justify-between gap-1">
+          <FormLabel className="font-medium dark:text-gray-400 flex items-center text-md">
+            {label}
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name={name}
+            render={({ field }) => {
+              return (
+                <FormControl>
+                  <Switch
+                    checked={field.value as boolean}
+                    onCheckedChange={field.onChange}
+                    defaultChecked={defaultChecked}
+                  />
+                </FormControl>
+              );
+            }}
+          />
+        </div>
+      </FormItem>
+    );
+  }
+);
+
+FormSwitch.displayName = "FormSwitch";
 
 export default FormSwitch;

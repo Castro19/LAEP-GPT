@@ -12,6 +12,7 @@ import MobileSectionPageLayout from "@/components/layout/ClassSearchPage/MobileS
 import useDeviceType from "@/hooks/useDeviceType";
 import { useUserData } from "@/hooks/useUserData";
 import { flowSelectionActions, useAppDispatch } from "@/redux";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SectionPage = () => {
   const isNarrowScreen = useIsNarrowScreen();
@@ -56,6 +57,14 @@ const SectionPage = () => {
             <div>
               <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4">
                 <div className="col-span-1">
+                  <Card className="bg-card/50 border-border/50">
+                    <CardHeader className="flex flex-col items-center justify-center">
+                      <CardTitle className="text-center">
+                        Class Search
+                      </CardTitle>
+                    </CardHeader>
+                    <div className="border-t border-border/50"></div>
+                  </Card>
                   <SectionForm />
                 </div>
                 <div className="col-span-2">

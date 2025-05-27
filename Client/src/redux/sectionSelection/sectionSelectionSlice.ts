@@ -3,14 +3,17 @@ import {
   SectionDetail,
   SelectedSection,
   CourseTerm,
+  SelectedSectionItem,
 } from "@polylink/shared/types";
 import {
   fetchSections,
   createOrUpdateSection,
   removeSection,
   transformSectionDetailToSelectedSectionItem,
+  bulkAddSelectedSections,
 } from "./crudSelectionSection";
 import { environment } from "@/helpers/getEnvironmentVars";
+import { RootState } from "../store";
 export interface SectionSelectionState {
   selectedSections: SelectedSection[];
   sectionsForSchedule: SelectedSection[];
@@ -58,6 +61,21 @@ export const createOrUpdateSelectedSectionAsync = createAsyncThunk(
   }
 );
 
+export const bulkAddSelectedSectionsAsync = createAsyncThunk(
+  "sections/bulkAddSelectedSections",
+  async (sectionsToAdd: SelectedSectionItem[]) => {
+    try {
+      const response = await bulkAddSelectedSections(sectionsToAdd);
+      return response.selectedSections;
+    } catch (error) {
+      if (environment === "dev") {
+        console.error("Error adding selected sections:", error);
+      }
+      throw error;
+    }
+  }
+);
+
 export const removeSelectedSectionAsync = createAsyncThunk(
   "sections/removeSelectedSection",
   async ({ sectionId, term }: { sectionId: number; term: CourseTerm }) => {
@@ -70,6 +88,73 @@ export const removeSelectedSectionAsync = createAsyncThunk(
       }
       throw error;
     }
+  }
+);
+
+export const updateSelectedSections = createAsyncThunk(
+  "sections/updateSelectedSections",
+  async (sections: SelectedSection[], { getState }) => {
+    const state = getState() as RootState;
+    const currentSelectedSections = state.sectionSelection.selectedSections;
+    const classNumsInCurrentSelectedSections = currentSelectedSections.map(
+      (s) => s.classNumber
+    );
+    const classNumsInNewSections = sections.map((s) => s.classNumber);
+
+    const classNumsToAdd = classNumsInNewSections.filter(
+      (cn) => !classNumsInCurrentSelectedSections.includes(cn)
+    );
+
+    // Only add sections whose class numbers are in classNumsToAdd
+    const newSections = sections.filter((section) =>
+      classNumsToAdd.includes(section.classNumber)
+    );
+
+    return [...currentSelectedSections, ...newSections];
+  }
+);
+
+export const addNewSectionsAndUpdateSelected = createAsyncThunk(
+  "sections/addNewSectionsAndUpdateSelected",
+  async (
+    { classNums, term }: { classNums: number[]; term: CourseTerm },
+    { getState, dispatch }
+  ) => {
+    const state = getState() as RootState;
+    const selectedSections = state.sectionSelection.selectedSections;
+
+    // First, identify sections that need to be added
+    const newSectionsToAdd: SelectedSectionItem[] = classNums
+      .filter((id) => !selectedSections.some((s) => s.classNumber === id))
+      .map((id) => ({
+        sectionId: id,
+        term,
+      }));
+
+    // If we have new sections to add, add them first
+    if (newSectionsToAdd.length > 0) {
+      // Wait for the bulk add to complete and get the updated sections
+      const updatedSections = await dispatch(
+        bulkAddSelectedSectionsAsync(newSectionsToAdd)
+      ).unwrap();
+
+      // Find the sections we want to add from the updated sections
+      const sectionsToAdd = classNums
+        .map((id) => updatedSections.find((s) => s.classNumber === id))
+        .filter(Boolean) as SelectedSection[];
+
+      // Update the selected sections with the new sections
+      if (sectionsToAdd.length > 0) {
+        await dispatch(updateSelectedSections(sectionsToAdd));
+      }
+
+      return sectionsToAdd;
+    }
+
+    // If no new sections to add, just return the existing sections
+    return classNums
+      .map((id) => selectedSections.find((s) => s.classNumber === id))
+      .filter(Boolean) as SelectedSection[];
   }
 );
 
@@ -147,6 +232,9 @@ const sectionSelectionSlice = createSlice({
         state.message = action.payload.message;
         state.fetchSelectedSectionsLoading = false;
       });
+    builder.addCase(updateSelectedSections.fulfilled, (state, action) => {
+      state.selectedSections = action.payload;
+    });
   },
 });
 

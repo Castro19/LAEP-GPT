@@ -4,14 +4,17 @@ import { SelectedSection, CourseTerm } from "@polylink/shared/types";
 import { transformClassNumbersToSelectedSections } from "../schedule/transformSection";
 import * as sectionCollection from "../section/sectionCollection";
 import * as summerSectionCollection from "../section/summerSectionCollection";
+import * as fallSectionCollection from "../section/fallSectionCollection";
 import { courseColors } from "../../../constants/colors";
+import { getSectionsByIds } from "../section/sectionServices";
+import { Section } from "@polylink/shared/types";
 // Map to store courseId to color mapping
 const courseIdToColorMap = new Map<string, string>();
 
 /**
  * Get a color for a courseId, ensuring the same courseId always gets the same color
  */
-function getColorForCourseId(courseId: string): string {
+export function getColorForCourseId(courseId: string): string {
   if (courseIdToColorMap.has(courseId)) {
     return courseIdToColorMap.get(courseId)!;
   }
@@ -33,21 +36,28 @@ async function getCourseIdByClassNumber(
 ): Promise<string | null> {
   try {
     // Determine which collection to use based on the term
+    let section;
     if (term === "summer2025") {
-      const section = await summerSectionCollection.findSectionsByFilter(
+      section = await summerSectionCollection.findSectionsByFilter(
         { classNumber },
         0,
         1
       );
-      return section.sections.length > 0 ? section.sections[0].courseId : null;
+    } else if (term === "fall2025") {
+      section = await fallSectionCollection.findSectionsByFilter(
+        { classNumber },
+        0,
+        1
+      );
     } else {
-      const section = await sectionCollection.findSectionsByFilter(
+      // spring2025
+      section = await sectionCollection.findSectionsByFilter(
         { classNumber },
         0,
         1
       );
-      return section.sections.length > 0 ? section.sections[0].courseId : null;
     }
+    return section.sections.length > 0 ? section.sections[0].courseId : null;
   } catch (error) {
     if (environment === "dev") {
       console.error(
@@ -103,6 +113,62 @@ export const getSelectedSectionsByUserId = async (
   }
 };
 
+/**
+ * Get the color for a section, prioritizing the current term's color if it exists
+ */
+export const getSectionColor = async (
+  userId: string,
+  sectionId: number,
+  term: CourseTerm,
+  courseId: string
+): Promise<string> => {
+  try {
+    const existingSection =
+      await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+
+    // First try to get the color directly from the section in the current term
+    const directColor =
+      existingSection?.selectedSections[term]?.[sectionId]?.color;
+    if (directColor) {
+      return directColor;
+    }
+
+    // If no direct color, look for any section with the same courseId in the current term
+    const termSections = existingSection?.selectedSections[term] || {};
+
+    // Get all sections for this term to find matching courseIds
+    const sections = await getSectionsByIds(
+      Object.keys(termSections).map(Number),
+      term
+    );
+
+    if (sections) {
+      // Find a section with the same courseId
+      const matchingSection = sections.find(
+        (s: Section) => s.courseId === courseId
+      );
+      if (matchingSection) {
+        const matchingColor = termSections[matchingSection.classNumber]?.color;
+        if (matchingColor) {
+          return matchingColor;
+        }
+      }
+    }
+
+    // If still no color found, use the courseId color mapping
+    const courseColor = getColorForCourseId(courseId);
+    return courseColor;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("[getSectionColor] Error:", error);
+    }
+    // Fallback to a random color if there's an error
+    const randomColor =
+      courseColors[Math.floor(Math.random() * courseColors.length)];
+    return randomColor;
+  }
+};
+
 // Creates a new section or updates an existing section
 export const postSelectedSection = async (
   userId: string,
@@ -124,10 +190,17 @@ export const postSelectedSection = async (
       section.term
     );
 
-    // Get a color for this courseId
-    const color = courseId
-      ? getColorForCourseId(courseId)
-      : courseColors[Math.floor(Math.random() * courseColors.length)];
+    if (!courseId) {
+      throw new Error("Could not find courseId for section");
+    }
+
+    // Get a consistent color for this section/course
+    const color = await getSectionColor(
+      userId,
+      section.sectionId,
+      section.term,
+      courseId
+    );
 
     if (existingSection) {
       if (existingSection.selectedSections[section.term]?.[section.sectionId]) {
@@ -170,7 +243,7 @@ export const postSelectedSection = async (
     }
   } catch (error) {
     if (environment === "dev") {
-      console.error(error);
+      console.error("[postSelectedSection] Error:", error);
     }
     throw error;
   }
@@ -203,6 +276,126 @@ export const deleteSelectedSection = async (
   } catch (error) {
     if (environment === "dev") {
       console.error(error);
+    }
+    throw error;
+  }
+};
+
+export const bulkPostSelectedSections = async (
+  userId: string,
+  sections: Array<{
+    sectionId: number;
+    term: CourseTerm;
+  }>,
+  operation: "add" | "remove" = "add"
+): Promise<{
+  selectedSections: SelectedSection[];
+  message: string;
+}> => {
+  try {
+    const selectedSections = await getSelectedSectionsByUserId(
+      userId,
+      sections[0].term
+    );
+    const existingSection =
+      await selectedSelectionModel.findSelectedSectionsByUserId(userId);
+
+    // Group sections by term for efficient processing
+    const sectionsByTerm = sections.reduce(
+      (acc, section) => {
+        if (!acc[section.term]) {
+          acc[section.term] = [];
+        }
+        acc[section.term].push(section.sectionId);
+        return acc;
+      },
+      {} as Record<CourseTerm, number[]>
+    );
+
+    // Prepare the update operation
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateOperations: Record<string, any> = {};
+    let processedCount = 0;
+    let skippedCount = 0;
+
+    // Process each term's sections
+    for (const [term, sectionIds] of Object.entries(sectionsByTerm)) {
+      for (const sectionId of sectionIds) {
+        if (operation === "add") {
+          // Skip if section already exists when adding
+          if (
+            existingSection?.selectedSections[term as CourseTerm]?.[sectionId]
+          ) {
+            skippedCount++;
+            continue;
+          }
+
+          // Get courseId and color for the section
+          const courseId = await getCourseIdByClassNumber(
+            sectionId,
+            term as CourseTerm
+          );
+          const selectedSection = selectedSections?.find(
+            (s) => s.courseId === courseId
+          );
+          const color = selectedSection?.color
+            ? selectedSection.color
+            : courseId
+              ? getColorForCourseId(courseId)
+              : courseColors[Math.floor(Math.random() * courseColors.length)];
+
+          // Add to update operations
+          updateOperations[`selectedSections.${term}.${sectionId}`] = { color };
+        } else {
+          // Skip if section doesn't exist when removing
+          if (
+            !existingSection?.selectedSections[term as CourseTerm]?.[sectionId]
+          ) {
+            skippedCount++;
+            continue;
+          }
+
+          // Add to update operations for removal
+          updateOperations[`selectedSections.${term}.${sectionId}`] = "";
+        }
+        processedCount++;
+      }
+    }
+
+    // If there are no sections to process, return early
+    if (Object.keys(updateOperations).length === 0) {
+      return {
+        selectedSections: await getSelectedSectionsByUserId(
+          userId,
+          sections[0].term
+        ),
+        message:
+          operation === "add"
+            ? `No new sections to add. ${skippedCount} sections were already in your schedule.`
+            : `No sections to remove. ${skippedCount} sections were not in your schedule.`,
+      };
+    }
+
+    // Perform the bulk update
+    await selectedSelectionModel.bulkCreateOrUpdateSelectedSections(
+      userId,
+      updateOperations,
+      operation
+    );
+
+    return {
+      selectedSections: await getSelectedSectionsByUserId(
+        userId,
+        sections[0].term
+      ),
+      message:
+        operation === "add"
+          ? `Successfully added ${processedCount} sections. ${skippedCount} sections were already in your schedule.`
+          : `Successfully removed ${processedCount} sections. ${skippedCount} sections were not in your schedule.`,
+    };
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error in bulkPostSelectedSections:", error);
     }
     throw error;
   }

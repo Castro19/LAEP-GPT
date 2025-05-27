@@ -229,3 +229,21 @@ export const updateAllOtherFlowcharts = async (
     );
   }
 };
+
+export const fetchPrimaryFlowchart = async (
+  userId: string
+): Promise<FlowchartDocument | null> => {
+  if (!flowchartCollection) initializeCollection();
+  try {
+    const result = await flowchartCollection.findOne({
+      userId,
+      primaryOption: true,
+    });
+    return result;
+  } catch (error) {
+    throw new Error(
+      "Error fetching primary flowchart from database: " +
+        (error as Error).message
+    );
+  }
+};

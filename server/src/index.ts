@@ -24,8 +24,12 @@ import classSearchRouter from "./routes/classSearch";
 import selectedSectionRouter from "./routes/selectedSection";
 import professorRouter from "./routes/professor";
 import scheduleRouter from "./routes/schedule";
+// import testRouter from "./routes/test";
+import scheduleBuilderRouter from "./routes/scheduleBuilder";
 // LLM API
 import OpenAI from "openai";
+import { wrapOpenAI } from "langsmith/wrappers";
+import { Server, IncomingMessage, ServerResponse } from "http";
 
 // Initialize express app
 const app = express();
@@ -82,13 +86,13 @@ app.use("/classSearch", authenticate, classSearchRouter);
 app.use("/selectedSections", authenticate, selectedSectionRouter);
 app.use("/schedules", authenticate, scheduleRouter);
 app.use("/professors", authenticate, professorRouter);
-// Initialize OpenAI API client
-export const deepseek = new OpenAI({
-  baseURL: "https://api.deepseek.com",
-  apiKey: process.env.DEEPSEEK_API_KEY,
-});
-
-export const client = new OpenAI();
+// app.use("/test", testRouter);
+app.use("/scheduleBuilder", authenticate, scheduleBuilderRouter);
+export const client = wrapOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || "dummy-key-for-testing",
+  })
+);
 
 export const ASST_MAP = {
   professor_ratings_query: process.env.FORMAT_ASST_ID,
@@ -104,17 +108,32 @@ export const qdrant = {
 };
 
 export const environment = process.env.ENVIRONMENT;
-// Connect to the database and start the server
-connectToDb()
-  .then(() => {
-    app.listen(port, () => {
+
+// Create server instance but don't start it automatically
+let server: Server<typeof IncomingMessage, typeof ServerResponse>;
+
+// Function to start the server
+const startServer = async () => {
+  try {
+    // Connect to the database first
+    await connectToDb();
+
+    // Then start the server
+    server = app.listen(port, () => {
       if (environment === "dev") {
         console.log(`Server listening at http://localhost:${port}`);
       }
     });
-  })
-  .catch((error) => {
-    if (environment === "dev") {
-      console.error("Failed to connect to the database:", error);
-    }
-  });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+// Export both app and server for testing
+export { app, server };
+
+// Only start the server if this file is being run directly
+if (require.main === module) {
+  startServer();
+}

@@ -44,7 +44,7 @@ export async function fetchSections(
 }> {
   const queryString = buildQueryString(filter);
   if (environment === "dev") {
-    console.log("queryString", queryString);
+    console.log("QUERY STRING", queryString);
   }
   const response = await fetch(
     `${serverUrl}/classSearch?${queryString}&page=${pageNumber}`,
@@ -72,10 +72,12 @@ type QueryAIResponse = {
   results: Section[];
   totalPages: number;
 };
-export async function queryAI(message: string): Promise<QueryAIResponse> {
-  console.log("queryAI", message);
+export async function queryAI(
+  message: string,
+  term: CourseTerm
+): Promise<QueryAIResponse> {
   try {
-    const response = await fetch(`${serverUrl}/llms/query`, {
+    const response = await fetch(`${serverUrl}/llms/query/${term}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),

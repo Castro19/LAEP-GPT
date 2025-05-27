@@ -1,4 +1,9 @@
-import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
+import {
+  classSearchActions,
+  scheduleActions,
+  useAppDispatch,
+  useAppSelector,
+} from "@/redux";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -8,10 +13,12 @@ import { SCHEDULE_PREFERENCES_SCHEMA } from "@/components/classSearch/courseFilt
 import { BuildScheduleContainer, SelectedSectionContainer } from "..";
 import { buildSchedule } from "@/components/scheduleBuilder/helpers";
 import { LeftSectionFooter } from "..";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { generatedScheduleToSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
+import { GeneratedSchedule, Preferences } from "@polylink/shared/types";
+import { environment } from "@/helpers/getEnvironmentVars";
 
 export type SchedulePreferencesForm = z.infer<
   typeof SCHEDULE_PREFERENCES_SCHEMA
@@ -24,6 +31,7 @@ const ScheduleBuilderForm = ({
   onSwitchTab: (tab: string) => void;
 }) => {
   const navigate = useNavigate();
+  const { scheduleId } = useParams();
 
   const dispatch = useAppDispatch();
   const { selectedSections, sectionsForSchedule } = useAppSelector(
@@ -43,12 +51,14 @@ const ScheduleBuilderForm = ({
 
   useEffect(() => {
     if (JSON.stringify(watchedValues) !== JSON.stringify(schedulePreferences)) {
-      dispatch(scheduleActions.setPreferences(watchedValues));
+      dispatch(scheduleActions.setPreferences(watchedValues as Preferences));
     }
   }, [watchedValues, dispatch, schedulePreferences]);
 
   const onSubmit = (data: SchedulePreferencesForm) => {
-    console.log(data);
+    if (environment === "dev") {
+      console.log("SUBMITTED DATA: ", data);
+    }
   };
 
   // Handle the build schedule button click
@@ -63,6 +73,11 @@ const ScheduleBuilderForm = ({
             className="bg-black border-white border-2"
             altText="Add Sections"
             onClick={() => {
+              dispatch(
+                classSearchActions.setFilters({
+                  term: currentScheduleTerm,
+                })
+              );
               navigate("/class-search");
             }}
           >
@@ -83,6 +98,7 @@ const ScheduleBuilderForm = ({
       });
       return;
     }
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
 
     // Create all combinations of sections
     const allCombinations = buildSchedule(
@@ -97,6 +113,7 @@ const ScheduleBuilderForm = ({
     if (allCombinations.length > 0) {
       dispatch(scheduleActions.setCurrentSchedule(allCombinations[0]));
     }
+    dispatch(scheduleActions.setCurrentScheduleId(undefined));
 
     navigate("/schedule-builder");
     onSwitchTab("schedule-builder");
@@ -116,9 +133,27 @@ const ScheduleBuilderForm = ({
           classNumbers: scheduleToSave.sections.map(
             (section) => section.classNumber
           ),
+          customEvents: scheduleToSave.customEvents,
           term: currentScheduleTerm,
+          scheduleId: scheduleId,
         })
       );
+      toast({
+        title: scheduleId ? "Schedule updated" : "Schedule created",
+        description: `Your schedule has been ${
+          scheduleId ? "updated" : "created"
+        }`,
+      });
+    } else {
+      const currentBlankSchedule: GeneratedSchedule = {
+        sections: [],
+        customEvents: [],
+        name: "New Schedule",
+        id: "",
+        averageRating: 0,
+      };
+
+      dispatch(scheduleActions.setCurrentSchedule(currentBlankSchedule));
     }
   };
 
@@ -130,7 +165,13 @@ const ScheduleBuilderForm = ({
         </BuildScheduleContainer>
         <LeftSectionFooter
           formText="Generate Schedule"
-          buttonText="Save Schedule"
+          buttonText={
+            scheduleId
+              ? "Update Schedule"
+              : currentSchedule
+                ? "Save Schedule"
+                : "New Schedule"
+          }
           onFormSubmit={handleBuildSchedule}
           onClick={handleSaveSchedule}
         />

@@ -1,6 +1,6 @@
 import SplashLayout from "@/components/layout/splashPage/SplashLayout";
 import AboutSection from "@/components/splashPage/about/AboutSection";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const AboutPage = () => {
   return (

@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 
 // My Components
 import CollapsibleContentWrapper from "@/components/classSearch/reusable/wrappers/CollapsibleContentWrapper";
 import { FormSwitch, TimeRange, TitleLabel } from "@/components/classSearch";
+import DaysSelector from "./DaysSelector";
 
 // UI Components
 import {
@@ -20,11 +21,11 @@ import { FaClock } from "react-icons/fa";
 
 // Constants
 import {
-  DAYS,
   HOURS,
   SECTION_FILTERS_SCHEMA,
 } from "@/components/classSearch/courseFilters/helpers/constants";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, scheduleActions } from "@/redux";
 
 const Scheduling = ({
   form,
@@ -32,7 +33,7 @@ const Scheduling = ({
   form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
 }) => {
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const statusOptions = [
     { label: "Open", value: "open" },
     { label: "Waitlist", value: "waitlist" },
@@ -152,6 +153,7 @@ const Scheduling = ({
                   <span
                     className="text-blue-500 cursor-pointer ml-1"
                     onClick={() => {
+                      dispatch(scheduleActions.setCurrentScheduleId(undefined));
                       navigate("/schedule-builder");
                     }}
                   >
@@ -164,47 +166,6 @@ const Scheduling = ({
         )}
       />
     </CollapsibleContentWrapper>
-  );
-};
-
-const DaysSelector = ({
-  field,
-  form,
-}: {
-  field: ControllerRenderProps<z.infer<typeof SECTION_FILTERS_SCHEMA>, "days">;
-  form: UseFormReturn<z.infer<typeof SECTION_FILTERS_SCHEMA>>;
-}) => {
-  // Ensure field.value is always an array, even when reset
-  const selectedDays = Array.isArray(field.value) ? field.value : [];
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-      {DAYS.map((day) => {
-        const isSelected = selectedDays.includes(day);
-        return (
-          <Button
-            key={day}
-            type="button"
-            variant={isSelected ? "default" : "outline"}
-            onClick={() => {
-              if (isSelected) {
-                // remove from array
-                form.setValue(
-                  "days",
-                  selectedDays.filter((d: string) => d !== day)
-                );
-              } else {
-                // add to array
-                form.setValue("days", [...selectedDays, day]);
-              }
-            }}
-            className="h-8"
-          >
-            {dayFormatter(day)}
-          </Button>
-        );
-      })}
-    </div>
   );
 };
 
@@ -250,21 +211,6 @@ export const TimeRangeSelector = ({
       />
     </div>
   );
-};
-
-const dayFormatter = (day: string) => {
-  switch (day) {
-    case "Mo":
-      return "Mon";
-    case "Tu":
-      return "Tue";
-    case "We":
-      return "Wed";
-    case "Th":
-      return "Thu";
-    case "Fr":
-      return "Fri";
-  }
 };
 
 function hourIntToLabel(h24: number): string {

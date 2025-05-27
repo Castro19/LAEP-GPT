@@ -14,10 +14,11 @@ export const COURSE_ATTRIBUTES = [
   "USCP",
 ] as const;
 
+const COURSE_TERMS = ["spring2025", "summer2025", "fall2025"] as const;
 export const HOURS = Array.from({ length: 14 }, (_, i) => i + 7);
 
 export const SECTION_FILTERS_SCHEMA = z.object({
-  term: z.enum(["spring2025", "summer2025"]).optional(),
+  term: z.enum(COURSE_TERMS).optional(),
   courseIds: z.array(z.string()).optional(),
   status: z.string().optional(),
   subject: z.string().optional(),
@@ -56,7 +57,7 @@ export const SCHEDULE_PREFERENCES_SCHEMA = z.object({
   minInstructorRating: z.string().optional(),
   maxInstructorRating: z.string().optional(),
   openOnly: z.boolean().optional(),
-  showOverlappingClasses: z.boolean().optional(),
+  withTimeConflicts: z.boolean().optional(),
   startTime: z.string().optional(),
   endTime: z.string().optional(),
 });
@@ -67,7 +68,7 @@ export const getInitialFilterValues = (
   concentration = ""
 ): SectionsFilterParams => {
   return {
-    term: "summer2025",
+    term: "fall2025",
     courseIds: [],
     status: "",
     subject: "",
@@ -88,7 +89,7 @@ export const getInitialFilterValues = (
       major,
       concentration,
     },
-    withNoConflicts: false,
+    withNoConflicts: true,
     isCreditNoCredit: false,
   };
 };

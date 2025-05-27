@@ -1,105 +1,111 @@
-name: Build and deploy Node.js app to Azure Web App - PolyLink
+# .github/workflows/azure-deploy.yml
+# • Builds on every push / PR
+# • Deploys only on push to main
+# • Uses hoisted node_modules (Strategy A) and ships them.
+
+name: Build & deploy Node.js app to Azure Web App – PolyLink
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches: [main] # build + deploy
+  pull_request:
+    branches: [main] # build-only
 
 jobs:
+  # ───────── BUILD ──────────────────────────────────────────
   build:
     runs-on: ubuntu-latest
-    name: Install and Build
-
     steps:
-      # Step 1: Checkout the code
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with: { node-version: "20.x", cache: npm }
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
-        with:
-          # Use at least Node 18 (or Node 20)
-          node-version: "20.x"
+      - name: Install all workspaces
+        run: npm ci
 
-      # Step 3: Install dependencies at the root (for all workspaces: shared + server)
-      - name: Install All Dependencies (Workspace)
+      - name: Build shared + server
         run: |
-          npm ci
-          # Optional debug info
-          npm list openai --depth=0 || true
+          npm run build:shared
+          npm run build:server
 
-      # Step 4: Build Shared + Server
-      - name: Build Shared
-        run: npm run build:shared
-
-      - name: Build Server
-        run: npm run build:server
-
-      # Step 5: Prune down to production dependencies *inside the server folder*
-      #         so we only ship what's needed for runtime.
-      - name: Prune for Production (Server)
+      - name: Prune to production dependencies
         run: |
-          cd server
-          # Remove any old node_modules
-          rm -rf node_modules
-          # Install ONLY production dependencies, pinned by the root lock file
-          npm ci --only=production
-          # Double-check what version of openai we actually have
-          npm list openai --depth=0 || true
+          npm prune --omit=dev     # modifies the *root* node_modules tree
 
-      # Step 6: Create final deployment artifact with dist + node_modules + package.json
-      - name: Create zip artifact
+          echo ""
+          echo "📦 Top-level packages in root node_modules (after prune):"
+          ls -1 node_modules | head -n 40
+          echo "… (total $(ls -1 node_modules | wc -l))"
+
+          echo ""
+          echo "🔍 Smoke-test for langgraph prebuilt file:"
+          test -f node_modules/@langchain/langgraph/prebuilt.js \
+            && echo "✅ prebuilt.js present" \
+            || { echo "❌ prebuilt.js missing"; exit 1; }
+
+      # ---------- Assemble deploy folder ----------
+      - name: Assemble deploy folder
         run: |
-          cd server
-          zip -r release.zip dist node_modules package.json
+          rm -rf deploy
+          mkdir -p deploy
 
-      # Step 7: Show ZIP contents (for debugging)
-      - name: Show ZIP contents
+          # ① app sources
+          cp -r server/dist deploy/
+
+          # ② manifest files Oryx needs at the root of the zip
+          cp server/package.json deploy/
+
+          # copy a lockfile if one exists in the server workspace, otherwise fallback to the root one
+          if [ -f server/package-lock.json ]; then
+            cp server/package-lock.json deploy/
+          else
+            echo "ℹ️  server/package-lock.json not found – copying root lock file"
+            cp package-lock.json deploy/
+          fi
+
+          # copy .npmrc if present
+          [ -f server/.npmrc ] && cp server/.npmrc deploy/ || true
+
+          # ③ hoisted node_modules with all actual packages
+          cp -r node_modules deploy/
+
+          echo "📦 deploy folder preview:"
+          ls -R deploy | head -n 40
+
+      - name: Zip deploy folder
         run: |
-          cd server
-          zipinfo release.zip
+          cd deploy
+          zip -r ../server.zip .
 
-      # Step 8: Upload Artifact
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: server-app
-          path: server/release.zip
+          path: server.zip
 
+  # ───────── DEPLOY (push→main only) ────────────────────────
   deploy:
-    runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write # required for requesting the JWT
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: { name: Production }
+    permissions: { id-token: write } # OIDC login
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: server-app
+      - uses: actions/download-artifact@v4
+        with: { name: server-app }
 
-      - name: Unzip artifact for deployment
-        run: |
-          mkdir server-build
-          cd server-build
-          unzip ../release.zip
-
-      - name: Login to Azure
+      - name: Azure CLI login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F274D06961214893BCE0EE8D715C228C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
+          # (no client-secret ⇒ OIDC token is used)
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLink"
           slot-name: "Production"
-          # We now have node_modules already included,
-          # so Azure won't attempt to re-install anything.
-          package: ./server-build
+          package: server.zip
+          type: runFromPackage # ← mount the ZIP; no incremental copy

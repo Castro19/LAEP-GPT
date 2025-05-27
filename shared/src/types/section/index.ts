@@ -1,5 +1,17 @@
+import { CourseTerm } from "../selectedSection";
+
+export type InstructorWithRating = {
+  name: string;
+  id: string;
+  courseId: string;
+  overallRating: number;
+  numEvals: number;
+  courseRating: number | null;
+  studentDifficulties: number | null;
+};
+
 export type Section = {
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
   classNumber: number; // unique section number (e.g. 1001)
   courseId: string; // unique course identifier (e.g. "CSC357")
   subject: string; // subject abbreviation (e.g. "CSC")
@@ -43,17 +55,8 @@ export type Section = {
     email: string; // email of the instructor (e.g. "john.doe@illinois.edu")
   }>;
 
-  instructorsWithRatings: Array<{
-    name: string; // name of the instructor (e.g. "John Doe")
-    id: string; // unique identifier for the instructor (e.g. "1234567890")
-    courseId: string; // unique identifier for the course (e.g. "CSC357")
-    overallRating: number; // overall rating of the instructor (e.g. 4.5)
-    numEvals: number; // number of evaluations for the instructor (e.g. 100)
-    courseRating: number | null; // rating of the instructor for the course (e.g. 4.5)
-    studentDifficulties: number | null; // student difficulties of the instructor (e.g. 3.5)
-  }> | null;
+  instructorsWithRatings: InstructorWithRating[] | null;
   techElectives: string[];
-
   classPair: number | null; // class number of the section paired with (e.g. 1002)
   isCreditNoCredit: boolean;
 };
@@ -89,7 +92,7 @@ export type SectionsFilterParams = {
   };
   withNoConflicts?: boolean; // whether to filter sections with no conflicts with their current primary schedule
   isCreditNoCredit?: boolean;
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
 };
 
 // ------------------------------------------------------------
@@ -125,7 +128,7 @@ export type SectionGroup = {
 
 // Updated SectionDetail to support standalone display
 export type SectionDetail = {
-  term: "spring2025" | "summer2025";
+  term: CourseTerm;
   courseId: string;
   courseName: string;
   classNumber: number;
@@ -170,4 +173,16 @@ export type InstructorWithRatings = {
   numEvals: number;
   courseRating: number | null;
   studentDifficulties: number | null;
+};
+
+// Section Essential
+export type SectionEssential = {
+  classNumber: number;
+  courseId: string;
+  courseName: string;
+  units: string;
+  instructors: Instructor[];
+  instructorsWithRatings: InstructorWithRatings[];
+  classPair: number | null;
+  meetings: Meeting[];
 };

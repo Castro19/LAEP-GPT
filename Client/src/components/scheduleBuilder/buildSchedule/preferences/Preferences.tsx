@@ -15,7 +15,14 @@ const Preferences = ({
 }) => {
   return (
     <div className="my-4 px-1 space-y-8 pb-4">
-      <UnitSlider form={form} min={0} max={24} showRange={false} />
+      <UnitSlider
+        form={form}
+        min={0}
+        max={24}
+        defaultMinValue={4}
+        defaultMaxValue={16}
+        showRange={false}
+      />
       <InstructorRatingSlider
         form={form}
         showDescription={false}
@@ -30,8 +37,9 @@ const Preferences = ({
       />
       <FormSwitch
         form={form}
-        label="Show Overlapping Classes"
-        name="showOverlappingClasses"
+        label="With Time Conflicts"
+        name="withTimeConflicts"
+        defaultChecked={true}
       />
       {/* <FormSwitch
         form={form}

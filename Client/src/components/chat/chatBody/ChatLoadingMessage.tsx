@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ChatLoadingMessage = ({ toolUsage }: { toolUsage: string | null }) => {
-  console.log("toolUsage", toolUsage);
-
   return (
     <motion.div
       className="flex items-center space-x-4 mb-8 sm:mb-12 w-full max-w-3xl mx-auto"
@@ -18,7 +16,7 @@ const ChatLoadingMessage = ({ toolUsage }: { toolUsage: string | null }) => {
         <Skeleton className="h-4 w-[150px] sm:w-[200px] bg-gray-300 dark:bg-slate-600/50" />
         {toolUsage && (
           <motion.div
-            className="text-sm sm:text-md italic pt-1 relative overflow-hidden text-gray-400 w-full"
+            className="text-sm sm:text-md italic pt-1 relative overflow-hidden text-gray-400 dark:text-gray-400 w-full"
             style={{
               background:
                 "linear-gradient(90deg, #9CA3AF 0%, #D1D5DB 50%, #9CA3AF 100%)",

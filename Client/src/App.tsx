@@ -8,6 +8,7 @@ import {
   useLocation,
   useNavigationType,
 } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { authActions, useAppDispatch } from "@/redux";
 import "./index.css";
 
@@ -201,7 +202,6 @@ const router = routerChosen(
   ],
   {
     future: {
-      v7_startTransition: true,
       v7_relativeSplatPath: true,
     },
   }
@@ -219,11 +219,13 @@ function App() {
   }, [dispatch]);
 
   return (
-    <Sentry.ErrorBoundary fallback={<ErrorPage />}>
-      <DefaultSEO />
-      <RouterProvider router={router} />
-      <Toaster />
-    </Sentry.ErrorBoundary>
+    <HelmetProvider>
+      <Sentry.ErrorBoundary fallback={<ErrorPage />}>
+        <DefaultSEO />
+        <RouterProvider router={router} />
+        <Toaster />
+      </Sentry.ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

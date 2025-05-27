@@ -3,6 +3,7 @@ import {
   ScheduleListItem,
   CourseTerm,
   ScheduleResponse,
+  CustomScheduleEvent,
 } from "@polylink/shared/types";
 
 // Schedule List
@@ -24,22 +25,29 @@ export async function fetchSchedules(term: CourseTerm): Promise<{
 
 export async function createOrUpdateSchedule(
   classNumbers: number[],
-  term: CourseTerm
+  term: CourseTerm,
+  scheduleId: string | undefined,
+  customEvents?: CustomScheduleEvent[]
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
+  scheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules`, {
       method: "POST",
-      body: JSON.stringify({ classNumbers, term }),
+      body: JSON.stringify({ classNumbers, term, scheduleId, customEvents }),
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
     });
     const data = await response.json();
-    return data;
+    return {
+      schedules: data.schedules,
+      primaryScheduleId: data.primaryScheduleId,
+      scheduleId: data.scheduleId,
+    };
   } catch (error) {
     console.error("Error creating or updating schedule:", error);
     throw error;
@@ -55,6 +63,8 @@ export async function updateSchedule(
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
+  name: string;
+  scheduleId: string;
 }> {
   try {
     const response = await fetch(`${serverUrl}/schedules/${schedule.id}`, {
@@ -66,7 +76,12 @@ export async function updateSchedule(
       credentials: "include",
     });
     const data = await response.json();
-    return data;
+    return {
+      schedules: data.schedules,
+      primaryScheduleId: data.primaryScheduleId,
+      name: data.name,
+      scheduleId: data.scheduleId,
+    };
   } catch (error) {
     console.error("Error updating schedule list item:", error);
     throw error;

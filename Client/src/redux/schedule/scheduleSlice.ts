@@ -3,6 +3,9 @@ import {
   ScheduleListItem,
   CourseTerm,
   GeneratedSchedule,
+  CustomScheduleEvent,
+  SelectedSection,
+  Preferences,
 } from "@polylink/shared/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -13,19 +16,14 @@ import {
   updateSchedule,
 } from "./crudSchedule";
 import { scheduleToGeneratedSchedule } from "@/components/scheduleBuilder/helpers/scheduleTransformers";
-
-export interface Preferences {
-  minUnits?: string;
-  maxUnits?: string;
-  minInstructorRating?: string;
-  maxInstructorRating?: string;
-  timeRange?: string;
-  openOnly: boolean;
-  useCurrentSchedule: boolean;
-  showOverlappingClasses: boolean;
-}
+import { RootState } from "../store";
+import {
+  computeScheduleConflicts,
+  enrichWithConflicts,
+} from "./helpers/computeConflicts";
 
 export interface ScheduleState {
+  currentScheduleId: string | undefined;
   scheduleList: ScheduleListItem[];
   primaryScheduleId: string;
   currentSchedule: GeneratedSchedule | null;
@@ -36,9 +34,11 @@ export interface ScheduleState {
   fetchSchedulesLoading: boolean;
   preferences: Preferences;
   currentScheduleTerm: CourseTerm;
+  hiddenSections: number[];
 }
 
 const initialState: ScheduleState = {
+  currentScheduleId: undefined,
   scheduleList: [],
   primaryScheduleId: "",
   currentSchedule: null,
@@ -47,7 +47,7 @@ const initialState: ScheduleState = {
   totalPages: 1,
   schedules: [],
   fetchSchedulesLoading: false,
-  currentScheduleTerm: "spring2025",
+  currentScheduleTerm: "fall2025",
   preferences: {
     minUnits: "",
     maxUnits: "",
@@ -55,9 +55,9 @@ const initialState: ScheduleState = {
     maxInstructorRating: "",
     timeRange: "",
     openOnly: false,
-    useCurrentSchedule: false,
-    showOverlappingClasses: false,
+    withTimeConflicts: true,
   },
+  hiddenSections: [],
 };
 
 // Fetch schedules for a specific term
@@ -86,16 +86,26 @@ export const createOrUpdateScheduleAsync = createAsyncThunk(
   async ({
     classNumbers,
     term,
+    scheduleId,
+    customEvents,
   }: {
     classNumbers: number[];
     term: CourseTerm;
+    scheduleId: string | undefined;
+    customEvents?: CustomScheduleEvent[];
   }) => {
     try {
-      const response = await createOrUpdateSchedule(classNumbers, term);
+      const response = await createOrUpdateSchedule(
+        classNumbers,
+        term,
+        scheduleId,
+        customEvents
+      );
       return {
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
         term,
+        scheduleId: response.scheduleId,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -131,6 +141,8 @@ export const updateScheduleAsync = createAsyncThunk(
         schedules: response.schedules,
         primaryScheduleId: response.primaryScheduleId,
         term,
+        name: response.name,
+        scheduleId: response.scheduleId,
       };
     } catch (error) {
       if (environment === "dev") {
@@ -170,6 +182,29 @@ export const getScheduleByIdAsync = createAsyncThunk(
   }
 );
 
+export const updateScheduleSections = createAsyncThunk(
+  "schedule/updateScheduleSections",
+  async (sections: SelectedSection[], { getState }) => {
+    const state = getState() as RootState;
+    if (!state.schedule.currentSchedule) return;
+
+    const updatedSchedule = {
+      ...state.schedule.currentSchedule,
+      sections: [...sections],
+      averageRating: state.schedule.currentSchedule.averageRating || 0,
+    };
+
+    await createOrUpdateSchedule(
+      updatedSchedule.sections.map((section) => section.classNumber),
+      state.schedule.currentScheduleTerm,
+      state.schedule.currentScheduleId,
+      updatedSchedule.customEvents
+    );
+
+    return updatedSchedule;
+  }
+);
+
 // Remove schedule
 export const removeScheduleAsync = createAsyncThunk(
   "schedule/removeSchedule",
@@ -190,10 +225,90 @@ export const removeScheduleAsync = createAsyncThunk(
   }
 );
 
+// Update scheduleId from scheduleBuilderLog
+export const updateScheduleIdFromBuilder = createAsyncThunk(
+  "schedule/updateScheduleIdFromBuilder",
+  async (scheduleId: string) => {
+    return scheduleId;
+  }
+);
+
+export const updateScheduleSection = createAsyncThunk(
+  "schedule/updateScheduleSection",
+  async (
+    { sectionIds, action }: { sectionIds: number[]; action: "add" | "remove" },
+    { getState }
+  ) => {
+    const state = getState() as RootState;
+    const { currentSchedule, currentScheduleId, currentScheduleTerm } =
+      state.schedule;
+    const { selectedSections } = state.sectionSelection;
+
+    if (!currentSchedule) {
+      throw new Error("No current schedule to update");
+    }
+
+    // If we have a currentScheduleId, we need to update the database
+    if (currentScheduleId) {
+      try {
+        // Get the updated sections based on the action
+        const updatedSections =
+          action === "remove"
+            ? currentSchedule.sections.filter(
+                (section) => !sectionIds.includes(section.classNumber)
+              )
+            : [
+                ...currentSchedule.sections,
+                ...sectionIds.map(
+                  (id) => selectedSections.find((s) => s.classNumber === id)!
+                ),
+              ];
+
+        // Make the API call to update the schedule
+        await createOrUpdateSchedule(
+          updatedSections.map((section) => section.classNumber),
+          currentScheduleTerm,
+          currentScheduleId,
+          currentSchedule.customEvents
+        );
+
+        return {
+          ...currentSchedule,
+          sections: updatedSections,
+        };
+      } catch (error) {
+        if (environment === "dev") {
+          console.error("Error updating schedule section:", error);
+        }
+        throw error;
+      }
+    } else {
+      // If no currentScheduleId, just update the local state
+      return {
+        ...currentSchedule,
+        sections:
+          action === "remove"
+            ? currentSchedule.sections.filter(
+                (section) => !sectionIds.includes(section.classNumber)
+              )
+            : [
+                ...currentSchedule.sections,
+                ...sectionIds.map(
+                  (id) => selectedSections.find((s) => s.classNumber === id)!
+                ),
+              ],
+      };
+    }
+  }
+);
+
 const scheduleSlice = createSlice({
   name: "schedule",
   initialState,
   reducers: {
+    setCurrentScheduleId(state, action: PayloadAction<string | undefined>) {
+      state.currentScheduleId = action.payload;
+    },
     setSchedules(state, action) {
       state.schedules = action.payload;
     },
@@ -204,7 +319,7 @@ const scheduleSlice = createSlice({
       state.totalPages = action.payload;
     },
     setCurrentSchedule(state, action) {
-      state.currentSchedule = action.payload;
+      state.currentSchedule = enrichWithConflicts(action.payload);
     },
     setPreferences(state, action) {
       state.preferences = action.payload;
@@ -215,6 +330,35 @@ const scheduleSlice = createSlice({
       state.totalPages = 1;
       state.schedules = [];
       state.currentSchedule = null;
+    },
+    toggleHiddenSection(state, action: PayloadAction<number>) {
+      const classNumber = action.payload;
+      // Toggle the visibility of a section by adding it to or removing it from the hiddenSections array.
+      const index = state.hiddenSections.indexOf(classNumber);
+      if (index === -1) {
+        state.hiddenSections.push(classNumber);
+      } else {
+        state.hiddenSections.splice(index, 1);
+      }
+    },
+    upsertCustomEvent(state, action: PayloadAction<CustomScheduleEvent>) {
+      if (!state.currentSchedule) return;
+      const list = state.currentSchedule.customEvents ?? [];
+      const idx = list.findIndex((e) => e.id === action.payload.id);
+      if (idx >= 0) {
+        list[idx] = action.payload;
+      } else {
+        list.push(action.payload);
+      }
+      state.currentSchedule.customEvents = list;
+    },
+    removeCustomEvent(state, action: PayloadAction<string>) {
+      if (state.currentSchedule?.customEvents) {
+        state.currentSchedule.customEvents =
+          state.currentSchedule.customEvents.filter(
+            (event) => event.id !== action.payload
+          );
+      }
     },
   },
   extraReducers: (builder) => {
@@ -233,31 +377,88 @@ const scheduleSlice = createSlice({
       .addCase(createOrUpdateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        if (action.payload.scheduleId) {
+          state.currentScheduleId = action.payload.scheduleId;
+        }
       })
       .addCase(updateScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        if (
+          state.currentSchedule &&
+          state.currentSchedule.id === action.payload.scheduleId
+        ) {
+          state.currentSchedule = {
+            ...state.currentSchedule,
+            name: action.payload.name,
+          };
+        }
       })
       .addCase(getScheduleByIdAsync.fulfilled, (state, action) => {
-        state.currentSchedule = action.payload.schedule;
-        if (action.payload.term) {
-          state.currentScheduleTerm = action.payload.term as CourseTerm;
-        }
+        const { schedule, term } = action.payload;
+        const { conflictGroups, withConflicts } = computeScheduleConflicts(
+          schedule.sections
+        );
+
+        state.currentSchedule = {
+          ...schedule,
+          conflictGroups,
+          withConflicts,
+        };
+        state.currentScheduleId = schedule.id;
+        state.currentScheduleTerm = term as CourseTerm;
+        state.page = 1;
+        state.totalPages = 1;
       })
       .addCase(removeScheduleAsync.fulfilled, (state, action) => {
         state.scheduleList = action.payload.schedules;
         state.primaryScheduleId = action.payload.primaryScheduleId;
+        if (state.currentScheduleId === action.meta.arg.scheduleId) {
+          state.currentScheduleId = undefined;
+          state.currentSchedule = null;
+        }
+      })
+      .addCase(updateScheduleIdFromBuilder.fulfilled, (state, action) => {
+        state.currentScheduleId = action.payload;
+      })
+      .addCase(updateScheduleSections.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { conflictGroups, withConflicts } = computeScheduleConflicts(
+            action.payload.sections
+          );
+          state.currentSchedule = {
+            ...action.payload,
+            conflictGroups: conflictGroups as SelectedSection[][],
+            withConflicts,
+          };
+        }
+      })
+      .addCase(updateScheduleSection.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { conflictGroups, withConflicts } = computeScheduleConflicts(
+            action.payload.sections
+          );
+          state.currentSchedule = {
+            ...action.payload,
+            conflictGroups: conflictGroups as SelectedSection[][],
+            withConflicts,
+          };
+        }
       });
   },
 });
 
 export const {
+  setCurrentScheduleId,
   setPage,
   setTotalPages,
   setSchedules,
   setCurrentSchedule,
   setPreferences,
   setCurrentScheduleTerm,
+  toggleHiddenSection,
+  upsertCustomEvent,
+  removeCustomEvent,
 } = scheduleSlice.actions;
 
 export const scheduleReducer = scheduleSlice.reducer;

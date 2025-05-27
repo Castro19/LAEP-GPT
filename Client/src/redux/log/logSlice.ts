@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
-  fetchAllLogs,
+  fetchLogsByPage,
   deleteLogItem,
   updateLogTitleInDB,
   upsertLogItem,
@@ -9,19 +9,28 @@ import { LogData, LogSliceType } from "@polylink/shared/types";
 import { RootState } from "../store";
 import { environment } from "@/helpers/getEnvironmentVars";
 
-// Read (Fetch Logs by UserID)
+const LOGS_PER_PAGE = 10;
+
+interface PaginatedLogSliceState extends LogSliceType {
+  isLoading: boolean;
+  currentPage: number;
+  hasMoreLogs: boolean;
+}
+
+// Thunk to load a specific page of logs
 export const fetchLogs = createAsyncThunk(
   "log/fetchLogs",
-  async (_, { rejectWithValue }) => {
+  async (page: number, { rejectWithValue }) => {
     try {
-      const fetchedLogs = await fetchAllLogs();
-
-      return fetchedLogs;
+      const fetchedLogs = await fetchLogsByPage(page, LOGS_PER_PAGE);
+      return { logs: fetchedLogs, page };
     } catch (error) {
       if (environment === "dev") {
-        console.error("Failed to fetch logs: ", error);
+        console.error(`Failed to fetch logs for page ${page}: `, error);
       }
-      return rejectWithValue({ message: "Failed to fetch logs" });
+      return rejectWithValue({
+        message: `Failed to fetch logs for page ${page}`,
+      });
     }
   }
 );
@@ -47,19 +56,18 @@ export const upsertLog = createAsyncThunk(
 
       const { isNewChat, title, timestamp } = await upsertLogItem({
         logId,
-        content: chatLog.content, // Ensure the content is included in the DB save
-        // The following are only needed if creating a new log
+        content: chatLog.content,
         assistantMongoId,
-        msg, // To make the title
+        msg,
       });
 
       if (isNewChat) {
         dispatch(
           addLogList({
-            content: chatLog.content, // Include the actual content
+            content: chatLog.content,
             logId,
             title,
-            timestamp, // Include the timestamp
+            timestamp,
           })
         );
       }
@@ -111,24 +119,25 @@ export const deleteLog = createAsyncThunk(
   }
 );
 
-const initialState: LogSliceType = {
+const initialState: PaginatedLogSliceState = {
   logList: [],
-  deletingLogIds: [], // Add this array
+  deletingLogIds: [],
+  isLoading: false,
+  currentPage: 0,
+  hasMoreLogs: true,
 };
 
 const logSlice = createSlice({
   name: "log",
   initialState,
   reducers: {
-    // logList:
-    // Reducer to add a new log to the state (CREATE)
     addLogList: (state, action: PayloadAction<LogData>) => {
       const { logId, title, content, timestamp } = action.payload;
       const newLog = {
         logId,
-        content: [...content], // Use the content passed in the action
+        content: [...content],
         title: title,
-        timestamp: timestamp, // Use the timestamp passed in the action
+        timestamp: timestamp,
       };
 
       state.logList.unshift(newLog); // Push to the front of the array
@@ -137,16 +146,47 @@ const logSlice = createSlice({
       const { logId } = action.payload;
       state.logList = state.logList.filter((log) => log.logId != logId);
     },
+    resetLogPagination: (state) => {
+      state.logList = [];
+      state.currentPage = 0;
+      state.hasMoreLogs = true;
+      state.isLoading = false;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchLogs.fulfilled, (state, action) => {
-        state.logList = action.payload;
+      .addCase(fetchLogs.pending, (state) => {
+        state.isLoading = true;
       })
-      .addCase(fetchLogs.rejected, (_state, action) => {
-        // Optionally handle error state
+      .addCase(fetchLogs.fulfilled, (state, action) => {
+        const { logs, page } = action.payload;
+
+        // If it's the first page, replace the list. Otherwise, append.
+        if (page === 1) {
+          state.logList = logs;
+        } else {
+          // Add only new logs to avoid duplicates if re-fetching the same page
+          const existingLogIds = new Set(state.logList.map((log) => log.logId));
+          const newLogs = logs.filter((log) => !existingLogIds.has(log.logId));
+          state.logList.push(...newLogs);
+        }
+
+        state.currentPage = page;
+        state.hasMoreLogs = logs.length === LOGS_PER_PAGE;
+        state.isLoading = false;
+      })
+      .addCase(fetchLogs.rejected, (state, action) => {
+        state.isLoading = false;
+        // If the fetch for page 1 fails, we might want to clear the list
+        if (action.meta.arg === 1) {
+          state.logList = [];
+          state.hasMoreLogs = false; // Can't load more if page 1 failed
+        }
         if (environment === "dev") {
-          console.error("Failed to load logs:", action.payload);
+          console.error(
+            "Failed to load logs:",
+            action.payload || action.error.message
+          );
         }
       })
       .addCase(upsertLog.fulfilled, (state, action) => {
@@ -169,6 +209,12 @@ const logSlice = createSlice({
           state.deletingLogIds.splice(index, 1);
         }
       })
+      .addCase(deleteLog.rejected, (state, action) => {
+        const index = state.deletingLogIds.indexOf(action.meta.arg.logId);
+        if (index > -1) {
+          state.deletingLogIds.splice(index, 1);
+        }
+      })
       .addCase(updateLogTitle.fulfilled, (state, action) => {
         const { message, logId, title } = action.payload;
         if (message === "Log title updated successfully") {
@@ -183,6 +229,7 @@ const logSlice = createSlice({
   },
 });
 
-export const { addLogList, deleteLogListItem } = logSlice.actions;
+export const { addLogList, deleteLogListItem, resetLogPagination } =
+  logSlice.actions;
 
 export const logReducer = logSlice.reducer;

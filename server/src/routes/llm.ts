@@ -5,11 +5,16 @@ import rateLimit from "express-rate-limit";
 import { environment, client } from "../index";
 import asyncHandler from "../middlewares/asyncMiddleware";
 
-import { RunningStreamData, SectionDocument } from "@polylink/shared/types";
+import {
+  RunningStreamData,
+  Section,
+  SectionDocument,
+} from "@polylink/shared/types";
 import { createBio } from "../helpers/assistants/createBio/createBio";
 import { sectionQueryAssistant } from "../helpers/assistants/SectionQuery/sectionQueryAssistant";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
-
+import * as summerCollection from "../db/models/section/summerSectionCollection";
+import * as fallSectionCollection from "../db/models/section/fallSectionCollection";
 import { Filter } from "mongodb";
 import { createLog, getLogById } from "../db/models/chatlog/chatLogServices";
 import { isUnauthorized } from "../helpers/auth/verifyAuth";
@@ -132,11 +137,11 @@ router.post(
           const message = (error as { error: Error | null })?.error?.message;
           if (message?.includes("Cannot cancel run with status")) {
             if (environment === "dev") {
-              console.log("Run canceled");
+              console.log("RUN CANCELED");
             }
           } else if (message?.includes("already has an active run")) {
             if (environment === "dev") {
-              console.log("Run already canceled: ", message);
+              console.log("RUN ALREADY CANCELED: ", message);
             }
           } else {
             if (environment === "dev") {
@@ -187,15 +192,16 @@ const validateQueryRequest = (
   next();
 };
 router.post(
-  "/query",
+  "/query/:term",
   validateQueryRequest,
   asyncHandler(async (req: Request, res: Response) => {
     try {
+      const { term } = req.params;
       const { message } = req.body;
 
       const response = await sectionQueryAssistant(message);
       if (environment === "dev") {
-        console.log("Query response:", response);
+        console.log("QUERY RESPONSE: ", response);
       }
       if (!response?.query) {
         // Add return here to prevent further execution
@@ -206,12 +212,35 @@ router.post(
         return;
       }
 
-      const { sections, total } = await findSectionsByFilter(
-        response?.query as Filter<SectionDocument>,
-        0,
-        25
-      );
-
+      let sections: Section[] = [];
+      let total: number = 0;
+      if (term === "spring2025") {
+        const result = await findSectionsByFilter(
+          response?.query as Filter<SectionDocument>,
+          0,
+          25
+        );
+        sections = result.sections;
+        total = result.total;
+      } else if (term === "summer2025") {
+        const result = await summerCollection.findSectionsByFilter(
+          response?.query as Filter<SectionDocument>,
+          0,
+          25
+        );
+        sections = result.sections;
+        total = result.total;
+      } else if (term === "fall2025") {
+        const result = await fallSectionCollection.findSectionsByFilter(
+          response?.query as Filter<SectionDocument>,
+          0,
+          25
+        );
+        sections = result.sections;
+        total = result.total;
+      } else {
+        throw new Error("Invalid term");
+      }
       // Single successful response
       res.json({
         ...response,

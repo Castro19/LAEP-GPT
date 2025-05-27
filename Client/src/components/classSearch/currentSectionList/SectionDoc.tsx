@@ -180,9 +180,9 @@ const CourseSection: React.FC<CourseSectionProps> = ({
                 No prerequisites
               </p>
             ) : (
-              <p className="text-[#C6C6C6] mb-5 text-sm sm:text-base">
+              <div className="text-[#C6C6C6] mb-5 text-sm sm:text-base">
                 <FormatPrerequisites prerequisites={course.prerequisites} />
-              </p>
+              </div>
             )
           ) : null}
           {course.professorGroups.map((group) => (

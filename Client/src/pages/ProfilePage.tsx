@@ -140,7 +140,7 @@ function ProfilePage() {
     };
 
     fetchSchedules();
-  }, [dispatch]);
+  }, [dispatch, currentScheduleTerm]);
 
   useEffect(() => {
     if (primaryScheduleId) {
@@ -308,11 +308,7 @@ function ProfilePage() {
             </TabsContent>
             <TabsContent value="weekly-schedule">
               {currentSchedule ? (
-                <WeeklySchedule
-                  sections={currentSchedule.sections}
-                  height="100vh"
-                  isProfilePage={true}
-                />
+                <WeeklySchedule sections={currentSchedule.sections} />
               ) : (
                 <div className="flex flex-col justify-center items-center">
                   <ProfileEmptyState

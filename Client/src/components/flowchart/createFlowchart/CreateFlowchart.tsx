@@ -23,6 +23,20 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import { FlowchartData } from "@polylink/shared/types";
 import { useEffect } from "react";
 
+const userYearToStartYear = (userYear: string): string => {
+  switch (userYear) {
+    case "senior":
+      return "2021";
+    case "junior":
+      return "2022";
+    case "sophomore":
+      return "2023";
+    case "freshman":
+      return "2024";
+    default:
+      return "2024";
+  }
+};
 const CreateFlowchart = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
   const navigate = useNavigate();
 
@@ -66,14 +80,14 @@ const CreateFlowchart = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
       selections.catalog &&
       selections.major &&
       selections.concentration &&
-      (selections.startingYear || userData.year)
+      (selections.startingYear || userYearToStartYear(userData.year))
     ) {
       const flowchartData = await fetchFlowchartDataHelper(
         dispatch,
         selections.catalog,
         selections.major,
         selections.concentration.code,
-        selections.startingYear ?? userData.year,
+        selections.startingYear ?? userYearToStartYear(userData.year),
         true
       );
       await saveFlowchartToDB(flowchartData);
@@ -96,11 +110,11 @@ const CreateFlowchart = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
       return;
     }
     try {
-      console.log("Flowchart Data", flowchartData);
       // Create a new object with the updated startYear instead of modifying the original
       const updatedFlowchartData = {
         ...flowchartData,
-        startYear: selections.startingYear ?? userData.year,
+        startYear:
+          selections.startingYear ?? userYearToStartYear(userData.year),
       };
 
       flowchart = await dispatch(
@@ -122,7 +136,8 @@ const CreateFlowchart = ({ onSwitchTab }: { onSwitchTab?: () => void }) => {
                 major: selections.major ?? "",
                 catalog: selections.catalog ?? "",
                 startingYear:
-                  userData.flowchartInformation.startingYear ?? 2022,
+                  userData.flowchartInformation.startingYear ??
+                  userYearToStartYear(userData.year),
               },
             })
           );

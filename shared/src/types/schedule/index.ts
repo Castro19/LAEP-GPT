@@ -18,14 +18,29 @@ export type ScheduleListDocument = SavedSchedules & {
   _id: string;
 };
 
+export type CustomScheduleEvent = {
+  id: string;
+  title: string;
+  color: string;
+  meetings: Array<{
+    days: Array<"Mo" | "Tu" | "We" | "Th" | "Fr">;
+    start_time: string | null;
+    end_time: string | null;
+  }>;
+  // Generated on frontend
+  isVisible?: boolean;
+  isLocked?: boolean;
+};
+
 // Generated Schedule (for schedule combinations)
 export type GeneratedSchedule = {
+  customEvents?: CustomScheduleEvent[];
   sections: SelectedSection[];
   averageRating: number;
   id?: string;
   name?: string;
   withConflicts?: boolean;
-  conflictGroups?: SelectedSection[];
+  conflictGroups?: SelectedSection[][];
 };
 
 // ScheduleResponse
@@ -36,6 +51,7 @@ export type ScheduleResponse = {
   createdAt: Date;
   updatedAt: Date;
   term: CourseTerm;
+  customEvents?: CustomScheduleEvent[];
 };
 
 // Schedule
@@ -46,7 +62,10 @@ export type Schedule = {
   createdAt: Date;
   updatedAt: Date;
   term: CourseTerm;
+  customEvents?: CustomScheduleEvent[];
+  isPrimary: boolean;
 };
+
 export type ScheduleDocument = Schedule & {
   _id: string;
 };

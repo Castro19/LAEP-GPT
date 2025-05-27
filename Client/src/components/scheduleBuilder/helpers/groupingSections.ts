@@ -26,59 +26,51 @@ function getValidSelectionsForCourse(
   isOpenOnly: boolean | undefined
 ): SelectedSection[][] {
   const validSelections: SelectedSection[][] = [];
-  const standaloneSections: SelectedSection[] = [];
 
-  // Add standalone sections (only if classPair is null).
-  sections.forEach((section) => {
-    if (section.classPair === null) {
-      standaloneSections.push(section);
-    }
-  });
-
-  // Add valid pairs.
+  // 1) Pairing loop (unchanged)
   for (let i = 0; i < sections.length; i++) {
     for (let j = i + 1; j < sections.length; j++) {
-      const sectionA = sections[i];
-      const sectionB = sections[j];
-      if (arePaired(sectionA, sectionB)) {
+      const A = sections[i],
+        B = sections[j];
+      if (arePaired(A, B)) {
         if (isOpenOnly) {
-          if (
-            sectionA.enrollmentStatus === "O" &&
-            sectionB.enrollmentStatus === "O"
-          ) {
-            validSelections.push([sectionA, sectionB]);
-          } else if (
-            sectionA.enrollmentStatus === "O" &&
-            sectionB.enrollmentStatus !== "O"
-          ) {
-            validSelections.push([sectionA]);
-          } else if (
-            sectionA.enrollmentStatus !== "O" &&
-            sectionB.enrollmentStatus === "O"
-          ) {
-            validSelections.push([sectionB]);
+          if (A.enrollmentStatus === "O" && B.enrollmentStatus === "O") {
+            validSelections.push([A, B]);
+          } else if (A.enrollmentStatus === "O") {
+            validSelections.push([A]);
+          } else if (B.enrollmentStatus === "O") {
+            validSelections.push([B]);
           } else {
-            validSelections.push([sectionA, sectionB]);
+            validSelections.push([A, B]);
           }
         } else {
-          validSelections.push([sectionA, sectionB]);
+          validSelections.push([A, B]);
         }
       }
     }
   }
 
-  // Add unpaired standalone sections
-  for (const section of standaloneSections) {
-    // Check if the section classNumber is the classPair of any other section.
-    const isPaired = sections.some(
-      (otherSection) => otherSection.classPair === section.classNumber
-    );
-    if (!isPaired) {
-      if (isOpenOnly) {
-        if (section.enrollmentStatus === "O") {
-          validSelections.push([section]);
-        }
-      } else {
+  // 2) Existing standalone logic (for classPair === null)
+  for (const section of sections) {
+    if (section.classPair === null) {
+      const isLinked = sections.some(
+        (other) => other.classPair === section.classNumber
+      );
+      if (!isLinked && (!isOpenOnly || section.enrollmentStatus === "O")) {
+        validSelections.push([section]);
+      }
+    }
+  }
+
+  // 3) NEW: any section whose classPair *isn’t* null but whose partner
+  //    isn’t in our list, should also become a singleton
+  for (const section of sections) {
+    if (
+      section.classPair !== null &&
+      !sections.some((other) => other.classNumber === section.classPair)
+    ) {
+      // partner missing → treat as standalone
+      if (!isOpenOnly || section.enrollmentStatus === "O") {
         validSelections.push([section]);
       }
     }

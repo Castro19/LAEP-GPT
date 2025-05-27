@@ -22,6 +22,8 @@ interface PlaceholdersAndVanishInputProps {
   interval?: number;
   /** If true, disable input and show a spinner on the button */
   loading?: boolean;
+  disabled?: boolean;
+  sendButtonRef?: React.RefObject<HTMLButtonElement>;
 }
 
 export function PlaceholdersAndVanishInput({
@@ -31,11 +33,14 @@ export function PlaceholdersAndVanishInput({
   maxLength = 200,
   interval = 3000,
   loading = false,
+  disabled = false,
+  sendButtonRef,
 }: PlaceholdersAndVanishInputProps) {
   const inputFieldFocus = useAppSelector(
     (state) => state.layout.inputFieldFocus
   );
-  // Track the index of the placeholder that’s currently displayed
+  const draftMsg = useAppSelector((state) => state.scheduleBuilderLog.draftMsg);
+  // Track the index of the placeholder that's currently displayed
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -219,10 +224,17 @@ export function PlaceholdersAndVanishInput({
     }
   };
 
+  // Sync value with draft message
+  useEffect(() => {
+    if (draftMsg && !value) {
+      setValue(draftMsg);
+    }
+  }, [draftMsg]);
+
   return (
     <div
       className={cn(
-        "w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
+        "w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 border border-gray-100 dark:border-gray-100/50 focus-within:border-blue-200 dark:focus-within:border-blue-200",
         value && "bg-gray-50"
       )}
     >
@@ -245,7 +257,7 @@ export function PlaceholdersAndVanishInput({
         value={value}
         maxLength={maxLength}
         type="text"
-        disabled={loading}
+        disabled={disabled || loading}
         className={cn(
           "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20",
           animating && "text-transparent dark:text-transparent"
@@ -257,6 +269,7 @@ export function PlaceholdersAndVanishInput({
         type="button"
         onClick={handleButtonClick}
         disabled={!value || loading}
+        ref={sendButtonRef}
         className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full 
                    disabled:bg-gray-100 bg-black dark:bg-zinc-900 dark:disabled:bg-zinc-800 
                    transition duration-200 flex items-center justify-center"

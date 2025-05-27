@@ -49,7 +49,7 @@ function OuterIconSidebar() {
     dispatch(classSearchActions.setIsInitialState(true));
 
     if (assistantList.length > 0) {
-      dispatch(assistantActions.setCurrentAssistant(assistantList[0].id));
+      dispatch(assistantActions.setAssistantByTitle("Calpoly SLO"));
     }
 
     onNewChat(

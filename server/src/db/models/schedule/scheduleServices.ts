@@ -1,14 +1,33 @@
 import { environment } from "../../..";
-import * as scheduleListModel from "./scheduleListCollection";
 import * as scheduleCollection from "./scheduleCollection";
 import {
   Schedule,
-  ScheduleListItem,
   CourseTerm,
   ScheduleResponse,
+  CustomScheduleEvent,
+  ScheduleListItem,
 } from "@polylink/shared/types";
 import { v4 as uuidv4 } from "uuid";
 import { transformClassNumbersToSelectedSections } from "./transformSection";
+
+// Helper function to transform Schedule[] to ScheduleListItem[] with primary first
+const transformToScheduleListItems = (
+  schedules: Schedule[]
+): ScheduleListItem[] => {
+  return schedules
+    .sort((a, b) => {
+      // Primary schedule always comes first
+      if (a.isPrimary) return -1;
+      if (b.isPrimary) return 1;
+      // Then sort by most recent updatedAt
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    })
+    .map((schedule) => ({
+      id: schedule.id,
+      name: schedule.name,
+      updatedAt: schedule.updatedAt,
+    }));
+};
 
 export const getScheduleListByUserId = async (
   userId: string,
@@ -18,70 +37,21 @@ export const getScheduleListByUserId = async (
   primaryScheduleId: string;
 }> => {
   try {
-    const result = await scheduleListModel.findScheduleListByUserId(userId);
-    if (!result) {
-      if (environment === "dev") {
-        console.log("No schedules found for the user");
-      }
+    const result = await scheduleCollection.findSchedulesByUserId(userId, term);
+    if (!result || result.length === 0) {
       return {
         schedules: [],
         primaryScheduleId: "",
       };
     }
-    return {
-      schedules: result.schedules[term],
-      primaryScheduleId: result.primaryScheduleId,
-    };
-  } catch (error) {
-    if (environment === "dev") {
-      console.error(error);
-    }
-    throw error;
-  }
-};
 
-export const updateScheduleListItem = async ({
-  userId,
-  scheduleId,
-  primaryScheduleId,
-  name,
-  term,
-}: {
-  userId: string;
-  scheduleId: string;
-  primaryScheduleId: string;
-  name: string;
-  term: CourseTerm;
-}): Promise<{
-  schedules: ScheduleListItem[];
-  primaryScheduleId: string;
-}> => {
-  const scheduleListItem = {
-    id: scheduleId,
-    name: name,
-    updatedAt: new Date(),
-  };
-  try {
-    const scheduleResult = await scheduleListModel.updateScheduleListItem(
-      userId,
-      scheduleListItem,
-      primaryScheduleId,
-      term
-    );
-    if (!scheduleResult) {
-      throw new Error("Failed to update schedule");
-    }
-    const schedules = await scheduleListModel.findScheduleListByUserId(userId);
-    if (!schedules) {
-      console.error("No schedules found for the user");
-      return {
-        schedules: [],
-        primaryScheduleId: "",
-      };
-    }
+    // Find the primary schedule
+    const primarySchedule = result.find((schedule) => schedule.isPrimary);
+    const primaryScheduleId = primarySchedule?.id || "";
+
     return {
-      schedules: schedules.schedules[term],
-      primaryScheduleId: schedules.primaryScheduleId,
+      schedules: transformToScheduleListItems(result),
+      primaryScheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -94,79 +64,85 @@ export const updateScheduleListItem = async ({
 export const createOrUpdateSchedule = async (
   userId: string,
   classNumbers: number[],
-  term: CourseTerm
+  term: CourseTerm,
+  scheduleIdFromClient: string | undefined,
+  customEvents?: CustomScheduleEvent[]
 ): Promise<{
   schedules: ScheduleListItem[];
   primaryScheduleId: string;
+  scheduleId: string;
 }> => {
   try {
-    const scheduleId = uuidv4();
-    const scheduleList =
-      await scheduleListModel.findScheduleListByUserId(userId);
-
-    // Initialize schedules array for the term if it doesn't exist
-    const currentSchedules = scheduleList?.schedules[term] || [];
-
-    // Check if there are any schedules in either term
-    const hasAnySchedules =
-      scheduleList &&
-      ((scheduleList.schedules.spring2025 &&
-        scheduleList.schedules.spring2025.length > 0) ||
-        (scheduleList.schedules.summer2025 &&
-          scheduleList.schedules.summer2025.length > 0));
-
-    const schedule = {
-      id: scheduleId,
+    // Get all schedules for the user in the given term
+    const existingSchedules = await scheduleCollection.findSchedulesByUserId(
       userId,
-      name: `Schedule ${currentSchedules.length + 1}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      sections: classNumbers,
-      term,
-    };
-    const scheduleResult = await scheduleCollection.createSchedule(schedule);
-    if (!scheduleResult) {
-      throw new Error("Failed to create schedule");
-    }
-    const schedules = await scheduleListModel.findScheduleListByUserId(userId);
-    if (schedules) {
-      // Only set as primary if there are no schedules in either term
-      if (!hasAnySchedules || !schedules.primaryScheduleId) {
-        await scheduleListModel.createOrUpdateScheduleList(
-          userId,
-          {
-            id: scheduleId,
-            name: schedule.name,
-            updatedAt: schedule.updatedAt,
-          },
-          scheduleId, // primary schedule
-          term
-        );
-      } else {
-        await scheduleListModel.createOrUpdateScheduleList(
-          userId,
-          {
-            id: scheduleId,
-            name: schedule.name,
-            updatedAt: schedule.updatedAt,
-          },
-          schedules.primaryScheduleId, // not primary schedule
-          term
-        );
+      term
+    );
+    const hasAnySchedules = existingSchedules.length > 0;
+
+    let scheduleId = scheduleIdFromClient || uuidv4();
+    if (scheduleIdFromClient) {
+      // Get the existing schedule to preserve its createdAt and name
+      const existingSchedule = await scheduleCollection.getScheduleById(
+        userId,
+        scheduleIdFromClient
+      );
+
+      if (!existingSchedule) {
+        throw new Error("Schedule not found for update");
+      }
+
+      // Update existing schedule with preserved fields
+      const schedule = {
+        ...existingSchedule,
+        updatedAt: new Date(),
+        sections: classNumbers,
+        customEvents,
+      };
+
+      const updateResult = await scheduleCollection.updateSchedule(
+        userId,
+        scheduleIdFromClient,
+        schedule
+      );
+
+      if (!updateResult.matchedCount) {
+        throw new Error("Schedule not found for update");
+      }
+    } else {
+      // Create new schedule
+      const schedule = {
+        id: scheduleId,
+        userId,
+        name: `Schedule ${existingSchedules.length + 1}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        sections: classNumbers,
+        term,
+        customEvents,
+        isPrimary: !hasAnySchedules, // Set as primary if this is the first schedule
+      };
+
+      const scheduleResult = await scheduleCollection.createSchedule(schedule);
+      if (!scheduleResult) {
+        throw new Error("Failed to create schedule");
       }
     }
-    const finalSchedules =
-      await scheduleListModel.findScheduleListByUserId(userId);
-    if (!finalSchedules) {
-      console.error("No schedules found for the user");
-      return {
-        schedules: [],
-        primaryScheduleId: "",
-      };
-    }
+
+    // Get updated list of schedules
+    const finalSchedules = await scheduleCollection.findSchedulesByUserId(
+      userId,
+      term
+    );
+    const primarySchedule = finalSchedules.find(
+      (schedule) => schedule.isPrimary
+    );
+    const primaryScheduleId = primarySchedule?.id || "";
+
     return {
-      schedules: finalSchedules.schedules[term],
-      primaryScheduleId: finalSchedules.primaryScheduleId,
+      schedules: transformToScheduleListItems(finalSchedules),
+      primaryScheduleId,
+      scheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -185,48 +161,51 @@ export const deleteScheduleItem = async (
   primaryScheduleId: string;
 }> => {
   try {
-    const scheduleList =
-      await scheduleListModel.findScheduleListByUserId(userId);
-    if (!scheduleList) {
-      throw new Error("No schedules found for the user");
+    const scheduleToDelete = await scheduleCollection.getScheduleById(
+      userId,
+      scheduleId
+    );
+    if (!scheduleToDelete) {
+      throw new Error("Schedule not found");
     }
 
-    if (scheduleList.primaryScheduleId === scheduleId) {
-      // We will need to update the primary schedule id
-      const newPrimaryScheduleId = scheduleList.schedules[term].find(
-        (schedule) => schedule.id !== scheduleId
-      )?.id;
-
-      await scheduleListModel.updatePrimaryScheduleId(
+    // If this is the primary schedule, we need to find a new primary
+    if (scheduleToDelete.isPrimary) {
+      const otherSchedules = await scheduleCollection.findSchedulesByUserId(
         userId,
-        newPrimaryScheduleId
+        term
       );
+      const newPrimarySchedule = otherSchedules.find(
+        (s) => s.id !== scheduleId
+      );
+
+      if (newPrimarySchedule) {
+        // Update the new primary schedule
+        await scheduleCollection.updateSchedule(userId, newPrimarySchedule.id, {
+          ...newPrimarySchedule,
+          isPrimary: true,
+        });
+      }
     }
 
     const result = await scheduleCollection.deleteSchedule(userId, scheduleId);
     if (!result) {
-      throw new Error("Schedule not found in schedule collection");
+      throw new Error("Failed to delete schedule");
     }
 
-    const deletedSchedule = await scheduleListModel.deleteScheduleListItem(
+    // Get updated list of schedules
+    const finalSchedules = await scheduleCollection.findSchedulesByUserId(
       userId,
-      scheduleId,
       term
     );
-    if (!deletedSchedule) {
-      throw new Error("Schedule not found in schedule list");
-    }
-    const schedules = await scheduleListModel.findScheduleListByUserId(userId);
-    if (!schedules) {
-      console.error("No schedules found for the user");
-      return {
-        schedules: [],
-        primaryScheduleId: "",
-      };
-    }
+    const primarySchedule = finalSchedules.find(
+      (schedule) => schedule.isPrimary
+    );
+    const primaryScheduleId = primarySchedule?.id || "";
+
     return {
-      schedules: schedules.schedules[term],
-      primaryScheduleId: schedules.primaryScheduleId,
+      schedules: transformToScheduleListItems(finalSchedules),
+      primaryScheduleId,
     };
   } catch (error) {
     if (environment === "dev") {
@@ -258,6 +237,7 @@ export const getScheduleById = async (
       id: result.id,
       name: result.name,
       sections: selectedSections,
+      customEvents: result.customEvents,
       createdAt: result.createdAt,
       updatedAt: result.updatedAt,
       term: result.term,
@@ -272,20 +252,77 @@ export const getScheduleById = async (
 
 export const fetchPrimarySchedule = async (
   userId: string,
-  _term: CourseTerm
+  term: CourseTerm
 ): Promise<Schedule | null> => {
-  const scheduleList = await scheduleListModel.findScheduleListByUserId(userId);
+  const schedules = await scheduleCollection.findSchedulesByUserId(
+    userId,
+    term
+  );
+  return schedules.find((schedule) => schedule.isPrimary) || null;
+};
 
-  const primaryScheduleId = scheduleList?.primaryScheduleId;
-  if (primaryScheduleId) {
-    const result = await scheduleCollection.getScheduleById(
+export const updateScheduleInfo = async ({
+  userId,
+  scheduleId,
+  name,
+  term,
+  isPrimary,
+}: {
+  userId: string;
+  scheduleId: string;
+  name: string;
+  term: CourseTerm;
+  isPrimary: boolean;
+}): Promise<{
+  schedules: ScheduleListItem[];
+  primaryScheduleId: string;
+}> => {
+  try {
+    // First update the Schedule collection
+    const existingSchedule = await scheduleCollection.getScheduleById(
       userId,
-      primaryScheduleId
+      scheduleId
     );
-    if (!result) {
-      return null;
+    if (!existingSchedule) {
+      throw new Error("Schedule not found");
     }
-    return result;
+
+    // Update the Schedule document with new name
+    const updatedSchedule = {
+      ...existingSchedule,
+      name,
+      updatedAt: new Date(),
+      isPrimary,
+    };
+
+    const scheduleUpdateResult = await scheduleCollection.updateSchedule(
+      userId,
+      scheduleId,
+      updatedSchedule
+    );
+
+    if (!scheduleUpdateResult.matchedCount) {
+      throw new Error("Failed to update schedule");
+    }
+
+    // Get updated list of schedules
+    const finalSchedules = await scheduleCollection.findSchedulesByUserId(
+      userId,
+      term
+    );
+    const primarySchedule = finalSchedules.find(
+      (schedule) => schedule.isPrimary
+    );
+    const primaryScheduleId = primarySchedule?.id || "";
+
+    return {
+      schedules: transformToScheduleListItems(finalSchedules),
+      primaryScheduleId,
+    };
+  } catch (error) {
+    if (environment === "dev") {
+      console.error(error);
+    }
+    throw error;
   }
-  return null;
 };

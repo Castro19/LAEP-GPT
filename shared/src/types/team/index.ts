@@ -5,6 +5,13 @@ export type TeamDocument = {
   desc: string;
   funFact: string;
   image: string;
+  type:
+    | "Contributor"
+    | "Previous Contributor"
+    | "Founder"
+    | "Product / Marketing"
+    | "Design"
+    | "Engineering";
   linkedin: string;
   github?: string;
 };

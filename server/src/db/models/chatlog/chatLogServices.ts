@@ -21,14 +21,31 @@ export const createLog = async (logData: ChatLogDocument): Promise<void> => {
   }
 };
 
+//Read (Fetch a limited # of logs by userId)
+export const getLogsByPage = async (
+  userId: string,
+  page: number,
+  limit: number
+): Promise<LogListType[]> => {
+  try {
+    return await ChatLogModel.fetchLogsByUserId(userId, page, limit);
+  } catch (error) {
+    console.error("Service error in getLogsByPage:", error);
+    throw new Error(
+      "Service error fetching limited logs: " + (error as Error).message
+    );
+  }
+};
+
 //Read (Fetch ALL logs by userId)
+/*
 export const getLogsByUser = async (userId: string): Promise<LogListType[]> => {
   try {
     return await ChatLogModel.fetchLogsByUserId(userId);
   } catch (error) {
     throw new Error("Service error: " + (error as Error).message);
   }
-};
+};*/
 
 // Read (Fetch a specific log by logId)
 export const getLogById = async (

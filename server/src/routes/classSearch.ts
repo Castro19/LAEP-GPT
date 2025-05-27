@@ -1,7 +1,11 @@
 import express from "express";
 import { getSectionsByFilter } from "../db/models/section/sectionServices"; // new function
 import { CustomRequest as Request } from "../types/express";
-import { SectionDocument, SectionsFilterParams } from "@polylink/shared/types";
+import {
+  CourseTerm,
+  SectionDocument,
+  SectionsFilterParams,
+} from "@polylink/shared/types";
 import { environment } from "../index";
 import { findSectionsByFilter } from "../db/models/section/sectionCollection";
 import { Filter } from "mongodb";
@@ -98,7 +102,7 @@ router.get("/", async (req: Request, res: any) => {
       isTechElective: isTechElective === "true", // Converts the string "true" to boolean true, any other value becomes false
       withNoConflicts: withNoConflicts === "true", // convert str to boolean
       isCreditNoCredit: isCreditNoCredit === "true", // convert str to boolean
-      term: term as "spring2025" | "summer2025",
+      term: term as CourseTerm,
     };
 
     // Call the service with the parsed query object

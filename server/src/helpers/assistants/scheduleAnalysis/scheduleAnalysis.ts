@@ -5,6 +5,7 @@ import {
   scheduleReview,
   sectionOptimization,
 } from "./helpers/queryType";
+import { environment } from "../../..";
 
 /**
  *
@@ -17,21 +18,33 @@ async function scheduleAnalysis(
   jsonObject: ScheduleBuilderObject
 ): Promise<string> {
   if (jsonObject.queryType === "schedule_review") {
-    console.log("FOUND SCHEDULE REVIEW");
+    if (environment === "dev") {
+      console.log("FOUND SCHEDULE REVIEW");
+    }
     messageToAdd = await scheduleReview(messageToAdd, jsonObject);
   } else if (jsonObject.queryType === "professor_insights") {
-    console.log("FOUND PROFESSOR INSIGHTS");
+    if (environment === "dev") {
+      console.log("FOUND PROFESSOR INSIGHTS");
+    }
     messageToAdd = await professorInsights(messageToAdd, jsonObject);
   } else if (jsonObject.queryType === "schedule_analysis") {
-    console.log("FOUND SCHEDULE ANALYSIS");
+    if (environment === "dev") {
+      console.log("FOUND SCHEDULE ANALYSIS");
+    }
     messageToAdd = await scheduleAnalysisHelper(messageToAdd, jsonObject);
   } else if (jsonObject.queryType === "section_optimization") {
-    console.log("FOUND SECTION OPTIMIZATION");
+    if (environment === "dev") {
+      console.log("FOUND SECTION OPTIMIZATION");
+    }
     messageToAdd = await sectionOptimization(messageToAdd, jsonObject);
   } else {
-    console.log("NOT FOUND");
+    if (environment === "dev") {
+      console.log("NOT FOUND");
+    }
   }
-  console.log("Message to add: ", messageToAdd);
+  if (environment === "dev") {
+    console.log("Message to add: ", messageToAdd);
+  }
   return messageToAdd;
 }
 

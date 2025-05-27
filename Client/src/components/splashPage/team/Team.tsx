@@ -1,8 +1,25 @@
 import { TeamDocument } from "@polylink/shared/types";
 import PersonCard from "./PersonCard";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
+import Contributors from "./Contributors";
 
 const Team = ({ teamMembers }: { teamMembers: TeamDocument[] }) => {
+  const founder = teamMembers.find(
+    (member) => member.name === "Cristian Castro Oliva"
+  );
+  const team = teamMembers.filter(
+    (member) =>
+      member.type !== "Contributor" &&
+      member.type !== "Previous Contributor" &&
+      member.type !== "Founder"
+  );
+  const contributors = teamMembers.filter(
+    (member) => member.type === "Contributor"
+  );
+  const previousContributors = teamMembers.filter(
+    (member) => member.type === "Previous Contributor"
+  );
+
   return (
     <>
       <Helmet>
@@ -37,7 +54,20 @@ const Team = ({ teamMembers }: { teamMembers: TeamDocument[] }) => {
       </Helmet>
       <div className="w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input dark:bg-zinc-80">
         <div className="flex flex-col items-center justify-center space-y-10 min-w-full">
-          {teamMembers.map((member) => (
+          {founder && (
+            <PersonCard
+              key={founder.name}
+              name={founder.name}
+              role={founder.role}
+              desc={founder.desc}
+              funFact={founder.funFact}
+              image={founder.image}
+              linkedin={founder.linkedin}
+              github={founder.github}
+              type="Founder"
+            />
+          )}
+          {team.map((member) => (
             <PersonCard
               key={member.name}
               name={member.name}
@@ -47,8 +77,18 @@ const Team = ({ teamMembers }: { teamMembers: TeamDocument[] }) => {
               image={member.image}
               linkedin={member.linkedin}
               github={member.github}
+              type={member.type}
             />
           ))}
+          {contributors.length > 0 && (
+            <Contributors type="Contributor" teamMembers={contributors} />
+          )}
+          {previousContributors.length > 0 && (
+            <Contributors
+              type="Previous Contributor"
+              teamMembers={previousContributors}
+            />
+          )}
         </div>
       </div>
     </>

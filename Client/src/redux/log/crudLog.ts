@@ -2,12 +2,18 @@ import { LogData, LogListType, MessageObjType } from "@polylink/shared/types";
 import { UpdateLogTitleData } from "./logSlice";
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 
-// Reading: Fetch all lofgs by as userID:
-export async function fetchAllLogs(): Promise<LogListType[] | never[]> {
+// Reading: Fetch logs by pagination with userID:
+export async function fetchLogsByPage(
+  page: number = 1,
+  limit: number = 20
+): Promise<LogListType[] | never[]> {
   try {
-    const response = await fetch(`${serverUrl}/chatLogs`, {
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${serverUrl}/chatLogs?page=${page}&limit=${limit}`,
+      {
+        credentials: "include",
+      }
+    );
     if (!response.ok) {
       if (environment === "dev") {
         console.error("Response Error  fetching chat Logs");

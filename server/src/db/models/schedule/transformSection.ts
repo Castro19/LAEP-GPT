@@ -29,10 +29,15 @@ export function transformSectionToSelectedSection(
 
   // Transform instructors to professors format
   const professors =
-    section.instructorsWithRatings?.map((instructor) => ({
-      name: instructor.name,
-      id: instructor.id,
-    })) || [];
+    section.instructorsWithRatings && section.instructorsWithRatings.length > 0
+      ? section.instructorsWithRatings.map((instructor) => ({
+          name: instructor.name,
+          id: instructor.id,
+        }))
+      : section.instructors.map((instructor) => ({
+          name: instructor.name,
+          id: instructor.name,
+        }));
 
   // Determine classPair based on the type of section
   let classPair: number | null = null;
@@ -59,6 +64,7 @@ export function transformSectionToSelectedSection(
     classPair,
     rating,
     color,
+    term: section.term,
   };
 }
 
@@ -137,12 +143,10 @@ export async function transformClassNumbersToSelectedSections(
           // Look through all classNumbers in the selected sections document for this term
           const termSections =
             selectedSectionsDoc?.selectedSections[term] || {};
-          for (const [classNum, sectionData] of Object.entries(termSections)) {
+          for (const [, sectionData] of Object.entries(termSections)) {
             // Find a section with the same courseId
             const matchingSection = sections.find(
-              (s) =>
-                s.classNumber === Number(classNum) &&
-                s.courseId === section.courseId
+              (s) => s.courseId === section.courseId
             );
             if (matchingSection) {
               color = sectionData.color;

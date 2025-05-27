@@ -18,7 +18,7 @@ export const getInstructors = async (searchTerm: string): Promise<string[]> => {
     name: { $regex: escapedSearchTerm, $options: "i" },
   });
   if (environment === "dev") {
-    console.log("filters", filters);
+    console.log("FILTERS: ", filters);
   }
   // Combine filters
   if (filters.length > 0) {
