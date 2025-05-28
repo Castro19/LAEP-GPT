@@ -45,11 +45,7 @@ const env = {
   VITE_REDIRECT_URL: "http://localhost:5173/auth",
 };
 
-Object.defineProperty(global, "import", {
+Object.defineProperty(import.meta, "env", {
   writable: true,
-  value: {
-    meta: {
-      env,
-    },
-  },
+  value: env,
 });
