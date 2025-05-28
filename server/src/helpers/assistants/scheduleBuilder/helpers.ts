@@ -12,8 +12,12 @@ import {
   SelectedSection,
   ProfessorRatingDocument,
   SectionAddedOrRemoved,
+  AcademicPlan,
 } from "@polylink/shared/types";
-import { fetchPrimaryFlowchart } from "../../../db/models/flowchart/flowchartServices";
+import {
+  fetchPrimaryFlowchart,
+  fetchPrimaryFlowchartDoc,
+} from "../../../db/models/flowchart/flowchartServices";
 import {
   getSectionsByCourseIds,
   getSectionsByIds,
@@ -30,6 +34,18 @@ import {
   SUGGESTED_SECTIONS_PER_COURSE,
   POTENTIAL_SECTIONS_PER_COURSE,
 } from "./const";
+import {
+  getCatalogYear,
+  TERM_MAP,
+} from "../../../db/models/flowchart/flowchartHelpers";
+import {
+  getGeCourses,
+  getGeSubjects,
+} from "../../../db/models/courses/courseServices";
+import {
+  getGeAreas,
+  getTechElectivesCourses,
+} from "../../../db/models/courses/courseServices";
 
 export const getAlternateSections = async ({
   userId,
@@ -88,7 +104,12 @@ export const getUserNextEligibleSections = async ({
   potentialSectionsClassNums: number[];
 }> => {
   const flowchart = await fetchPrimaryFlowchart(userId);
-
+  if (!flowchart) {
+    return {
+      suggestedSections: [],
+      potentialSectionsClassNums: [],
+    };
+  }
   // Sort terms by tIndex
   const terms = (flowchart.termData || []).sort(
     (a: Term, b: Term) => a.tIndex - b.tIndex
@@ -595,4 +616,143 @@ export async function buildSectionSummaries(
     return finalStr;
   });
   return summaries;
+}
+
+export async function getFlowchartSummary(
+  userId: string
+): Promise<AcademicPlan | null> {
+  const flowchart = await fetchPrimaryFlowchartDoc(userId);
+
+  if (!flowchart) {
+    return null;
+  }
+
+  const startYear =
+    flowchart.flowchartData.startYear === "incoming-transfer"
+      ? 2024
+      : parseInt(flowchart.flowchartData.startYear);
+
+  let summary = `Academic Plan Summary for ${flowchart.flowInfo.majorName} with ${flowchart.flowInfo.concName}concentration\n\n`;
+
+  // Process each term
+  const termSummary = flowchart.flowchartData.termData.map((term) => {
+    const termNumber = term.tIndex;
+    const termName = TERM_MAP[termNumber as keyof typeof TERM_MAP];
+    const baseYearOffset = Math.floor((termNumber - 1) / 4);
+    const yearOffset =
+      termName === "Spring" ? baseYearOffset + 1 : baseYearOffset;
+    const year = startYear + yearOffset;
+    const termLabel = `${termName} ${year}`;
+
+    // Get completed and remaining courses
+    const completedCourses = term.courses.filter((course) => course.completed);
+    const remainingCourses = term.courses.filter((course) => !course.completed);
+
+    // If all courses are completed, just show a brief summary
+    if (remainingCourses.length === 0) {
+      return `\n${termLabel}: Completed`;
+    }
+
+    let termInfo = `\n${termLabel}:\n`;
+
+    if (completedCourses.length > 0) {
+      termInfo += "Completed Courses:\n";
+      completedCourses.forEach((course) => {
+        if (course.id) {
+          termInfo += `- ${course.id}: ${course.displayName} (${course.units} units)\n`;
+        } else if (course.customId) {
+          termInfo += `- ${course.customId}: ${course.customDisplayName || course.customId} (${course.customUnits} units)\n`;
+        }
+      });
+    }
+
+    if (remainingCourses.length > 0) {
+      termInfo += "\nRemaining Courses:\n";
+      remainingCourses.forEach((course) => {
+        if (course.id) {
+          termInfo += `- ${course.id}: ${course.displayName} (${course.units} units)\n`;
+        } else if (course.customId) {
+          termInfo += `- ${course.customId}: ${course.customDisplayName || course.customId} (${course.customUnits} units)\n`;
+        }
+      });
+    }
+
+    return termInfo;
+  });
+
+  summary += termSummary.join("\n");
+
+  // Add remaining requirements summary
+  const remainingCourses = flowchart.flowchartData.termData.flatMap((term) =>
+    term.courses.filter((course) => !course.completed)
+  );
+
+  const remainingRequired = remainingCourses.filter((course) => course.id);
+  const remainingElectives = remainingCourses.filter(
+    (course) => course.customId
+  );
+  const completedCoursesIds = flowchart.flowchartData.termData.flatMap((term) =>
+    term.courses
+      .filter((course) => course.completed)
+      .map((course) => course.id)
+      .filter((id): id is string => !!id)
+  );
+  const catalogYear = getCatalogYear(flowchart.flowchartData.name);
+  const geAreas = await getGeAreas(catalogYear, completedCoursesIds);
+  const geAreasLeft = geAreas.filter((area) => !area.completed);
+  const techElectives = await getTechElectivesCourses(flowchart.flowInfo.code);
+  const techElectivesLeft = techElectives.techElectives
+    .map((techElective) => ({
+      ...techElective,
+      courses: techElective.courses.filter(
+        (course) => !completedCoursesIds.includes(course)
+      ),
+    }))
+    .filter((techElective) => techElective.courses.length > 0);
+
+  // Get courses for each GE area
+  const geAreasWithCourses = await Promise.all(
+    geAreasLeft.map(async (area) => {
+      const subjects = await getGeSubjects(
+        area.category,
+        catalogYear,
+        completedCoursesIds
+      );
+      const courses = await Promise.all(
+        subjects.map((subject) =>
+          getGeCourses(subject.subject, area.category, catalogYear)
+        )
+      );
+      return {
+        category: area.category,
+        courses: courses
+          .flatMap((courseGroup) =>
+            Object.values(
+              courseGroup as Record<string, Record<string, unknown[]>>
+            ).flatMap((subjectCourses) => Object.values(subjectCourses).flat())
+          )
+          .map((course) => (course as { courseId: string }).courseId),
+      };
+    })
+  );
+
+  summary += "\n\nRemaining Requirements Summary:\n";
+  summary += `Total Remaining Courses: ${remainingCourses.length}\n`;
+  summary += `Required Courses Remaining: ${remainingRequired.length}\n`;
+  summary += `Elective Courses Remaining: ${remainingElectives.length}\n`;
+  summary += `GE Areas Remaining: ${geAreasLeft.map((area) => area.category).join(", ")}\n`;
+  summary += `Tech Electives Remaining: ${techElectivesLeft.map((elective) => elective.name).join(", ")}\n`;
+
+  return {
+    completedCoursesIds,
+    requiredCoursesLeft: remainingRequired
+      .filter((course) => course.id)
+      .map((course) => course.id as string),
+    techElectives,
+    GEAreasLeft: geAreasWithCourses.map((area) => ({
+      category: area.category,
+      courses: area.courses,
+    })),
+    summary,
+  };
 }

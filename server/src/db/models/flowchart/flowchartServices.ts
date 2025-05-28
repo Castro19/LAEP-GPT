@@ -11,6 +11,7 @@ import {
   FetchedFlowchartObject,
   FetchFlowchartResponse,
   FlowchartData,
+  FlowchartDocument,
 } from "@polylink/shared/types";
 import { BulkWriteResult } from "mongodb";
 import { environment } from "../../../index";
@@ -270,7 +271,7 @@ export const isPrimaryFlowchart = async (
 
 export const fetchPrimaryFlowchart = async (
   userId: string
-): Promise<FlowchartData> => {
+): Promise<FlowchartData | null> => {
   try {
     const primaryFlowchart = await flowchartModel.fetchPrimaryFlowchart(userId);
     if (!primaryFlowchart) {
@@ -278,7 +279,10 @@ export const fetchPrimaryFlowchart = async (
       const flowchartList = await fetchAllFlowcharts(userId);
       const anyFlowchart = flowchartList[0];
       if (!anyFlowchart) {
-        throw new Error("No flowcharts found");
+        if (environment === "dev") {
+          console.error("No flowcharts found");
+        }
+        return null;
       }
       const flowchart = await fetchFlowchart(anyFlowchart.flowchartId, userId);
       return flowchart.flowchartData;
@@ -288,5 +292,35 @@ export const fetchPrimaryFlowchart = async (
     throw new Error(
       "Error fetching primary flowchart: " + (error as Error).message
     );
+  }
+};
+
+export const fetchPrimaryFlowchartDoc = async (
+  userId: string
+): Promise<FlowchartDocument | null> => {
+  try {
+    const primaryFlowchart = await flowchartModel.fetchPrimaryFlowchart(userId);
+    if (!primaryFlowchart) {
+      // Fetch any flowchart
+      const flowchartList = await fetchAllFlowcharts(userId);
+      const anyFlowchart = flowchartList[0];
+      if (!anyFlowchart) {
+        if (environment === "dev") {
+          console.error("No flowcharts found");
+        }
+        return null;
+      }
+      const flowchart = await flowchartModel.fetchFlowchart(
+        anyFlowchart.flowchartId,
+        userId
+      );
+      return flowchart;
+    }
+    return primaryFlowchart;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Error fetching primary flowchart:", error);
+    }
+    return null;
   }
 };
