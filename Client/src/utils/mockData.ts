@@ -1,11 +1,10 @@
-import { MessageObjType } from "@polylink/shared/types";
+import { CourseTerm, MessageObjType, Section } from "@polylink/shared/types";
 
 export const mockMessages: MessageObjType[] = [
   {
     id: "msg1",
     sender: "user",
     text: "Hey! Can you help me understand how machine learning works?",
-    model: "GPT-4",
     userReaction: null,
   },
   {
@@ -19,7 +18,6 @@ export const mockMessages: MessageObjType[] = [
     id: "msg3",
     sender: "user",
     text: "Yes, please! Can you give me a simple example?",
-    model: "GPT-4",
     userReaction: null,
   },
   {
@@ -33,7 +31,6 @@ export const mockMessages: MessageObjType[] = [
     id: "msg5",
     sender: "user",
     text: "That makes sense! What about neural networks?",
-    model: "GPT-4",
     userReaction: null,
   },
   {
@@ -45,3 +42,35 @@ export const mockMessages: MessageObjType[] = [
     thinkingState: false,
   },
 ];
+
+export const mockSections: Section[] = [
+  {
+    classNumber: 1234,
+    courseName: "Test Class",
+    term: "spring2025" as CourseTerm,
+    courseId: "COURSE1",
+    subject: "TEST",
+    catalogNumber: "101",
+    component: "LEC",
+    description: "Test Description",
+    prerequisites: null,
+    units: "3",
+    enrollmentStatus: "O",
+    enrollment: {
+      waitTotal: 0,
+      waitCap: 0,
+      classCapacity: 100,
+      enrollmentTotal: 50,
+      enrollmentAvailable: 50,
+      enrollmentStatusDescription: "Open",
+    },
+    instructionMode: "PA",
+    courseAttributes: [],
+    meetings: [],
+    instructors: [],
+    instructorsWithRatings: null,
+    techElectives: [],
+    classPair: null,
+    isCreditNoCredit: false,
+  },
+] as Section[];
