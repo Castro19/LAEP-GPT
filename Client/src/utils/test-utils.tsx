@@ -22,7 +22,7 @@ export function renderWithProviders(
     ...renderOptions
   }: CustomRenderOptions & Omit<RenderOptions, "wrapper"> = {}
 ): CustomRenderResult {
-  function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
+  function Wrapper({ children }: PropsWithChildren): JSX.Element {
     return <Provider store={customStore}>{children}</Provider>;
   }
 
