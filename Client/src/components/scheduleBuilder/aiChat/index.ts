@@ -25,9 +25,6 @@ export * from "./logs";
 // Header Components - Components for the chat header
 export * from "./header";
 
-// Action Components - Components for chat actions
-export * from "./actions";
-
 // Types - TypeScript interfaces and types
 export * from "./types";
 
