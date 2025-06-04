@@ -10,7 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 // Icons
 import { RiChatNewFill } from "react-icons/ri";
 
-const NewChat = () => {
+const SBNewChat = () => {
   // Redux:
   const dispatch = useAppDispatch();
   const { currentScheduleChatId, error, isLoading } = useAppSelector(
@@ -41,4 +41,4 @@ const NewChat = () => {
   );
 };
 
-export default NewChat;
+export default SBNewChat;

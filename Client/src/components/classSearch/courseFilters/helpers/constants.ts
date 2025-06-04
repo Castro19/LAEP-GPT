@@ -89,7 +89,7 @@ export const getInitialFilterValues = (
       major,
       concentration,
     },
-    withNoConflicts: true,
+    withNoConflicts: false,
     isCreditNoCredit: false,
   };
 };

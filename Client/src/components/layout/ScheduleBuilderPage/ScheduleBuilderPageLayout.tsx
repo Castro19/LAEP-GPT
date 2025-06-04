@@ -2,7 +2,7 @@ import React from "react";
 import OuterIconSidebar from "../dynamicLayouts/OuterIconSidebar";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import MobileHeader from "../dynamicLayouts/MobileHeader";
-import { ChatWidget } from "@/components/ChatWidget/ChatWidget";
+import { ChatWidget } from "@/components/chatWidget/ChatWidget";
 
 type SectionPageLayoutProps = {
   children: React.ReactNode;
