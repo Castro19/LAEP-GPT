@@ -1,3 +1,39 @@
+/**
+ * @component ChatMessage
+ * @description Renders individual chat messages with markdown support, different styles for user/assistant
+ * messages, and reaction functionality. Handles secure markdown-to-HTML conversion.
+ *
+ * @props
+ * @prop {MessageObjType} msg - Message object containing:
+ *   - text: Markdown formatted message
+ *   - sender: 'user' | 'bot'
+ *   - userReaction: 'like' | 'dislike' | null
+ *   - urlPhoto: Assistant's avatar URL
+ *
+ * @dependencies
+ * - markdown-it: Converts markdown to HTML
+ * - DOMPurify: Sanitizes HTML for security
+ * - Redux: For reaction state management
+ *
+ * @features
+ * - Secure markdown rendering with HTML sanitization
+ * - Different styling for user/assistant messages
+ * - Like/dislike reactions with Redux integration
+ * - Assistant avatar display
+ * - Responsive design with mobile optimizations
+ *
+ * @implementation
+ * - Uses markdown-it with custom link renderer for security
+ * - Sanitizes HTML with DOMPurify
+ * - Handles message reactions through Redux
+ * - Supports dark mode
+ *
+ * @related
+ * Redux: Client/src/redux/message/messageSlice.ts
+ * - putUserReaction: Handles reaction updates
+ * - updateUserReaction: Updates UI state
+ */
+
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";

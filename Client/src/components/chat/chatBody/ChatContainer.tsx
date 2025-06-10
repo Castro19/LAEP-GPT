@@ -1,3 +1,28 @@
+/**
+ * @component ChatContainer
+ * @description Main container for chat interface. Manages message display, auto-scrolling behavior,
+ * and toggles between new chat suggestions and message history.
+ *
+ * @features
+ * - Auto-scrolls to bottom on new messages unless user has scrolled up
+ * - Toggles between suggested messages and chat history
+ * - Handles dynamic height based on route
+ *
+ * @props
+ * None - Uses Redux state for messages and chat status
+ *
+ * @dependencies
+ * - Redux: messagesByChatId, isNewChat, loading, currentChatId
+ * - ScrollArea: For scrollable message container
+ *
+ * @behavior
+ * - Auto-scrolls to bottom when:
+ *   - New messages arrive and user is at bottom
+ *   - First message is added
+ * - Disables auto-scroll when user manually scrolls up
+ * - Resumes auto-scroll when user scrolls to bottom
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { ChatInput, ChatMessage } from "@/components/chat";
 import AssistantSuggestedMessages from "./AssistantSuggestedMessages";

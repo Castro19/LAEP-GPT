@@ -1,3 +1,32 @@
+/**
+ * @component ChatLoadingMessage
+ * @description Displays a loading state animation when the AI is processing a response.
+ * Shows tool usage information when the AI is using specific tools.
+ *
+ * @props
+ * @prop {string | null} toolUsage - Current tool being used by the AI, if any
+ *
+ * @dependencies
+ * - framer-motion: For loading animations
+ * - Skeleton: For loading placeholder UI
+ *
+ * @state
+ * Connected to Redux message slice:
+ * - thinkingState: Controls visibility
+ * - toolUsage: Shows current AI tool activity
+ *
+ * @implementation
+ * - Uses framer-motion for smooth fade-in animation
+ * - Displays skeleton loading UI for message preview
+ * - Shows tool usage with animated gradient text
+ * - Responsive design for different screen sizes
+ *
+ * @related
+ * Redux: Client/src/redux/message/messageSlice.ts
+ * - updateThinkingState: Controls loading visibility
+ * - setToolUsage: Updates tool usage display
+ */
+
 // file: ChatLoadingMessage.tsx
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
