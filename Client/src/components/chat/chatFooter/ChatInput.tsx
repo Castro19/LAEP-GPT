@@ -1,3 +1,39 @@
+/**
+ * @component ChatInput
+ * @description Handles user message input, submission, and interaction with the AI system.
+ * Manages message sending, cancellation, and chat history limitations.
+ *
+ * @props
+ * @prop {React.RefObject<HTMLDivElement>} messagesContainerRef - Reference to message container for scrolling
+ * @prop {React.RefObject<HTMLTextAreaElement>} textareaRef - Reference to input textarea
+ * @prop {React.RefObject<HTMLButtonElement>} sendButtonRef - Reference to send button
+ *
+ * @features
+ * - Auto-expanding textarea
+ * - Message character limit (2000)
+ * - Chat history limit (12 messages)
+ * - Stop generation button
+ * - Enter to send (Shift+Enter for new line)
+ * - Safe area inset for mobile
+ *
+ * @dependencies
+ * - Redux: message and log actions
+ * - UUID: For message ID generation
+ * - React Router: For navigation
+ *
+ * @behavior
+ * - Handles new and existing chat sessions
+ * - Manages message sending and cancellation
+ * - Updates chat history in database
+ * - Handles navigation for new chats --> goes to chat id page
+ *
+ * @related
+ * Redux: Client/src/redux/message/messageSlice.ts
+ * - fetchBotResponse: Sends message to AI
+ * - cancelBotResponse: Stops AI generation
+ * - updateMsg: Updates input state
+ */
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";

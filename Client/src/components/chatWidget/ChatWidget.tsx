@@ -1,3 +1,45 @@
+/**
+ * @component ChatWidget
+ * @description A floating chat interface component that can be minimized, maximized, and resized.
+ * Provides a persistent chat window that can be integrated into any page.
+ *
+ * @props
+ * @prop {boolean} initialOpen - Whether the chat widget starts in open state (default: false)
+ *
+ * @features
+ * - Floating window with minimize/maximize controls
+ * - Resizable dimensions with drag handles
+ * - Smooth animations for state transitions
+ * - Pulsing notification when minimized
+ * - Responsive design with size constraints
+ * - Customizable chat interface
+ *
+ * @dependencies
+ * - framer-motion: For animations and motion effects
+ * - lucide-react: For icons (MessageSquare, X, Maximize2, Minimize2)
+ * - @/components/ui/button: For button components
+ * - @/components/scheduleBuilder/aiChat: For chat interface components
+ *
+ * @behavior
+ * - Manages window state (open/closed/minimized)
+ * - Handles window resizing
+ * - Controls animation states
+ * - Manages chat interface visibility
+ * - Provides pulsing notification when minimized
+ *
+ * @related
+ * Components:
+ * - ScheduleBuilderAIChat: Main chat interface
+ * - ScheduleBuilderAIChatHeader: Chat header component
+ * - CurrentToolCall: Tool call display
+ * - ScheduleBuilderChatInput: Chat input component
+ *
+ * @usage
+ * ```tsx
+ * <ChatWidget initialOpen={false} />
+ * ```
+ */
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   motion,

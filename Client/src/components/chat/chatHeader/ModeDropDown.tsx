@@ -1,3 +1,33 @@
+/**
+ * @component ModeDropDown
+ * @description Dropdown component for selecting different AI assistants. Displays assistant
+ * information and allows users to switch between different AI models.
+ *
+ * @props
+ * None - Uses Redux state for assistant data
+ *
+ * @features
+ * - Displays list of available assistants
+ * - Shows assistant descriptions and capabilities
+ * - Handles assistant selection
+ * - Updates current model in Redux
+ *
+ * @dependencies
+ * - Redux: assistant state management
+ * - UI Components: Dropdown, Avatar
+ *
+ * @behavior
+ * - Loads available assistants from Redux
+ * - Updates selected assistant in state
+ * - Maintains current selection
+ * - Handles assistant switching
+ *
+ * @related
+ * Redux: Client/src/redux/assistant/assistantSlice.ts
+ * - setCurrentModel: Updates selected assistant
+ * - currentModel: Currently selected assistant
+ */
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
@@ -74,6 +104,7 @@ export default function ModeDropDown({ onSelect }: ModeDropDownProps) {
       title,
       desc: description,
       urlPhoto: option.urlPhoto || "", // Default to an empty string if no photo is provided
+      model: option.model,
       locked:
         (title === "Matching Assistant" && matchingAssistantLocked) ||
         (title === "Flowchart Assistant" && flowchartAssistantLocked),

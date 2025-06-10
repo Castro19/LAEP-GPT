@@ -1,3 +1,33 @@
+/**
+ * @component AssistantSelector
+ * @description Sidebar component for selecting AI assistants. Similar to ModeDropDown but
+ * optimized for sidebar display with a different layout and interaction pattern.
+ *
+ * @props
+ * None - Uses Redux state for assistant data
+ *
+ * @features
+ * - Displays available assistants in sidebar
+ * - Shows assistant details and capabilities
+ * - Handles assistant selection
+ * - Updates current model in Redux
+ *
+ * @dependencies
+ * - Redux: assistant state management
+ * - AssistantItem: For individual assistant display
+ *
+ * @behavior
+ * - Loads available assistants from Redux
+ * - Updates selected assistant in state
+ * - Maintains current selection
+ * - Handles assistant switching
+ *
+ * @related
+ * Redux: Client/src/redux/assistant/assistantSlice.ts
+ * - setCurrentModel: Updates selected assistant
+ * - currentModel: Currently selected assistant
+ */
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux";
@@ -126,8 +156,10 @@ export default function AssistantSelector({
           {otherAssistants.map((option) => (
             <li key={option.id}>
               <AssistantItem
-                assistant={option}
-                onClick={() => handleAssistantSelect(option)}
+                assistant={option as ListItemAssistant}
+                onClick={() =>
+                  handleAssistantSelect(option as ListItemAssistant)
+                }
                 className={cn(
                   option.locked ? "cursor-not-allowed opacity-50" : ""
                 )}

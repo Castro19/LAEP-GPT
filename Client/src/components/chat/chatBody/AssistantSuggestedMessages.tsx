@@ -1,3 +1,22 @@
+/**
+ * @component AssistantSuggestedMessages
+ * @description Displays suggested questions for new chat sessions. Appears only at the start of a conversation
+ * and disappears after the first message is sent.
+ *
+ * @props
+ * @prop {React.RefObject<HTMLButtonElement>} sendButtonRef - Reference to trigger message sending
+ *
+ * @dependencies
+ * - Redux: currentModel (suggestedQuestions), messageActions
+ * - TypewriterEffectSmooth: Welcome message animation
+ *
+ * @example
+ * ```tsx
+ * const sendButtonRef = useRef<HTMLButtonElement>(null);
+ * <AssistantSuggestedMessages sendButtonRef={sendButtonRef} />
+ * ```
+ */
+
 import { Button } from "@/components/ui/button";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import { messageActions, useAppDispatch, useAppSelector } from "@/redux";

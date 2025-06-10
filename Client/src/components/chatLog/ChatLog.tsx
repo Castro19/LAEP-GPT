@@ -1,3 +1,40 @@
+/**
+ * @component ChatLog
+ * @description Individual chat log item displaying chat information and options.
+ * Represents a single chat conversation in the sidebar.
+ *
+ * @props
+ * @prop {string} id - Chat log ID
+ * @prop {string} title - Chat title
+ * @prop {string} assistantName - Name of the assistant
+ * @prop {string} assistantAvatar - Assistant's avatar URL
+ * @prop {string} lastMessage - Last message in chat
+ * @prop {string} lastMessageTime - Timestamp of last message
+ * @prop {boolean} isActive - Whether chat is currently selected
+ * @prop {Function} onSelect - Function to select this chat
+ *
+ *
+ * @features
+ * - Chat information display
+ * - Active state indication
+ * - Options menu access
+ * - Selection handling
+ *
+ * @dependencies
+ * - ChatLogOptions: For chat management
+ * - UI Components: Button, Avatar
+ *
+ * @behavior
+ * - Shows chat details
+ * - Handles selection
+ * - Manages options menu
+ * - Updates active state
+ *
+ * @related
+ * Components: ChatLogOptions.tsx
+ * - For chat management options
+ */
+
 import { useNavigate, useParams } from "react-router-dom";
 // Redux
 import { useAppSelector, useAppDispatch, messageActions } from "@/redux";

@@ -1,3 +1,35 @@
+/**
+ * @component ChatLogOptions
+ * @description Options menu for chat logs, providing rename and delete functionality.
+ * Manages the UI for modifying chat log properties.
+ *
+ * @props
+ * @prop {string} id - Chat log ID
+ * @prop {string} title - Current chat title
+ * @prop {Function} onClose - Function to close options menu
+ *
+ * @features
+ * - Rename chat title
+ * - Delete chat log
+ * - Confirmation dialogs
+ * - Error handling
+ *
+ * @dependencies
+ * - Redux: For log management
+ * - UI Components: Dialog, Input
+ *
+ * @behavior
+ * - Handles title renaming
+ * - Manages deletion process
+ * - Shows confirmation dialogs
+ * - Updates Redux state
+ *
+ * @related
+ * Redux: Client/src/redux/log/logSlice.ts
+ * - updateLogTitle: Updates chat title
+ * - deleteLog: Removes chat log
+ */
+
 import { useState, useEffect } from "react";
 import {
   logActions,

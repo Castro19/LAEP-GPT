@@ -1,3 +1,29 @@
+/**
+ * @component MobileChatContainer
+ * @description Mobile-optimized version of ChatContainer. Handles chat interface with mobile-specific
+ * layout adjustments and safe area insets for modern mobile devices.
+ *
+ * @features
+ * - Fixed footer with safe area inset for mobile keyboards
+ * - Reduced height (70%) for better mobile viewport usage
+ * - Maintains auto-scroll behavior from base container
+ * - Uses safe-bottom-inset to prevent footer overlap with mobile navigation
+ *
+ * @props
+ * None - Uses Redux state for messages and chat status
+ *
+ * @dependencies
+ * - Redux: messagesByChatId, isNewChat, loading, currentChatId
+ * - ScrollArea: For scrollable message container
+ *
+ * @behavior
+ * - Inherits base chat container functionality
+ * - Adapts layout for mobile viewport
+ * - Handles mobile keyboard interactions
+ * - Maintains scroll position management
+ * - Prevents footer overlap with mobile navigation using safe-bottom-inset
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { ChatInput, ChatMessage } from "@/components/chat";
 import AssistantSuggestedMessages from "./AssistantSuggestedMessages";

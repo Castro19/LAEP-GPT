@@ -1,3 +1,33 @@
+/**
+ * @component AssistantItem
+ * @description Individual assistant display component used within the sidebar selector.
+ * Shows assistant information and handles selection interaction.
+ *
+ * @props
+ * @prop {AssistantType} assistant - Assistant data including:
+ *   - id: Unique identifier
+ *   - title: Assistant name
+ *   - desc: Assistant description
+ *   - urlPhoto: Avatar image URL
+ *   - locked: Access status
+ *
+ * @features
+ * - Displays assistant avatar
+ * - Shows assistant name and description
+ * - Handles selection state
+ * - Manages locked/unlocked status
+ *
+ * @dependencies
+ * - UI Components: Avatar, Button
+ * - Icons for status indicators
+ *
+ * @behavior
+ * - Renders assistant information
+ * - Handles click interaction
+ * - Shows selection state
+ * - Displays access status
+ */
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
