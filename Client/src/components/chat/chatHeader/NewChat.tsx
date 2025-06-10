@@ -1,3 +1,34 @@
+/**
+ * @component NewChat
+ * @description Button component for starting a new chat session. Resets the chat state
+ * and prepares for a new conversation with the current assistant.
+ *
+ * @props
+ * None - Uses Redux state for chat management
+ *
+ * @features
+ * - Resets current chat state
+ * - Clears message history
+ * - Returns to new chat view
+ * - Maintains current assistant selection
+ *
+ * @dependencies
+ * - Redux: message and log actions
+ * - React Router: For navigation
+ *
+ * @behavior
+ * - Resets chat state in Redux
+ * - Clears current chat ID
+ * - Toggles new chat state
+ * - Navigates to chat home
+ *
+ * @related
+ * Redux: Client/src/redux/message/messageSlice.ts
+ * - resetMsgList: Clears message history
+ * - toggleNewChat: Sets new chat state
+ * - setCurrentChatId: Resets chat ID
+ */
+
 import { useNavigate } from "react-router-dom";
 import { RiChatNewFill } from "react-icons/ri";
 import { onNewChat } from "../helpers/newChatHandler";
