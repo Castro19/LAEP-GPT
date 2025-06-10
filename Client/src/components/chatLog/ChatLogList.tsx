@@ -1,3 +1,36 @@
+/**
+ * @component ChatLogList
+ * @description List of chat logs displaying recent conversations.
+ * Manages the display and selection of chat history.
+ *
+ * @props
+ * @prop {Array<ChatLog>} logs - Array of chat logs
+ * @prop {string} currentLogId - ID of currently selected chat
+ * @prop {Function} onSelectLog - Function to select a chat
+ *
+ * @features
+ * - Chat log listing
+ * - Chat selection
+ * - Empty state handling
+ * - Scroll management
+ *
+ * @dependencies
+ * - ChatLog: For individual chat items
+ * - Redux: For log management
+ *
+ * @behavior
+ * - Renders chat list
+ * - Handles selection
+ * - Manages empty state
+ * - Updates current chat
+ *
+ * @related
+ * Components: ChatLog.tsx
+ * - For individual chat items
+ * Redux: Client/src/redux/log/logSlice.ts
+ * - For log state management
+ */
+
 import ChatLog from "./ChatLog";
 import {
   messageActions,
