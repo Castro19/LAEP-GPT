@@ -59,8 +59,7 @@ const NewChat = () => {
                 navigate,
                 error,
                 loading,
-                messagesByChatId,
-                location.pathname.includes("/schedule-builder")
+                messagesByChatId
               )
             }
           >

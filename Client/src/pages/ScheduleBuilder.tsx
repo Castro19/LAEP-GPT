@@ -18,7 +18,6 @@ import {
   PaginationFooter,
   NoSelectedSections,
 } from "@/components/scheduleBuilder";
-import { onNewChat } from "@/components/chat";
 // Types
 import { CourseTerm, Schedule } from "@polylink/shared/types";
 // UI Components
@@ -32,9 +31,7 @@ const ScheduleBuilderPage = () => {
   const { scheduleId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { currentChatId, error, loading, messagesByChatId } = useAppSelector(
-    (state) => state.message
-  );
+
   const { currentScheduleTerm, currentSchedule, currentScheduleId } =
     useAppSelector((state) => state.schedule);
 
@@ -115,20 +112,6 @@ const ScheduleBuilderPage = () => {
       dispatch(assistantActions.setAssistantByTitle("Schedule Analysis"));
     }
   }, [assistantList, dispatch]);
-
-  // Start a new chat when the page is loaded
-  useEffect(() => {
-    onNewChat(
-      currentChatId,
-      dispatch,
-      navigate,
-      error,
-      loading,
-      messagesByChatId,
-      true
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, navigate]);
 
   // Update tabValue when currentScheduleTerm changes
   useEffect(() => {
