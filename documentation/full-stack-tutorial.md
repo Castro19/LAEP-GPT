@@ -49,13 +49,43 @@ This guide outlines the step-by-step process for implementing a new full-stack f
 
 - Add `extraReducers` in the Redux slice to handle pending, success, and error states for the async thunk.
 
-### 9. Create the Frontend Component
+### 9. Update Store and Reducers
+
+Add the error reducer and actions to the Redux store:
+
+1. In `Client/src/redux/index.ts`:
+
+   ```typescript
+   export { errorReducer } from "./error/errorSlice.ts";
+   export * as errorActions from "./error/errorSlice.ts";
+   ```
+
+2. In `Client/src/redux/store.ts`:
+
+   ```typescript
+   import { errorReducer } from "./error/errorSlice";
+
+   const store = configureStore({
+     reducer: {
+       // ... other reducers
+       error: errorReducer,
+     },
+   });
+   ```
+
+This enables:
+
+- Using `errorActions` throughout the app (e.g., `errorActions.submitErrorReport`)
+- Type-safe dispatch with `useAppDispatch`
+- Accessing error state with `useAppSelector`
+
+### 10. Create the Frontend Component
 
 - Develop a basic frontend component that dispatches the Redux action.
 - Verify that the action is dispatched correctly and updates the Redux store.
 - If the feature is entirely new, create a **new subfolder** in `Client/src/components/feedback` and place the component inside.
 
-### 10. Improve the Component Design
+### 11. Improve the Component Design
 
 - Enhance the component's UI using a component library like **ShadCN/UI**.
 - Add animations using **Framer Motion** for a smooth user experience.
