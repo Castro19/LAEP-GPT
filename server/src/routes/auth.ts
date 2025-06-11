@@ -9,7 +9,7 @@ import {
   updateUser,
 } from "../db/models/user/userServices";
 import { getUserByFirebaseId } from "../db/models/user/userServices";
-import admin from "firebase-admin";
+import admin, { FirebaseError } from "firebase-admin";
 import { UserData } from "@polylink/shared/types";
 import { byPassCalPolyEmailCheck } from "../db/models/signupAccess/signupAccessServices";
 import { verifyCalPolyEmail } from "../helpers/auth/verifyValidEmail";
@@ -142,7 +142,8 @@ router.get("/check", (async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).send({ error: "User not found" });
     }
-
+    console.log("user", user);
+    console.log("decodedToken", decodedToken);
     if (!user.emailVerified && decodedToken.email_verified) {
       await updateUser(user.userId, { emailVerified: true });
     }
@@ -218,5 +219,58 @@ router.post("/update-display-name", (async (req: Request, res: Response) => {
     res.status(500).send({ error: "Failed to update display name" });
   }
 }) as RequestHandler);
+
+router.post(
+  "/create-account-with-existing-email",
+  async (req: Request, res: Response) => {
+    const { email, password, firstName, lastName } = req.body;
+
+    try {
+      // 1. Look up the Microsoft user
+      const user = await admin.auth().getUserByEmail(email);
+      const userData = await getUserByFirebaseId(user.uid);
+      if (!userData) {
+        res.status(404).send({ error: "User not found" });
+        return;
+      }
+      const providers = user.providerData.map((p) => p.providerId);
+
+      // Allow only "microsoft-only" accounts through this path
+      if (providers.length !== 1 || providers[0] !== "microsoft.com") {
+        res.status(409).send({ error: "Cannot add password to this account" });
+        return;
+      }
+
+      // 2. Add password + optional displayName
+      await admin.auth().updateUser(userData.userId, {
+        password,
+        displayName: `${firstName} ${lastName}`,
+      });
+      await updateUser(userData.userId, {
+        emailVerified: false,
+        name: `${firstName} ${lastName}`,
+      });
+
+      // Get the user's ID token
+      const customToken = await admin.auth().createCustomToken(user.uid);
+
+      res.status(200).send({
+        customToken,
+        isNewUser: false,
+      });
+    } catch (error) {
+      if ((error as FirebaseError).code === "auth/user-not-found") {
+        res
+          .status(404)
+          .send({ error: "No Microsoft account with that e-mail" });
+        return;
+      }
+      if (environment === "dev") {
+        console.error("Error creating account with existing email:", error);
+      }
+      res.status(500).send({ error: "Failed to create account" });
+    }
+  }
+);
 
 export default router;
