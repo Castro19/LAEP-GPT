@@ -17,6 +17,7 @@ import {
   loginUser,
   verifyCalPolyEmail,
   updateUserDisplayName,
+  createAccountWithExistingEmail,
 } from "./crudAuth";
 import { auth } from "@/firebase";
 import { AppDispatch } from "../store";
@@ -340,7 +341,19 @@ export const signUpWithEmail = createAsyncThunk<
         if (errorCode.message.includes("auth/invalid-email")) {
           dispatch(setRegisterError("Invalid email address."));
         } else if (errorCode.message.includes("auth/email-already-in-use")) {
-          dispatch(setRegisterError("Email already in use."));
+          const userResponse = await createAccountWithExistingEmail(
+            email,
+            password,
+            firstName,
+            lastName
+          );
+          if (userResponse) {
+            dispatch(setIsNewUser(userResponse.isNewUser));
+            dispatch(checkAuthentication());
+            navigate("/verify-email");
+          } else {
+            dispatch(setRegisterError("Failed to create account."));
+          }
         } else {
           dispatch(setRegisterError(errorCode.message));
         }

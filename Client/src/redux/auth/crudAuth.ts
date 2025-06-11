@@ -1,5 +1,11 @@
 import { environment, serverUrl } from "@/helpers/getEnvironmentVars";
 import { UserData } from "@polylink/shared/types";
+import {
+  signInWithCustomToken,
+  updateProfile,
+  sendEmailVerification,
+} from "firebase/auth";
+import { auth } from "@/firebase";
 
 export async function loginUser(
   token: string,
@@ -114,6 +120,65 @@ export async function updateUserDisplayName(
   } catch (error) {
     if (environment === "dev") {
       console.error("Failed to update display name:", error);
+    }
+    return null;
+  }
+}
+
+export async function createAccountWithExistingEmail(
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
+) {
+  try {
+    // Call our new server endpoint to create the account
+    const response = await fetch(
+      `${serverUrl}/auth/create-account-with-existing-email`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName,
+          lastName,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to create account");
+    }
+
+    const { customToken } = await response.json();
+
+    // Sign in with the custom token
+    const userCredential = await signInWithCustomToken(auth, customToken);
+    const user = userCredential.user;
+
+    // Update the user's profile with display name
+    await updateProfile(user, {
+      displayName: `${firstName} ${lastName}`,
+    });
+
+    // Send verification email
+    await sendEmailVerification(user);
+
+    // Force token refresh to include the updated display name
+    await user.getIdToken(true);
+
+    // Get the refreshed token
+    const token = await user.getIdToken();
+
+    // Login with the new token
+    const userResponse = await loginUser(token);
+    return userResponse;
+  } catch (error) {
+    if (environment === "dev") {
+      console.error("Failed to create account with existing email:", error);
     }
     return null;
   }
