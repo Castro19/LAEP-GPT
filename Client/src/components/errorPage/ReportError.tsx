@@ -129,7 +129,12 @@ export function ReportError() {
                 <div>
                   <label className="block text-sm font-medium mb-1">Type</label>
                   <Select
-                    onValueChange={(v) => form.setValue("type", v as any)}
+                    onValueChange={(v: string) =>
+                      form.setValue(
+                        "type",
+                        v as "bug" | "feature-request" | "improvement" | "other"
+                      )
+                    }
                     defaultValue={form.getValues("type")}
                   >
                     <SelectTrigger className="w-full bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-600">
@@ -149,7 +154,12 @@ export function ReportError() {
                     Severity
                   </label>
                   <Select
-                    onValueChange={(v) => form.setValue("severity", v as any)}
+                    onValueChange={(v: string) =>
+                      form.setValue(
+                        "severity",
+                        v as "low" | "medium" | "high" | "critical"
+                      )
+                    }
                     defaultValue={form.getValues("severity")}
                   >
                     <SelectTrigger className="w-full bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-600">
