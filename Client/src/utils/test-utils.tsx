@@ -16,6 +16,7 @@ import { classSearchReducer } from "../redux/classSearch/classSearchSlice";
 import { sectionSelectionReducer } from "../redux/sectionSelection/sectionSelectionSlice";
 import { scheduleReducer } from "../redux/schedule/scheduleSlice";
 import { scheduleBuilderLogReducer } from "../redux/scheduleBuilderLog/scheduleBuilderLogSlice";
+import { errorReducer } from "../redux/error/errorSlice";
 
 interface CustomRenderOptions {
   preloadedState?: Partial<RootState>;
@@ -39,6 +40,7 @@ const rootReducer = {
   sectionSelection: sectionSelectionReducer,
   schedule: scheduleReducer,
   scheduleBuilderLog: scheduleBuilderLogReducer,
+  error: errorReducer,
 };
 
 export function renderWithProviders(
