@@ -142,7 +142,8 @@ router.get("/check", (async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).send({ error: "User not found" });
     }
-
+    console.log("user", user);
+    console.log("decodedToken", decodedToken);
     if (!user.emailVerified && decodedToken.email_verified) {
       await updateUser(user.userId, { emailVerified: true });
     }
@@ -227,9 +228,13 @@ router.post(
     try {
       // 1. Look up the Microsoft user
       const user = await admin.auth().getUserByEmail(email);
+      const userData = await getUserByFirebaseId(user.uid);
+      if (!userData) {
+        res.status(404).send({ error: "User not found" });
+        return;
+      }
       const providers = user.providerData.map((p) => p.providerId);
-      // console.log("user", user);
-      // console.log("providers", providers);
+
       // Allow only "microsoft-only" accounts through this path
       if (providers.length !== 1 || providers[0] !== "microsoft.com") {
         res.status(409).send({ error: "Cannot add password to this account" });
@@ -237,11 +242,13 @@ router.post(
       }
 
       // 2. Add password + optional displayName
-      await admin.auth().createUser({
-        email,
+      await admin.auth().updateUser(userData.userId, {
         password,
         displayName: `${firstName} ${lastName}`,
+      });
+      await updateUser(userData.userId, {
         emailVerified: false,
+        name: `${firstName} ${lastName}`,
       });
 
       // Get the user's ID token
@@ -249,7 +256,7 @@ router.post(
 
       res.status(200).send({
         customToken,
-        isNewUser: true,
+        isNewUser: false,
       });
     } catch (error) {
       if ((error as FirebaseError).code === "auth/user-not-found") {
