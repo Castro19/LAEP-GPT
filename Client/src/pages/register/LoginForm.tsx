@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { cn } from "@/lib/utils";
-import { IoSchoolSharp } from "react-icons/io5";
+// import { IoSchoolSharp } from "react-icons/io5";
 import { Navigate, Link } from "react-router-dom";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { useAppDispatch, useAppSelector, authActions } from "@/redux";
 import { ErrorMessage } from "@/components/register/ErrorMessage";
-import SpecialButton from "@/components/ui/specialButton";
+// import SpecialButton from "@/components/ui/specialButton";
 import {
   clearRegisterError,
   linkWithMicrosoft,
@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/use-toast";
 import { environment } from "@/helpers/getEnvironmentVars";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import LoginBanner from "@/components/register/LoginBanner";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -28,10 +29,10 @@ export default function LoginForm() {
   const { userLoggedIn, registerError, loading, pendingCredential } =
     useAppSelector((state) => state.auth);
 
-  const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    dispatch(authActions.signInWithMicrosoft());
-  };
+  // const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   dispatch(authActions.signInWithMicrosoft());
+  // };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -194,13 +195,13 @@ export default function LoginForm() {
               <span className="px-2 bg-neutral-900 text-neutral-400">OR</span>
             </div>
           </div>
-
-          <SpecialButton
+          <LoginBanner />
+          {/* <SpecialButton
             onClick={handleOutlookSignIn}
             text="Login with Cal Poly Account"
             icon={<IoSchoolSharp className="text-xl" />}
             className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700"
-          />
+          /> */}
 
           <div className="text-center">
             <p className="text-neutral-400 text-sm">

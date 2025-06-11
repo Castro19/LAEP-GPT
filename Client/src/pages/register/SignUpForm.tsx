@@ -5,8 +5,8 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { ErrorMessage } from "../../components/register/ErrorMessage";
-import { IoSchoolSharp } from "react-icons/io5";
-import SpecialButton from "@/components/ui/specialButton";
+// import { IoSchoolSharp } from "react-icons/io5";
+// import SpecialButton from "@/components/ui/specialButton";
 import { clearRegisterError } from "@/redux/auth/authSlice";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -86,10 +86,10 @@ export function SignupFormDemo() {
     dispatch(authActions.signUpWithEmail({ ...userData, navigate }));
   };
 
-  const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    dispatch(authActions.signInWithMicrosoft());
-  };
+  // const handleOutlookSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   dispatch(authActions.signInWithMicrosoft());
+  // };
 
   useEffect(() => {
     dispatch(clearRegisterError());
@@ -270,12 +270,12 @@ export function SignupFormDemo() {
             </div>
           </div>
 
-          <SpecialButton
+          {/* <SpecialButton
             onClick={handleOutlookSignIn}
             text="Sign up with Cal Poly Account"
             icon={<IoSchoolSharp className="text-xl" />}
             className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700"
-          />
+          /> */}
 
           <div className="text-center">
             <p className="text-neutral-400 text-sm">
