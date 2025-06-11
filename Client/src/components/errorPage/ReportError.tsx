@@ -1,9 +1,9 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAppDispatch } from "@/redux";
-import { Form } from "@/components/ui/form";
+import { useAppDispatch, errorActions } from "@/redux";
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -20,17 +20,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
+import { ErrorDocument } from "@polylink/shared/types";
+import { CreateErrorReportData } from "@/redux/error/errorSlice";
 
 // Define the Zod schema for error reporting
-const ERROR_REPORT_SCHEMA = z.object({
-  title: z
-    .string()
-    .min(5, "Title must be at least 5 characters")
-    .max(100, "Title must be less than 100 characters"),
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters")
-    .max(1000, "Description must be less than 1000 characters"),
+const errorReportSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
   type: z.enum(["bug", "feature-request", "improvement", "other"]),
   severity: z.enum(["low", "medium", "high", "critical"]),
   stepsToReproduce: z.string().optional(),
@@ -45,14 +42,16 @@ const ERROR_REPORT_SCHEMA = z.object({
     .optional(),
 });
 
-type ErrorReportForm = z.infer<typeof ERROR_REPORT_SCHEMA>;
+type ErrorReportForm = Omit<
+  ErrorDocument,
+  "_id" | "createdAt" | "updatedAt" | "status" | "userId"
+>;
 
-const ReportError = () => {
+export function ReportError() {
   const dispatch = useAppDispatch();
 
-  // Initialize the form with default values
   const form = useForm<ErrorReportForm>({
-    resolver: zodResolver(ERROR_REPORT_SCHEMA),
+    resolver: zodResolver(errorReportSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -71,10 +70,20 @@ const ReportError = () => {
 
   const onSubmit = async (data: ErrorReportForm) => {
     try {
-      // TODO: Dispatch action to create error report
-      console.log("Form submitted:", data);
+      await dispatch(
+        errorActions.submitErrorReport(data as CreateErrorReportData)
+      ).unwrap();
+      toast({
+        title: "Success",
+        description: "Error report submitted successfully",
+      });
+      form.reset();
     } catch (error) {
-      console.error("Error submitting form:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit error report. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -232,6 +241,6 @@ const ReportError = () => {
       </Card>
     </div>
   );
-};
+}
 
 export default ReportError;
