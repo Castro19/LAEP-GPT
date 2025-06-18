@@ -1,8 +1,9 @@
 // Main Flowchart Components
 export { default as Flowchart } from "./currentFlowchart/FlowChart";
-export { default as TermContainer } from "./currentFlowchart/TermContainer";
+export { default as TermContainer } from "./currentFlowchart/FlowchartTermContainer";
 export { default as CreateFlowchart } from "./createFlowchart/CreateFlowchart";
-export { default as FlowchartUnitCounts } from "./currentFlowchart/FlowchartUnitCounts";
+export { default as FlowchartFooter } from "./currentFlowchart/FlowchartFooter";
+export { default as FlowchartActions } from "./currentFlowchart/FlowchartActions";
 
 // Flowchart Creation Components
 export { default as FlowchartOptions } from "./createFlowchart/FlowChartOptions";

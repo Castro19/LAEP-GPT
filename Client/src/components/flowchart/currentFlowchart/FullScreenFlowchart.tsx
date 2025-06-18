@@ -14,27 +14,35 @@ const TERM_MAP = {
   1: "Fall",
   2: "Winter",
   3: "Spring",
+  4: "Summer",
   5: "Fall",
   6: "Winter",
   7: "Spring",
+  8: "Summer",
   9: "Fall",
-  10: "Winter",
+  10: "Winter", 
   11: "Spring",
+  12: "Summer",
   13: "Fall",
   14: "Winter",
   15: "Spring",
+  16: "Summer",
   17: "Fall",
   18: "Winter",
   19: "Spring",
-  21: "Fall",
+  20: "Summer",
+  21: "Fall", 
   22: "Winter",
   23: "Spring",
+  24: "Summer",
   25: "Fall",
-  26: "Winter",
+  26: "Winter", 
   27: "Spring",
+  28: "Summer",
   29: "Fall",
   30: "Winter",
   31: "Spring",
+  32: "Summer",
 };
 
 interface FullScreenFlowchartProps {
@@ -57,7 +65,7 @@ const FullScreenFlowchart: React.FC<FullScreenFlowchartProps> = ({
     // year logic
     const baseYearOffset = Math.floor((termNumber - 1) / 4);
     const yearOffset =
-      termName === "Spring" ? baseYearOffset + 1 : baseYearOffset;
+      termName === "Spring" || termName === "Summer" ? baseYearOffset + 1 : baseYearOffset;
     const year = startYear + yearOffset;
     return `${termName} ${year}`;
   };

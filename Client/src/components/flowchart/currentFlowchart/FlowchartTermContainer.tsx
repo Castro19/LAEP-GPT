@@ -1,3 +1,4 @@
+// TermContainer.tsx
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import cloneDeep from "lodash-es/cloneDeep";
 import { Droppable } from "@hello-pangea/dnd";
@@ -9,14 +10,15 @@ import { FlowchartData, Term } from "@polylink/shared/types";
 import { CiCircleCheck } from "react-icons/ci";
 
 // My components
-import FullScreenCourseItem from "./FullScreenCourseItem";
+import CourseItem from "./CourseItem";
 
 // UI Components
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
+import useDeviceType from "@/hooks/useDeviceType";
 
-interface FullScreenTermContainerProps {
+interface TermContainerProps {
   term: Term;
   termName: string;
   // eslint-disable-next-line no-unused-vars
@@ -34,16 +36,47 @@ const updateFlowchartTermData = (
   updatedFlowchartData.termData = newTermData;
 };
 
-const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
+const TermContainer: React.FC<TermContainerProps> = ({
   term,
   termName,
   onCourseToggleComplete,
 }) => {
   const dispatch = useAppDispatch();
+  const device = useDeviceType();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
 
-  // Split term name into two parts (e.g., "Fall 2025" -> ["Fall", "2025"])
-  const [termSeason, termYear] = termName.split(" ");
+  const handleAddSummerTerm = () => {
+    if (!flowchartData) return;
+
+    // Get current term's year index to determine summer term index
+    const currentTermIndex = term.tIndex;
+    const yearGroup = Math.floor((currentTermIndex - 1) / 4);
+    const summerTermIndex = yearGroup * 4 + 4; // This gives us 4, 8, 12, etc.
+
+    // Check if summer term already exists
+    if (flowchartData.termData.some((t) => t.tIndex === summerTermIndex)) {
+      return; // Summer term already exists
+    }
+
+    // Create new summer term
+    const newSummerTerm: Term = {
+      tIndex: summerTermIndex,
+      tUnits: "0",
+      courses: [],
+    };
+
+    // Insert the summer term in the correct position
+    const updatedTerms = [...flowchartData.termData];
+    const insertIndex = updatedTerms.findIndex((t) => t.tIndex > summerTermIndex);
+    if (insertIndex === -1) {
+      updatedTerms.push(newSummerTerm);
+    } else {
+      updatedTerms.splice(insertIndex, 0, newSummerTerm);
+    }
+
+    const updatedFlowchartData = { ...flowchartData, termData: updatedTerms };
+    dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
+  };
 
   // Operates like a switch state - all courses become completed/noncompleted
   const handleTermClick = () => {
@@ -80,29 +113,37 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-full">
-      {/* Header - Reorganized for narrow widths */}
-      <div className="p-1 flex-shrink-0">
-        <h3 className="m-0 text-center text-sm font-medium py-1">
-          <div>{termSeason}</div>
-          <div>{termYear}</div>
-        </h3>
-        <div className="flex justify-center items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
-            onClick={() => handleTermClick()}
-          >
-            <CiCircleCheck className="w-4 h-4" />
-          </Button>
-        </div>
+    <div
+      className={`flex flex-col w-full dark:bg-gray-900 shadow-md ${
+        device === "desktop" ? "h-[calc(100vh-12rem)]" : "h-[calc(100vh-10rem)]"
+      }`}
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
+      {/* Header */}
+      <div className="flex justify-center items-center ml-6 py-2">
+          <div className="inline-flex items-center gap-2">
+            <Button 
+              variant="link" 
+              className="m-0 hover:line-through hover:text-gray-600 dark:hover:text-gray-400"
+              onClick={() => {}} 
+            >
+              {termName}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9"
+              onClick={() => handleTermClick()}
+            >
+              <CiCircleCheck className="w-6 h-6" />
+            </Button>
+          </div>
+        <hr className="my-2" />
       </div>
-      <hr className="my-1 flex-shrink-0" />
 
       {/* Scrollable content area */}
-      <ScrollArea className="flex-1 w-full">
-        <div className="p-1">
+      <ScrollArea className="flex-1 min-w-full">
+        <div className="h-full pb-4">
           <Droppable droppableId={`term-${term.tIndex}`}>
             {(provided) => (
               <div
@@ -120,7 +161,7 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
                   >
                     {/* eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars */}
                     {(_provided, _snapshot) => (
-                      <FullScreenCourseItem
+                      <CourseItem
                         termIndex={term.tIndex}
                         course={course}
                         coursePosition={index}
@@ -139,8 +180,8 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
       </ScrollArea>
 
       {/* Fixed footer */}
-      <div className="p-1 border-t border-slate-700 flex-shrink-0">
-        <h4 className="m-0 text-xs text-center">
+      <div className="p-4 border-t border-slate-700">
+        <h4 className="m-0">
           Units: {term.tUnits}
           {term.courses.length ? ` (${term.courses.length} courses)` : ""}
         </h4>
@@ -149,4 +190,4 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
   );
 };
 
-export default FullScreenTermContainer;
+export default TermContainer;
