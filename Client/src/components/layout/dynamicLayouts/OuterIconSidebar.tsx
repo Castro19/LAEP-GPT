@@ -105,11 +105,8 @@ function OuterIconSidebar() {
   };
 
   const isActive = (path: string) => {
-    if (path === "/flowchart" && userData.flowchartInformation.flowchartId) {
-      return (
-        location.pathname ===
-        `/flowchart/${userData.flowchartInformation.flowchartId}`
-      );
+    if (path === "/flowchart") {
+      return location.pathname.startsWith("/flowchart/");
     } else if (path === "/chat" && currentChatId) {
       return location.pathname === `/chat/${currentChatId}`;
     } else if (
