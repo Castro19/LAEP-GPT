@@ -15,6 +15,62 @@ import {
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
+/**
+ * SBChatMessage - Individual chat message component for schedule builder AI chat
+ *
+ * This component renders individual chat messages with support for tool calls,
+ * loading states, and different message types. It handles both user and assistant
+ * messages with appropriate styling and tool call display.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {SBMessage} props.msg - The message object to display
+ *
+ * @example
+ * ```tsx
+ * <SBChatMessage msg={messageData} />
+ * ```
+ *
+ * @dependencies
+ * - Accordion components for tool call display
+ * - AIChatLoadingMessage for loading states
+ * - FormattedChatMessage for message formatting
+ * - Tool components for specific tool call rendering
+ * - Lucide React for icons
+ *
+ * @features
+ * - User and assistant message differentiation
+ * - Tool call display with collapsible details
+ * - Loading state handling
+ * - Message formatting and styling
+ * - Tool-specific rendering (fetch_sections, manage_schedule)
+ * - Accordion interface for tool details
+ *
+ * @messageTypes
+ * - User messages: Right-aligned with gradient background
+ * - Assistant messages: Left-aligned with different gradient
+ * - Tool calls: Expandable accordion with tool details
+ * - Loading messages: Animated loading state
+ *
+ * @toolSupport
+ * - fetch_sections: Course section fetching operations
+ * - manage_schedule: Schedule management operations
+ * - Generic tool calls: JSON display for unknown tools
+ *
+ * @styling
+ * - Gradient backgrounds for message bubbles
+ * - Responsive design for different screen sizes
+ * - Dark theme with proper contrast
+ * - Hover effects and transitions
+ * - Proper spacing and alignment
+ *
+ * @accessibility
+ * - Proper ARIA labels for accordion
+ * - Keyboard navigation support
+ * - Screen reader friendly structure
+ * - Focus management for interactive elements
+ */
+
 /* -------------------------------------------------------------------------
    📑  Types (replace with shared types when available)
 ---------------------------------------------------------------------------*/

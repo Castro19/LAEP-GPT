@@ -1,3 +1,34 @@
+/**
+ * @component SectionContainer
+ * @description Main layout container for class search results. Manages different states (loading,
+ * initial, no results, results) and renders appropriate components with pagination.
+ *
+ * @props
+ * None - Component reads from Redux state
+ *
+ * @dependencies
+ * - Redux: classSearch state (sections, isInitialState, loading)
+ * - CourseCatalog: Results display component
+ * - InitialSectionState: Welcome screen
+ * - SectionLoading: Loading indicator
+ * - NoSectionsFound: No results display
+ * - PaginationFooter: Pagination controls
+ * - ScrollArea: Scrollable content area
+ *
+ * @features
+ * - State-based component rendering
+ * - Responsive height calculation
+ * - Scrollable content area
+ * - Pagination integration
+ * - Mobile/desktop layout adaptation
+ * - Section data transformation
+ *
+ * @example
+ * ```tsx
+ * <SectionContainer />
+ * ```
+ */
+
 import { useAppSelector } from "@/redux";
 
 // My Components

@@ -14,6 +14,73 @@ import { environment } from "@/helpers/getEnvironmentVars";
 import { scheduleActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * ScheduleOptions - Popover component for managing individual schedule options
+ *
+ * This component provides a popover interface for managing schedule-specific options
+ * including name editing, primary schedule setting, and schedule deletion. It integrates
+ * with the Redux store to persist changes and handle navigation.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {ScheduleListItem} props.schedule - The schedule data to manage
+ * @param {string} props.name - Current name of the schedule
+ * @param {function} props.onNameChange - Callback function when name is changed
+ * @param {boolean} props.primaryOption - Whether this schedule is set as primary
+ * @param {function} props.onPrimaryChange - Callback function when primary status changes
+ *
+ * @example
+ * ```tsx
+ * <ScheduleOptions
+ *   schedule={scheduleData}
+ *   name="My Schedule"
+ *   onNameChange={(name) => setName(name)}
+ *   primaryOption={true}
+ *   onPrimaryChange={(primary) => setPrimary(primary)}
+ * />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule management and state
+ * - React Router for navigation
+ * - UI components for popover, input, switch, and buttons
+ * - React Icons for options menu icon
+ *
+ * @features
+ * - Schedule name editing with input field
+ * - Primary schedule toggle with switch control
+ * - Schedule deletion with confirmation
+ * - Automatic navigation after deletion
+ * - Form validation and error handling
+ * - Popover-based interface for compact design
+ *
+ * @state
+ * - Local state for popover open/close
+ * - Redux state for primary schedule and current term
+ * - Form state for name and primary option
+ *
+ * @actions
+ * - handleNameChange: Updates the schedule name
+ * - handleUpdateData: Saves changes to the schedule
+ * - handleDeleteFlowchart: Deletes the schedule and navigates
+ *
+ * @validation
+ * - Name input validation
+ * - Primary schedule validation
+ * - Schedule existence validation
+ *
+ * @styling
+ * - Compact popover design
+ * - Responsive layout with grid system
+ * - Consistent spacing and typography
+ * - Dark mode support
+ * - Hover effects and transitions
+ *
+ * @navigation
+ * - Automatic navigation to schedule builder after deletion
+ * - URL state management for current schedule
+ * - Route parameter handling
+ */
 const ScheduleOptions = ({
   schedule,
   name,

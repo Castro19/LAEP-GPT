@@ -19,6 +19,56 @@ import EmptySelectedSectionts from "./EmptySelectedSectionts";
 import SelectOrDeselectAllSections from "./SelectOrDeselectAllSections";
 import CourseAccordion from "./CourseAccordion";
 
+/**
+ * SectionsChosen - Component for displaying and managing selected course sections
+ *
+ * This component provides a comprehensive interface for viewing and managing sections
+ * that have been selected for schedule building. It groups sections by course and professor,
+ * handles conflict detection, and provides functionality to add/remove courses from schedules.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {SelectedSection[]} props.selectedSections - Array of selected sections to display
+ * @param {boolean} [props.inChat=false] - Whether the component is being used in a chat context
+ *
+ * @example
+ * ```tsx
+ * <SectionsChosen
+ *   selectedSections={selectedSections}
+ *   inChat={false}
+ * />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for section selection and schedule state
+ * - Framer Motion for animations
+ * - Toast notifications for user feedback
+ * - Course accordion and section management components
+ *
+ * @features
+ * - Groups sections by course ID and professor
+ * - Conflict detection and visualization
+ * - Add/remove entire courses from schedule
+ * - Term validation and switching
+ * - Class pair handling (labs/lectures)
+ * - Professor rating display
+ * - Empty state handling
+ * - Bulk selection/deselection options
+ *
+ * @state
+ * - Redux state for selected sections, schedule, and term
+ * - Local computed state for conflict groups and course grouping
+ *
+ * @actions
+ * - handleAddCourseToCalendar: Adds all sections of a course to the schedule
+ * - handleRemoveCourseFromCalendar: Removes all sections of a course from the schedule
+ * - handleToggleCourseVisibility: Shows/hides sections for a specific course
+ *
+ * @grouping
+ * - Sections are grouped by courseId and professor name
+ * - Each group displays the professor's rating and available sections
+ * - Conflict groups are identified and highlighted
+ */
 const SectionsChosen = ({
   selectedSections = [],
   inChat = false,

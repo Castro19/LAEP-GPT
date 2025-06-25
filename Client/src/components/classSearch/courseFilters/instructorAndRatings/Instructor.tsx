@@ -1,3 +1,31 @@
+/**
+ * @component Instructor
+ * @description Handles instructor-related filtering including rating ranges, instructor search,
+ * and options for including unrated instructors.
+ *
+ * @props
+ * @prop {UseFormReturn<SectionFiltersForm>} form - React Hook Form instance for instructor filter state
+ *
+ * @dependencies
+ * - fetchProfessors: API helper for instructor search
+ * - InstructorRatingSlider: Rating range selection component
+ * - Searchbar: Instructor search with autocomplete
+ * - DeletableTags: Selected instructor display and removal
+ *
+ * @features
+ * - Instructor rating range slider (min/max)
+ * - Include unrated instructors toggle
+ * - Instructor search with autocomplete
+ * - Selected instructors with deletable tags
+ * - Real-time instructor filtering
+ *
+ * @example
+ * ```tsx
+ * const form = useForm<SectionFiltersForm>();
+ * <Instructor form={form} />
+ * ```
+ */
+
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 

@@ -2,6 +2,63 @@ import { useNavigate } from "react-router-dom";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
 import { motion } from "framer-motion";
 
+/**
+ * Hero - Main hero section component for the splash page
+ *
+ * This component provides the primary hero section with animated typewriter text
+ * and an interactive "Meet the Team" button. It serves as the main call-to-action
+ * for the splash page, encouraging users to learn more about the team.
+ *
+ * @component
+ *
+ * @example
+ * ```tsx
+ * <Hero />
+ * ```
+ *
+ * @dependencies
+ * - React Router for navigation
+ * - Framer Motion for animations
+ * - TypewriterEffectSmooth for text animation
+ *
+ * @features
+ * - Animated typewriter text effect
+ * - Interactive button with hover animations
+ * - Smooth navigation to team page
+ * - Responsive design with dark mode support
+ * - Spring-based button animations
+ * - Gradient styling with hover effects
+ *
+ * @animations
+ * - Typewriter effect for hero text
+ * - Button hover and tap animations
+ * - Floating emoji animation
+ * - Gradient overlay on hover
+ * - Scale and position transitions
+ *
+ * @styling
+ * - Gradient backgrounds and borders
+ * - Shadow effects with hover states
+ * - Responsive design considerations
+ * - Dark mode support
+ * - Custom button styling with rings
+ *
+ * @navigation
+ * - Routes to "/team" page on button click
+ * - Uses React Router navigation
+ * - Maintains browser history
+ *
+ * @accessibility
+ * - Proper button semantics
+ * - Keyboard navigation support
+ * - Screen reader friendly text
+ * - Focus management for interactive elements
+ *
+ * @content
+ * - Typewriter text: "Want to help build PolyLink?"
+ * - Call-to-action: "Meet the Team" button
+ * - Animated emoji: 👥
+ */
 const buttonVariants = {
   hover: {
     scale: 1.05,

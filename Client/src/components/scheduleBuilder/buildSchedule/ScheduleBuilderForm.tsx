@@ -24,6 +24,44 @@ export type SchedulePreferencesForm = z.infer<
   typeof SCHEDULE_PREFERENCES_SCHEMA
 >;
 
+/**
+ * ScheduleBuilderForm - Main form component for building and managing schedules
+ *
+ * This component provides the core interface for schedule building functionality, including:
+ * - Form management for schedule preferences using react-hook-form and zod validation
+ * - Schedule generation from selected sections
+ * - Schedule saving and updating capabilities
+ * - Navigation between different schedule builder tabs
+ * - Error handling and user feedback via toast notifications
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {function} props.onSwitchTab - Callback function to switch between tabs in the schedule builder
+ *
+ * @example
+ * ```tsx
+ * <ScheduleBuilderForm onSwitchTab={(tab) => setActiveTab(tab)} />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for state management (schedule, sectionSelection)
+ * - React Router for navigation
+ * - React Hook Form for form handling
+ * - Zod for schema validation
+ * - Toast notifications for user feedback
+ *
+ * @features
+ * - Real-time preference updates synced with Redux store
+ * - Automatic schedule generation from selected sections
+ * - Conflict detection and handling
+ * - Schedule persistence with database integration
+ * - Responsive design with mobile support
+ *
+ * @state
+ * - Form state managed by react-hook-form
+ * - Redux state for selected sections, current schedule, and preferences
+ * - URL parameters for schedule ID
+ */
 const ScheduleBuilderForm = ({
   onSwitchTab,
 }: {

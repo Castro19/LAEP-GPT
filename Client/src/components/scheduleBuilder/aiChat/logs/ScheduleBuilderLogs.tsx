@@ -10,6 +10,66 @@ import ScheduleLogsOptions from "./ScheduleLogsOptions";
 // UI components:
 import { Button } from "@/components/ui/button";
 
+/**
+ * ScheduleBuilderLogs - Component for displaying and managing schedule builder chat logs
+ *
+ * This component provides a sidebar interface for viewing and managing saved chat logs
+ * from schedule builder conversations. It displays log titles, timestamps, and provides
+ * options for log management.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {function} props.onClose - Callback function to close the logs panel
+ *
+ * @example
+ * ```tsx
+ * <ScheduleBuilderLogs onClose={() => setShowLogs(false)} />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule builder log state
+ * - ScheduleLogsOptions for individual log management
+ * - UI Button components
+ *
+ * @features
+ * - List of saved chat logs with titles and timestamps
+ * - Click to load specific log conversations
+ * - Hover-based options menu for each log
+ * - Automatic log fetching and state management
+ * - Responsive design for different screen sizes
+ * - Close functionality for panel management
+ *
+ * @logManagement
+ * - handleLogClick: Loads specific log by thread ID
+ * - Automatic log fetching from Redux state
+ * - Options menu for each log entry
+ * - Timestamp formatting and display
+ *
+ * @layout
+ * - Absolute positioned sidebar
+ * - Fixed width (320px) with max height
+ * - Scrollable log list
+ * - Header with close button
+ * - Hover effects for interactive elements
+ *
+ * @styling
+ * - Dark theme with slate colors
+ * - Proper spacing and typography
+ * - Hover states for buttons
+ * - Shadow and border effects
+ * - Responsive design considerations
+ *
+ * @accessibility
+ * - Proper button roles and labels
+ * - Keyboard navigation support
+ * - Screen reader friendly structure
+ * - Focus management for interactive elements
+ *
+ * @state
+ * - Redux state for logs list
+ * - Local state for panel visibility
+ * - Automatic state updates on log changes
+ */
 type Props = {
   onClose: () => void;
 };

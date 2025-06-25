@@ -1,3 +1,28 @@
+/**
+ * @component SectionDoc
+ * @description Main container for displaying course sections in a hierarchical structure. Renders
+ * courses grouped by professor with collapsible sections, enrollment info, and scheduling details.
+ *
+ * @props
+ * @prop {CourseInfo[]} courses - Array of course information with professor groups and sections
+ *
+ * @dependencies
+ * - Redux: sectionSelectionActions for adding sections to schedule
+ * - Collapsible: Expandable/collapsible UI components
+ * - SectionInfo: SectionHeader, SectionEnrollment, SectionSchedule components
+ * - StarRating: Professor rating display
+ * - FormatPrerequisites: Prerequisite formatting
+ *
+ * @features
+ * - Course catalog with expandable/collapsible sections
+ * - Professor grouping with ratings
+ * - Section enrollment status and scheduling
+ * - Add to schedule functionality
+ * - Expand/collapse all courses
+ * - Responsive design for mobile/desktop
+ * - Prerequisite display
+ */
+
 import { useState } from "react";
 import {
   CourseInfo,

@@ -9,6 +9,54 @@ import { motion, AnimatePresence } from "framer-motion";
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import useDeviceType from "@/hooks/useDeviceType";
 
+/**
+ * SavedSchedules - Component for displaying and managing saved schedules
+ *
+ * This component provides a list interface for viewing and interacting with saved schedules.
+ * It displays schedule items with their names, update times, and primary status indicators.
+ * Users can select schedules, view options, and navigate between different saved schedules.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {function} [props.onSwitchTab] - Optional callback function to switch tabs when a schedule is selected
+ *
+ * @example
+ * ```tsx
+ * <SavedSchedules onSwitchTab={(tab) => setActiveTab(tab)} />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule list and primary schedule state
+ * - React Router for navigation
+ * - Framer Motion for animations
+ * - Custom hooks for responsive design
+ * - ScheduleOptions component for schedule management
+ *
+ * @features
+ * - Displays list of saved schedules with names and timestamps
+ * - Primary schedule indicator with pin icon
+ * - Schedule selection and navigation
+ * - Responsive design for mobile and desktop
+ * - Smooth animations for list items
+ * - Empty state handling
+ * - Current schedule highlighting
+ * - Schedule options menu on hover
+ *
+ * @state
+ * - Redux state for schedule list and primary schedule
+ * - Local state for schedule names and primary options
+ * - URL state for current schedule ID
+ *
+ * @animations
+ * - Staggered entrance animations for schedule items
+ * - Smooth transitions for hover states
+ * - AnimatePresence for proper exit animations
+ *
+ * @responsive
+ * - Adapts layout based on screen size
+ * - Different navigation behavior for mobile vs desktop
+ * - Optimized touch interactions for mobile devices
+ */
 const SavedSchedules = ({
   onSwitchTab,
 }: {

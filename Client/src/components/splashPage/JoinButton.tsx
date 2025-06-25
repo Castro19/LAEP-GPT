@@ -1,6 +1,64 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * JoinButton - Call-to-action button for user registration
+ *
+ * This component provides a prominent call-to-action button that encourages
+ * users to join PolyLink. It features animated hover effects, gradient styling,
+ * and navigation to the registration page.
+ *
+ * @component
+ *
+ * @example
+ * ```tsx
+ * <JoinButton />
+ * ```
+ *
+ * @dependencies
+ * - React Router for navigation
+ * - Framer Motion for animations
+ *
+ * @features
+ * - Animated hover and tap effects
+ * - Gradient background with hover states
+ * - Animated arrow indicator
+ * - Spring-based animations
+ * - Shadow effects with hover enhancement
+ * - Navigation to registration page
+ *
+ * @animations
+ * - Scale and position hover effects
+ * - Tap animation for feedback
+ * - Entrance animation with fade and slide
+ * - Animated arrow movement
+ * - Gradient overlay on hover
+ *
+ * @styling
+ * - Gradient backgrounds (slate colors)
+ * - Shadow effects with hover enhancement
+ * - Ring borders with hover states
+ * - Responsive design
+ * - Custom button dimensions
+ *
+ * @navigation
+ * - Routes to "/register/login" on click
+ * - Uses React Router navigation
+ * - Maintains browser history
+ *
+ * @accessibility
+ * - Proper button semantics
+ * - Keyboard navigation support
+ * - Screen reader friendly text
+ * - Focus management
+ * - Clear call-to-action text
+ *
+ * @content
+ * - Primary text: "Get Started Now"
+ * - Animated arrow: →
+ * - Hover gradient overlay
+ * - Drop shadow for text
+ */
 // Add this at the top of your component
 const buttonVariants = {
   hover: {

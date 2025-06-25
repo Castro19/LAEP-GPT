@@ -7,6 +7,75 @@ import { FormattedChatMessage } from "@/components/scheduleBuilder/aiChat";
 import { ToolCall } from "@/components/scheduleBuilder/aiChat/messages/SBChatMessage";
 // My components:
 
+/**
+ * FormattingStrs - Helper functions for formatting tool calls and messages in AI chat
+ *
+ * This module provides utility functions for formatting tool call arguments,
+ * rendering tool names, and creating formatted message components for the
+ * schedule builder AI chat interface.
+ *
+ * @module
+ *
+ * @example
+ * ```tsx
+ * import { renderToolName, FetchSectionsMessage } from './FormattingStrs';
+ *
+ * const toolName = renderToolName(toolCall);
+ * <FetchSectionsMessage fetch_type="search" search_query="CSC 101" />
+ * ```
+ *
+ * @dependencies
+ * - FormattedChatMessage for message rendering
+ * - Environment variables for development logging
+ * - React for component rendering
+ *
+ * @features
+ * - Tool name rendering based on tool type and arguments
+ * - Operation message formatting for schedule management
+ * - Fetch sections message formatting
+ * - Type-safe argument handling
+ * - Development environment logging
+ *
+ * @toolTypes
+ * - manage_schedule: Schedule management operations
+ * - fetch_sections: Section fetching operations
+ * - Generic tool calls: Fallback handling
+ *
+ * @operations
+ * - readall: Reading current schedule
+ * - add: Adding sections to schedule
+ * - remove: Removing sections from schedule
+ *
+ * @fetchTypes
+ * - search: Course search operations
+ * - alternate: Alternate section fetching
+ * - curriculum: Curriculum-based section fetching
+ *
+ * @exports
+ * - renderToolName: Formats tool names for display
+ * - renderOperation: Formats operation messages
+ * - OperationMessage: React component for operation display
+ * - renderFetchType: Formats fetch operation messages
+ * - FetchSectionsMessage: React component for fetch display
+ * - renderToolMessage: Generic tool message formatter
+ * - Type definitions for all argument types
+ */
+
+/**
+ * Renders a human-readable tool name based on tool type and arguments
+ *
+ * @param {ToolCall} tool - The tool call object to format
+ * @returns {string} Formatted tool name for display
+ *
+ * @example
+ * ```tsx
+ * const name = renderToolName({
+ *   name: "manage_schedule",
+ *   args: { operation: "add" }
+ * });
+ * // Returns: "Adding sections"
+ * ```
+ */
 const renderToolName = (tool: ToolCall) => {
   if (tool.name === "manage_schedule") {
     if (tool.args.operation === "readall") {

@@ -1,3 +1,31 @@
+/**
+ * @component NoSectionsFound
+ * @description Displays when search returns no results. Shows active filters and provides
+ * guidance for adjusting search criteria.
+ *
+ * @props
+ * None - Component reads from Redux state
+ *
+ * @dependencies
+ * - Redux: classSearch state for current filters
+ * - Framer Motion: Entrance animations
+ * - Card: UI container component
+ * - React Icons: FiFilter icon
+ *
+ * @features
+ * - No results found message
+ * - Active filter display with formatted values
+ * - Filter value formatting (time ranges, arrays, booleans)
+ * - Instruction mode mapping
+ * - Smooth entrance animations
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <NoSectionsFound />
+ * ```
+ */
+
 import { Card } from "@/components/ui/card";
 import { useAppSelector } from "@/redux";
 import { motion } from "framer-motion";

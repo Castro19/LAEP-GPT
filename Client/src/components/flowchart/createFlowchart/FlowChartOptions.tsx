@@ -1,3 +1,35 @@
+/**
+ * @component FlowChartOptions
+ * @description Selection interface for flowchart creation options. Provides dropdowns for
+ * starting year, catalog, major, and concentration with dynamic loading.
+ *
+ * @props
+ * @prop {'flowchart' | 'signup'} type - Component type for different contexts
+ *
+ * @dependencies
+ * - Redux: flowSelectionActions, user state
+ * - useUserData: User data management
+ * - ReusableDropdown: Dropdown UI components
+ * - Framer Motion: Entrance animations
+ * - React Icons: RiBookLine, RiCalendarLine, RiGraduationCapLine, RiStackLine
+ *
+ * @features
+ * - Starting year selection (2019-2024)
+ * - Catalog dropdown with dynamic loading
+ * - Major dropdown based on catalog
+ * - Concentration dropdown based on major
+ * - Automatic concentration reset on major change
+ * - User data integration for signup flow
+ * - Hover animations and responsive design
+ * - Icon-based labels for each option
+ *
+ * @example
+ * ```tsx
+ * <FlowChartOptions type="flowchart" />
+ * <FlowChartOptions type="signup" />
+ * ```
+ */
+
 import { useEffect } from "react";
 import { flowSelectionActions, useAppDispatch, useAppSelector } from "@/redux";
 import { useUserData } from "@/hooks/useUserData";

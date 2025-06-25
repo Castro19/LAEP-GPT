@@ -1,3 +1,30 @@
+/**
+ * @component QueryAI
+ * @description AI-powered natural language search interface for course filtering. Converts user
+ * queries to structured filters and provides explanations.
+ *
+ * @props
+ * None - Component manages its own state
+ *
+ * @dependencies
+ * - Redux: queryAIAsync, layoutActions for menu integration
+ * - PlaceholdersAndVanishInput: Animated input with placeholder suggestions
+ * - CollapsibleContentWrapper: Expandable container
+ *
+ * @features
+ * - OpenAI Query Class Search
+ * - Animated placeholder suggestions
+ * - Query explanation display
+ * - Error handling and loading states
+ * - Menu integration for mobile
+ * - Real-time query processing
+ *
+ * @example
+ * ```tsx
+ * <QueryAI />
+ * ```
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { layoutActions, useAppDispatch, useAppSelector } from "@/redux";
 import {
