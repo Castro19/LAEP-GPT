@@ -36,6 +36,74 @@ import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTermName } from "@/constants/schedule";
 
+/**
+ * SectionCard - Individual section display and management component
+ *
+ * This component renders a detailed card for a single course section, providing
+ * comprehensive information about the section and various interaction options.
+ * It handles section selection, schedule management, visibility toggling, and
+ * conflict detection.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {SelectedSection} props.section - The section data to display
+ * @param {boolean} props.isSelected - Whether this section is selected for schedule building
+ * @param {Set<number>} props.conflictIds - Set of class numbers that have time conflicts
+ *
+ * @example
+ * ```tsx
+ * <SectionCard
+ *   section={sectionData}
+ *   isSelected={true}
+ *   conflictIds={new Set([12345, 67890])}
+ * />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule and section selection state
+ * - Toast notifications for user feedback
+ * - UI components for tooltips, toggles, and buttons
+ * - Lucide React for icons
+ * - Time formatting utilities
+ *
+ * @features
+ * - Comprehensive section information display
+ * - Add/remove from schedule functionality
+ * - Section selection for schedule building
+ * - Visibility toggling (hide/show sections)
+ * - Conflict detection and highlighting
+ * - Term validation and switching
+ * - Class pair handling (labs/lectures)
+ * - Time and day display
+ * - Professor information
+ * - Color-coded course identification
+ *
+ * @state
+ * - Redux state for current schedule, term, and hidden sections
+ * - Local computed state for section status
+ * - Form state for various interactions
+ *
+ * @actions
+ * - handleRemove: Removes section from selected sections
+ * - handleAddToSelected: Adds section to selected sections
+ * - handleToggleSelection: Toggles section for schedule building
+ * - handleToggleHidden: Shows/hides the section
+ * - handleRemoveFromCalendar: Removes section from current schedule
+ * - handleAddToCalendar: Adds section to current schedule
+ *
+ * @validation
+ * - Term matching validation
+ * - Class pair validation
+ * - Conflict detection
+ * - Schedule state validation
+ *
+ * @styling
+ * - Dynamic color theming based on course
+ * - Conflict state highlighting
+ * - Responsive design
+ * - Dark mode support
+ * - Hover effects and transitions
+ */
 const SectionCard: React.FC<{
   section: SelectedSection;
   isSelected: boolean;

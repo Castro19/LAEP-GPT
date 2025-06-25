@@ -1,3 +1,30 @@
+/**
+ * @component SectionForm
+ * @description Primary form wrapper that manages complete filtering state. Integrates with Redux for
+ * persistence, handles form submission, and converts form data to API-compatible format.
+ *
+ * @props
+ * @prop {(tab: string) => void} onSwitchTab - Optional callback to switch tabs after form submission
+ *
+ * @dependencies
+ * - Redux: classSearchActions, scheduleActions, flowSelectionActions
+ * - React Hook Form: Form validation and state management
+ * - Zod: Schema validation for form data
+ * - SectionFilters: Child component for filter UI
+ *
+ * @features
+ * - Real-time form state synchronization with Redux
+ * - Automatic API query building from form data
+ * - Form reset functionality
+ * - Responsive design for mobile/desktop
+ * - Tech elective handling with major/concentration
+ *
+ * @example
+ * ```tsx
+ * <SectionForm onSwitchTab={(tab) => setActiveTab(tab)} />
+ * ```
+ */
+
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

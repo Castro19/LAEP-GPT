@@ -1,3 +1,31 @@
+/**
+ * @component SectionCourseDropdown
+ * @description Searchable dropdown for course selection with debounced API calls. Provides
+ * course search functionality with autocomplete and error handling.
+ *
+ * @props
+ * @prop {(courseId: string) => void} onSelect - Callback when a course is selected
+ *
+ * @dependencies
+ * - Redux: flowchartData for catalog year
+ * - fetchCoursesAPI: Course search functionality
+ * - Command: Searchable dropdown UI components
+ * - getCatalogYear: Helper for determining catalog year
+ *
+ * @features
+ * - Debounced course search (300ms delay)
+ * - Real-time course suggestions
+ * - Loading states and error handling
+ * - Empty state with search tips
+ * - Catalog year integration
+ * - Course ID selection
+ *
+ * @example
+ * ```tsx
+ * <CourseSearchbar onSelect={(courseId) => handleCourseSelect(courseId)} />
+ * ```
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from "react";
 import {

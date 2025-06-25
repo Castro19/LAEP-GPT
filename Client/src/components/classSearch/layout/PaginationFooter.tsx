@@ -1,3 +1,31 @@
+/**
+ * @component PaginationFooter
+ * @description Pagination controls for class search results. Handles page navigation with
+ * previous/next buttons and displays current page information.
+ *
+ * @props
+ * None - Component reads from Redux state
+ *
+ * @dependencies
+ * - Redux: classSearch state (page, totalPages, loading, isQueryAI)
+ * - Redux actions: setPage, fetchSectionsAsync, queryAIPagination
+ * - Button: UI button components
+ *
+ * @features
+ * - Previous/next page navigation
+ * - Current page display (Page X of Y)
+ * - Loading state handling
+ * - AI query pagination support
+ * - Disabled state for edge pages
+ * - Sticky bottom positioning
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <PaginationFooter />
+ * ```
+ */
+
 import { useAppDispatch, useAppSelector } from "@/redux";
 import {
   setPage,

@@ -1,3 +1,32 @@
+/**
+ * @component FullScreenFlowchart
+ * @description Full-screen flowchart display showing all terms simultaneously. Provides
+ * grid layout for desktop and scrollable layout for mobile.
+ *
+ * @props
+ * @prop {FlowchartData | null} flowchartData - Flowchart data to display
+ *
+ * @dependencies
+ * - Redux: flowchartActions for course completion
+ * - FullScreenTermContainer: Individual term containers
+ * - useIsNarrowScreen: Responsive design hook
+ * - useDeviceType: Device type detection
+ *
+ * @features
+ * - Full timeline view of all terms
+ * - Responsive grid layout (desktop) vs scrollable (mobile)
+ * - Term mapping and naming
+ * - Course completion toggling
+ * - Skip term filtering
+ * - Dynamic column sizing
+ * - Mobile-optimized horizontal scrolling
+ *
+ * @example
+ * ```tsx
+ * <FullScreenFlowchart flowchartData={flowchartData} />
+ * ```
+ */
+
 import { useAppDispatch, flowchartActions } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";
 

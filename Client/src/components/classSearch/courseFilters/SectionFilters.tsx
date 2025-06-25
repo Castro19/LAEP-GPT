@@ -1,3 +1,24 @@
+/**
+ * @component SectionFilters
+ * @description Main container that orchestrates all course filter sections. Renders CourseInformation,
+ * Scheduling, Instructor, and QueryAI components with visual separators.
+ *
+ * @props
+ * @prop {UseFormReturn<SectionFiltersForm>} form - React Hook Form instance for filter state management
+ *
+ * @dependencies
+ * - CourseInformation: Course term, subject, catalog number, units, attributes
+ * - Scheduling: Days, time range, enrollment status, instruction mode
+ * - Instructor: Rating range, instructor search, unrated toggle
+ * - QueryAI: OpenAI Query Class Search
+ *
+ * @example
+ * ```tsx
+ * const form = useForm<SectionFiltersForm>();
+ * <SectionFilters form={form} />
+ * ```
+ */
+
 import { UseFormReturn } from "react-hook-form";
 
 // Components

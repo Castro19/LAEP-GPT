@@ -1,3 +1,37 @@
+/**
+ * @component SectionInfo
+ * @description Collection of components for displaying section information including headers,
+ * enrollment details, and scheduling. Handles section addition to schedule with toast notifications.
+ *
+ * @components
+ * - SectionHeader: Component type badge, enrollment status, section number
+ * - SectionEnrollment: Instruction mode, seats available, waitlist info
+ * - SectionSchedule: Meeting times, locations, add to schedule functionality
+ *
+ * @dependencies
+ * - Redux: sectionSelectionActions, classSearch state
+ * - React Router: Navigation to schedule builder
+ * - Toast: Success/error notifications
+ * - BadgeSection: Status and type badges
+ * - LabelSection: Form labels
+ *
+ * @features
+ * - Section header with enrollment status badges
+ * - Instruction mode display (PA, SM, P, PS, AM, SA)
+ * - Enrollment capacity and waitlist info
+ * - Meeting schedule with days and times
+ * - Add section to schedule with conflict checking
+ * - Add paired sections (lecture + lab)
+ * - Toast notifications with navigation
+ *
+ * @example
+ * ```tsx
+ * <SectionHeader section={sectionDetail} />
+ * <SectionEnrollment section={sectionDetail} />
+ * <SectionSchedule meetings={meetings} section={sectionDetail} />
+ * ```
+ */
+
 import { Meeting, SectionDetail } from "@polylink/shared/types";
 import {
   useAppDispatch,

@@ -1,3 +1,35 @@
+/**
+ * @component SavedFlowchartList
+ * @description Displays list of user's saved flowcharts with management options. Provides
+ * flowchart selection, editing, deletion, and primary flowchart setting.
+ *
+ * @props
+ * @prop {() => void} onSwitchTab - Optional callback for tab switching
+ *
+ * @dependencies
+ * - Redux: flowchartActions, user state
+ * - React Router: Navigation to flowchart pages
+ * - useUserData: User data management
+ * - Popover: Flowchart editing interface
+ * - Input, Switch, Button: UI components
+ * - Toast: Success/error notifications
+ *
+ * @features
+ * - Saved flowcharts list display
+ * - Flowchart selection and navigation
+ * - Flowchart name editing
+ * - Primary flowchart setting
+ * - Flowchart deletion with confirmation
+ * - Active flowchart highlighting
+ * - Tab switching integration
+ * - Toast notifications
+ *
+ * @example
+ * ```tsx
+ * <SavedFlowchartList onSwitchTab={() => setActiveTab('flowchart')} />
+ * ```
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { flowchartActions, useAppDispatch, useAppSelector } from "@/redux";

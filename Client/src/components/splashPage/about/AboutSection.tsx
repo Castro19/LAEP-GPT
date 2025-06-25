@@ -3,6 +3,85 @@ import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
 import text from "@/components/splashPage/about/aboutText";
 
+/**
+ * AboutSection - Comprehensive about page component with markdown content and videos
+ *
+ * This component renders a full-screen about page with markdown content, embedded
+ * YouTube videos, and animated background elements. It provides detailed information
+ * about PolyLink's features and capabilities.
+ *
+ * @component
+ *
+ * @example
+ * ```tsx
+ * <AboutSection />
+ * ```
+ *
+ * @dependencies
+ * - Framer Motion for animations
+ * - MarkdownIt for markdown parsing
+ * - DOMPurify for HTML sanitization
+ * - aboutText for content data
+ *
+ * @features
+ * - Markdown content rendering
+ * - Embedded YouTube videos
+ * - Animated background elements
+ * - Staggered content animations
+ * - Responsive design
+ * - Dark theme with gradients
+ *
+ * @content
+ * - Introduction with demo video
+ * - About section with overview
+ * - Flowchart feature explanation
+ * - Course search demonstration
+ * - Schedule builder showcase
+ * - Schedule insights analysis
+ * - Conclusion section
+ *
+ * @videos
+ * - Introduction: HlPKFzQB5l4
+ * - About: zMBJrFnoJRw
+ * - Flowchart: pUXRDrsNco8
+ * - Course Search: MYXE1Yx4MJU
+ * - Schedule Builder: fjd6oeoiT4A
+ * - Schedule Insights: yo-UKQzNCec
+ *
+ * @animations
+ * - Background gradient animations
+ * - Content fade-in effects
+ * - Staggered section animations
+ * - Decorative element scaling
+ * - Hover effects on elements
+ *
+ * @styling
+ * - Dark slate background
+ * - Gradient overlays
+ * - Glassmorphism effects
+ * - Prose styling for markdown
+ * - Responsive video embeds
+ * - Decorative dot patterns
+ *
+ * @security
+ * - HTML sanitization with DOMPurify
+ * - Safe markdown rendering
+ * - XSS protection
+ * - Secure video embedding
+ *
+ * @accessibility
+ * - Semantic HTML structure
+ * - Proper heading hierarchy
+ * - Screen reader friendly content
+ * - Keyboard navigation support
+ * - Alt text for decorative elements
+ *
+ * @performance
+ * - Lazy loading for videos
+ * - Optimized animations
+ * - Efficient markdown parsing
+ * - Responsive image handling
+ */
 const md = new MarkdownIt();
 
 const AboutSection = () => {

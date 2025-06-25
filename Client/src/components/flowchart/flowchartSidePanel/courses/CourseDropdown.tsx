@@ -1,3 +1,37 @@
+/**
+ * @component CourseDropdown
+ * @description Course selection interface with categorized dropdowns for GWR, USCP, and
+ * technical electives. Provides course search and subject-based organization.
+ *
+ * @props
+ * None - Component manages its own state
+ *
+ * @dependencies
+ * - Redux: flowchart state for catalog year
+ * - fetchCoursesBySubjectAPI: Course fetching
+ * - fetchSubjectNamesAPI: Subject fetching
+ * - SidebarCourse: Individual course display
+ * - CourseSearchbar: Course search functionality
+ * - GeDropdown: General education courses
+ * - TechElectiveDropdown: Technical elective courses
+ * - Collapsible: Expandable course sections
+ *
+ * @features
+ * - Course type categorization (GWR, USCP)
+ * - Subject-based course organization
+ * - Dynamic course loading
+ * - Course search functionality
+ * - Collapsible course sections
+ * - Icon-based course type identification
+ * - Memory-efficient course loading
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <CourseDropdown />
+ * ```
+ */
+
 import { useState, useEffect, memo, useRef } from "react";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { useAppSelector } from "@/redux";

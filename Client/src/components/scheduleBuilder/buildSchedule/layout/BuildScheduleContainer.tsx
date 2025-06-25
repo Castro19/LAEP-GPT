@@ -7,6 +7,55 @@ import { useEffect, useRef } from "react";
 const SCROLL_AREA_ID = "build-schedule-scroll-area";
 const SCROLL_VIEWPORT_ID = `${SCROLL_AREA_ID}-viewport`;
 
+/**
+ * BuildScheduleContainer - Layout container for the schedule builder interface
+ *
+ * This component provides the main layout structure for the schedule building interface,
+ * including a scrollable area with proper height management and scroll behavior.
+ * It integrates with the layout system to handle scroll triggers and viewport management.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render within the container
+ *
+ * @example
+ * ```tsx
+ * <BuildScheduleContainer>
+ *   <SelectedSectionContainer />
+ *   <Preferences />
+ * </BuildScheduleContainer>
+ * ```
+ *
+ * @dependencies
+ * - Redux store for layout state management
+ * - AnimateWrapper for entrance animations
+ * - UI components for card and scroll area
+ * - React refs for scroll management
+ *
+ * @features
+ * - Responsive height calculation (calc(100vh-12rem))
+ * - Scrollable content area with proper overflow handling
+ * - Automatic scroll to bottom on trigger
+ * - Viewport ID management for external scroll control
+ * - Card-based layout with shadow and border styling
+ * - Animation wrapper integration
+ *
+ * @layout
+ * - Flex column layout for vertical stacking
+ * - Full height container with overflow management
+ * - Consistent padding and spacing
+ * - Dark mode support through UI components
+ *
+ * @scrollBehavior
+ * - Monitors scrollTrigger from Redux state
+ * - Automatically scrolls to bottom when triggered
+ * - Maintains scroll position during content updates
+ * - Provides viewport ID for external scroll control
+ *
+ * @constants
+ * - SCROLL_AREA_ID: Unique identifier for the scroll area
+ * - SCROLL_VIEWPORT_ID: Unique identifier for the scroll viewport
+ */
 const BuildScheduleContainer = ({
   children,
 }: {

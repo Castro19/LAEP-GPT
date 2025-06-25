@@ -23,6 +23,70 @@ import {
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+/**
+ * CurrentToolCall - Tooltip component for displaying current tool call status
+ *
+ * This component provides a tooltip interface for displaying the current tool call
+ * being executed by the AI assistant. It includes animated states, pinning functionality,
+ * and auto-scroll behavior for real-time updates.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {number} props.currentWidth - Current width for tooltip sizing
+ * @param {boolean} props.minimized - Whether the widget is minimized
+ *
+ * @example
+ * ```tsx
+ * <CurrentToolCall currentWidth={400} minimized={false} />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule builder log state
+ * - Framer Motion for animations
+ * - Radix UI Tooltip for tooltip functionality
+ * - Lucide React for icons
+ * - ScrollArea for content scrolling
+ *
+ * @features
+ * - Real-time tool call status display
+ * - Animated icon states during streaming
+ * - Pinnable tooltip for persistent viewing
+ * - Auto-scroll during content streaming
+ * - Minimization state handling
+ * - Tool name rendering and formatting
+ *
+ * @tooltipBehavior
+ * - Opens automatically on new assistant messages
+ * - Can be pinned to stay open
+ * - Closes on outside click when not pinned
+ * - Handles minimization state changes
+ * - Force mount for proper portal management
+ *
+ * @animations
+ * - Icon scaling animation during streaming
+ * - Color transitions for different states
+ * - Smooth tooltip appearance/disappearance
+ * - Continuous animation during active streaming
+ *
+ * @scrollBehavior
+ * - Auto-scrolls to bottom during streaming
+ * - Respects user scroll position
+ * - Handles scroll area viewport detection
+ * - First render scroll behavior
+ *
+ * @state
+ * - Local state for tooltip open/pinned status
+ * - Ref-based scroll position tracking
+ * - Redux state for current tool calls and messages
+ * - Force mount state for portal management
+ *
+ * @styling
+ * - Dynamic width based on container
+ * - Fixed height tooltip (400px)
+ * - Dark theme with proper contrast
+ * - Responsive design considerations
+ * - High z-index for proper layering
+ */
 const SCROLL_AREA_ID = "assistant-tooltip-scroll";
 const VIEWPORT_ID = `${SCROLL_AREA_ID}-viewport`;
 

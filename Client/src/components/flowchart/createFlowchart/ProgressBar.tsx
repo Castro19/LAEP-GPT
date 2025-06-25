@@ -1,3 +1,34 @@
+/**
+ * @component ProgressBar
+ * @description Visual progress indicator for flowchart creation steps. Shows step circles,
+ * labels, and animated progress bar.
+ *
+ * @props
+ * @prop {number} value - Progress percentage (0-100)
+ *
+ * @dependencies
+ * - Framer Motion: Animated step circles and progress bar
+ *
+ * @features
+ * - 4-step progress tracking with labeled circles
+ * - Animated progress bar fill
+ * - Step completion highlighting
+ * - Gradient styling for completed steps
+ * - Responsive design
+ * - Spring animations for step circles
+ *
+ * @steps
+ * 1. Choose Starting Year
+ * 2. Choose Catalog
+ * 3. Choose Major
+ * 4. Choose Concentration
+ *
+ * @example
+ * ```tsx
+ * <ProgressBar value={75} />
+ * ```
+ */
+
 import { motion } from "framer-motion";
 
 interface ProgressBarProps {

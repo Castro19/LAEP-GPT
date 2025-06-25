@@ -18,6 +18,73 @@ import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-van
 // helpers
 import { resetInputAndScrollToBottom } from "@/components/chat/helpers/formatHelper";
 
+/**
+ * ScheduleBuilderChatInput - Input component for AI chat in schedule builder
+ *
+ * This component provides the chat input interface with placeholder suggestions,
+ * message handling, and integration with the schedule builder AI system. It manages
+ * user input, message submission, and state synchronization with Redux.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.RefObject<HTMLDivElement>} props.messagesContainerRef - Reference to messages container for scroll management
+ * @param {React.RefObject<HTMLTextAreaElement>} props.textAreaRef - Reference to textarea for input management
+ * @param {React.RefObject<HTMLButtonElement>} props.sendButtonRef - Reference to send button for form submission
+ *
+ * @example
+ * ```tsx
+ * <ScheduleBuilderChatInput
+ *   messagesContainerRef={messagesContainerRef}
+ *   textAreaRef={textAreaRef}
+ *   sendButtonRef={sendButtonRef}
+ * />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule and schedule builder log state
+ * - PlaceholdersAndVanishInput for enhanced input experience
+ * - nanoid for unique ID generation
+ * - Format helper for input and scroll management
+ *
+ * @features
+ * - Placeholder suggestions for common queries
+ * - Real-time input validation and character counting
+ * - Optimistic message updates for better UX
+ * - Automatic schedule initialization
+ * - Thread management for conversation continuity
+ * - Error handling and user feedback
+ * - Loading state management
+ *
+ * @inputHandling
+ * - handleInputChange: Updates draft message in Redux
+ * - handleSubmit: Processes message submission
+ * - Auto-focus on component mount
+ * - Character limit enforcement (2000 chars)
+ * - Input clearing after submission
+ *
+ * @state
+ * - Redux state for draft message, current log, and loading states
+ * - Local refs for input management
+ * - Thread ID management for conversation continuity
+ *
+ * @placeholders
+ * - "Find GE B classes in the morning"
+ * - "Find open CSC101 classes"
+ * - "Add an easy USCP class"
+ *
+ * @validation
+ * - Empty message prevention
+ * - Character limit validation
+ * - Loading state validation
+ * - Schedule state validation
+ *
+ * @styling
+ * - Dark theme with slate colors
+ * - Fixed height input area
+ * - Error and warning message styling
+ * - Responsive design
+ * - Safe area inset support
+ */
 const placeholders = [
   "Find GE B classes in the morning",
   "Find open CSC101 classes",

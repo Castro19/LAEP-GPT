@@ -8,6 +8,57 @@ import {
   SBAssistantSuggestedMessages,
 } from "@/components/scheduleBuilder/aiChat";
 
+/**
+ * ChatContainerScheduleBuilder - Container component for managing chat messages and scroll behavior
+ *
+ * This component manages the display of conversation turns, handles scroll behavior,
+ * and provides empty state with suggested messages. It automatically scrolls to new
+ * messages while respecting user scroll position.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.RefObject<HTMLButtonElement>} props.sendButtonRef - Reference to the send button for suggested messages
+ *
+ * @example
+ * ```tsx
+ * <ChatContainerScheduleBuilder sendButtonRef={sendButtonRef} />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule builder log state
+ * - TurnConversationItem for individual message display
+ * - SBAssistantSuggestedMessages for empty state
+ * - Scroll area viewport detection utilities
+ *
+ * @features
+ * - Automatic message list management from Redux state
+ * - Smart scroll behavior that respects user position
+ * - Empty state with suggested messages
+ * - Scroll position tracking and restoration
+ * - First message handling for initial scroll
+ *
+ * @scrollBehavior
+ * - Tracks if user is at bottom of scroll area
+ * - Only auto-scrolls when user is at bottom or first message
+ * - Uses threshold-based detection (20px from bottom)
+ * - Handles scroll area viewport detection
+ *
+ * @state
+ * - Local state for message list
+ * - Ref-based tracking of scroll position
+ * - First message flag for initial behavior
+ * - Redux state for current log and conversation turns
+ *
+ * @utilities
+ * - findScrollAreaViewport: Locates scroll area viewport element
+ * - checkIfUserAtBottom: Determines if user is near bottom of scroll area
+ * - BOTTOM_THRESHOLD: Configurable threshold for bottom detection
+ *
+ * @styling
+ * - Proper padding and height management
+ * - Empty state centering
+ * - Responsive design considerations
+ */
 /* -------------------------------------------------------------------------
    🟥  ChatContainerScheduleBuilder
 ---------------------------------------------------------------------------*/

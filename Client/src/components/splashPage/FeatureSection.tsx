@@ -1,5 +1,60 @@
 import { motion } from "framer-motion";
 
+/**
+ * FeatureSection - Individual feature display component
+ *
+ * This component renders individual feature cards with icons, titles, and descriptions.
+ * It includes hover animations and staggered entrance animations for a polished user experience.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {string} props.title - Feature title
+ * @param {string} props.description - Feature description
+ * @param {string} props.icon - Emoji icon for the feature
+ * @param {number} props.index - Index for staggered animation timing
+ *
+ * @example
+ * ```tsx
+ * <FeatureSection
+ *   title="Find Classes Instantly"
+ *   description="AI-powered search helps you discover the best courses."
+ *   icon="🚀"
+ *   index={0}
+ * />
+ * ```
+ *
+ * @dependencies
+ * - Framer Motion for animations
+ * - Tailwind CSS for styling
+ *
+ * @features
+ * - Staggered entrance animations
+ * - Hover effects with background changes
+ * - Gradient text styling
+ * - Animated borders
+ * - Responsive design
+ * - Dark mode support
+ *
+ * @animations
+ * - Fade in and slide up entrance
+ * - Staggered timing based on index
+ * - Hover state transitions
+ * - Background opacity changes
+ * - Border color transitions
+ *
+ * @styling
+ * - Glassmorphism design with backdrop blur
+ * - Gradient text for titles
+ * - Animated borders
+ * - Hover state styling
+ * - Responsive layout
+ *
+ * @accessibility
+ * - Semantic HTML structure
+ * - Proper heading hierarchy
+ * - Screen reader friendly content
+ * - Keyboard navigation support
+ */
 const FEATURES = [
   {
     title: "Find Classes Instantly",

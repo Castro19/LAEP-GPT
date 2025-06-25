@@ -1,3 +1,29 @@
+/**
+ * @component CourseTooltipContent
+ * @description Detailed course information display for tooltips. Shows course details,
+ * prerequisites, and additional information.
+ *
+ * @props
+ * @prop {Course} course - Course data to display in tooltip
+ *
+ * @dependencies
+ * - Course: Course type from shared types
+ * - TooltipContent: UI tooltip container
+ *
+ * @features
+ * - Course ID and display name
+ * - Unit information
+ * - Prerequisites display
+ * - Course description
+ * - Custom course information
+ * - Responsive tooltip layout
+ *
+ * @example
+ * ```tsx
+ * <CourseTooltipContent course={courseData} />
+ * ```
+ */
+
 import { Course } from "@polylink/shared/types";
 import { TooltipContent } from "@/components/ui/tooltip";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";

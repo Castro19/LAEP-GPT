@@ -1,3 +1,35 @@
+/**
+ * @component FlowChart
+ * @description Main flowchart display component for academic schedules. Renders terms in a
+ * carousel with year navigation, course completion tracking, and full-screen support.
+ *
+ * @props
+ * @prop {FlowchartData | null} flowchartData - Flowchart data to display
+ *
+ * @dependencies
+ * - Redux: flowchartActions, layout state
+ * - Carousel: Term navigation with previous/next controls
+ * - YearSelector: Year-based navigation
+ * - TermContainer: Individual term display
+ * - FullScreenFlowchart: Full-screen mode
+ * - useIsNarrowScreen: Responsive design hook
+ *
+ * @features
+ * - Carousel-based term navigation
+ * - Year-based navigation with hover animations
+ * - Course completion toggling
+ * - Full timeline view
+ * - Term mapping (Fall, Winter, Spring)
+ * - Responsive design for mobile/desktop
+ * - Hover pulse animations for navigation
+ * - Skip term filtering
+ *
+ * @example
+ * ```tsx
+ * <FlowChart flowchartData={flowchartData} />
+ * ```
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { useAppDispatch, flowchartActions, useAppSelector } from "@/redux";
 import { FlowchartData } from "@polylink/shared/types";

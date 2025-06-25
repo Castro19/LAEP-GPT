@@ -1,3 +1,33 @@
+/**
+ * @component FlowchartInfo
+ * @description Displays current flowchart information including catalog, major, concentration,
+ * and link to official flowchart. Shows empty state when no flowchart is selected.
+ *
+ * @props
+ * None - Component reads from Redux state
+ *
+ * @dependencies
+ * - Redux: flowchart state for current flowchart
+ * - Card: UI container for information display
+ * - Button: External link button
+ * - Framer Motion: Entrance animations
+ * - Lucide Icons: ExternalLink icon
+ *
+ * @features
+ * - Current flowchart information display
+ * - Catalog, major, and concentration info
+ * - External link to official flowchart
+ * - Empty state handling
+ * - Smooth entrance animations
+ * - Hover effects and transitions
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <FlowchartInfo />
+ * ```
+ */
+
 import { useAppSelector } from "@/redux";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

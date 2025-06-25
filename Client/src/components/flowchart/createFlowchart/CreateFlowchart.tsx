@@ -1,3 +1,35 @@
+/**
+ * @component CreateFlowchart
+ * @description Main component for creating academic flowcharts (academic schedules). Manages
+ * the flowchart creation process with progress tracking and user selections.
+ *
+ * @props
+ * @prop {() => void} onSwitchTab - Optional callback for tab switching after creation
+ *
+ * @dependencies
+ * - Redux: flowchartActions, flowSelectionActions, userActions
+ * - React Router: Navigation to created flowchart
+ * - ProgressBar: Progress tracking component
+ * - FlowchartOptions: Selection interface
+ * - useUserData: User data management
+ * - fetchFlowchartDataHelper: Flowchart data fetching
+ *
+ * @features
+ * - 4-step progress tracking (Starting Year, Catalog, Major, Concentration)
+ * - User year to start year conversion
+ * - Flowchart data fetching and database saving
+ * - Primary flowchart setting
+ * - User data updates
+ * - Navigation to created flowchart
+ * - Toast notifications for errors
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <CreateFlowchart onSwitchTab={() => setActiveTab('flowchart')} />
+ * ```
+ */
+
 import { useNavigate } from "react-router-dom";
 import {
   flowchartActions,

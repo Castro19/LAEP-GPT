@@ -3,6 +3,69 @@ import PersonCard from "./PersonCard";
 import { Helmet } from "react-helmet-async";
 import Contributors from "./Contributors";
 
+/**
+ * Team - Main team page component for displaying team members
+ *
+ * This component renders the complete team page with founder, team members,
+ * contributors, and previous contributors. It includes SEO optimization
+ * and proper organization of different team member types.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {TeamDocument[]} props.teamMembers - Array of team member data
+ *
+ * @example
+ * ```tsx
+ * <Team teamMembers={teamData} />
+ * ```
+ *
+ * @dependencies
+ * - TeamDocument type from shared types
+ * - PersonCard for individual member display
+ * - Contributors for contributor sections
+ * - React Helmet for SEO
+ *
+ * @features
+ * - Categorizes team members by type
+ * - Displays founder prominently
+ * - Shows current team members
+ * - Lists contributors separately
+ * - Includes previous contributors
+ * - SEO optimization with meta tags
+ *
+ * @teamCategories
+ * - Founder: Single prominent display
+ * - Team: Current team members (excluding contributors)
+ * - Contributors: Active contributors
+ * - Previous Contributors: Past contributors
+ *
+ * @seo
+ * - Page title: "Our Team | PolyLink"
+ * - Meta description for team page
+ * - OpenGraph tags for social sharing
+ * - Twitter Card tags for Twitter sharing
+ * - Custom image for social media
+ *
+ * @layout
+ * - Responsive design with rounded corners
+ * - Proper spacing between sections
+ * - Centered content layout
+ * - Shadow effects for depth
+ *
+ * @styling
+ * - Dark theme with zinc background
+ * - Rounded corners on larger screens
+ * - Proper padding and spacing
+ * - Shadow input styling
+ * - Responsive design
+ *
+ * @accessibility
+ * - Semantic HTML structure
+ * - Proper heading hierarchy
+ * - Screen reader friendly content
+ * - Keyboard navigation support
+ * - Alt text for images
+ */
 const Team = ({ teamMembers }: { teamMembers: TeamDocument[] }) => {
   const founder = teamMembers.find(
     (member) => member.name === "Cristian Castro Oliva"

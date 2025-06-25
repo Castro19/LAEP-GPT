@@ -1,3 +1,28 @@
+/**
+ * @component SectionLoading
+ * @description Loading indicator displayed while fetching course sections. Shows animated
+ * dots with loading text.
+ *
+ * @props
+ * None - Component manages its own state
+ *
+ * @dependencies
+ * - Framer Motion: Animated dots and text
+ * - cn utility: Class name merging
+ *
+ * @features
+ * - Animated bouncing dots (3 dots with staggered delays)
+ * - Loading text with fade-in animation
+ * - Dark/light mode color support
+ * - Smooth entrance/exit animations
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <SectionLoading />
+ * ```
+ */
+
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils"; // Assuming you have a className utility
 
