@@ -87,7 +87,6 @@ jobs:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: { name: Production }
     permissions: { id-token: write } # OIDC login
 
     steps:
@@ -100,11 +99,12 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CE7CA87135A644EE9DDFCFCDAE30A1EE }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_30AF9DB255A5487C8756D49024DD4B46 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B179ADFE03854C3CB0D14188E84F7C62 }}
+          # (no client-secret ⇒ OIDC token is used)
 
-      - name: "Deploy to Azure Web App"
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: "PolyLinkApp"
           slot-name: "Production"
-          package: .
+          package: server.zip
+          type: runFromPackage # ← mount the ZIP; no incremental copy
