@@ -97,15 +97,14 @@ jobs:
       - name: Azure CLI login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F274D06961214893BCE0EE8D715C228C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6525025D5E644854A55E3DBAB0DA6BA0 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4FD34D38472142FAAB00A39151A44589 }}
-          # (no client-secret ⇒ OIDC token is used)
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CE7CA87135A644EE9DDFCFCDAE30A1EE }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_30AF9DB255A5487C8756D49024DD4B46 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B179ADFE03854C3CB0D14188E84F7C62 }}
 
-      - name: Deploy to Azure Web App
+      - name: "Deploy to Azure Web App"
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "PolyLink"
+          app-name: "PolyLinkApp"
           slot-name: "Production"
-          package: server.zip
-          type: runFromPackage # ← mount the ZIP; no incremental copy
+          package: .
