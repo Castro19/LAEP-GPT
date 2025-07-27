@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
 import useDeviceType from "@/hooks/useDeviceType";
+import useFlowchartHistory from "@/hooks/useFlowchartHistory";
 
 interface TermContainerProps {
   term: Term;
@@ -45,15 +46,16 @@ const TermContainer: React.FC<TermContainerProps> = ({
   const dispatch = useAppDispatch();
   const device = useDeviceType();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const { saveCurrentState } = useFlowchartHistory();
 
   const getSummerTermIndex = () => {
     // Get current term's year index to determine summer term index
     const currentTermIndex = term.tIndex;
     const yearGroup = Math.floor((currentTermIndex - 1) / 4);
     const summerTermIndex = yearGroup * 4 + 4; // This gives us 4, 8, 12, etc.
-    
+
     return summerTermIndex;
-  }
+  };
 
   const summerTermIndex = getSummerTermIndex();
 
@@ -64,7 +66,10 @@ const TermContainer: React.FC<TermContainerProps> = ({
     if (flowchartData.termData.some((t) => t.tIndex === summerTermIndex)) {
       return; // Summer term already exists
     }
-    
+
+    // Save current state before making changes
+    saveCurrentState();
+
     // Create new summer term
     const newSummerTerm: Term = {
       tIndex: summerTermIndex,
@@ -77,13 +82,20 @@ const TermContainer: React.FC<TermContainerProps> = ({
     updatedTerms.sort((a, b) => a.tIndex - b.tIndex);
     console.log(updatedTerms);
 
-    const updatedFlowchartData = updateFlowchartTermData(flowchartData, updatedTerms);
+    const updatedFlowchartData = updateFlowchartTermData(
+      flowchartData,
+      updatedTerms
+    );
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
 
   // Operates like a switch state - all courses become completed/noncompleted
   const handleTermClick = () => {
     if (!flowchartData) return;
+
+    // Save current state before making changes
+    saveCurrentState();
+
     const areAllCoursesCompleted = term.courses.every(
       (course) => course.completed
     );
@@ -112,7 +124,10 @@ const TermContainer: React.FC<TermContainerProps> = ({
       console.warn("Term index does not exist, possible duplicate creation.");
     }
 
-    const updatedFlowchartData = updateFlowchartTermData(flowchartData, updatedTerms);
+    const updatedFlowchartData = updateFlowchartTermData(
+      flowchartData,
+      updatedTerms
+    );
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
 
@@ -127,7 +142,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
       <div className="flex justify-center items-center ml-6 py-2">
         <div className="inline-flex items-center gap-1">
           <span className="font-medium text-sm text-foreground">
-          {termName}
+            {termName}
           </span>
           <Button
             variant="ghost"
@@ -138,7 +153,7 @@ const TermContainer: React.FC<TermContainerProps> = ({
             <CircleCheck />
           </Button>
           {/* Spring terms are 3, 7, 11... */}
-          {term.tIndex == (summerTermIndex - 1) && (
+          {term.tIndex == summerTermIndex - 1 && (
             <Button
               variant="ghost"
               size="icon"

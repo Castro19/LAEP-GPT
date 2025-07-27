@@ -16,6 +16,7 @@ import FullScreenCourseItem from "./FullScreenCourseItem";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
+import useFlowchartHistory from "@/hooks/useFlowchartHistory";
 
 interface FullScreenTermContainerProps {
   term: Term;
@@ -43,15 +44,16 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const { saveCurrentState } = useFlowchartHistory();
 
   const getSummerTermIndex = () => {
     // Get current term's year index to determine summer term index
     const currentTermIndex = term.tIndex;
     const yearGroup = Math.floor((currentTermIndex - 1) / 4);
     const summerTermIndex = yearGroup * 4 + 4; // This gives us 4, 8, 12, etc.
-    
+
     return summerTermIndex;
-  }
+  };
 
   const summerTermIndex = getSummerTermIndex();
 
@@ -62,7 +64,10 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
     if (flowchartData.termData.some((t) => t.tIndex === summerTermIndex)) {
       return; // Summer term already exists
     }
-    
+
+    // Save current state before making changes
+    saveCurrentState();
+
     // Create new summer term
     const newSummerTerm: Term = {
       tIndex: summerTermIndex,
@@ -75,14 +80,23 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
     updatedTerms.sort((a, b) => a.tIndex - b.tIndex);
     console.log(updatedTerms);
 
-    const updatedFlowchartData = updateFlowchartTermData(flowchartData, updatedTerms);
+    const updatedFlowchartData = updateFlowchartTermData(
+      flowchartData,
+      updatedTerms
+    );
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
 
   // Operates like a switch state - all courses become completed/noncompleted
   const handleTermClick = () => {
     if (!flowchartData) return;
-    const areAllCoursesCompleted = term.courses.every(course => course.completed);
+
+    // Save current state before making changes
+    saveCurrentState();
+
+    const areAllCoursesCompleted = term.courses.every(
+      (course) => course.completed
+    );
     const newCompletedState = !areAllCoursesCompleted;
 
     const updatedCourses = term.courses.map((course) => ({
@@ -117,18 +131,22 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
     if (!flowchartData) return;
 
     const updatedTerms = [...flowchartData.termData];
-    const termIndexToRemove = updatedTerms.findIndex((currentTerm) => currentTerm.tIndex === term.tIndex);
+    const termIndexToRemove = updatedTerms.findIndex(
+      (currentTerm) => currentTerm.tIndex === term.tIndex
+    );
     updatedTerms.splice(termIndexToRemove, 1);
 
-    const updatedFlowchartData = { ...flowchartData, termData: updatedTerms};
+    const updatedFlowchartData = { ...flowchartData, termData: updatedTerms };
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
-    dispatch(flowchartActions.updateFlowchart({
-      flowchartId: flowchart.flowchartId,
-      name: name,
-      flowchartData: null,
-      primaryOption: primaryOption ?? false,
-    }))
-  }
+    dispatch(
+      flowchartActions.updateFlowchart({
+        flowchartId: flowchart.flowchartId,
+        name: name,
+        flowchartData: null,
+        primaryOption: primaryOption ?? false,
+      })
+    );
+  };
 
   return (
     <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-full">
@@ -136,7 +154,7 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
       <div className="p-1 flex-shrink-0">
         <div className="flex justify-center items-center text-center">
           <span className="font-medium text-sm text-foreground">
-          {termName}
+            {termName}
           </span>
         </div>
         <div className="flex justify-center items-center gap-2">
@@ -149,7 +167,7 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
             <CircleCheck />
           </Button>
           {/* Spring terms are 3, 7, 11... */}
-          {term.tIndex == (summerTermIndex - 1) && (
+          {term.tIndex == summerTermIndex - 1 && (
             <Button
               variant="ghost"
               size="icon"
@@ -170,7 +188,9 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
             {(provided) => (
               <div
                 className={`flex flex-col gap-1 min-h-[200px] ${
-                  term.courses.length === 0 ? 'border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-md p-2' : ''
+                  term.courses.length === 0
+                    ? "border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-md p-2"
+                    : ""
                 }`}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
