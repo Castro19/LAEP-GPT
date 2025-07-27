@@ -8,7 +8,7 @@ import {
 import {
   Flowchart,
   CreateFlowchart,
-  FlowchartUnitCounts,
+  FlowchartFooter,
 } from "@/components/flowchart";
 import FlowchartLayout from "@/components/layout/FlowchartPage/FlowchartLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -138,7 +138,7 @@ const FlowChartPage = () => {
                   ) : (
                     <>
                       <Flowchart flowchartData={flowchartData} />
-                      {flowchartData && <FlowchartUnitCounts />}
+                      {flowchartData && <FlowchartFooter />}
                     </>
                   )}
                 </div>
@@ -183,7 +183,10 @@ const FlowchartMobile = () => {
               {createFlowchart || !flowchartData ? (
                 <CreateFlowchart onSwitchTab={handleTabSwitch} />
               ) : (
-                <Flowchart flowchartData={flowchartData} />
+                <>
+                  <Flowchart flowchartData={flowchartData} />
+                  {flowchartData && <FlowchartFooter />}
+                </>
               )}
             </TabsContent>
           </Tabs>

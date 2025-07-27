@@ -6,7 +6,8 @@ import { Droppable } from "@hello-pangea/dnd";
 import { FlowchartData, Term } from "@polylink/shared/types";
 
 // Icons
-import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
+import { CalendarPlus } from "lucide-react";
+import { CircleCheck } from "lucide-react";
 
 // My components
 import FullScreenCourseItem from "./FullScreenCourseItem";
@@ -15,6 +16,7 @@ import FullScreenCourseItem from "./FullScreenCourseItem";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PortalAwareDraggable from "@/components/layout/FlowchartPage/PortalAwareDraggable";
+import useFlowchartHistory from "@/hooks/useFlowchartHistory";
 
 interface FullScreenTermContainerProps {
   term: Term;
@@ -32,6 +34,7 @@ const updateFlowchartTermData = (
 
   // Update the termData property
   updatedFlowchartData.termData = newTermData;
+  return updatedFlowchartData;
 };
 
 const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
@@ -41,15 +44,64 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const { saveCurrentState } = useFlowchartHistory();
 
-  // Split term name into two parts (e.g., "Fall 2025" -> ["Fall", "2025"])
-  const [termSeason, termYear] = termName.split(" ");
+  const getSummerTermIndex = () => {
+    // Get current term's year index to determine summer term index
+    const currentTermIndex = term.tIndex;
+    const yearGroup = Math.floor((currentTermIndex - 1) / 4);
+    const summerTermIndex = yearGroup * 4 + 4; // This gives us 4, 8, 12, etc.
 
-  const handleTermClick = (action: "add" | "remove") => {
+    return summerTermIndex;
+  };
+
+  const summerTermIndex = getSummerTermIndex();
+
+  const handleAddSummerTerm = () => {
     if (!flowchartData) return;
+
+    // Check if summer term already exists
+    if (flowchartData.termData.some((t) => t.tIndex === summerTermIndex)) {
+      return; // Summer term already exists
+    }
+
+    // Save current state before making changes
+    saveCurrentState();
+
+    // Create new summer term
+    const newSummerTerm: Term = {
+      tIndex: summerTermIndex,
+      tUnits: "0",
+      courses: [],
+    };
+
+    const updatedTerms = [...flowchartData.termData];
+    updatedTerms.push(newSummerTerm);
+    updatedTerms.sort((a, b) => a.tIndex - b.tIndex);
+    console.log(updatedTerms);
+
+    const updatedFlowchartData = updateFlowchartTermData(
+      flowchartData,
+      updatedTerms
+    );
+    dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
+  };
+
+  // Operates like a switch state - all courses become completed/noncompleted
+  const handleTermClick = () => {
+    if (!flowchartData) return;
+
+    // Save current state before making changes
+    saveCurrentState();
+
+    const areAllCoursesCompleted = term.courses.every(
+      (course) => course.completed
+    );
+    const newCompletedState = !areAllCoursesCompleted;
+
     const updatedCourses = term.courses.map((course) => ({
       ...course,
-      completed: action === "add",
+      completed: newCompletedState,
     }));
     const updatedTerms = [...flowchartData.termData];
 
@@ -75,31 +127,56 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
 
+  const handleRemoveTermClick = () => {
+    if (!flowchartData) return;
+
+    const updatedTerms = [...flowchartData.termData];
+    const termIndexToRemove = updatedTerms.findIndex(
+      (currentTerm) => currentTerm.tIndex === term.tIndex
+    );
+    updatedTerms.splice(termIndexToRemove, 1);
+
+    const updatedFlowchartData = { ...flowchartData, termData: updatedTerms };
+    dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
+    dispatch(
+      flowchartActions.updateFlowchart({
+        flowchartId: flowchart.flowchartId,
+        name: name,
+        flowchartData: null,
+        primaryOption: primaryOption ?? false,
+      })
+    );
+  };
+
   return (
     <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-full">
       {/* Header - Reorganized for narrow widths */}
       <div className="p-1 flex-shrink-0">
-        <h3 className="m-0 text-center text-sm font-medium py-1">
-          <div>{termSeason}</div>
-          <div>{termYear}</div>
-        </h3>
+        <div className="flex justify-center items-center text-center">
+          <span className="font-medium text-sm text-foreground">
+            {termName}
+          </span>
+        </div>
         <div className="flex justify-center items-center gap-2">
           <Button
             variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
-            onClick={() => handleTermClick("remove")}
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => handleTermClick()}
           >
-            <CiCircleRemove className="w-4 h-4" />
+            <CircleCheck />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
-            onClick={() => handleTermClick("add")}
-          >
-            <CiCircleCheck className="w-4 h-4" />
-          </Button>
+          {/* Spring terms are 3, 7, 11... */}
+          {term.tIndex == summerTermIndex - 1 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9"
+              onClick={() => handleAddSummerTerm()}
+            >
+              <CalendarPlus />
+            </Button>
+          )}
         </div>
       </div>
       <hr className="my-1 flex-shrink-0" />
@@ -110,7 +187,11 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
           <Droppable droppableId={`term-${term.tIndex}`}>
             {(provided) => (
               <div
-                className="flex flex-col gap-1"
+                className={`flex flex-col gap-1 min-h-[200px] ${
+                  term.courses.length === 0
+                    ? "border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-md p-2"
+                    : ""
+                }`}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >

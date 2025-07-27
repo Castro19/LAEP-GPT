@@ -98,42 +98,39 @@ const FlowchartUnitCounts = () => {
       className="dark:bg-gray-900 sticky bottom-0"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div
-        className={`flex ${isNarrowScreen ? "flex-col" : "items-center justify-between"} m-4 text-lg`}
-      >
-        <div
-          className={`flex ${isNarrowScreen ? "flex-col space-y-2" : "items-center gap-4"}`}
-        >
-          {/* Major Units */}
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#FEFD9A]"></div>
-            {!isNarrowScreen && <span>Major:</span>}
-            <span>{units.major.toFixed(1)}</span>
-          </div>
-          {/* Support Units */}
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#FCD09E]"></div>
-            {!isNarrowScreen && <span>Support:</span>}
-            <span>{units.support.toFixed(1)}</span>
-          </div>
-          {/* GE Units */}
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#DCFDD2]"></div>
-            {!isNarrowScreen && <span>GE:</span>}
-            <span>{units.ge.toFixed(1)}</span>
-          </div>
-          {/* Other Units */}
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[#F5F5DC]"></div>
-            {!isNarrowScreen && <span>Other:</span>}
-            <span>{units.other.toFixed(1)}</span>
+      <div className="space-y-4 ml-4 mr-4 text-lg">
+        <div className={`${isNarrowScreen ? "flex-col space-y-2" : "flex justify-between items-center px-4"}`}>
+          <div className={`flex ${isNarrowScreen ? "flex-col space-y-2" : "items-center mt-4 gap-4"}`}>
+            {/* Major Units */}
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#FEFD9A]"></div>
+              {!isNarrowScreen && <span>Major:</span>}
+              <span>{units.major.toFixed(1)}</span>
+            </div>
+            {/* Support Units */}
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#FCD09E]"></div>
+              {!isNarrowScreen && <span>Support:</span>}
+              <span>{units.support.toFixed(1)}</span>
+            </div>
+            {/* GE Units */}
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#DCFDD2]"></div>
+              {!isNarrowScreen && <span>GE:</span>}
+              <span>{units.ge.toFixed(1)}</span>
+            </div>
+            {/* Other Units */}
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#F5F5DC]"></div>
+              {!isNarrowScreen && <span>Other:</span>}
+              <span>{units.other.toFixed(1)}</span>
+            </div>
           </div>
         </div>
-        <div
-          className={`flex items-center gap-2 font-bold ${isNarrowScreen ? "mt-2" : ""}`}
-        >
-          <span className="font-medium">Total Units:</span>
-          <span>{units.total.toFixed(1)}</span>
+        {/* Total Units */}
+        <div className="flex justify-start items-center border-t ml-4 pt-2 dark:border-gray-700">
+          <span className="font-semibold">Total Units:</span>
+          <span className="ml-2">{units.total.toFixed(1)}</span>
         </div>
       </div>
       {/* Disclaimer */}

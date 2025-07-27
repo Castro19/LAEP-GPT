@@ -37,6 +37,7 @@ import { type CarouselApi } from "@/components/ui/carousel";
 
 // Hooks
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
+import useFlowchartHistory from "@/hooks/useFlowchartHistory";
 
 // My components
 import { TermContainer, defaultTermData } from "@/components/flowchart";
@@ -71,27 +72,35 @@ const TERM_MAP = {
   1: "Fall",
   2: "Winter",
   3: "Spring",
+  4: "Summer",
   5: "Fall",
   6: "Winter",
   7: "Spring",
+  8: "Summer",
   9: "Fall",
   10: "Winter",
   11: "Spring",
+  12: "Summer",
   13: "Fall",
   14: "Winter",
   15: "Spring",
+  16: "Summer",
   17: "Fall",
   18: "Winter",
   19: "Spring",
+  20: "Summer",
   21: "Fall",
   22: "Winter",
   23: "Spring",
+  24: "Summer",
   25: "Fall",
   26: "Winter",
   27: "Spring",
+  28: "Summer",
   29: "Fall",
   30: "Winter",
   31: "Spring",
+  32: "Summer",
 };
 
 const Flowchart = ({
@@ -102,6 +111,7 @@ const Flowchart = ({
   const dispatch = useAppDispatch();
   const isNarrowScreen = useIsNarrowScreen();
   const device = useDeviceType();
+  const { saveCurrentState } = useFlowchartHistory();
 
   const { isDragging } = useAppSelector((state) => state.layout);
   const { isFullTimelineView } = useAppSelector((state) => state.flowchart);
@@ -117,19 +127,31 @@ const Flowchart = ({
     ? parseInt(flowchartData.startYear, 10) || 2022
     : 2022;
 
-  const termsPerYear = 3; // Fall, Winter, Spring
+  const termsPerYear = 4; // Fall, Winter, Spring, Summer
 
   const getTermName = (termNumber: number) => {
     const termName = TERM_MAP[termNumber as keyof typeof TERM_MAP];
-    // year logic
-    const baseYearOffset = Math.floor((termNumber - 1) / 4);
-    const yearOffset =
-      termName === "Spring" ? baseYearOffset + 1 : baseYearOffset;
+    // year logic - group by academic years (Fall through Summer)
+    // termNumber: 1(Fall), 2(Winter), 3(Spring), 4(Summer), 5(Fall)...
+    // (termNumber - 1) gives us: 0, 1, 2, 3, 4...
+    // Divided by 4 (termsPerYear) and floored gives us:
+    // 0/4 = 0 (Fall, Winter, Spring, Summer of first year)
+    // 4/4 = 1 (Fall of second year)
+    const yearOffset = Math.floor((termNumber - 1) / termsPerYear);
     const year = startYear + yearOffset;
-    return `${termName} ${year}`;
+    // Adjust for calendar year (Winter, Spring, Summer are in the next calendar-year)
+    const actualYear =
+      termName === "Winter" || termName === "Spring" || termName === "Summer"
+        ? year + 1
+        : year;
+    return `${termName} ${actualYear}`;
   };
 
   const onCourseToggleComplete = (termIndex: number, courseIndex: number) => {
+    // Save current state before making changes
+    saveCurrentState();
+
+    // Use Redux action to toggle course completion
     dispatch(
       flowchartActions.toggleCourseCompletion({ termIndex, courseIndex })
     );
@@ -140,36 +162,65 @@ const Flowchart = ({
     ? flowchartData.termData.filter((term) => term.tIndex !== -1)
     : defaultTermData.filter((term) => term.tIndex !== -1);
 
-  const totalTerms = termsData.length;
-  const totalYears = Math.ceil(totalTerms / termsPerYear);
+  // Count how many Fall terms we have to determine number of years
+  const totalYears = termsData.reduce((years, term) => {
+    const termName = TERM_MAP[term.tIndex as keyof typeof TERM_MAP];
+    return termName === "Fall" ? years + 1 : years;
+  }, 0);
 
   // Add state for selected year
   const [selectedYear, setSelectedYear] = useState(0);
 
-  // Modify the scrollToYear function to use the carousel API
-  const scrollToYear = (yearIndex: number) => {
+  const handleYearChange = (yearIndex: number) => {
     setSelectedYear(yearIndex);
     if (api) {
-      const termIndex = yearIndex * termsPerYear;
-      api.scrollTo(termIndex);
+      // Find the index of the nth Fall term (nth = yearIndex)
+      const termIndex = termsData.findIndex((term, index) => {
+        const termName = TERM_MAP[term.tIndex as keyof typeof TERM_MAP];
+        const fallTermsSoFar = termsData
+          .slice(0, index + 1)
+          .filter(
+            (t) => TERM_MAP[t.tIndex as keyof typeof TERM_MAP] === "Fall"
+          ).length;
+        return termName === "Fall" && fallTermsSoFar === yearIndex + 1;
+      });
+
+      if (termIndex !== -1) {
+        api.scrollTo(termIndex);
+      }
     }
   };
 
-  // Update the useEffect to use the carousel API
+  // Handle carousel initialization and scroll position
   useEffect(() => {
-    if (!api) return;
+    if (!api || isFullTimelineView) return;
 
+    // Set up selection change listener
     const onSelect = () => {
       const currentIndex = api.selectedScrollSnap();
-      const yearIndex = Math.floor(currentIndex / termsPerYear);
-      setSelectedYear(yearIndex);
+      const currentTerm = termsData[currentIndex];
+      if (!currentTerm) return;
+
+      // Count how many Fall terms come before this term to determine the year
+      const fallsSeen = termsData
+        .slice(0, currentIndex + 1)
+        .filter(
+          (t) => TERM_MAP[t.tIndex as keyof typeof TERM_MAP] === "Fall"
+        ).length;
+
+      // Subtract 1 to convert to 0-based index, but never go below 0
+      const yearIndex = Math.max(fallsSeen - 1, 0);
+
+      if (yearIndex !== selectedYear) {
+        setSelectedYear(yearIndex);
+      }
     };
 
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
     };
-  }, [api, termsPerYear]);
+  }, [api, selectedYear, isFullTimelineView, termsData]);
 
   // Hover logic for desktop only
   const handlePrevHoverStart = () => {
@@ -271,7 +322,7 @@ const Flowchart = ({
       <YearSelector
         totalYears={totalYears}
         selectedYear={selectedYear}
-        scrollToYear={scrollToYear}
+        onYearChange={handleYearChange}
         isNarrowScreen={isNarrowScreen}
       />
       {isFullTimelineView ? (
@@ -320,7 +371,7 @@ const Flowchart = ({
             </CarouselContent>
 
             {/* Hide arrows if not desktop */}
-            {device === "desktop" && (
+            {(device === "desktop" || !isNarrowScreen) && (
               <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
                 <div
                   className="pointer-events-auto z-10"
