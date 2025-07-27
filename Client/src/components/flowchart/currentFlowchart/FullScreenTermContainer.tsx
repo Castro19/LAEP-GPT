@@ -6,7 +6,8 @@ import { Droppable } from "@hello-pangea/dnd";
 import { FlowchartData, Term } from "@polylink/shared/types";
 
 // Icons
-import { CiCircleCheck } from "react-icons/ci";
+import { CalendarPlus } from "lucide-react";
+import { CircleCheck } from "lucide-react";
 
 // My components
 import FullScreenCourseItem from "./FullScreenCourseItem";
@@ -32,6 +33,7 @@ const updateFlowchartTermData = (
 
   // Update the termData property
   updatedFlowchartData.termData = newTermData;
+  return updatedFlowchartData;
 };
 
 const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
@@ -42,8 +44,40 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
   const dispatch = useAppDispatch();
   const { flowchartData } = useAppSelector((state) => state.flowchart);
 
-  // Split term name into two parts (e.g., "Fall 2025" -> ["Fall", "2025"])
-  const [termSeason, termYear] = termName.split(" ");
+  const getSummerTermIndex = () => {
+    // Get current term's year index to determine summer term index
+    const currentTermIndex = term.tIndex;
+    const yearGroup = Math.floor((currentTermIndex - 1) / 4);
+    const summerTermIndex = yearGroup * 4 + 4; // This gives us 4, 8, 12, etc.
+    
+    return summerTermIndex;
+  }
+
+  const summerTermIndex = getSummerTermIndex();
+
+  const handleAddSummerTerm = () => {
+    if (!flowchartData) return;
+
+    // Check if summer term already exists
+    if (flowchartData.termData.some((t) => t.tIndex === summerTermIndex)) {
+      return; // Summer term already exists
+    }
+    
+    // Create new summer term
+    const newSummerTerm: Term = {
+      tIndex: summerTermIndex,
+      tUnits: "0",
+      courses: [],
+    };
+
+    const updatedTerms = [...flowchartData.termData];
+    updatedTerms.push(newSummerTerm);
+    updatedTerms.sort((a, b) => a.tIndex - b.tIndex);
+    console.log(updatedTerms);
+
+    const updatedFlowchartData = updateFlowchartTermData(flowchartData, updatedTerms);
+    dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
+  };
 
   // Operates like a switch state - all courses become completed/noncompleted
   const handleTermClick = () => {
@@ -79,23 +113,52 @@ const FullScreenTermContainer: React.FC<FullScreenTermContainerProps> = ({
     dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
   };
 
+  const handleRemoveTermClick = () => {
+    if (!flowchartData) return;
+
+    const updatedTerms = [...flowchartData.termData];
+    const termIndexToRemove = updatedTerms.findIndex((currentTerm) => currentTerm.tIndex === term.tIndex);
+    updatedTerms.splice(termIndexToRemove, 1);
+
+    const updatedFlowchartData = { ...flowchartData, termData: updatedTerms};
+    dispatch(flowchartActions.setFlowchartData(updatedFlowchartData));
+    dispatch(flowchartActions.updateFlowchart({
+      flowchartId: flowchart.flowchartId,
+      name: name,
+      flowchartData: null,
+      primaryOption: primaryOption ?? false,
+    }))
+  }
+
   return (
     <div className="flex flex-col w-full dark:bg-gray-900 shadow-md h-full">
       {/* Header - Reorganized for narrow widths */}
       <div className="p-1 flex-shrink-0">
-        <h3 className="m-0 text-center text-sm font-medium py-1">
-          <div>{termSeason}</div>
-          <div>{termYear}</div>
-        </h3>
+        <div className="flex justify-center items-center text-center">
+          <span className="font-medium text-sm text-foreground">
+          {termName}
+          </span>
+        </div>
         <div className="flex justify-center items-center gap-2">
           <Button
             variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
+            size="icon"
+            className="h-9 w-9"
             onClick={() => handleTermClick()}
           >
-            <CiCircleCheck className="w-4 h-4" />
+            <CircleCheck />
           </Button>
+          {/* Spring terms are 3, 7, 11... */}
+          {term.tIndex == (summerTermIndex - 1) && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9"
+              onClick={() => handleAddSummerTerm()}
+            >
+              <CalendarPlus />
+            </Button>
+          )}
         </div>
       </div>
       <hr className="my-1 flex-shrink-0" />

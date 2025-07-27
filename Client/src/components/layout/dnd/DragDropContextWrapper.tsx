@@ -21,6 +21,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { serverUrl } from "@/helpers/getEnvironmentVars";
 import { getCatalogYear } from "@/components/flowchart/helpers/findCatalogYear";
+import useFlowchartHistory from "@/hooks/useFlowchartHistory";
 
 interface DragDropContextWrapperProps {
   children: ReactNode;
@@ -31,6 +32,7 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
   const flowchartData = useAppSelector(
     (state) => state.flowchart.flowchartData
   );
+  const { saveCurrentState } = useFlowchartHistory();
   const catalog = getCatalogYear(flowchartData?.name || "");
 
   const handleDragStart = () => {
@@ -90,8 +92,14 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
       const destTermIndex = parseInt(destination.droppableId.split("-")[1], 10);
 
       if (flowchartData) {
+        // moveCourseBetweenTerms(
+        //   flowchartData,
+        //   sourceTermIndex,
+        //   destTermIndex,
+        //   source.index,
+        //   destination.index
+        // );
         moveCourseBetweenTerms(
-          flowchartData,
           sourceTermIndex,
           destTermIndex,
           source.index,
@@ -140,14 +148,36 @@ const DragDropContextWrapper = ({ children }: DragDropContextWrapperProps) => {
 
   // Helper function to move course between terms
   const moveCourseBetweenTerms = (
-    flowchartData: FlowchartData,
     sourceTermIndex: number,
     destTermIndex: number,
     sourceIndex: number,
     destIndex: number
   ) => {
-    const newTermData: Term[] = cloneDeep(flowchartData.termData);
+    // const newTermData: Term[] = cloneDeep(flowchartData.termData);
 
+    // const sourceTerm = newTermData.find((t) => t.tIndex === sourceTermIndex);
+    // const destTerm = newTermData.find((t) => t.tIndex === destTermIndex);
+
+    // if (sourceTerm && destTerm) {
+    //   const [movedCourse] = sourceTerm.courses.splice(sourceIndex, 1);
+    //   destTerm.courses.splice(destIndex, 0, movedCourse);
+
+    //   recalculateUnits(sourceTerm);
+    //   recalculateUnits(destTerm);
+    //   dispatch(
+    //     flowchartActions.setFlowchartData({
+    //       ...flowchartData,
+    //       termData: newTermData,
+    //     })
+    //   );
+    // }
+    if (!flowchartData) return;
+
+    // Save current state before making changes
+    saveCurrentState();
+
+    // Clone the flowchart data and perform the move
+    const newTermData: Term[] = cloneDeep(flowchartData.termData);
     const sourceTerm = newTermData.find((t) => t.tIndex === sourceTermIndex);
     const destTerm = newTermData.find((t) => t.tIndex === destTermIndex);
 

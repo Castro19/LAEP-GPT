@@ -4,13 +4,13 @@ import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 const YearSelector = ({
   totalYears,
   selectedYear,
-  scrollToYear,
+  onYearChange,
   isNarrowScreen,
 }: {
   totalYears: number;
   selectedYear: number;
   // eslint-disable-next-line no-unused-vars
-  scrollToYear: (year: number) => void;
+  onYearChange: (year: number) => void;
   isNarrowScreen: boolean;
 }) => {
   const dispatch = useAppDispatch();
@@ -26,7 +26,7 @@ const YearSelector = ({
 
     dispatch(flowchartActions.setFullTimelineView(false));
     const yearIndex = parseInt(value);
-    scrollToYear(yearIndex);
+    onYearChange(yearIndex);
   };
 
   return (

@@ -13,13 +13,16 @@ const FlowchartFooter = () => {
     >
     <div className="space-y-4 mx-5 text-lg">
         {/* Top section with actions and unit categories */}
-        <div className={`${isNarrowScreen ? "flex-col space-y-4" : "flex justify-between items-center"}`}>
+        <div className={`${isNarrowScreen ? "flex-row" : "flex justify-between items-center"}`}>
           <UnitCategories />
-          <FlowchartActions />
+          {!isNarrowScreen && <FlowchartActions />}
         </div>
 
-        {/* Bottom section with total units*/}
-        <TotalUnits />
+        {/* Bottom section with total units */}
+        <div className={`flex ${isNarrowScreen ? "justify-between" : "justify-center"} items-center border-t pt-2 dark:border-gray-700`}>
+          <TotalUnits />
+          {isNarrowScreen && <FlowchartActions />}
+        </div>
       </div>
 
       {/* Disclaimer */}

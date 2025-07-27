@@ -1,9 +1,10 @@
+import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 import { useAppSelector } from "@/redux";
 import { useEffect, useState } from "react";
-import { UnitCounts } from "@polylink/shared/types";
 
 export const TotalUnits = () => {
   const { flowchartData } = useAppSelector((state) => state.flowchart);
+  const isNarrowScreen = useIsNarrowScreen();
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -34,9 +35,8 @@ export const TotalUnits = () => {
   }, [flowchartData]);
 
   return (
-    <div className="flex justify-center items-center border-t pt-2 dark:border-gray-700">
-      <span className="font-semibold">Total Units:</span>
-      <span className="ml-2">{total.toFixed(1)}</span>
-    </div>
-  );
+    <>
+      <span className={`font-semibold ${isNarrowScreen && "ml-2"}`}>{`Total Units: ${total.toFixed(1)}`}</span>
+    </>
+);
 };

@@ -67,7 +67,7 @@ export const UnitCategories = () => {
   }, [flowchartData]);
 
   return (
-    <div className={`flex ${isNarrowScreen ? "flex-col space-y-2" : "items-center gap-4"}`}>
+    <div className={`flex ${isNarrowScreen ? "flex-row justify-center gap-4" : "items-center gap-4"}`}>
       {/* Major Units */}
       <div className="flex items-center gap-2">
         <div className="w-4 h-4 bg-[#FEFD9A]"></div>
