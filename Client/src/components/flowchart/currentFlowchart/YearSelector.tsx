@@ -1,3 +1,38 @@
+/**
+ * @component YearSelector
+ * @description Year-based navigation component for flowchart viewing. Provides tabs for
+ * individual years and full timeline view.
+ *
+ * @props
+ * @prop {number} totalYears - Total number of years in the flowchart
+ * @prop {number} selectedYear - Currently selected year index
+ * @prop {(year: number) => void} scrollToYear - Function to scroll to specific year
+ * @prop {boolean} isNarrowScreen - Whether screen is narrow for responsive design
+ *
+ * @dependencies
+ * - Redux: flowchartActions for full timeline view
+ * - Tabs: UI tab components
+ * - TabsList, TabsTrigger: Tab navigation elements
+ *
+ * @features
+ * - Year-based tab navigation (Year 1, Year 2, etc.)
+ * - Full timeline view option
+ * - Responsive design for narrow screens
+ * - Active state highlighting
+ * - Hover effects and transitions
+ * - Dark mode support
+ *
+ * @example
+ * ```tsx
+ * <YearSelector
+ *   totalYears={4}
+ *   selectedYear={1}
+ *   scrollToYear={handleScroll}
+ *   isNarrowScreen={true}
+ * />
+ * ```
+ */
+
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 

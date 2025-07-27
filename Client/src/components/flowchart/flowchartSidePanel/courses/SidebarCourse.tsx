@@ -1,3 +1,32 @@
+/**
+ * @component SidebarCourse
+ * @description Individual course display component for sidebar. Shows course information
+ * with completion status and tooltip with course description.
+ *
+ * @props
+ * @prop {Course} course - Course data to display
+ *
+ * @dependencies
+ * - Redux: flowchart state for completed courses
+ * - Tooltip: Course description display
+ * - Card: Course display container
+ * - useMemo: Performance optimization for completion check
+ *
+ * @features
+ * - Course ID and display name
+ * - Completion status with visual feedback
+ * - Tooltip with course description
+ * - Hover animations and transitions
+ * - Color-coded course display
+ * - Responsive design
+ * - Performance optimization
+ *
+ * @example
+ * ```tsx
+ * <SidebarCourse course={courseData} />
+ * ```
+ */
+
 import { useMemo } from "react";
 import { useAppSelector } from "@/redux";
 import { Course } from "@polylink/shared/types";

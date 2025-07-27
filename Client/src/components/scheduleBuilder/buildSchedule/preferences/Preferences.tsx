@@ -8,6 +8,56 @@ import {
 } from "@/components/classSearch";
 import { SECTION_FILTERS_SCHEMA } from "@/components/classSearch/courseFilters/helpers/constants";
 
+/**
+ * Preferences - Component for managing schedule building preferences
+ *
+ * This component provides a form interface for configuring various preferences
+ * that affect how schedules are generated, including unit limits, instructor ratings,
+ * and conflict handling options.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {UseFormReturn} props.form - React Hook Form instance for managing form state
+ *
+ * @example
+ * ```tsx
+ * const form = useForm<SchedulePreferencesForm>({
+ *   resolver: zodResolver(SCHEDULE_PREFERENCES_SCHEMA),
+ *   defaultValues: preferences
+ * });
+ *
+ * <Preferences form={form} />
+ * ```
+ *
+ * @dependencies
+ * - React Hook Form for form management
+ * - Zod for schema validation
+ * - Class search components for form controls
+ * - SECTION_FILTERS_SCHEMA for validation rules
+ *
+ * @features
+ * - Unit range slider (0-24 units, default 4-16)
+ * - Instructor rating slider for schedule average
+ * - Toggle for open classes only
+ * - Toggle for including time conflicts
+ * - Form validation and error handling
+ * - Responsive design
+ *
+ * @formControls
+ * - UnitSlider: Sets minimum and maximum unit limits for schedules
+ * - InstructorRatingSlider: Sets target average instructor rating
+ * - FormSwitch: Toggles for various filtering options
+ *
+ * @validation
+ * - Uses SECTION_FILTERS_SCHEMA for form validation
+ * - Real-time validation feedback
+ * - Type-safe form handling with TypeScript
+ *
+ * @styling
+ * - Consistent spacing and layout
+ * - Dark mode support
+ * - Accessible form controls
+ */
 const Preferences = ({
   form,
 }: {

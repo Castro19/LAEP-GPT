@@ -1,3 +1,28 @@
+/**
+ * @component LoginBanner
+ * @description Banner component displaying Microsoft login availability notice. Provides
+ * information about login status and alternative sign-up options.
+ *
+ * @props
+ * None - Component displays static information
+ *
+ * @dependencies
+ * - React Router: Link component for navigation
+ * - Lucide Icons: AlertCircle icon
+ *
+ * @features
+ * - Microsoft login status notification
+ * - Alternative sign-up link
+ * - Warning styling with yellow theme
+ * - Responsive design
+ * - Hover effects on link
+ *
+ * @example
+ * ```tsx
+ * <LoginBanner />
+ * ```
+ */
+
 import { Link } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
 

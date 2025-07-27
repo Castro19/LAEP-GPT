@@ -1,3 +1,33 @@
+/**
+ * @component TitleCard
+ * @description Decorative title card component with gradient background and SVG decorations.
+ * Displays title and description with responsive design.
+ *
+ * @props
+ * @prop {string} title - Main title text to display
+ * @prop {string} description - Description text below title
+ *
+ * @dependencies
+ * - useIsNarrowScreen: Responsive design hook
+ * - SVG: Decorative background elements
+ *
+ * @features
+ * - Gradient background styling
+ * - Decorative SVG elements
+ * - Responsive text sizing
+ * - Dark mode support
+ * - Responsive padding and layout
+ * - Z-index layering
+ *
+ * @example
+ * ```tsx
+ * <TitleCard
+ *   title="Welcome"
+ *   description="Get started with your account"
+ * />
+ * ```
+ */
+
 import useIsNarrowScreen from "@/hooks/useIsNarrowScreen";
 
 // TitleCard.tsx

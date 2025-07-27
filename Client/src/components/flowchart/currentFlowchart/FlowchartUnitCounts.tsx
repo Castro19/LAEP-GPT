@@ -1,3 +1,29 @@
+/**
+ * @component FlowchartUnitCounts
+ * @description Displays unit count summary for the entire flowchart. Shows total units,
+ * completed units, and remaining units.
+ *
+ * @props
+ * @prop {FlowchartData} flowchartData - Flowchart data to calculate unit counts
+ *
+ * @dependencies
+ * - FlowchartData: Flowchart type from shared types
+ * - Card: UI container for unit display
+ *
+ * @features
+ * - Total unit calculation
+ * - Completed unit tracking
+ * - Remaining unit calculation
+ * - Progress percentage display
+ * - Visual unit breakdown
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <FlowchartUnitCounts flowchartData={flowchartData} />
+ * ```
+ */
+
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux";
 import { UnitCounts } from "@polylink/shared/types";

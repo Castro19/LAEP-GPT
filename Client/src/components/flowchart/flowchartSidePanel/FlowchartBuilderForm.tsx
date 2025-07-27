@@ -1,3 +1,35 @@
+/**
+ * @component FlowchartBuilderForm
+ * @description Main side panel form for flowchart management. Provides flowchart info,
+ * saved flowcharts list, course dropdowns, and new flowchart creation.
+ *
+ * @props
+ * @prop {() => void} onSwitchTab - Optional callback for tab switching
+ *
+ * @dependencies
+ * - Redux: flowchartActions for flowchart management
+ * - React Router: Navigation to flowchart pages
+ * - BuildScheduleContainer: Layout container
+ * - SavedFlowchartList: List of user's saved flowcharts
+ * - CourseDropdown: Course selection interface
+ * - FlowchartInfo: Current flowchart information
+ * - CollapsibleContentWrapper: Collapsible sections
+ *
+ * @features
+ * - Flowchart information display
+ * - Saved flowcharts management
+ * - Course selection and search
+ * - New flowchart creation
+ * - Tab switching integration
+ * - Responsive design
+ * - Sticky bottom navigation
+ *
+ * @example
+ * ```tsx
+ * <FlowchartBuilderForm onSwitchTab={() => setActiveTab('flowchart')} />
+ * ```
+ */
+
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 

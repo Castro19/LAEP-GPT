@@ -1,3 +1,40 @@
+/**
+ * @component TermContainer
+ * @description Container for displaying a single academic term with courses. Supports
+ * drag-and-drop, course completion toggling, and bulk term operations.
+ *
+ * @props
+ * @prop {Term} term - Term data to display
+ * @prop {string} termName - Display name for the term
+ * @prop {(termIndex: number, courseIndex: number) => void} onCourseToggleComplete - Course completion callback
+ *
+ * @dependencies
+ * - Redux: flowchartActions for data updates
+ * - Droppable: Drag-and-drop functionality
+ * - CourseItem: Individual course display
+ * - PortalAwareDraggable: Draggable course wrapper
+ * - ScrollArea: Scrollable content area
+ * - cloneDeep: Deep object cloning
+ *
+ * @features
+ * - Drag-and-drop course reordering
+ * - Bulk term completion (add/remove all courses)
+ * - Scrollable course list
+ * - Term unit calculation and display
+ * - Course count display
+ * - Responsive height calculation
+ * - Safe area insets for mobile
+ *
+ * @example
+ * ```tsx
+ * <TermContainer
+ *   term={termData}
+ *   termName="Fall 2024"
+ *   onCourseToggleComplete={handleToggle}
+ * />
+ * ```
+ */
+
 // TermContainer.tsx
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import cloneDeep from "lodash-es/cloneDeep";

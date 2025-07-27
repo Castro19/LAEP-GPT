@@ -1,3 +1,31 @@
+/**
+ * @component InitialSectionState
+ * @description Welcome screen displayed when no search has been performed. Provides introduction
+ * to class search features, AI search promotion, and important disclaimers.
+ *
+ * @props
+ * None - Component manages its own state
+ *
+ * @dependencies
+ * - Redux: layoutActions for AI menu toggle
+ * - Framer Motion: Entrance animations
+ * - Card: UI container component
+ * - React Icons: FiSearch, FiInfo icons
+ *
+ * @features
+ * - Welcome message with search icon
+ * - AI feature promotion with clickable link
+ * - Important information about data accuracy
+ * - Service disclaimers
+ * - Smooth entrance animations
+ * - Responsive design
+ *
+ * @example
+ * ```tsx
+ * <InitialSectionState />
+ * ```
+ */
+
 import { Card } from "@/components/ui/card";
 import { useAppDispatch, layoutActions } from "@/redux";
 import { motion } from "framer-motion";

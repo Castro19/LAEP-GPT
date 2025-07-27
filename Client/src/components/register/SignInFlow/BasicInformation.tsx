@@ -1,3 +1,35 @@
+/**
+ * @component BasicInformation
+ * @description Form component for collecting basic user information during registration.
+ * Includes starting year, current year, and major selection.
+ *
+ * @props
+ * @prop {boolean} showStartingYear - Whether to show starting year selection
+ *
+ * @dependencies
+ * - Redux: flowSelectionActions, user state
+ * - useUserData: User data management hook
+ * - Framer Motion: Entrance animations
+ * - MAJORS: Constants for major options
+ * - ReusableDropdown: Dropdown UI component
+ * - RadioGroup: Radio button selection
+ * - React Icons: RiGraduationCapLine, RiCalendarLine, RiUserStarLine
+ *
+ * @features
+ * - Starting year selection (2019-2025)
+ * - Current year selection (freshman to graduate)
+ * - Major selection from predefined list
+ * - Form validation and state management
+ * - Responsive design
+ * - Smooth animations
+ * - Icon-based labels
+ *
+ * @example
+ * ```tsx
+ * <BasicInformation showStartingYear={true} />
+ * ```
+ */
+
 import { motion } from "framer-motion";
 
 // Redux

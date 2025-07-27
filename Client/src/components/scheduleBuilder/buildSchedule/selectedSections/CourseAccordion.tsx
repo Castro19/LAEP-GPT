@@ -26,6 +26,85 @@ import { useAppSelector } from "@/redux";
 import useAutoExpand from "@/hooks/useAutoExpand";
 import { SCROLL_VIEWPORT_ID } from "../layout/BuildScheduleContainer";
 
+/**
+ * CourseAccordion - Collapsible component for displaying course sections grouped by professor
+ *
+ * This component provides an accordion interface for displaying all sections of a course,
+ * organized by professor. It handles conflict detection, schedule management, and provides
+ * smooth animations and scroll behavior for conflict resolution.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {string} props.courseId - The course identifier
+ * @param {Record<string, {rating: number, sections: SelectedSection[]}>} props.professorGroups - Sections grouped by professor with ratings
+ * @param {number} props.courseIndex - Index of this course in the list for animation timing
+ * @param {number} props.conflictGroupIndex - Index of the conflict group this course belongs to
+ * @param {number} props.positionInGroup - Position of this course within its conflict group
+ * @param {Set<number>} props.conflictIds - Set of class numbers that have time conflicts
+ * @param {SelectedSection[]} props.sectionsForSchedule - Sections currently selected for schedule building
+ * @param {boolean} props.isInSchedule - Whether any section of this course is in the current schedule
+ * @param {boolean} props.isHidden - Whether this course's sections are hidden
+ * @param {function} props.onAddCourse - Callback to add all sections of this course to schedule
+ * @param {function} props.onRemoveCourse - Callback to remove all sections of this course from schedule
+ * @param {function} props.onToggleVisibility - Callback to toggle visibility of this course's sections
+ *
+ * @example
+ * ```tsx
+ * <CourseAccordion
+ *   courseId="CSC 101"
+ *   professorGroups={{
+ *     "Dr. Smith": { rating: 4.5, sections: [section1, section2] },
+ *     "Dr. Johnson": { rating: 4.2, sections: [section3] }
+ *   }}
+ *   courseIndex={0}
+ *   conflictGroupIndex={1}
+ *   positionInGroup={0}
+ *   conflictIds={new Set([12345])}
+ *   sectionsForSchedule={selectedSections}
+ *   isInSchedule={true}
+ *   isHidden={false}
+ *   onAddCourse={(courseId) => handleAddCourse(courseId)}
+ *   onRemoveCourse={(courseId) => handleRemoveCourse(courseId)}
+ *   onToggleVisibility={(courseId) => handleToggleVisibility(courseId)}
+ * />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for layout state management
+ * - Framer Motion for animations
+ * - Radix UI Collapsible for accordion functionality
+ * - Lucide React for icons
+ * - Custom hooks for auto-expansion behavior
+ *
+ * @features
+ * - Collapsible accordion interface for course sections
+ * - Professor-based grouping with ratings
+ * - Conflict detection and highlighting
+ * - Automatic expansion for conflict resolution
+ * - Smooth scroll to expanded sections
+ * - Add/remove entire courses from schedule
+ * - Section visibility toggling
+ * - Color-coded course identification
+ * - Hover effects and transitions
+ *
+ * @animations
+ * - Staggered entrance animations based on course index
+ * - Smooth expand/collapse transitions
+ * - Hover color adjustments
+ * - Conflict state animations
+ *
+ * @scrollBehavior
+ * - Automatic scroll to expanded sections during conflict resolution
+ * - Smooth scrolling with viewport management
+ * - Retry mechanism for viewport detection
+ *
+ * @styling
+ * - Dynamic background colors based on course
+ * - Conflict state ring highlighting
+ * - Responsive design
+ * - Dark mode support
+ * - Backdrop blur effects for buttons
+ */
 export interface CourseAccordionProps {
   courseId: string;
   professorGroups: Record<

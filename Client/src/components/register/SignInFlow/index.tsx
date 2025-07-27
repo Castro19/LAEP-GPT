@@ -1,3 +1,42 @@
+/**
+ * @component SignInFlow
+ * @description Main sign-in flow container that manages multi-step user registration process.
+ * Handles navigation between steps and renders appropriate layout based on device type.
+ *
+ * @props
+ * None - Component manages its own state and routing
+ *
+ * @dependencies
+ * - React Router: Outlet, useLocation, useNavigate
+ * - Redux: authActions for user state management
+ * - useUserData: User data management hook
+ * - useDeviceType: Device type detection
+ * - MobileSignInFlow: Mobile layout component
+ * - DesktopSignInFlow: Desktop layout component
+ * - Toast: Error notifications
+ *
+ * @features
+ * - Multi-step registration flow (5 steps)
+ * - Device-responsive layout selection
+ * - Step navigation (next/previous)
+ * - Terms acceptance validation
+ * - Profile completion handling
+ * - Toast notifications for errors
+ * - Context passing to child components
+ *
+ * @steps
+ * 1. Terms of Service
+ * 2. Input Information
+ * 3. Basic Information
+ * 4. Demographics
+ * 5. Interests
+ *
+ * @example
+ * ```tsx
+ * <SignInFlow />
+ * ```
+ */
+
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, authActions } from "@/redux";

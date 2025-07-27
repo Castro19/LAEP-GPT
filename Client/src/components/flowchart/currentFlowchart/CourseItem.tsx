@@ -1,3 +1,43 @@
+/**
+ * @component CourseItem
+ * @description Individual course display component with completion toggling, tooltips,
+ * context menus, and deletion functionality.
+ *
+ * @props
+ * @prop {number} termIndex - Index of the term containing this course
+ * @prop {Course} course - Course data to display
+ * @prop {number} coursePosition - Position of course within the term
+ * @prop {(courseId: string | null) => void} onToggleComplete - Course completion callback
+ *
+ * @dependencies
+ * - Redux: flowchartActions for data updates
+ * - Tooltip: Course information display
+ * - ContextMenu: Right-click menu for deletion
+ * - Card: Course display container
+ * - CourseToolTipContent: Detailed course information
+ * - cloneDeep: Deep object cloning
+ *
+ * @features
+ * - Course completion toggling with visual feedback
+ * - Tooltip with detailed course information
+ * - Context menu for course deletion
+ * - Unit calculation and display
+ * - Custom unit support
+ * - Responsive design
+ * - Hover animations
+ * - Color-coded course display
+ *
+ * @example
+ * ```tsx
+ * <CourseItem
+ *   termIndex={1}
+ *   course={courseData}
+ *   coursePosition={0}
+ *   onToggleComplete={handleToggle}
+ * />
+ * ```
+ */
+
 import { useAppDispatch, useAppSelector, flowchartActions } from "@/redux";
 import { Course, FlowchartData } from "@polylink/shared/types";
 import cloneDeep from "lodash-es/cloneDeep";

@@ -15,6 +15,47 @@ import { CourseTerm, Section, SelectedSection } from "@polylink/shared/types";
 import { transformSectionToSelectedSection } from "@/helpers/transformSection";
 import { environment } from "@/helpers/getEnvironmentVars";
 
+/**
+ * TimeConflictsPopup - Modal component for handling schedule time conflicts
+ *
+ * This component displays a popup when time conflicts are detected in the current schedule,
+ * offering users options to either manually edit the schedule or automatically resolve conflicts
+ * by finding alternative sections for conflicting courses.
+ *
+ * @component
+ *
+ * @example
+ * ```tsx
+ * <TimeConflictsPopup />
+ * ```
+ *
+ * @dependencies
+ * - Redux store for schedule state and actions
+ * - Framer Motion for animations
+ * - Lucide React for icons
+ * - Schedule generation helpers
+ *
+ * @features
+ * - Automatic detection of time conflicts in current schedule
+ * - Manual conflict resolution option (opens conflict editor)
+ * - Automatic conflict resolution by fetching alternative sections
+ * - Smooth animations for popup appearance/disappearance
+ * - Error handling for API calls
+ * - Visual feedback with icons and descriptive text
+ *
+ * @state
+ * - Local state for popup visibility
+ * - Redux state for current schedule, preferences, and term
+ *
+ * @actions
+ * - editManually: Opens the conflict editor interface
+ * - autoResolve: Automatically resolves conflicts by finding alternative sections
+ * - close: Closes the popup
+ *
+ * @animations
+ * - Height and opacity transitions for smooth popup appearance
+ * - Uses AnimatePresence for proper exit animations
+ */
 const TimeConflictsPopup = () => {
   const { currentSchedule, preferences, currentScheduleTerm } = useAppSelector(
     (s) => s.schedule
@@ -53,7 +94,7 @@ const TimeConflictsPopup = () => {
       [];
 
     // 2) Figure out which ones were in conflict, fetch alternates, then
-    //    for each alternate section grab its course’s color out of the map:
+    //    for each alternate section grab its course's color out of the map:
     let alternateSections: Section[] = [];
 
     try {

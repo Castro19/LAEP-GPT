@@ -1,3 +1,32 @@
+/**
+ * @component Scheduling
+ * @description Manages scheduling-related filters including days, time range, enrollment status,
+ * instruction mode, and conflict checking with primary schedule.
+ *
+ * @props
+ * @prop {UseFormReturn<SectionFiltersForm>} form - React Hook Form instance for scheduling filter state
+ *
+ * @dependencies
+ * - Redux: scheduleActions for schedule builder integration
+ * - DaysSelector: Multi-select component for class days
+ * - TimeRange: Start/end time selectors
+ * - React Router: Navigation to schedule builder
+ *
+ * @features
+ * - Days selector (Mo, Tu, We, Th, Fr) with multi-select
+ * - Time range picker with 24-hour format
+ * - Enrollment status toggles (Open, Waitlist, Closed)
+ * - Instruction mode buttons (In-Person, Async, Sync, Hybrid)
+ * - No conflicts toggle with schedule builder integration
+ * - Direct navigation to schedule builder for conflict setup
+ *
+ * @example
+ * ```tsx
+ * const form = useForm<SectionFiltersForm>();
+ * <Scheduling form={form} />
+ * ```
+ */
+
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 

@@ -1,3 +1,29 @@
+/**
+ * @component ErrorMessage
+ * @description Error alert component for displaying error messages with consistent styling.
+ * Uses destructive variant with red background and white text.
+ *
+ * @props
+ * @prop {string} text - Error message text to display
+ *
+ * @dependencies
+ * - Alert: UI alert component
+ * - AlertTitle, AlertDescription: Alert sub-components
+ * - Lucide Icons: AlertCircle icon
+ *
+ * @features
+ * - Destructive styling (red background)
+ * - White text for contrast
+ * - Alert icon display
+ * - Consistent error message format
+ * - Accessible alert structure
+ *
+ * @example
+ * ```tsx
+ * <ErrorMessage text="Invalid email address" />
+ * ```
+ */
+
 import { AlertCircle } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

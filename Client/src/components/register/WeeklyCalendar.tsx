@@ -1,3 +1,31 @@
+/**
+ * @component WeeklyCalendar
+ * @description Interactive weekly availability calendar for user scheduling preferences.
+ * Allows users to select/deselect time slots with drag functionality.
+ *
+ * @props
+ * @prop {boolean} inReadMode - Whether calendar is in read-only mode
+ *
+ * @dependencies
+ * - Redux: User state for availability data
+ * - useUserData: User data management hook
+ * - Fragment: React fragment for rendering
+ *
+ * @features
+ * - Interactive time slot selection (8 AM - 8 PM)
+ * - Drag functionality for bulk selection
+ * - Availability interval management
+ * - Read-only mode support
+ * - Time formatting (AM/PM)
+ * - Visual feedback for selected slots
+ * - Mouse event handling
+ *
+ * @example
+ * ```tsx
+ * <WeeklySchedule inReadMode={false} />
+ * ```
+ */
+
 import { Fragment, useState } from "react";
 import { useUserData } from "@/hooks/useUserData";
 import { useAppSelector } from "@/redux";

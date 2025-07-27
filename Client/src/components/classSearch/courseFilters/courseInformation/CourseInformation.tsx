@@ -1,3 +1,35 @@
+/**
+ * @component CourseInformation
+ * @description Handles course-specific filtering including term selection, course search, subject,
+ * catalog numbers, units, course attributes, and technical electives.
+ *
+ * @props
+ * @prop {UseFormReturn<SectionFiltersForm>} form - React Hook Form instance for course filter state
+ *
+ * @dependencies
+ * - Redux: flowSelectionActions for major/concentration options
+ * - fetchCoursesAPI: Course search functionality
+ * - SUBJECTS: Static subject data
+ * - TermSelector: Academic term selection
+ * - CatalogNumberSlider: Course number range filtering
+ * - UnitSlider: Credit unit range filtering
+ *
+ * @features
+ * - Course search with deletable tags
+ * - Subject dropdown with all academic subjects
+ * - Catalog number range slider (100-600)
+ * - Unit range slider (0-9)
+ * - Course attributes multi-select (GE A-D, GWR, USCP)
+ * - Technical elective handling with major/concentration
+ * - Credit/No Credit toggle
+ *
+ * @example
+ * ```tsx
+ * const form = useForm<SectionFiltersForm>();
+ * <CourseInformation form={form} />
+ * ```
+ */
+
 import { useEffect } from "react";
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
