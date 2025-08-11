@@ -26,6 +26,7 @@ import professorRouter from "./routes/professor";
 import scheduleRouter from "./routes/schedule";
 // import testRouter from "./routes/test";
 import scheduleBuilderRouter from "./routes/scheduleBuilder";
+import errorRouter from "./routes/error";
 // LLM API
 import OpenAI from "openai";
 import { wrapOpenAI } from "langsmith/wrappers";
@@ -88,6 +89,7 @@ app.use("/schedules", authenticate, scheduleRouter);
 app.use("/professors", authenticate, professorRouter);
 // app.use("/test", testRouter);
 app.use("/scheduleBuilder", authenticate, scheduleBuilderRouter);
+app.use("/errors", errorRouter);
 export const client = wrapOpenAI(
   new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || "dummy-key-for-testing",
